@@ -1,154 +1,152 @@
-"use client";
-
-/**
- * Hoja A4 editorial del «Temario y precios» (794 × 1123 px, equivalente a
- * 210 × 297 mm a 96 dpi). Todas las medidas van inline para que la vista
- * previa, la captura con `html-to-image` y el PDF midan exactamente lo mismo,
- * sin depender de Tailwind ni de variables del tema.
- *
- * Estructura vertical: filete de acento, cabecera de marca, cuerpo flexible y
- * pie común fijo al fondo (por flujo flex, no absoluto). El pie es idéntico en
- * todas las hojas: «ProgramBI · Temario y precios · {title}» a la izquierda,
- * la edición al centro y la paginación a la derecha, separado por un hairline.
- */
-
-import type { CSSProperties, JSX, ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
 import {
   A4,
+  FONT_MONO,
   FONT_SANS,
-  SHADOW_SHEET,
-  SPACE,
   T,
-  TYPE,
   accentOf,
 } from "@/lib/brochure/brochure-theme";
 import { BrochureBrandHeader } from "./BrochureBrandHeader";
 
 export type BrochureA4SheetProps = {
-  data: CourseBrochureData;
   pageNumber: number;
   totalPages: number;
+  data: CourseBrochureData;
+  isCover?: boolean;
   children: ReactNode;
-  className?: string;
   style?: CSSProperties;
 };
 
+/**
+ * Contenedor A4 fijo a 96 dpi (794 × 1123 px).
+ * Garantiza paridad visual 1:1 entre navegador, impresión y PDF descargado.
+ */
 export function BrochureA4Sheet({
-  data,
   pageNumber,
   totalPages,
+  data,
+  isCover = false,
   children,
-  className,
   style,
-}: BrochureA4SheetProps): JSX.Element {
-  const acento = accentOf(data.accentColor);
-
-  const raiz: CSSProperties = {
-    width: A4.w,
-    height: A4.h,
-    backgroundColor: T.paper,
-    color: T.ink,
-    position: "relative",
-    overflow: "hidden",
-    boxSizing: "border-box",
-    display: "flex",
-    flexDirection: "column",
-    border: `1px solid ${T.line}`,
-    borderRadius: 2,
-    boxShadow: SHADOW_SHEET,
-    fontFamily: FONT_SANS,
-    flexShrink: 0,
-  };
-
-  /** Filete superior: único acento a sangre de la hoja. */
-  const filete: CSSProperties = {
-    height: 6,
-    flexShrink: 0,
-    backgroundColor: acento,
-  };
-
-  const cabecera: CSSProperties = {
-    padding: `${SPACE[5]}px ${A4.margin}px 0`,
-    flexShrink: 0,
-  };
-
-  const cuerpo: CSSProperties = {
-    flex: 1,
-    minHeight: 0,
-    display: "flex",
-    flexDirection: "column",
-    padding: `${SPACE[4]}px ${A4.margin}px ${SPACE[3]}px`,
-    overflow: "hidden",
-  };
-
-  const pie: CSSProperties = {
-    margin: `0 ${A4.margin}px`,
-    padding: `${SPACE[3]}px 0 ${SPACE[4]}px`,
-    borderTop: `1px solid ${T.line}`,
-    display: "grid",
-    gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
-    alignItems: "center",
-    columnGap: SPACE[3],
-    fontSize: TYPE.small.size,
-    lineHeight: 1.3,
-    color: T.mute,
-    flexShrink: 0,
-  };
-
-  const pieTitulo: CSSProperties = {
-    minWidth: 0,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  };
-
-  const pieEdicion: CSSProperties = {
-    justifySelf: "center",
-    textAlign: "center",
-    whiteSpace: "nowrap",
-  };
-
-  const piePagina: CSSProperties = {
-    justifySelf: "end",
-    textAlign: "right",
-    whiteSpace: "nowrap",
-    color: T.inkSoft,
-    fontWeight: 500,
-  };
+}: BrochureA4SheetProps) {
+  const accent = accentOf(data.accentColor);
 
   return (
-    <div
+    <section
       data-brochure-sheet={pageNumber}
-      id={`brochure-page-${pageNumber}`}
-      data-page-number={pageNumber}
-      className={className ? `brochure-a4-sheet ${className}` : "brochure-a4-sheet"}
-      style={{ ...raiz, ...style }}
+      aria-label={`${data.title} — Página ${pageNumber} de ${totalPages}`}
+      className={isCover ? "brochure-a4-sheet brochure-cover-sheet" : "brochure-a4-sheet"}
+      style={{
+        width: A4.w,
+        height: A4.h,
+        minWidth: A4.w,
+        maxWidth: A4.w,
+        minHeight: A4.h,
+        maxHeight: A4.h,
+        background: T.paper,
+        color: T.ink,
+        fontFamily: FONT_SANS,
+        fontSize: 13,
+        lineHeight: 1.5,
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        overflow: "hidden",
+        boxSizing: "border-box",
+        WebkitFontSmoothing: "antialiased",
+        ...style,
+      }}
     >
-      <div aria-hidden="true" style={filete} />
+      {/* Filete superior sutil de marca: 3px de acento + línea estructural */}
+      <div
+        aria-hidden="true"
+        style={{
+          height: 3,
+          width: "100%",
+          background: T.obsidian,
+          position: "relative",
+          flexShrink: 0,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: 140,
+            background: accent,
+          }}
+        />
+      </div>
 
-      <header style={cabecera}>
-        <BrochureBrandHeader data={data} />
-      </header>
+      {!isCover && <BrochureBrandHeader data={data} />}
 
-      <main style={cuerpo}>{children}</main>
+      <main
+        style={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          padding: isCover ? "0" : "22px 48px 18px",
+          overflow: "hidden",
+          boxSizing: "border-box",
+        }}
+      >
+        {children}
+      </main>
 
-      <footer style={pie}>
+      <footer
+        style={{
+          marginTop: "auto",
+          padding: "11px 48px 16px",
+          borderTop: `1px solid ${T.line}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 16,
+          background: isCover ? T.paperWarm : T.paper,
+          flexShrink: 0,
+        }}
+      >
         <span
-          style={pieTitulo}
-          title={`ProgramBI · Temario y precios · ${data.title}`}
+          style={{
+            fontSize: 11,
+            fontWeight: 500,
+            color: T.mute,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: 380,
+          }}
         >
-          {`ProgramBI · Temario y precios · ${data.title}`}
+          ProgramBI · Temario oficial · {data.title}
         </span>
 
-        <span style={pieEdicion}>
-          {`Edición ${data.paisNombre} · ${data.moneda}`}
+        <span
+          style={{
+            fontFamily: FONT_MONO,
+            fontSize: 11,
+            color: T.mute,
+            whiteSpace: "nowrap",
+          }}
+        >
+          Edición {data.paisNombre} ({data.moneda})
         </span>
 
-        <span style={piePagina}>
-          {`Página ${pageNumber} de ${totalPages}`}
+        <span
+          style={{
+            fontFamily: FONT_MONO,
+            fontSize: 11,
+            fontWeight: 600,
+            color: T.ink,
+            whiteSpace: "nowrap",
+          }}
+        >
+          Página {pageNumber} de {totalPages}
         </span>
       </footer>
-    </div>
+    </section>
   );
 }

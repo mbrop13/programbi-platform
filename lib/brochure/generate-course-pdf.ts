@@ -484,6 +484,14 @@ function normalizarCanvas(origen: HTMLCanvasElement): HTMLCanvasElement {
 async function renderizarHoja(hoja: HTMLElement): Promise<HTMLCanvasElement> {
   const { toCanvas } = await import("html-to-image");
 
+  const rootStyle =
+    typeof window !== "undefined"
+      ? window.getComputedStyle(document.documentElement)
+      : null;
+  const resolvedFontSans = rootStyle?.getPropertyValue("--font-sans").trim();
+  const resolvedFontMono = rootStyle?.getPropertyValue("--font-mono").trim();
+  const resolvedFontDancing = rootStyle?.getPropertyValue("--font-dancing").trim();
+
   const base: Record<string, unknown> = {
     width: HOJA_PX_W,
     height: HOJA_PX_H,
@@ -496,6 +504,9 @@ async function renderizarHoja(hoja: HTMLElement): Promise<HTMLCanvasElement> {
       boxShadow: "none",
       border: "none",
       borderRadius: "0",
+      ...(resolvedFontSans ? { "--font-sans": resolvedFontSans } : {}),
+      ...(resolvedFontMono ? { "--font-mono": resolvedFontMono } : {}),
+      ...(resolvedFontDancing ? { "--font-dancing": resolvedFontDancing } : {}),
     },
   };
 
@@ -560,7 +571,7 @@ async function construirPdfWysiwyg(
     });
 
     const canvas = await renderizarHoja(hoja);
-    const imagen = canvas.toDataURL("image/jpeg", 0.94);
+    const imagen = canvas.toDataURL("image/jpeg", 0.96);
     if (!imagen.startsWith("data:image/")) {
       throw new Error("La hoja no se pudo convertir a imagen");
     }
@@ -1630,7 +1641,7 @@ async function construirPdfVectorial(
   avisar("Componiendo el temario…");
   nuevaPagina();
   cabecera(
-    "Programa académico",
+    "Programa Académico Detallado",
     "Todo lo que vas a dominar",
     `${data.modulesCount} módulos en ${data.levelsCount} ${
       data.levelsCount === 1 ? "nivel" : "niveles"

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Suspense } from "react";
-import { Geist, Dancing_Script } from "next/font/google";
+import { Geist, Geist_Mono, Dancing_Script } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/app/providers";
@@ -12,6 +12,12 @@ import "@/app/globals.css";
 
 const geist = Geist({
   variable: "--font-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
 });
@@ -102,7 +108,7 @@ export default function RootShell({
   children: ReactNode;
 }) {
   return (
-    <html lang={lang} suppressHydrationWarning className={`${geist.variable} ${dancing.variable}`}>
+    <html lang={lang} suppressHydrationWarning className={`${geist.variable} ${geistMono.variable} ${dancing.variable}`}>
       <head>
         <script
           type="application/ld+json"

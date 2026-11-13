@@ -1,407 +1,366 @@
-"use client";
-
-/**
- * Hoja 5 del temario y precios: equipo docente.
- *
- * Tarjetas horizontales con retrato circular de 96 px, nombre en el estilo
- * `h2` del tema, rol en el acento del curso y una bio de dos o tres líneas
- * armada SOLO con datos ya publicados del profesor (`founderBio` o sus
- * credenciales). Si la edición trae más de cuatro docentes, la lista pasa a
- * una grilla compacta de dos columnas para que no se corte nada en el A4.
- *
- * Los retratos viven en `public/images/mentors/` para que la captura del PDF
- * los pueda rasterizar sin CORS. Todo va en estilos inline y fuentes de
- * sistema: la vista previa, la captura con `html-to-image` y el PDF miden
- * exactamente lo mismo, sin Tailwind dentro de la hoja.
- */
-
-import type { CSSProperties } from "react";
-import { BrochureA4Sheet } from "@/components/brochure/BrochureA4Sheet";
 import type {
   BrochureProfesor,
   CourseBrochureData,
 } from "@/lib/brochure/brochure-data";
+import { BROCHURE_COMPANY_LOGOS } from "@/lib/brochure/brochure-assets";
 import {
-  FONT_DISPLAY,
+  FONT_MONO,
   FONT_SANS,
-  RADIUS,
-  SPACE,
   T,
-  TYPE,
+  accentInk,
   accentOf,
-  tint,
 } from "@/lib/brochure/brochure-theme";
+import { BrochureA4Sheet } from "@/components/brochure/BrochureA4Sheet";
+import {
+  SectionDividerLabel,
+  SheetTitleBlock,
+} from "@/components/brochure/BrochurePrimitives";
 
-/**
- * Retratos locales HD del equipo fijo. La ruta se resuelve por nombre para que
- * la hoja muestre siempre las fotos same-origin, incluso si el dato aún apunta
- * al CDN heredado (la captura del PDF no admite imágenes externas).
- */
-const RETRATOS_LOCALES: Record<string, string> = {
-  "Manuel Oliva": "/images/mentors/manuel-oliva.jpg",
-  "Emanuel Berrocal": "/images/mentors/emanuel-berrocal.jpg",
-  "Rodrigo Vega": "/images/mentors/rodrigo-vega.jpg",
-};
-
-type BrochureFacultySheetProps = {
+export type BrochureFacultySheetProps = {
   data: CourseBrochureData;
-  pageNumber: number;
+  pageNumber?: number;
   totalPages: number;
 };
 
-/** Slug ASCII del nombre, para la ruta local de respaldo. */
-function slugDe(nombre: string): string {
-  return nombre
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+/**
+ * Construye una biografía limpia en oraciones completas sin cortes `....`.
+ */
+function cleanFacultyBio(prof: BrochureProfesor): string {
+  if (prof.founderBio) {
+    const raw = prof.founderBio.replace(/\s+/g, " ").trim();
+    if (raw.length <= 255) return raw;
+    const sentences = raw.match(/[^.!?]+[.!?]+/g) ?? [raw];
+    let out = "";
+    for (const s of sentences) {
+      const candidate = out ? `${out} ${s.trim()}` : s.trim();
+      if (candidate.length > 265 && out.length > 90) break;
+      out = candidate;
+    }
+    if (out && out.length <= 275) return out;
+    const sliced = raw.slice(0, 240);
+    const lastSpace = sliced.lastIndexOf(" ");
+    return `${(lastSpace > 120 ? sliced.slice(0, lastSpace) : sliced).replace(/[,:;.\s]+$/, "")}.`;
+  }
+
+  const extras = [
+    ...(prof.founderAcademics ?? []),
+    ...(prof.founderCareer ?? []),
+    ...(prof.credentials ?? []),
+  ]
+    .map((s) => s.trim())
+    .filter(
+      (s) =>
+        s.length > 0 &&
+        s.toLowerCase() !== prof.title.trim().toLowerCase() &&
+        !s.toLowerCase().includes(prof.title.trim().toLowerCase())
+    );
+  const unique: string[] = [];
+  for (const item of extras) {
+    if (!unique.some((u) => u.toLowerCase() === item.toLowerCase())) {
+      unique.push(item);
+    }
+  }
+  return unique.join(" · ");
 }
 
-/** Foto del profesor: local HD primero, dato original después. */
-function retratoDe(profesor: BrochureProfesor): string | null {
-  const local = RETRATOS_LOCALES[profesor.name];
-  if (local) return local;
-  if (profesor.imageUrl) return profesor.imageUrl;
-  const slug = slugDe(profesor.name);
-  return slug ? `/images/mentors/${slug}.jpg` : null;
-}
+function cleanCredentialLine(prof: BrochureProfesor): string {
+  const parts = [
+    prof.title,
+    ...(prof.founderBio ? (prof.founderAcademics ?? []).slice(0, 1) : []),
+    ...(prof.founderBio ? (prof.founderCareer ?? []).slice(0, 1) : []),
+  ]
+    .map((v) => (typeof v === "string" ? v.trim() : ""))
+    .filter(Boolean);
 
-function iniciales(nombre: string): string {
-  return nombre
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((parte) => parte.charAt(0).toUpperCase())
-    .join("");
+  const unique: string[] = [];
+  for (const part of parts) {
+    if (
+      !unique.some(
+        (u) =>
+          u.toLowerCase().includes(part.toLowerCase()) ||
+          part.toLowerCase().includes(u.toLowerCase())
+      )
+    ) {
+      unique.push(part);
+    }
+    if (unique.length >= 2) break;
+  }
+  return unique.join(" · ");
 }
 
 /**
- * Bio breve con hechos ya publicados: la del fundador cuando existe y, si no,
- * sus credenciales reales. No se agrega texto nuevo ni se inventan cargos.
+ * Hoja 5 — Claustro Docente y Red Empresarial.
+ * Presenta a Manuel Oliva, Emanuel Berrocal y Rodrigo Vega con retrato
+ * arquitectónico, credenciales completas sin recortes rotos y los 12 logos.
  */
-function bioDe(profesor: BrochureProfesor): string {
-  const fundador = profesor.founderBio?.trim();
-  if (fundador) return fundador;
-  return profesor.credentials
-    .map((credencial) => credencial.trim())
-    .filter(Boolean)
-    .slice(0, 3)
-    .join(" ");
-}
-
-/** Recorte tipográfico sin cortar una línea por la mitad. */
-const RECORTE: CSSProperties = {
-  display: "-webkit-box",
-  WebkitBoxOrient: "vertical",
-  overflow: "hidden",
-};
-
 export function BrochureFacultySheet({
   data,
-  pageNumber,
+  pageNumber = 5,
   totalPages,
 }: BrochureFacultySheetProps) {
   const accent = accentOf(data.accentColor);
-  const profesores = data.profesores;
-  const compacto = profesores.length > 4;
-  const denso = profesores.length > 3;
+  const accentText = accentInk(data.accentColor);
 
-  const kicker: CSSProperties = {
-    fontFamily: FONT_SANS,
-    fontSize: TYPE.kicker.size,
-    lineHeight: TYPE.kicker.line,
-    fontWeight: TYPE.kicker.weight,
-    letterSpacing: TYPE.kicker.tracking,
-    textTransform: "uppercase",
-    color: accent,
-  };
-
-  const titulo: CSSProperties = {
-    margin: `${SPACE[1]}px 0 0`,
-    fontFamily: FONT_DISPLAY,
-    fontSize: TYPE.h1.size,
-    lineHeight: TYPE.h1.line,
-    fontWeight: TYPE.h1.weight,
-    letterSpacing: -0.4,
-    color: T.ink,
-  };
-
-  const entrada: CSSProperties = {
-    margin: `${SPACE[1]}px 0 0`,
-    maxWidth: 560,
-    fontFamily: FONT_SANS,
-    fontSize: TYPE.body.size,
-    lineHeight: TYPE.body.line,
-    color: T.mute,
-  };
-
-  const tarjeta: CSSProperties = {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: compacto ? SPACE[3] : 20,
-    padding: compacto || denso ? "14px 16px" : "18px 20px",
-    backgroundColor: T.wash,
-    border: `1px solid ${T.line}`,
-    borderRadius: RADIUS.card,
-    boxSizing: "border-box",
-    minWidth: 0,
-    minHeight: denso ? 120 : 178,
-  };
-
-  const retrato: CSSProperties = {
-    flex: "0 0 auto",
-    width: 96,
-    height: 96,
-    borderRadius: "50%",
-    boxShadow: `0 0 0 1px ${tint(accent, 0.35)}`,
-    backgroundColor: T.paper,
-    overflow: "hidden",
-  };
-
-  const foto: CSSProperties = {
-    width: "100%",
-    height: "100%",
-    borderRadius: "50%",
-    objectFit: "cover",
-    objectPosition: "center top",
-    display: "block",
-  };
-
-  const sinFoto: CSSProperties = {
-    width: "100%",
-    height: "100%",
-    borderRadius: "50%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: tint(accent, 0.1),
-    fontFamily: FONT_DISPLAY,
-    fontSize: 24,
-    fontWeight: 700,
-    color: accent,
-  };
-
-  const nombre: CSSProperties = {
-    margin: 0,
-    fontFamily: FONT_SANS,
-    fontSize: TYPE.h2.size,
-    lineHeight: TYPE.h2.line,
-    fontWeight: TYPE.h2.weight,
-    color: T.ink,
-  };
-
-  const rol: CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    marginTop: SPACE[0],
-    fontFamily: FONT_SANS,
-    fontSize: TYPE.kicker.size,
-    lineHeight: TYPE.kicker.line,
-    fontWeight: 700,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-    color: T.inkSoft,
-  };
-
-  const punto: CSSProperties = {
-    display: "block",
-    width: 5,
-    height: 5,
-    borderRadius: RADIUS.chip,
-    backgroundColor: accent,
-    flexShrink: 0,
-  };
-
-  const bio: CSSProperties = {
-    ...RECORTE,
-    WebkitLineClamp: denso ? 2 : 3,
-    margin: `${SPACE[1]}px 0 0`,
-    fontFamily: FONT_SANS,
-    fontSize: TYPE.body.size,
-    lineHeight: TYPE.body.line,
-    color: T.inkSoft,
-  };
-
-  const chip: CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "3px 8px",
-    borderRadius: RADIUS.chip,
-    backgroundColor: tint(accent, 0.08),
-    fontFamily: FONT_SANS,
-    fontSize: 10.5,
-    lineHeight: 1.2,
-    fontWeight: 600,
-    color: T.inkSoft,
-    whiteSpace: "nowrap",
-  };
+  const profesores = (data.profesores ?? []).slice(0, 3);
+  const companyLogos = (
+    data.companyLogos?.length ? data.companyLogos : BROCHURE_COMPANY_LOGOS
+  ).slice(0, 12);
 
   return (
-    <BrochureA4Sheet data={data} pageNumber={pageNumber} totalPages={totalPages}>
+    <BrochureA4Sheet
+      pageNumber={pageNumber}
+      totalPages={totalPages}
+      data={data}
+    >
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: SPACE[4],
           height: "100%",
-          minHeight: 0,
           fontFamily: FONT_SANS,
-          color: T.ink,
         }}
       >
-        {/* 1. Cabecera editorial */}
-        <header>
-          <div style={kicker}>QUIÉN TE ENSEÑA</div>
-          <h2 style={titulo}>Aprende con quienes lideran proyectos de datos</h2>
-          <p style={entrada}>
-            Profesores en ejercicio, con experiencia directa en banca, minería,
-            retail y consultoría.
-          </p>
-        </header>
-
-        {/* 2. Tarjetas de profesores: fila amplia, grilla compacta si hay más de 4 */}
-        <section
-          aria-label="Equipo docente"
-          style={
-            compacto
-              ? {
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                  gap: SPACE[2],
-                }
-              : {
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: SPACE[3],
-                }
+        <SheetTitleBlock
+          kicker="Claustro docente"
+          title="Aprende con quienes lideran proyectos de datos"
+          subtitle="Profesores en ejercicio activo, con trayectoria comprobada en banca, minería, retail, finanzas y consultoría analítica."
+          accentColor={data.accentColor}
+          rightSlot={
+            <div
+              style={{
+                textAlign: "right",
+                fontFamily: FONT_MONO,
+                fontSize: 11,
+                color: T.mute,
+              }}
+            >
+              <div style={{ fontWeight: 700, color: T.ink }}>
+                0{profesores.length} DOCENTES
+              </div>
+              <div>{data.modality || "Zoom en vivo"}</div>
+            </div>
           }
-        >
-          {profesores.map((profesor) => {
-            const imagen = retratoDe(profesor);
-            const bioProfesor = bioDe(profesor);
+        />
 
+        {/* Fichas editoriales del claustro docente */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          {profesores.map((prof, idx) => {
+            const bio = cleanFacultyBio(prof);
+            const cred = cleanCredentialLine(prof);
+            const photoSrc = prof.imageUrl || "/images/logo.png";
             return (
-              <article key={profesor.name} style={tarjeta}>
-                <div style={retrato}>
-                  {imagen ? (
-                    <img
-                      src={imagen}
-                      alt={`Retrato de ${profesor.name}`}
-                      crossOrigin="anonymous"
-                      style={foto}
-                    />
-                  ) : (
-                    <span aria-hidden="true" style={sinFoto}>
-                      {iniciales(profesor.name)}
-                    </span>
-                  )}
+              <article
+                key={prof.name}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "86px 1fr",
+                  gap: 18,
+                  padding: "14px 16px",
+                  border: `1px solid ${T.line}`,
+                  borderRadius: 6,
+                  background: idx === 0 ? T.paperWarm : T.paper,
+                }}
+              >
+                <div
+                  style={{
+                    width: 86,
+                    height: 104,
+                    borderRadius: 5,
+                    overflow: "hidden",
+                    border: `1px solid ${T.lineStrong}`,
+                    background: T.wash,
+                    flexShrink: 0,
+                  }}
+                >
+                  <img
+                    src={photoSrc}
+                    alt={prof.name}
+                    crossOrigin="anonymous"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "top center",
+                      display: "block",
+                    }}
+                  />
                 </div>
 
                 <div
                   style={{
-                    flex: 1,
-                    minWidth: 0,
                     display: "flex",
                     flexDirection: "column",
+                    justifyContent: "space-between",
+                    minWidth: 0,
                   }}
                 >
-                  <h3 style={nombre}>{profesor.name}</h3>
-
-                  <div style={rol}>
-                    <span aria-hidden="true" style={punto} />
-                    <span>{profesor.role}</span>
-                  </div>
-
-                  {bioProfesor ? <p style={bio}>{bioProfesor}</p> : null}
-
-                  {!denso ? (
+                  <div>
                     <div
                       style={{
                         display: "flex",
+                        alignItems: "baseline",
+                        justifyContent: "space-between",
+                        gap: 12,
                         flexWrap: "wrap",
-                        gap: 6,
-                        marginTop: SPACE[1],
                       }}
                     >
-                      <span style={chip}>
-                        {`+${profesor.yearsExperience} años de experiencia`}
-                      </span>
-                      <span style={chip}>
-                        {`+${profesor.studentCount.toLocaleString("es-CL")} alumnos`}
-                      </span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <h2
+                          style={{
+                            margin: 0,
+                            fontSize: 17.5,
+                            fontWeight: 700,
+                            letterSpacing: "-0.02em",
+                            color: T.ink,
+                          }}
+                        >
+                          {prof.name}
+                        </h2>
+                        <span
+                          style={{
+                            fontFamily: FONT_MONO,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            letterSpacing: "0.06em",
+                            textTransform: "uppercase",
+                            color: accentText,
+                            background: T.wash,
+                            border: `1px solid ${T.line}`,
+                            borderRadius: 3,
+                            padding: "1px 7px",
+                          }}
+                        >
+                          {prof.role}
+                        </span>
+                      </div>
+
+                      <div
+                        style={{
+                          fontFamily: FONT_MONO,
+                          fontSize: 11,
+                          fontWeight: 600,
+                          color: T.inkSoft,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        +{prof.yearsExperience} años · +{prof.studentCount.toLocaleString("es-CL")} alumnos
+                      </div>
                     </div>
-                  ) : null}
+
+                    {cred ? (
+                      <div
+                        style={{
+                          marginTop: 4,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          color: T.inkSoft,
+                        }}
+                      >
+                        {cred}
+                      </div>
+                    ) : null}
+
+                    {bio ? (
+                      <p
+                        style={{
+                          margin: "7px 0 0",
+                          fontSize: 12.2,
+                          lineHeight: 1.46,
+                          color: T.inkSoft,
+                        }}
+                      >
+                        {bio}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
               </article>
             );
           })}
-        </section>
+        </div>
 
-        {/* 3. Cierre: modalidad real del curso y tamaño del equipo */}
-        <aside
-          style={{
-            marginTop: "auto",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: SPACE[4],
-            padding: "16px 20px",
-            backgroundColor: tint(accent, 0.06),
-            border: `1px solid ${T.line}`,
-            borderLeft: `3px solid ${accent}`,
-            borderRadius: RADIUS.card,
-            boxSizing: "border-box",
-          }}
-        >
-          <div style={{ minWidth: 0 }}>
-            <div style={{ ...kicker, color: T.mute }}>MODALIDAD</div>
-            <div
-              style={{
-                marginTop: SPACE[0],
-                fontFamily: FONT_SANS,
-                fontSize: 14,
-                lineHeight: 1.4,
-                fontWeight: 600,
-                color: T.ink,
-              }}
-            >
-              {data.modality}
-            </div>
+        {/* Red corporativa completa de las 12 empresas */}
+        <div style={{ marginTop: "auto", paddingTop: 18 }}>
+          <SectionDividerLabel
+            label="Empresas cuyos equipos y profesionales han confiado en ProgramBI"
+            rightLabel={`${companyLogos.length} organizaciones`}
+          />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(6, minmax(0, 1fr))",
+              borderTop: `1px solid ${T.obsidian}`,
+              borderLeft: `1px solid ${T.line}`,
+              background: T.paper,
+            }}
+          >
+            {companyLogos.map((logo) => (
+              <div
+                key={logo.name}
+                style={{
+                  height: 54,
+                  padding: "8px 12px",
+                  borderRight: `1px solid ${T.line}`,
+                  borderBottom: `1px solid ${T.line}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: T.paperWarm,
+                }}
+              >
+                <img
+                  src={logo.logoUrl}
+                  alt={logo.name}
+                  crossOrigin="anonymous"
+                  style={{
+                    maxHeight: 24,
+                    maxWidth: "100%",
+                    width: "auto",
+                    objectFit: "contain",
+                    filter: "grayscale(100%) contrast(1.12)",
+                    opacity: 0.84,
+                    display: "block",
+                  }}
+                />
+              </div>
+            ))}
           </div>
 
-          {profesores.length > 0 ? (
-            <div style={{ flexShrink: 0, textAlign: "right" }}>
-              <div
-                style={{
-                  fontFamily: FONT_DISPLAY,
-                  fontSize: 30,
-                  lineHeight: 1,
-                  fontWeight: 700,
-                  color: T.ink,
-                }}
-              >
-                {String(profesores.length).padStart(2, "0")}
-              </div>
-              <div
-                style={{
-                  marginTop: 3,
-                  fontFamily: FONT_SANS,
-                  fontSize: TYPE.kicker.size,
-                  lineHeight: TYPE.kicker.line,
-                  fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: T.mute,
-                }}
-              >
-                {profesores.length === 1 ? "DOCENTE" : "DOCENTES"}
-              </div>
-            </div>
-          ) : null}
-        </aside>
+          <div
+            style={{
+              marginTop: 12,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              fontSize: 11.5,
+              color: T.mute,
+            }}
+          >
+            <span>
+              Programas abiertos para profesionales y capacitaciones cerradas in-company en toda Latinoamérica.
+            </span>
+            <span
+              style={{
+                fontFamily: FONT_MONO,
+                fontSize: 11,
+                fontWeight: 600,
+                color: accentText,
+                borderBottom: `2px solid ${accent}`,
+                paddingBottom: 1,
+                whiteSpace: "nowrap",
+              }}
+            >
+              +15 años de experiencia aplicada
+            </span>
+          </div>
+        </div>
       </div>
     </BrochureA4Sheet>
   );

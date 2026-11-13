@@ -98,23 +98,6 @@ const ESTILO_BOTON_BARRA: CSSProperties = {
 
 /* ── Contraste del acento ─────────────────────────────────────────────────── */
 
-/** Luminancia relativa WCAG de un color hex de seis dígitos. */
-function luminancia(hex: string): number {
-  const limpio = hex.replace("#", "").trim();
-  if (!/^[0-9a-fA-F]{6}$/.test(limpio)) return 1;
-  const canales = [0, 2, 4].map((inicio) => {
-    const valor = parseInt(limpio.slice(inicio, inicio + 2), 16) / 255;
-    return valor <= 0.03928
-      ? valor / 12.92
-      : Math.pow((valor + 0.055) / 1.055, 2.4);
-  });
-  return (
-    0.2126 * (canales[0] ?? 0) +
-    0.7152 * (canales[1] ?? 0) +
-    0.0722 * (canales[2] ?? 0)
-  );
-}
-
 /** Acento del curso validado para filetes y numeración (nunca texto sobre él). */
 function acentoDe(hex: string): string {
   return /^#[0-9a-fA-F]{6}$/.test(hex.trim()) ? hex : T.brand;
@@ -124,9 +107,8 @@ function acentoDe(hex: string): string {
  * Fondo del CTA principal: el acento del curso solo si el texto blanco llega a
  * 4.5:1 (WCAG AA); si no (amarillos y verdes claros), el azul de marca.
  */
-function fondoAcento(hex: string): string {
-  const contraste = 1.05 / (luminancia(hex) + 0.05);
-  return contraste >= 4.5 ? acentoDe(hex) : T.brand;
+function fondoAcento(): string {
+  return T.obsidian;
 }
 
 /**
@@ -152,10 +134,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
     () => acentoDe(data.accentColor),
     [data.accentColor]
   );
-  const acentoFondo = useMemo(
-    () => fondoAcento(data.accentColor),
-    [data.accentColor]
-  );
+  const acentoFondo = useMemo(() => fondoAcento(), []);
   /**
    * Hojas A4 que el temario monta realmente. `totalPages` manda en los pies y
    * en el índice; esto solo reserva alto de lienzo por si el plan crece.
@@ -339,7 +318,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
           .brochure-sidebar { display: flex !important; flex-direction: column; }
         }
         .brochure-nav-item:hover { background: ${T.wash} !important; }
-        .brochure-nav-item[aria-current="true"]:hover { background: ${T.brandSoft} !important; }
+        .brochure-nav-item[aria-current="true"]:hover { background: ${T.wash} !important; }
         .brochure-thumb:hover {
           border-color: #C9C4B8 !important;
           box-shadow: 0 8px 20px rgba(20,22,27,.12) !important;
@@ -767,9 +746,9 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                       cursor: "pointer",
                       border: "none",
                       borderLeft: `2px solid ${
-                        activo ? acentoCurso : "transparent"
+                        activo ? T.obsidian : "transparent"
                       }`,
-                      background: activo ? T.brandSoft : "transparent",
+                      background: activo ? T.wash : "transparent",
                       color: activo ? T.ink : T.inkSoft,
                       fontWeight: activo ? 600 : 500,
                     }}
@@ -835,23 +814,114 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                       top: 0,
                       left: 0,
                       right: 0,
-                      height: 2,
+                      height: 3,
                       background: acentoCurso,
-                      opacity: 0.9,
                     }}
                   />
-                  <span
+                  <div
+                    aria-hidden="true"
                     style={{
-                      fontSize: 8,
-                      letterSpacing: 1.2,
-                      fontWeight: 700,
-                      color: T.mute,
-                      fontVariantNumeric: "tabular-nums",
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 5,
+                      paddingTop: 2,
                     }}
                   >
-                    {String(miniatura.pagina).padStart(2, "0")}
-                  </span>
-                  <span style={{ fontSize: 9.5, lineHeight: 1.3 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 8,
+                          letterSpacing: 1.2,
+                          fontWeight: 700,
+                          color: T.mute,
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {String(miniatura.pagina).padStart(2, "0")}
+                      </span>
+                      <span
+                        style={{
+                          width: 24,
+                          height: 3,
+                          borderRadius: 1,
+                          background: T.line,
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        width: miniatura.pagina === 1 ? "78%" : "64%",
+                        height: 6,
+                        borderRadius: 1.5,
+                        background: T.obsidian,
+                      }}
+                    />
+                    {miniatura.pagina === 1 ? (
+                      <>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2 }}>
+                          <span style={{ height: 10, background: T.wash, borderRadius: 1 }} />
+                          <span style={{ height: 10, background: T.wash, borderRadius: 1 }} />
+                          <span style={{ height: 10, background: T.wash, borderRadius: 1 }} />
+                          <span style={{ height: 10, background: T.wash, borderRadius: 1 }} />
+                        </div>
+                        <div style={{ height: 42, background: T.obsidian, borderRadius: 2, borderBottom: `2px solid ${acentoCurso}` }} />
+                      </>
+                    ) : miniatura.pagina === 2 ? (
+                      <>
+                        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 3 }}>
+                          <span style={{ height: 34, background: T.obsidian, borderRadius: 2 }} />
+                          <span style={{ height: 34, background: T.wash, borderRadius: 2 }} />
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
+                          <span style={{ height: 16, background: T.wash, borderRadius: 1 }} />
+                          <span style={{ height: 16, background: T.wash, borderRadius: 1 }} />
+                          <span style={{ height: 16, background: T.wash, borderRadius: 1 }} />
+                          <span style={{ height: 16, background: T.wash, borderRadius: 1 }} />
+                        </div>
+                      </>
+                    ) : miniatura.pagina === 3 ? (
+                      <>
+                        <div style={{ height: 22, border: `1px solid ${T.line}`, borderRadius: 2, background: T.wash }} />
+                        <div style={{ height: 34, background: T.obsidian, borderRadius: 2, borderTop: `2px solid ${acentoCurso}` }} />
+                      </>
+                    ) : miniatura.pagina === 4 ? (
+                      <>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
+                          <span style={{ height: 18, background: T.wash, border: `1px solid ${T.line}`, borderRadius: 1.5 }} />
+                          <span style={{ height: 18, background: T.wash, border: `1px solid ${T.line}`, borderRadius: 1.5 }} />
+                          <span style={{ height: 18, background: T.wash, border: `1px solid ${T.line}`, borderRadius: 1.5 }} />
+                          <span style={{ height: 18, background: T.wash, border: `1px solid ${T.line}`, borderRadius: 1.5 }} />
+                        </div>
+                        <div style={{ height: 22, background: T.certNavy, borderRadius: 2 }} />
+                      </>
+                    ) : miniatura.pagina === 5 ? (
+                      <>
+                        <div style={{ height: 16, background: T.wash, border: `1px solid ${T.line}`, borderRadius: 1.5 }} />
+                        <div style={{ height: 16, background: T.wash, border: `1px solid ${T.line}`, borderRadius: 1.5 }} />
+                        <div style={{ height: 16, background: T.wash, border: `1px solid ${T.line}`, borderRadius: 1.5 }} />
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2 }}>
+                          <span style={{ height: 8, background: T.line }} />
+                          <span style={{ height: 8, background: T.line }} />
+                          <span style={{ height: 8, background: T.line }} />
+                          <span style={{ height: 8, background: T.line }} />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ height: 9, background: T.obsidian, borderRadius: 1.5, borderLeft: `3px solid ${acentoCurso}` }} />
+                        <div style={{ height: 26, border: `1px solid ${T.line}`, borderRadius: 2 }} />
+                        <div style={{ height: 26, border: `1px solid ${T.line}`, borderRadius: 2 }} />
+                      </>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 9.5, fontWeight: 600, lineHeight: 1.25, color: T.ink }}>
                     {miniatura.etiqueta}
                   </span>
                 </button>

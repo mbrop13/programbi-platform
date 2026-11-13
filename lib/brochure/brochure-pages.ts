@@ -1,16 +1,11 @@
 /**
- * Planificación determinista de las hojas A4 del brochure.
+ * Planificador editorial determinista para las hojas de temario (6..N).
  *
- * El brochure tiene 5 hojas fijas (1 Portada, 2 Inversión, 3 Calendario,
- * 4 Proyectos/Certificado, 5 Equipo Docente) y el temario empieza en la hoja 6.
- * Este módulo decide exactamente qué módulos caen en cada hoja de temario
- * (máximo 4 tarjetas por hoja, grilla 2×2) y reserva la última hoja para el
- * panel de inscripción (máximo 3 módulos), de modo que la vista previa, la
- * impresión y el PDF siempre tengan el mismo número de páginas, con tipografía
- * grande y sin que ningún módulo se corte.
- *
- * Es lógica pura (sin React) y compartida por el visor (WS7) y las hojas de
- * temario (WS6). No editar sin actualizar ambos lados.
+ * Calcula el ancho de cada módulo (`span`: 1 o 2 columnas) y su altura real
+ * estimada en píxeles (incluyendo envoltorio de texto por ancho de columna,
+ * cabeceras de nivel y reserva para el panel de cierre en la última hoja)
+ * para eliminar cualquier recorte/desbordamiento en cursos densos como
+ * `mercado-financiero`, `excel`, `python` y `power-bi`.
  */
 
 import type {
@@ -19,7 +14,7 @@ import type {
   CourseBrochureData,
 } from "./brochure-data";
 
-/** Hojas fijas antes del temario: portada, inversión, calendario, showcase y equipo. */
+/** Hojas fijas previas al temario: portada, inversión, calendario, showcase y docentes. */
 export const BROCHURE_FIXED_PAGES = 5;
 
 export type PlannedBrochureModule = BrochureModulo & {
@@ -27,6 +22,10 @@ export type PlannedBrochureModule = BrochureModulo & {
   moduleNumber: number;
   levelLabel: string;
   levelShortLabel: string | null;
+  /** 1 = media columna (~340px); 2 = ancho completo (~698px, 2 subcolumnas). */
+  span: 1 | 2;
+  /** Altura estimada conservadora en px para paginación exacta. */
+  estimatedHeightPx: number;
 };
 
 export type BrochureSyllabusGroup = {
@@ -38,53 +37,93 @@ export type BrochureSyllabusGroup = {
 export type BrochureSyllabusPage = {
   groups: BrochureSyllabusGroup[];
   moduleCount: number;
-  /** Peso editorial acumulado (1 = módulo corto, 5 = módulo muy cargado). */
-  weight: number;
+  /** Altura estimada total del contenido en px. */
+  usedHeightPx: number;
 };
 
-/** Máximo de tarjetas por hoja: con tipografía grande caben 2 filas de 2. */
-const MAX_MODULES = 4;
-/** Peso editorial máximo por hoja: deja aire para bandas, títulos y pie. */
-const MAX_WEIGHT = 13;
-/** La última hoja reserva espacio para el panel de inscripción. */
-const LAST_PAGE_MAX_MODULES = 3;
-/**
- * Si la hoja ya tiene esta cantidad de módulos, un cambio de nivel abre hoja
- * nueva: dos bandas de nivel más tres filas de tarjetas no caben en un A4.
- */
-const MODULES_BEFORE_LEVEL_BREAK = 3;
+/** Alto útil disponible debajo del encabezado "Programa Académico Detallado". */
+const PAGE_BODY_MAX_PX = 815;
+/** Espacio reservado en la última hoja para la placa final de inscripción. */
+const LAST_PAGE_ENROLLMENT_RESERVE_PX = 160;
+const LEVEL_BANNER_PX = 48;
+const ROW_GAP_PX = 14;
 
-function weightOf(modulo: BrochureModulo): number {
-  const topics = Array.isArray(modulo.topics) ? modulo.topics.length : 0;
-  return 1 + Math.min(4, Math.ceil(topics / 4));
+function decideModuleSpan(modulo: BrochureModulo): 1 | 2 {
+  const topics = Array.isArray(modulo.topics) ? modulo.topics : [];
+  const totalChars = topics.reduce((sum, t) => sum + t.length, 0);
+  const longestTopic = topics.reduce((max, t) => Math.max(max, t.length), 0);
+  if (topics.length >= 8 || totalChars >= 370 || longestTopic >= 68) {
+    return 2;
+  }
+  return 1;
+}
+
+function estimateModuleHeightPx(modulo: BrochureModulo, span: 1 | 2): number {
+  const topics = Array.isArray(modulo.topics) ? modulo.topics : [];
+  const titleCharsPerLine = span === 2 ? 64 : 29;
+  const titleLines = Math.max(1, Math.ceil((modulo.title?.length ?? 20) / titleCharsPerLine));
+  const headerAndChrome = 54 + titleLines * 20;
+
+  if (topics.length === 0) return headerAndChrome + 16;
+
+  if (span === 2) {
+    // Dos subcolumnas de ~318px cada una -> ~43 chars por línea a 11.8px.
+    const half = Math.ceil(topics.length / 2);
+    const left = topics.slice(0, half);
+    const right = topics.slice(half);
+    const colHeight = (items: string[]) =>
+      items.reduce(
+        (acc, t) => acc + Math.max(1, Math.ceil((t.length + 3) / 42)) * 17 + 6,
+        0
+      );
+    return headerAndChrome + Math.max(colHeight(left), colHeight(right)) + 16;
+  }
+
+  // Media columna de ~328px con lista simple de 1 columna -> ~39 chars por línea.
+  const listHeight = topics.reduce(
+    (acc, t) => acc + Math.max(1, Math.ceil((t.length + 3) / 38)) * 17 + 6,
+    0
+  );
+  return headerAndChrome + listHeight + 16;
+}
+
+function measurePageHeightPx(groups: BrochureSyllabusGroup[]): number {
+  let total = 0;
+  for (let gi = 0; gi < groups.length; gi++) {
+    const group = groups[gi];
+    total += LEVEL_BANNER_PX;
+    let i = 0;
+    while (i < group.modules.length) {
+      const current = group.modules[i];
+      if (current.span === 2) {
+        total += current.estimatedHeightPx + ROW_GAP_PX;
+        i += 1;
+      } else {
+        const next = group.modules[i + 1];
+        if (next && next.span === 1) {
+          total += Math.max(current.estimatedHeightPx, next.estimatedHeightPx) + ROW_GAP_PX;
+          i += 2;
+        } else {
+          total += current.estimatedHeightPx + ROW_GAP_PX;
+          i += 1;
+        }
+      }
+    }
+    if (gi < groups.length - 1) total += 10;
+  }
+  return total;
 }
 
 function emptyPage(): BrochureSyllabusPage {
-  return { groups: [], moduleCount: 0, weight: 0 };
+  return { groups: [], moduleCount: 0, usedHeightPx: 0 };
 }
 
-function pushModule(
-  page: BrochureSyllabusPage,
-  nivel: BrochureNivel,
+function cloneGroupsWithModule(
+  groups: BrochureSyllabusGroup[],
   modulo: PlannedBrochureModule
-): void {
-  const last = page.groups[page.groups.length - 1];
-  if (last && last.levelLabel === nivel.label && last.levelShortLabel === (nivel.shortLabel ?? null)) {
-    last.modules.push(modulo);
-  } else {
-    page.groups.push({
-      levelLabel: nivel.label,
-      levelShortLabel: nivel.shortLabel ?? null,
-      modules: [modulo],
-    });
-  }
-  page.moduleCount += 1;
-  page.weight += weightOf(modulo);
-}
-
-/** Añade un módulo ya planificado conservando la agrupación por nivel. */
-function appendPlanned(page: BrochureSyllabusPage, modulo: PlannedBrochureModule): void {
-  const last = page.groups[page.groups.length - 1];
+): BrochureSyllabusGroup[] {
+  const next = groups.map((g) => ({ ...g, modules: [...g.modules] }));
+  const last = next[next.length - 1];
   if (
     last &&
     last.levelLabel === modulo.levelLabel &&
@@ -92,78 +131,89 @@ function appendPlanned(page: BrochureSyllabusPage, modulo: PlannedBrochureModule
   ) {
     last.modules.push(modulo);
   } else {
-    page.groups.push({
+    next.push({
       levelLabel: modulo.levelLabel,
       levelShortLabel: modulo.levelShortLabel,
       modules: [modulo],
     });
   }
+  return next;
+}
+
+function pushModuleToPage(
+  page: BrochureSyllabusPage,
+  modulo: PlannedBrochureModule
+): void {
+  page.groups = cloneGroupsWithModule(page.groups, modulo);
   page.moduleCount += 1;
-  page.weight += weightOf(modulo);
+  page.usedHeightPx = measurePageHeightPx(page.groups);
 }
 
 /**
- * Reparte el temario en hojas A4. Siempre devuelve al menos una hoja.
+ * Reparte los módulos en hojas A4 garantizando holgura vertical y
+ * reserva exacta en la última página para el bloque de inscripción.
  */
 export function planBrochureSyllabus(data: CourseBrochureData): BrochureSyllabusPage[] {
-  const pages: BrochureSyllabusPage[] = [];
-  let current = emptyPage();
+  const planned: PlannedBrochureModule[] = [];
   let numero = 0;
 
-  for (const nivel of data.temario ?? []) {
+  for (const nivel of (data.temario ?? []) as BrochureNivel[]) {
     for (const modulo of nivel.modules ?? []) {
-      const weight = weightOf(modulo);
-      const ultimoGrupo = current.groups[current.groups.length - 1];
-      const cambiaNivel =
-        ultimoGrupo != null &&
-        (ultimoGrupo.levelLabel !== nivel.label ||
-          ultimoGrupo.levelShortLabel !== (nivel.shortLabel ?? null));
-
-      if (
-        current.moduleCount > 0 &&
-        ((cambiaNivel && current.moduleCount >= MODULES_BEFORE_LEVEL_BREAK) ||
-          current.weight + weight > MAX_WEIGHT ||
-          current.moduleCount >= MAX_MODULES)
-      ) {
-        pages.push(current);
-        current = emptyPage();
-      }
-
       numero += 1;
-      pushModule(current, nivel, {
+      const span = decideModuleSpan(modulo);
+      planned.push({
         ...modulo,
         moduleNumber: numero,
         levelLabel: nivel.label,
         levelShortLabel: nivel.shortLabel ?? null,
+        span,
+        estimatedHeightPx: estimateModuleHeightPx(modulo, span),
       });
     }
   }
 
+  if (planned.length === 0) return [emptyPage()];
+
+  const pages: BrochureSyllabusPage[] = [];
+  let current = emptyPage();
+
+  for (const modulo of planned) {
+    const candidateGroups = cloneGroupsWithModule(current.groups, modulo);
+    const candidateHeight = measurePageHeightPx(candidateGroups);
+
+    if (current.moduleCount > 0 && candidateHeight > PAGE_BODY_MAX_PX) {
+      pages.push(current);
+      current = emptyPage();
+    }
+    pushModuleToPage(current, modulo);
+  }
+
   if (current.moduleCount > 0) pages.push(current);
-  if (pages.length === 0) return [emptyPage()];
 
-  // Reserva el panel de inscripción en la última hoja: si el plan termina con
-  // 4 módulos, mueve el último a una hoja nueva (aunque quede con 1 módulo)
-  // para que el panel respire. `weight` y `moduleCount` se recalculan al mover.
+  // Asegura espacio para la placa final de inscripción en la última hoja.
   const last = pages[pages.length - 1];
-  if (last.moduleCount > LAST_PAGE_MAX_MODULES) {
+  const lastLimit = PAGE_BODY_MAX_PX - LAST_PAGE_ENROLLMENT_RESERVE_PX;
+  if (last.usedHeightPx > lastLimit && last.moduleCount > 0) {
     const moved: PlannedBrochureModule[] = [];
-
-    while (last.moduleCount > LAST_PAGE_MAX_MODULES) {
-      const group = last.groups[last.groups.length - 1];
-      const modulo = group?.modules.pop();
-      if (!modulo) break;
-
+    while (last.usedHeightPx > lastLimit && last.moduleCount > 0) {
+      const grp = last.groups[last.groups.length - 1];
+      const popped = grp?.modules.pop();
+      if (!popped) break;
+      if (grp.modules.length === 0) last.groups.pop();
       last.moduleCount -= 1;
-      last.weight -= weightOf(modulo);
-      moved.unshift(modulo);
-
-      if (group.modules.length === 0) last.groups.pop();
+      last.usedHeightPx = measurePageHeightPx(last.groups);
+      moved.unshift(popped);
     }
 
-    if (moved.length > 0) {
+    if (last.moduleCount === 0) {
+      // Un único módulo altísimo ocupa casi toda la hoja: se queda ahí y el CTA pasa a una hoja dedicada limpia si excediera.
+      for (const m of moved) pushModuleToPage(last, m);
+      if (last.usedHeightPx > lastLimit) {
+        pages.push(emptyPage());
+      }
+    } else if (moved.length > 0) {
       const extra = emptyPage();
-      for (const modulo of moved) appendPlanned(extra, modulo);
+      for (const m of moved) pushModuleToPage(extra, m);
       pages.push(extra);
     }
   }
