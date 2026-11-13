@@ -128,7 +128,7 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
           </nav>
 
           <div className="mt-6 lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12">
-            <div className="min-w-0 max-w-[760px]">
+            <div className="min-w-0 max-w-[760px] lg:col-start-2 lg:row-start-1">
               <h1 className="text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">{guia.h1}</h1>
               <p className="mt-3 text-sm text-faint">
                 Actualizado el {actualizado} · Guía de ProgramBI · {nombreMercado}
@@ -207,7 +207,7 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
               ) : null}
             </div>
 
-            <div className="hidden lg:order-first lg:block">
+            <div className="hidden lg:col-start-1 lg:row-start-1 lg:block">
               <IndiceGuiaNav items={encabezados} />
             </div>
           </div>
