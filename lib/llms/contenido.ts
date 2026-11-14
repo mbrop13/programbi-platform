@@ -32,7 +32,7 @@ import { SITE_URL } from "@/lib/seo";
 
 /** Resumen que encabeza los dos archivos. Debe ser el mismo en ambos. */
 const RESUMEN =
-  "ProgramBI es una academia de datos en español: cursos en vivo de Power BI, SQL Server, Python, análisis de datos e IA, con grabaciones de por vida y certificado. Se dicta desde Chile para toda Latinoamérica, con horarios por país y el arancel vigente en el PDF de temario y precios de cada curso.";
+  "ProgramBI es una academia de datos en español: cursos en vivo de Power BI, SQL Server, Python, análisis de datos e IA, con campus virtual con clases y material durante el curso y certificado. Se dicta desde Chile para toda Latinoamérica, con horarios por país y el arancel vigente en el PDF de temario y precios de cada curso.";
 
 const url = (ruta: string) => `${SITE_URL}${ruta}`;
 
@@ -258,7 +258,7 @@ function bloquePoliticas(): string[] {
     "## Políticas y condiciones",
     `- Cuotas: ${NOTA_CUOTAS} Aplica en todos los países, con ${MEDIOS_CUOTAS.join(" o ")}; la disponibilidad final la confirma la pasarela en el checkout.`,
     `- Horario: clases en vivo por Zoom de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile, dos veces por semana; cada país ve el equivalente en su hora local.`,
-    "- Grabaciones: cada sesión queda grabada y disponible de por vida en el campus del curso.",
+    "- Campus virtual: acceso al campus virtual con las clases y el material usado para que puedas practicar durante el curso.",
     `- Certificado: al completar el curso se entrega un certificado de ProgramBI, incluido en el valor, con un código público con formato PBI-XXX-XXXXXX que se verifica en ${md("verificar-certificado", url("/verificar-certificado"))}. La ficha pública de cada certificado se abre desde su código en \`/certificado/<codigo>\`.`,
     "- Certificación PL-300: es un examen de Microsoft, distinto del certificado de ProgramBI; se rinde y se paga aparte.",
     "- Mac: Power BI Desktop funciona solo en Windows. En macOS se trabaja con Power BI web desde el navegador.",
@@ -276,7 +276,7 @@ function bloqueDatosClave(): string[] {
     `- Modalidad: clases en vivo por Zoom, dos veces por semana, de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile; la ficha de cada país muestra su hora local.`,
     "- Certificado: incluido al completar el curso, con código público que se verifica en línea.",
     `- Cuotas: ${textoCuotas()}.`,
-    "- Grabaciones: cada clase queda grabada y disponible de por vida en el campus.",
+    "- Campus virtual: acceso al campus virtual con las clases y material usado para que puedas practicar durante el curso.",
     "- Arancel: el monto vigente por país, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de cada curso.",
     `- Precios por país: cada página de precios (${md("precios", url("/precios"))}) y la versión extendida (${md("llms-full.txt", url("/llms-full.txt"))}) enlazan el PDF de temario y precios con el arancel de ese mercado.`,
     "",

@@ -182,7 +182,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     "clase-gratis":
       "La clase abierta se dicta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; si aún no hay fecha, puedes pedir que te avisen.",
     certificado:
-      "El certificado lleva código de verificación y se suma a las grabaciones de por vida en el campus. Es un certificado de ProgramBI, no la certificación oficial PL-300 de Microsoft.",
+      "El certificado lleva código de verificación y se suma al campus virtual con las clases y material usado para practicar durante el curso. Es un certificado de ProgramBI, no la certificación oficial PL-300 de Microsoft.",
   },
   preguntas: [
     {
@@ -207,7 +207,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     },
     {
       q: "¿Qué certificado recibo al terminar?",
-      a: "Un certificado digital de ProgramBI con código de verificación y acceso permanente a las grabaciones. Es un certificado de la academia: la certificación PL-300 de Microsoft se rinde y se paga aparte.",
+      a: "Un certificado digital de ProgramBI con código de verificación y acceso al campus virtual con las clases y el material usado durante el curso. Es un certificado de la academia: la certificación PL-300 de Microsoft se rinde y se paga aparte.",
     },
   ],
   seo: {

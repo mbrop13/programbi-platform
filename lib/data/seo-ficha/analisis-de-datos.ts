@@ -29,7 +29,7 @@ export const BLOQUES_ANALISIS_DE_DATOS: BloqueSeoFicha[] = [
       "La diferencia con un curso suelto de Power BI es el alcance: ese curso son 20 horas por nivel y se concentra en tableros y DAX. Este programa son 60 horas por nivel y suma SQL Server y Python, que es lo que permite extraer el dato y automatizar el reporte, no solo visualizarlo.",
     ],
     bullets: [
-      "Certificado digital de ProgramBI al completar y grabaciones de por vida en el campus.",
+      "Certificado digital de ProgramBI al completar y campus virtual con las clases y material usado para practicar durante el curso.",
       "Clases en vivo por Zoom, en horario vespertino, hora de Chile.",
       "Cada nivel de 60 horas se paga en 3 cuotas sin interés con Mercado Pago o Webpay; el arancel vigente está en el PDF de temario y precios del curso.",
       "Puedes hacer el básico-intermedio y decidir después si tomas el avanzado: son niveles separados.",

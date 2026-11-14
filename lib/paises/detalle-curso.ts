@@ -63,7 +63,7 @@ export function detalleCursoLocal(opts: {
     },
     {
       q: "¿Qué recibo al terminar el curso?",
-      a: `Certificado digital de ProgramBI y acceso de por vida a las grabaciones en el campus virtual. Las clases son en vivo, así que conectate a la hora de ${lugar} y después repites cuando quieras.`,
+      a: `Certificado digital de ProgramBI y acceso al campus virtual con las clases y el material usado para que puedas practicar durante el curso. Las clases son en vivo a la hora de ${lugar}.`,
     },
   ];
 

@@ -135,7 +135,7 @@ export const COURSE_SEO: Record<
       {
         q: "¿Cuánto cuesta el curso de análisis de datos y cómo se paga?",
         soloChile: true,
-        a: "El arancel vigente de cada nivel de 60 horas, los descuentos y las 3 cuotas sin interés están en el PDF de temario y precios de la ficha del curso. Incluye clases en vivo por Zoom, grabaciones de por vida en el campus y certificado digital al completar. El programa completo son dos niveles de 60 horas y se paga por nivel.",
+        a: "El arancel vigente de cada nivel de 60 horas, los descuentos y las 3 cuotas sin interés están en el PDF de temario y precios de la ficha del curso. Incluye clases en vivo por Zoom, campus virtual con las clases y el material usado para que puedas practicar durante el curso y certificado digital al completar. El programa completo son dos niveles de 60 horas y se paga por nivel.",
       },
       {
         q: "¿Son 60 horas por nivel o 120 horas en total?",

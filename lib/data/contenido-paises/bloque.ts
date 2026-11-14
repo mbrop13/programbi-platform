@@ -229,7 +229,7 @@ export function construirBloque(
       valor: "Certificado digital",
       detalle: nota(
         "certificado",
-        "Certificado de ProgramBI con código de verificación y grabaciones de por vida en el campus."
+        "Certificado de ProgramBI con código de verificación y campus virtual con las clases y material usado para practicar durante el curso."
       ),
     },
   ];
