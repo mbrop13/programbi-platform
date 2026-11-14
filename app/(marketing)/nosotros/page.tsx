@@ -13,8 +13,16 @@ import MentorsSection from "@/components/marketing/MentorsSection";
 import { EQUIPO, EQUIPO_INDEXABLE, fundadorEquipo, rutaPerfil } from "@/lib/data/equipo";
 import { getOrganizacionEquipoJsonLd, getPersonaJsonLd } from "@/lib/seo/course-jsonld";
 import { ogImageUrl } from "@/lib/og/url";
-import { twitterShare, absoluteUrl, jsonLdString, tituloSeo } from "@/lib/seo";
-import { normalizarPais } from "@/config/paises";
+import {
+  ORG_ID,
+  WEBSITE_ID,
+  absoluteUrl,
+  jsonLdString,
+  tituloSeo,
+  twitterShare,
+} from "@/lib/seo";
+import { lastmodDe } from "@/lib/seo/lastmod";
+import { getPais, normalizarPais } from "@/config/paises";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
@@ -76,6 +84,10 @@ export default async function NosotrosPage({
   const pais = normalizarPais((await params).pais);
   const contenido = getContenidoPais(pais);
   const fundador = fundadorEquipo();
+  const canonical = absoluteUrl(rutaLocal(pais, "/nosotros"));
+  const homeUrl = absoluteUrl(rutaLocal(pais, "/"));
+  const idioma = getPais(pais).idioma;
+  const dateModified = lastmodDe("/nosotros");
   const descripcionOrg = localizarMercado(
     "Institución líder de formación profesional y consultoría de Business Intelligence en Chile y Latinoamérica.",
     pais
@@ -85,18 +97,30 @@ export default async function NosotrosPage({
     "@graph": [
       {
         "@type": "AboutPage",
-        "@id": "https://www.programbi.com/nosotros/#webpage",
-        url: absoluteUrl(rutaLocal(pais, "/nosotros")),
+        "@id": `${canonical}#webpage`,
+        url: canonical,
         name: "Sobre Nosotros — Academia de Análisis de Datos | ProgramBI",
-        description: "Información institucional sobre la academia ProgramBI, fundadores, equipo docente y misión.",
-        isPartOf: { "@id": "https://www.programbi.com/#website" },
-        mainEntity: { "@id": "https://www.programbi.com/#organization" },
+        description:
+          "Información institucional sobre la academia ProgramBI, fundadores, equipo docente y misión.",
+        inLanguage: idioma,
+        dateModified,
+        isPartOf: { "@id": WEBSITE_ID },
+        breadcrumb: { "@id": `${canonical}#breadcrumb` },
+        mainEntity: { "@id": ORG_ID },
       },
       // La organización enlaza al fundador en `founder` y a los perfiles
       // publicados en `employee`; los nodos Person van en el mismo @graph.
       getOrganizacionEquipoJsonLd(descripcionOrg),
       ...EQUIPO_INDEXABLE.map(getPersonaJsonLd),
-    ]
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: homeUrl },
+          { "@type": "ListItem", position: 2, name: "Nosotros", item: canonical },
+        ],
+      },
+    ],
   };
 
   return (
@@ -106,7 +130,7 @@ export default async function NosotrosPage({
         dangerouslySetInnerHTML={{ __html: jsonLdString(aboutJsonLd) }}
       />
       
-      <main className="bg-canvas min-h-dvh pt-12 pb-20 sm:pt-16 text-ink relative">
+      <div className="bg-canvas min-h-dvh pt-12 pb-20 sm:pt-16 text-ink relative">
         <section className="relative mb-16 lg:mb-20">
           <div className="max-w-6xl mx-auto px-5">
             <div className="max-w-3xl">
@@ -256,7 +280,7 @@ export default async function NosotrosPage({
             </ul>
           </div>
         </section>
-      </main>
+      </div>
     </>
   );
 }

@@ -9,15 +9,14 @@ import {
   MessageCircle,
   Minus,
 } from "lucide-react";
-import { PRECIOS_VALID_FROM } from "@/config/pricing";
+import { PRECIOS_VALID_FROM, monedaPublica, precioPublico } from "@/config/pricing";
 import { ISO_CHILE, getPais } from "@/config/paises";
 import type {
   ComparativaAcademia as ContenidoComparativa,
   PaisComparativa,
 } from "@/lib/data/academias";
 import { REVISION_DIAS } from "@/lib/data/academias";
-import { formatMoneda } from "@/lib/paises/precios";
-import { absoluteUrl, jsonLdString, SITE_URL } from "@/lib/seo";
+import { ORG_ID, WEBSITE_ID, absoluteUrl, jsonLdString } from "@/lib/seo";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import CalculadoraPrecioHora, { type OpcionCalculadora } from "./CalculadoraPrecioHora";
@@ -65,7 +64,7 @@ export default function ComparativaAcademia({
   const inicioRuta = iso === ISO_CHILE ? "/" : `/${iso}`;
 
   const progPrecio = contenido.precioProgrambi;
-  const progPrecioTexto = contenido.resumen10s.precioProgrambi;
+  const offerPrecio = precioPublico(iso, "power-bi");
 
   const opcionesCalculadora: OpcionCalculadora[] = [];
   if (progPrecio != null) {
@@ -97,7 +96,7 @@ export default function ComparativaAcademia({
         inLanguage: contenido.idioma,
         dateModified: fechaJsonLd,
         datePublished: fechaJsonLd,
-        isPartOf: { "@id": `${SITE_URL}/#website` },
+        isPartOf: { "@id": WEBSITE_ID },
         about: [
           { "@type": "Thing", name: "Power BI" },
           { "@type": "Thing", name: contenido.rival },
@@ -131,11 +130,30 @@ export default function ComparativaAcademia({
         name: "Power BI en vivo",
         description:
           "Curso de Power BI en vivo por Zoom, con grabaciones, proyecto guiado y certificado de ProgramBI.",
-        provider: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
+        provider: { "@id": ORG_ID },
         url: courseUrl,
         inLanguage: contenido.idioma,
         courseMode: "Online",
-        // Sin Offer: el arancel vive en el brochure PDF del curso.
+        hasCourseInstance: {
+          "@type": "CourseInstance",
+          courseMode: "Online",
+          courseWorkload: `PT${contenido.horasProgrambi}H`,
+          inLanguage: contenido.idioma,
+        },
+        offers: {
+          "@type": "Offer",
+          category: "Paid",
+          url: courseUrl,
+          availability: "https://schema.org/InStock",
+          ...(offerPrecio != null
+            ? {
+                price: offerPrecio,
+                priceCurrency: monedaPublica(iso),
+                validFrom: PRECIOS_VALID_FROM,
+                priceValidUntil: "2026-12-31",
+              }
+            : {}),
+        },
       },
       {
         "@type": "FAQPage",

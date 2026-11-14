@@ -5,28 +5,28 @@ pais: py
 hreflang: es-PY
 curso: claude
 url_curso: https://www.programbi.com/py/cursos/claude
-title: "Curso de Claude en Paraguay: en vivo, 23/11 | ProgramBI"
-meta: "Curso de Claude en Paraguay en vivo por Zoom: 20 h para tareas administrativas, Excel y presentaciones. Inicio 23/11, 19:30 hora Paraguay."
+title: "Curso de Claude en Paraguay online en vivo | ProgramBI"
+meta: "Curso de Claude en Paraguay en vivo por Zoom: 20 h para oficina, Excel y presentaciones. Horario 19:30 de Paraguay; grupos nuevos cada mes."
 h1: "Curso de Claude en Paraguay: aprendé a trabajar con la IA de Anthropic, en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/py/cursos/claude
 nota_hermes: |
   ELEMENTO VISUAL: tabla «Según tu puesto, por dónde empezar» (área → primer uso) + tabla del recorrido del curso.
   Intención: "curso claude paraguay", "curso claude asunción" (transaccional) → click_registro en /py/cursos/claude. country=py, course=claude.
   - PRECIO: {precio_local} = placeholder de config/pricing.ts (WS1), clave claude × py. Manu aún no define el monto: NO escribas cifras. Sin valor → "Consulta el valor por WhatsApp". La ficha /py/ puede publicar un Offer en USD no aprobado: WS1 debe quitarlo o alinearlo.
-  - FECHA: la ficha confirma inicio lunes 23 de noviembre de 2026, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
+  - FECHA: inicios mensuales con cupos abiertos, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Claude para Paraguay en programbi.com y quiero info del curso en vivo".
 ---
 
 # Curso de Claude en Paraguay: aprendé a trabajar con la IA de Anthropic, en vivo
 
-**En pocas palabras:** el [curso de Claude de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/claude) tiene **20 horas de clases en vivo por Zoom** —cinco módulos de cuatro horas cada uno— y te enseña a usar Claude, el asistente de inteligencia artificial de Anthropic, en el trabajo de oficina: textos, resúmenes, planillas de Excel, presentaciones y automatizaciones simples, **todo sin programar**. Empieza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**. Inversión: **{precio_local}**.
+**En pocas palabras:** el [curso de Claude de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/claude) tiene **20 horas de clases en vivo por Zoom** —cinco módulos de cuatro horas cada uno— y te enseña a usar Claude, el asistente de inteligencia artificial de Anthropic, en el trabajo de oficina: textos, resúmenes, planillas de Excel, presentaciones y automatizaciones simples, **todo sin programar**. Lanza **nuevos grupos todos los meses** (consultá la fecha en la ficha), con clases **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**. Inversión: **{precio_local}**.
 
 Te quedás con las grabaciones de por vida, obtenés un certificado digital y cerrás con un proyecto final hecho sobre una tarea real de tu empresa. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información de la ficha del curso, revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · lunes y miércoles 19:30 · «Ver el curso».
+**[CTA-TOP]** — Nuevos grupos cada mes · lunes y miércoles 19:30 (Paraguay) · «Ver el curso».
 
 ## Qué cambia en tu día a día
 
@@ -106,7 +106,7 @@ La ficha lo dirige a **trabajo administrativo**, con el mismo temario para parti
 
 ## Fechas y condiciones
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** apertura mensual de cohortes; mirá la próxima fecha en la ficha.
 - **Días y hora:** lunes y miércoles, de 19:30 a 21:30, hora de Paraguay.
 - **Duración:** 20 horas, cinco módulos de cuatro horas.
 - **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
@@ -115,7 +115,7 @@ La ficha lo dirige a **trabajo administrativo**, con el mismo temario para parti
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Consultar por WhatsApp».
+**[CTA-END]** — {precio_local} · Cohortes mensuales · «Inscribirme» · «Consultar por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -123,7 +123,7 @@ La ficha lo dirige a **trabajo administrativo**, con el mismo temario para parti
 {precio_local}. Para confirmar el monto y la forma de pago, escribí por WhatsApp.
 
 **¿Cuándo empieza?**
-El lunes 23 de noviembre de 2026, con clases lunes y miércoles de 19:30 a 21:30, hora de Paraguay.
+Abrimos grupos mensualmente, con clases lunes y miércoles de 19:30 a 21:30, hora de Paraguay (confirmá fecha en la ficha).
 
 **¿Necesito saber programar?**
 No; todo se hace sin escribir código, y Claude Code se presenta en lenguaje sencillo para que entiendas qué puede hacer.

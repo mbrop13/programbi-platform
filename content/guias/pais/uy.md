@@ -6,7 +6,7 @@ country: uy
 lang: es-UY
 slug: como-aprender-power-bi-en-uruguay
 path: /uy/guias/como-aprender-power-bi-en-uruguay
-updated: 2026-11-04
+updated: 2026-11-14
 course: power-bi
 url_curso: https://www.programbi.com/uy/cursos/power-bi
 sources:
@@ -117,7 +117,7 @@ Si tenés tiempo y disciplina, podés avanzar solo con la documentación de Micr
 ##### El curso Power BI en vivo de ProgramBI (versión Uruguay)
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30, hora de Uruguay**.
-- **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
+- **20 horas, 8 módulos**, básico-intermedio. Cohortes todos los meses; confirmá el próximo arranque en la ficha del curso.
 - Consultá el arancel vigente en UYU al abrir el temario PDF en el [curso de Power BI para Uruguay](/uy/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH (justo lo del selector de moneda) e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.

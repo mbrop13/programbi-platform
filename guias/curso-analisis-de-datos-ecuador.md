@@ -6,9 +6,9 @@ hreflang: es-EC
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/ec/cursos/analisis-de-datos
 title: "Curso de Análisis de datos en Ecuador | ProgramBI"
-meta: "Curso de análisis de datos en Ecuador en vivo: SQL Server, Power BI y Python, 60 h por nivel. Inicio 23 de noviembre, 17:30 hora de Ecuador."
+meta: "Curso de análisis de datos en Ecuador en vivo: SQL Server, Power BI y Python, 60 h por nivel. Sesiones 17:30 de Ecuador e inicios cada mes."
 h1: "Curso de Análisis de datos en Ecuador: la ruta completa con SQL Server, Power BI y Python"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/ec/cursos/analisis-de-datos
 nota_hermes: |
@@ -22,11 +22,11 @@ nota_hermes: |
 
 # Curso de Análisis de datos en Ecuador: la ruta completa con SQL Server, Power BI y Python
 
-**Respuesta directa:** el [curso de Análisis de datos de ProgramBI para Ecuador](https://www.programbi.com/ec/cursos/analisis-de-datos) es una formación **en vivo por Zoom de 60 horas por nivel**, organizada en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para quienes quieren pasar de armar reportes en Excel a trabajar como analistas de datos. El nivel básico-intermedio comienza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 17:30 a 19:30, hora de Ecuador**. Precio: **{precio_local}**.
+**Respuesta directa:** el [curso de Análisis de datos de ProgramBI para Ecuador](https://www.programbi.com/ec/cursos/analisis-de-datos) es una formación **en vivo por Zoom de 60 horas por nivel**, organizada en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para quienes quieren pasar de armar reportes en Excel a trabajar como analistas de datos. El nivel básico-intermedio lanza **grupos nuevos cada mes** (próxima fecha en la ficha), con clases **lunes y miércoles de 17:30 a 19:30, hora de Ecuador**. Precio: **{precio_local}**.
 
 La ficha incluye dos niveles de 60 horas —básico-intermedio y avanzado—, grabaciones con acceso de por vida, certificado digital, un proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 17:30 hora de Ecuador · «Ver el curso».
+**[CTA-TOP]** — Grupos cada mes · 17:30 hora de Ecuador · «Ver el curso».
 
 ## ¿Por qué tres herramientas y no una?
 
@@ -121,7 +121,7 @@ Prepárate con cuatro pasos sencillos. Primero, repasa lo básico de Excel —fi
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** nuevas ediciones todos los meses (fecha vigente en la ficha).
 - **Días y horario:** lunes y miércoles, 17:30 a 19:30, hora de Ecuador.
 - **Duración:** 60 horas por nivel (20 por herramienta).
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -131,7 +131,7 @@ Prepárate con cuatro pasos sencillos. Primero, repasa lo básico de Excel —fi
 
 **[CTA-MID]** — Descarga el temario completo.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Próxima cohorte mensual · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -142,7 +142,7 @@ Prepárate con cuatro pasos sencillos. Primero, repasa lo básico de Excel —fi
 60 horas por nivel: 20 de SQL Server, 20 de Power BI y 20 de Python.
 
 **¿Cuándo empieza y a qué hora?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 17:30 a 19:30, hora de Ecuador.
+Iniciamos cohortes todos los meses en horario lunes y miércoles de 17:30 a 19:30, hora de Ecuador (fecha exacta en la ficha).
 
 **¿Necesito saber programar?**
 No. El nivel básico-intermedio parte desde cero en cada una de las tres herramientas.

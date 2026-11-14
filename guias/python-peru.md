@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/pe/cursos/python
 title: "Curso de Python en Perú en vivo: guía 2026 | ProgramBI"
 meta: "Curso de Python online en vivo en Perú: Python para datos desde cero en 20 h (lunes y miércoles 17:30 Lima). Pandas y automatización."
 h1: "Curso de Python en Perú: Python para datos, online y desde cero"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/pe/cursos/python
   - https://www.programbi.com/pe/cursos/sql-server
@@ -26,11 +26,11 @@ nota_hermes: |
 
 # Curso de Python en Perú: Python para datos, online y desde cero
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI en Perú](https://www.programbi.com/pe/cursos/python) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **lunes y miércoles de 17:30 a 19:30, hora de Perú**. Empieza el **lunes 23 de noviembre de 2026** y cuesta **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI en Perú](https://www.programbi.com/pe/cursos/python) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **lunes y miércoles de 17:30 a 19:30, hora de Perú**. Cuenta con **inicios todos los meses** (revisa la próxima fecha en la ficha) y cuesta **{precio_local}**. Incluye grabaciones de por vida y certificado.
 
 **¿Qué aprendes?** Python desde los fundamentos con enfoque en análisis de datos: variables, funciones, listas y diccionarios, y luego Pandas para limpiar, transformar, agrupar y cruzar información; gráficos con Matplotlib y conexión a bases de datos y APIs. En tu chamba, eso se traduce en automatizar el consolidado que hoy armas juntando archivos de cada agencia, fundo o tienda.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 17:30 hora de Perú · «Ver el curso».
+**[CTA-TOP]** — Inicios todos los meses · lunes y miércoles 17:30 (Perú) · «Ver el curso».
 
 ## Por qué Python vale la pena en Perú
 
@@ -168,7 +168,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/pytho
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **lunes 23 de noviembre de 2026**. Precio: **{precio_local}**.
+- Inicio: **grupos todos los meses** (próxima fecha en la ficha). Precio: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

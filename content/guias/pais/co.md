@@ -6,7 +6,7 @@ country: co
 lang: es-CO
 slug: como-aprender-power-bi-en-colombia
 path: /co/guias/como-aprender-power-bi-en-colombia
-updated: 2026-11-04
+updated: 2026-11-14
 course: power-bi
 url_curso: https://www.programbi.com/co/cursos/power-bi
 sources:
@@ -120,7 +120,7 @@ Hay mucho material gratis, y si eres constante puedes avanzar solo. Pero la mayo
 ##### El curso Power BI en vivo de ProgramBI (versión Colombia)
 
 - **En vivo por Zoom**, lunes y miércoles de **17:30 a 19:30, hora de Colombia**.
-- **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
+- **20 horas, 8 módulos**, básico-intermedio. Abrimos grupos cada mes; consulta la próxima fecha en la ficha del programa.
 - Valores en COP y medios de pago locales incluidos al abrir el temario del [curso de Power BI para Colombia](/co/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.

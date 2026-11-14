@@ -81,7 +81,7 @@ export default function GuiasIndexPage() {
   };
 
   return (
-    <main className="bg-canvas px-4 pb-20 pt-12 sm:px-6 lg:px-8">
+    <div className="bg-canvas px-4 pb-20 pt-12 sm:px-6 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <div className="mx-auto max-w-[1120px]">
         <nav aria-label="Migas de pan" className="text-xs text-mute">
@@ -181,6 +181,6 @@ export default function GuiasIndexPage() {
           </ul>
         </section>
       </div>
-    </main>
+    </div>
   );
 }

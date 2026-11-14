@@ -5,10 +5,10 @@ pais: uy
 hreflang: es-UY
 curso: claude
 url_curso: https://www.programbi.com/uy/cursos/claude
-title: "Curso de Claude en Uruguay: en vivo, 23/11 | ProgramBI"
-meta: "Curso de Claude en Uruguay en vivo por Zoom: 20 h para tareas de oficina, planillas y documentos. Inicio 23/11, 19:30 hora de Uruguay."
+title: "Curso de Claude en Uruguay online en vivo | ProgramBI"
+meta: "Curso de Claude en Uruguay en vivo por Zoom: 20 h para oficina, planillas y documentos. Clases 19:30 hora Uruguay; nuevas cohortes cada mes."
 h1: "Curso de Claude en Uruguay: IA de Anthropic para quien trabaja en administración"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/uy/cursos/claude
   - https://www.impo.com.uy/bases/leyes/18331-2008
@@ -16,18 +16,18 @@ nota_hermes: |
   ELEMENTO VISUAL: tabla «Qué incluye cada módulo» con columna «En la práctica» + bloque «Tres preguntas antes de anotarte».
   Intención: "curso claude uruguay", "curso claude montevideo" (transaccional) → click_registro en /uy/cursos/claude. country=uy, course=claude.
   - PRECIO: {precio_local} = placeholder de config/pricing.ts (WS1), clave claude × uy. Manu aún no define el monto: NO escribas cifras. Sin valor → "Consulta el valor por WhatsApp".
-  - FECHA: la ficha confirma inicio lunes 23 de noviembre de 2026, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
+  - FECHA: inicios mensuales con cupos abiertos, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Claude para Uruguay en programbi.com y quiero info del curso en vivo".
 ---
 
 # Curso de Claude en Uruguay: IA de Anthropic para quien trabaja en administración
 
-**Para ir al grano:** el [curso de Claude de ProgramBI en Uruguay](https://www.programbi.com/uy/cursos/claude) es una formación **en vivo por Zoom de 20 horas**, organizada en cinco módulos de cuatro horas, donde aprendés a trabajar con Claude —la inteligencia artificial de Anthropic— en lo administrativo: redacción, resúmenes, planillas, presentaciones y automatizaciones livianas, **sin programar**. La cohorte arranca el **lunes 23 de noviembre de 2026** y las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**. Cuesta **{precio_local}**.
+**Para ir al grano:** el [curso de Claude de ProgramBI en Uruguay](https://www.programbi.com/uy/cursos/claude) es una formación **en vivo por Zoom de 20 horas**, organizada en cinco módulos de cuatro horas, donde aprendés a trabajar con Claude —la inteligencia artificial de Anthropic— en lo administrativo: redacción, resúmenes, planillas, presentaciones y automatizaciones livianas, **sin programar**. Se abren **cohortes todos los meses** (próxima fecha en la ficha) y las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**. Cuesta **{precio_local}**.
 
 Quedan las grabaciones de por vida, recibís certificado digital y terminás con un proyecto armado sobre una tarea real de tu oficina. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: la ficha del curso, consultada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Cohorte del 23 de noviembre · lunes y miércoles 19:30 · «Ver el curso».
+**[CTA-TOP]** — Ediciones mensuales · lunes y miércoles 19:30 (Uruguay) · «Ver el curso».
 
 ## Tres preguntas antes de anotarte
 
@@ -104,7 +104,7 @@ La ficha lo enfoca en **trabajo administrativo**, con el mismo temario para part
 
 ## Datos de la cohorte
 
-- **Arranque:** lunes 23 de noviembre de 2026.
+- **Arranque:** todos los meses comienza una edición nueva (consultá la fecha en la ficha).
 - **Clases:** lunes y miércoles, 19:30 a 21:30, hora de Uruguay.
 - **Carga horaria:** 20 horas, cinco módulos de cuatro.
 - **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
@@ -115,7 +115,7 @@ La ficha lo enfoca en **trabajo administrativo**, con el mismo temario para part
 
 Elegí un proceso concreto de tu oficina —el control mensual, una respuesta que mandás seguido, un informe que se repite— y llevalo como caso desde la primera clase. Cada módulo le suma una capa: el pedido bien armado, el Project con los documentos, la planilla ordenada y, al final, la automatización liviana. Así el proyecto final no es un ejercicio aparte, sino algo que ya vas a estar usando.
 
-**[CTA-END]** — {precio_local} · Desde el 23/11 · «Inscribirme» · «Escribinos por WhatsApp».
+**[CTA-END]** — {precio_local} · Cupos abiertos · «Inscribirme» · «Escribinos por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -123,7 +123,7 @@ Elegí un proceso concreto de tu oficina —el control mensual, una respuesta qu
 {precio_local}, en pesos uruguayos con Mercado Pago Uruguay o transferencia.
 
 **¿Cuándo empieza y a qué hora?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 19:30 a 21:30, hora de Uruguay.
+Hay arranques mensuales; las clases son lunes y miércoles de 19:30 a 21:30, hora de Uruguay (ver próxima fecha en la ficha).
 
 **¿Hace falta saber programar?**
 No. Ni Claude Code requiere escribir código en este curso: se explica en lenguaje simple.

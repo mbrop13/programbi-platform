@@ -6,9 +6,9 @@ hreflang: es-GT
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/gt/cursos/analisis-de-datos
 title: "Curso de Análisis de datos en Guatemala | ProgramBI"
-meta: "Curso de análisis de datos en Guatemala en vivo: SQL Server, Power BI y Python, 60 h por nivel. Inicio 23 de noviembre, 16:30 hora de Guatemala."
+meta: "Curso de análisis de datos en Guatemala en vivo: SQL Server, Power BI y Python, 60 h por nivel. Horario 16:30 Guatemala y cupos abiertos."
 h1: "Curso de Análisis de datos en Guatemala: SQL, Power BI y Python para dar el salto a analista"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/gt/cursos/analisis-de-datos
 nota_hermes: |
@@ -22,11 +22,11 @@ nota_hermes: |
 
 # Curso de Análisis de datos en Guatemala: SQL, Power BI y Python para dar el salto a analista
 
-**En pocas palabras:** el [curso de Análisis de datos de ProgramBI para Guatemala](https://www.programbi.com/gt/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**, con **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para aprender a sacar datos de una base, convertirlos en tableros y analizarlos con código. El nivel básico-intermedio empieza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 16:30 a 18:30, hora de Guatemala**. Precio: **{precio_local}**.
+**En pocas palabras:** el [curso de Análisis de datos de ProgramBI para Guatemala](https://www.programbi.com/gt/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**, con **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para aprender a sacar datos de una base, convertirlos en tableros y analizarlos con código. El nivel básico-intermedio ofrece **nuevas cohortes mensuales** (fecha publicada en la ficha), con clases **lunes y miércoles de 16:30 a 18:30, hora de Guatemala**. Precio: **{precio_local}**.
 
 En la misma ficha hay dos niveles de 60 horas —básico-intermedio y avanzado—, y el programa incluye grabaciones de por vida, certificado digital, proyecto final con datos reales e inteligencia artificial como apoyo en cada módulo. Información de la ficha revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 16:30 hora de Guatemala · «Ver el curso».
+**[CTA-TOP]** — Cohortes cada mes · 16:30 hora de Guatemala · «Ver el curso».
 
 ## Tres preguntas para saber si este curso es para ti
 
@@ -150,7 +150,7 @@ Ambos niveles tienen 60 horas, 20 por herramienta.
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** apertura mensual de grupos (fecha vigente en la ficha del curso).
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de Guatemala.
 - **Duración:** 60 horas por nivel (20 por herramienta).
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -160,7 +160,7 @@ Ambos niveles tienen 60 horas, 20 por herramienta.
 
 **[CTA-MID]** — Descarga el temario completo.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Inicios todos los meses · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -171,7 +171,7 @@ Ambos niveles tienen 60 horas, 20 por herramienta.
 60 horas por nivel: 20 de SQL Server, 20 de Power BI y 20 de Python.
 
 **¿Cuándo empieza y a qué hora?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 16:30 a 18:30, hora de Guatemala.
+Abrimos grupos mensualmente los lunes y miércoles de 16:30 a 18:30, hora de Guatemala; verifica la fecha de arranque en la ficha.
 
 **¿Necesito saber programar?**
 No. El nivel básico-intermedio parte desde cero en cada una de las tres herramientas, paso a paso.

@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/pe/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos en Perú: guía 2026 | ProgramBI"
 meta: "Curso de análisis de datos en Perú en vivo: SQL Server, Power BI y Python en 60 h (17:30 Lima). Sueldos locales y ruta práctica paso a paso."
 h1: "Curso de Análisis de Datos en Perú: el camino para ser analista de datos"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/pe/cursos/analisis-de-datos
   - https://www.programbi.com/pe/cursos/power-bi
@@ -27,11 +27,11 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Perú: el camino para ser analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI en Perú](https://www.programbi.com/pe/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 17:30 a 19:30, hora de Perú**, el próximo grupo empieza el **lunes 23 de noviembre de 2026** y el precio es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI en Perú](https://www.programbi.com/pe/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 17:30 a 19:30, hora de Perú**, se abren **nuevos grupos cada mes** (consulta la fecha en la ficha) y el precio es **{precio_local}**. Incluye grabaciones de por vida y certificado.
 
 **¿Cómo ser analista de datos en Perú?** Aprende SQL para extraer información, Power BI para modelarla y presentarla, y Python para limpiar y explorar bases grandes. Luego demuéstralo con un proyecto sobre un problema real —colocaciones de una caja, envíos de una agroexportadora— y ya tienes la base que piden las convocatorias de analista.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 17:30 hora de Perú · «Ver el curso».
+**[CTA-TOP]** — Inicios cada mes · lunes y miércoles 17:30 (hora de Perú) · «Ver el curso».
 
 ## Dónde está la demanda en Perú
 
@@ -126,7 +126,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/anali
 - Contenido: SQL desde cero, modelado y DAX, análisis exploratorio con Pandas, dashboards y reportes automáticos, ETL con Power Query y conexión a bases de datos, proyecto final con datos reales, con IA de apoyo en cada módulo.
 - **Nivel avanzado** de 60 horas adicionales: automatización, inteligencia de tiempo y modelos.
 - **Grabaciones de por vida** y **certificado** al terminar.
-- Inicio: **lunes 23 de noviembre de 2026**. Precio: **{precio_local}**.
+- Inicio: **grupos todos los meses** (próxima fecha en la ficha del curso). Precio: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

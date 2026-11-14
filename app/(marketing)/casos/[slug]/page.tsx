@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Globe, Award, CheckCircle, ArrowUpRight, BarChart } from "lucide-react";
+import { ArrowLeft, Globe, Award, CheckCircle, ArrowUpRight } from "lucide-react";
 import { casesOfUse } from "@/lib/data/cases";
 import { ogImageUrl } from "@/lib/og/url";
-import { tituloSeo } from "@/lib/seo";
+import { jsonLdString, tituloSeo, twitterShare } from "@/lib/seo";
 
 interface PageProps {
   params: Promise<{
@@ -24,29 +24,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const currentCase = casesOfUse.find((c) => c.slug === slug);
   if (!currentCase) return { title: "Caso no encontrado" };
 
+  const ogUrl = ogImageUrl({
+    kicker: "Caso de uso",
+    title: currentCase.fullTitle,
+    description: currentCase.description,
+    path: `casos/${slug}`,
+  });
+  const ogTitle = `${currentCase.fullTitle} | ProgramBI`;
+
   return {
     title: { absolute: tituloSeo(currentCase.title) },
     description: currentCase.description,
+    robots: { index: false, follow: true },
     alternates: { canonical: `/casos/${slug}` },
     openGraph: {
-      title: `${currentCase.fullTitle} | ProgramBI`,
+      title: ogTitle,
       description: currentCase.description,
       url: `https://www.programbi.com/casos/${slug}`,
       type: "article",
       images: [
         {
-          url: ogImageUrl({
-            kicker: "Caso de uso",
-            title: currentCase.fullTitle,
-            description: currentCase.description,
-            path: `casos/${slug}`,
-          }),
+          url: ogUrl,
           width: 1200,
           height: 630,
           alt: currentCase.fullTitle,
         },
       ],
     },
+    twitter: twitterShare(ogTitle, currentCase.description, ogUrl),
   };
 }
 
@@ -70,10 +75,10 @@ export default async function CaseStudyPage({ params }: PageProps) {
   };
 
   return (
-    <main className="bg-white min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-32">
+    <div className="bg-white min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-32">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(caseJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(caseJsonLd) }}
       />
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
         
@@ -137,7 +142,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
               </div>
 
               {/* Skills/Products list */}
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Módulos Utilizados</h4>
+              <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Módulos Utilizados</h2>
               <ul className="space-y-3 mb-6">
                 {currentCase.productsUsed.map((prod, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-slate-700 font-semibold font-sans">
@@ -167,7 +172,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
           
           {/* Left Column: Metrics */}
           <div className="space-y-8 lg:border-r lg:border-slate-100 lg:pr-10">
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2 mb-2">Impacto Medido</h4>
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2 mb-2">Impacto Medido</h2>
             {currentCase.metrics.map((metric, i) => (
               <div key={i} className="flex flex-col border-b border-slate-50 pb-5 last:border-b-0">
                 <span className="text-3xl lg:text-4xl font-black text-slate-900 font-mono tracking-tight">
@@ -185,9 +190,9 @@ export default async function CaseStudyPage({ params }: PageProps) {
             
             {/* Problem */}
             <div className="space-y-4">
-              <h3 className="font-display text-xl sm:text-2xl font-black text-slate-900">
+              <h2 className="font-display text-xl sm:text-2xl font-black text-slate-900">
                 El Desafío del Negocio
-              </h3>
+              </h2>
               <p className="text-slate-650 text-base leading-relaxed">
                 {currentCase.problem}
               </p>
@@ -213,9 +218,9 @@ export default async function CaseStudyPage({ params }: PageProps) {
 
             {/* Solution */}
             <div className="space-y-4">
-              <h3 className="font-display text-xl sm:text-2xl font-black text-slate-900">
+              <h2 className="font-display text-xl sm:text-2xl font-black text-slate-900">
                 La Solución Implementada
-              </h3>
+              </h2>
               <p className="text-slate-650 text-base leading-relaxed">
                 {currentCase.solution}
               </p>
@@ -223,9 +228,9 @@ export default async function CaseStudyPage({ params }: PageProps) {
 
             {/* Results */}
             <div className="space-y-4">
-              <h3 className="font-display text-xl sm:text-2xl font-black text-slate-900">
+              <h2 className="font-display text-xl sm:text-2xl font-black text-slate-900">
                 Retorno y Resultados de la Optimización
-              </h3>
+              </h2>
               <p className="text-slate-650 text-base leading-relaxed">
                 {currentCase.results}
               </p>
@@ -249,6 +254,6 @@ export default async function CaseStudyPage({ params }: PageProps) {
         </div>
 
       </div>
-    </main>
+    </div>
   );
 }

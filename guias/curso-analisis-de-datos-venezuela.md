@@ -6,9 +6,9 @@ hreflang: es-VE
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/ve/cursos/analisis-de-datos
 title: "Curso de Análisis de datos en Venezuela | ProgramBI"
-meta: "Curso de análisis de datos en Venezuela en vivo: SQL Server, Power BI y Python, 60 h por nivel. Inicio 23 de noviembre, 18:30 hora de Venezuela."
+meta: "Curso de análisis de datos en Venezuela en vivo: SQL Server, Power BI y Python, 60 h por nivel. Sesiones 18:30 Venezuela y nuevas cohortes cada mes."
 h1: "Curso de Análisis de datos en Venezuela: conviértete en analista con SQL, Power BI y Python"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/ve/cursos/analisis-de-datos
 nota_hermes: |
@@ -22,11 +22,11 @@ nota_hermes: |
 
 # Curso de Análisis de datos en Venezuela: conviértete en analista con SQL, Power BI y Python
 
-**Respuesta corta:** el [curso de Análisis de datos de ProgramBI para Venezuela](https://www.programbi.com/ve/cursos/analisis-de-datos) es una formación **en vivo por Zoom** con dos niveles de **60 horas** cada uno; cada nivel reparte **20 horas para SQL Server, 20 para Power BI y 20 para Python**. El nivel básico-intermedio comienza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 18:30 a 20:30, hora de Venezuela**. Precio: **{precio_local}**.
+**Respuesta corta:** el [curso de Análisis de datos de ProgramBI para Venezuela](https://www.programbi.com/ve/cursos/analisis-de-datos) es una formación **en vivo por Zoom** con dos niveles de **60 horas** cada uno; cada nivel reparte **20 horas para SQL Server, 20 para Power BI y 20 para Python**. El nivel básico-intermedio tiene **inicios todos los meses** (revisa la próxima fecha en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de Venezuela**. Precio: **{precio_local}**.
 
 Incluye grabaciones en el campus con acceso de por vida, certificado digital y un proyecto final con datos reales, además de apoyo de inteligencia artificial en cada módulo para generar y revisar consultas, medidas y scripts. Datos tomados de la ficha del curso el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 18:30 hora de Venezuela · «Ver el curso».
+**[CTA-TOP]** — Nuevas cohortes cada mes · 18:30 hora de Venezuela · «Ver el curso».
 
 ## El oficio de analista, explicado sin rodeos
 
@@ -121,7 +121,7 @@ Buena parte del trabajo de un analista se puede hacer a distancia: consultas, mo
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** fechas de arranque cada mes, publicadas en la ficha del programa.
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de Venezuela.
 - **Duración:** 60 horas por nivel (20 por herramienta).
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -131,7 +131,7 @@ Buena parte del trabajo de un analista se puede hacer a distancia: consultas, mo
 
 **[CTA-MID]** — Descarga el temario completo.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Cohortes mensuales · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -142,7 +142,7 @@ Buena parte del trabajo de un analista se puede hacer a distancia: consultas, mo
 60 horas por nivel, repartidas en 20 horas de SQL Server, 20 de Power BI y 20 de Python.
 
 **¿A qué hora son las clases?**
-Lunes y miércoles de 18:30 a 20:30, hora de Venezuela, desde el 23 de noviembre de 2026.
+Lunes y miércoles de 18:30 a 20:30, hora de Venezuela, con inicios nuevos todos los meses (consulta la fecha en la ficha).
 
 **¿Necesito saber programar?**
 No. El nivel básico-intermedio parte de cero en cada herramienta.

@@ -6,7 +6,7 @@ export default async function AiPage() {
   const profile = await getCurrentUserProfile();
 
   if (!profile) {
-    redirect("/auth/login?next=/ai");
+    redirect("/login?next=/ai");
   }
 
   return <AiChatShell />;

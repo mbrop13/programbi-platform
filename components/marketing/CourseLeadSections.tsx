@@ -8,6 +8,7 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { localizarMercado } from "@/lib/paises/precios";
 import { enlacesDeCurso } from "@/lib/seo/enlaces";
 import { ISO_CHILE, normalizarPais } from "@/config/paises";
+import { textoCuotas } from "@/config/cuotas";
 
 export const COURSE_CRO_SLUGS = [
   "analisis-de-datos",
@@ -30,9 +31,9 @@ export function isCourseCroSlug(slug: string): boolean {
 const SIN_PRECIO = /(\$|S\/|US\$|MX\$)\s?\d[\d.,]{2,}|\b\d{3}\.\d{3}\b/;
 
 /** Reemplaza una respuesta con monto por la invitación al PDF de temario y precios. */
-function sinPrecio(texto: string): string {
+function sinPrecio(texto: string, pais?: string): string {
   return SIN_PRECIO.test(texto)
-    ? "El arancel vigente de tu país, los descuentos y las 3 cuotas sin interés están en el PDF de temario y precios de la ficha del curso."
+    ? `El arancel vigente de tu país, los descuentos y las ${textoCuotas(pais)} están en el PDF de temario y precios de la ficha del curso.`
     : texto;
 }
 
@@ -212,31 +213,44 @@ function faqAnswer(text: string) {
   });
 }
 
-const COURSE_CASE_LINKS: Record<string, { href: string; label: string }> = {
-  "analisis-de-datos": {
-    href: "/casos/automatizacion-conciliaciones",
-    label: "Caso: conciliación con Python y SQL",
-  },
-  "power-bi": {
-    href: "/casos/dashboards-ventas-bi",
-    label: "Caso: dashboards de ventas en Power BI",
-  },
-  "power-automate": {
-    href: "/casos/automatizacion-conciliaciones",
-    label: "Caso: automatización de conciliaciones",
-  },
+const COURSE_RESOURCE_LINKS: Record<string, { href: string; label: string }[]> = {
+  "analisis-de-datos": [
+    { href: "/guias/sueldo-analista-de-datos-latinoamerica", label: "Guía: sueldo de analista de datos en Latinoamérica" },
+    { href: "/test-nivel", label: "Test de nivel SQL y Excel" },
+    { href: "/casos", label: "Testimonios de alumnos" },
+  ],
+  "power-bi": [
+    { href: "/guias/power-bi-vs-excel", label: "Guía: Power BI vs. Excel" },
+    { href: "/casos", label: "Testimonios de alumnos" },
+  ],
+  "power-automate": [
+    { href: "/guias/curso-power-automate-chile", label: "Guía: automatización con Power Automate" },
+    { href: "/empresas", label: "Capacitación para empresas" },
+  ],
+  "sql-server": [
+    { href: "/test-nivel/sql", label: "Test de nivel SQL" },
+    { href: "/versus/sql-server-vs-postgresql", label: "Comparativa: SQL Server vs. PostgreSQL" },
+  ],
+  excel: [
+    { href: "/test-nivel/excel", label: "Test de nivel Excel" },
+    { href: "/guias/power-bi-vs-excel", label: "Guía: Power BI vs. Excel" },
+  ],
+  python: [
+    { href: "/versus/python-vs-r", label: "Comparativa: Python vs. R" },
+    { href: "/casos", label: "Testimonios de alumnos" },
+  ],
 };
 
 export function CourseSeoInternalLinks({ slug }: { slug: string }) {
-  const caseLink = COURSE_CASE_LINKS[slug];
+  const extraCurso = COURSE_RESOURCE_LINKS[slug] ?? [];
   const extra = enlacesDeCurso(slug);
-  if (!caseLink && extra.length === 0) return null;
+  if (extraCurso.length === 0 && extra.length === 0) return null;
 
-  // Landings propias del curso primero; el caso y el catálogo cierran la lista.
+  // Landings propias del curso primero; guías, comparativas, testimonios y el catálogo cierran la lista.
   const vistos = new Set<string>();
   const enlaces = [
     ...extra,
-    ...(caseLink ? [caseLink] : []),
+    ...extraCurso,
     { href: "/cursos", label: "Todos los cursos" },
     { href: "/", label: "Inicio" },
   ].filter((enlace) => (vistos.has(enlace.href) ? false : (vistos.add(enlace.href), true)));
@@ -291,7 +305,7 @@ export function CourseFaq({
                 <span className="hidden text-2xl leading-none text-faint group-open:block">–</span>
               </summary>
               <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-mute sm:text-base">
-                {faqAnswer(sinPrecio(item.a))}
+                {faqAnswer(sinPrecio(item.a, pais))}
               </p>
             </details>
           ))}

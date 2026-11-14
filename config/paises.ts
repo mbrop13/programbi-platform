@@ -163,6 +163,11 @@ export const TIPO_CAMBIO_USD = 900;
 
 const EMAIL = "contacto@programbi.cl";
 const WHATSAPP_CL = "https://wa.me/56935409699";
+const MEDIOS_PAGO_USD = [
+  "Mercado Pago (tarjeta de crédito o débito)",
+  "Tarjeta de crédito o débito internacional",
+  "Transferencia bancaria en dólares",
+];
 
 function contactoPendiente(): Pais["contacto"] {
   // Sin ciudad confirmada no se publica nada: un «[PENDIENTE …]» en el HTML
@@ -226,7 +231,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/La_Paz",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -263,7 +268,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/Costa_Rica",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -281,7 +286,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/Guayaquil",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -299,7 +304,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/El_Salvador",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -317,7 +322,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/Guatemala",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -335,7 +340,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: false,
     zonaHoraria: "America/Tegucigalpa",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -371,7 +376,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: false,
     zonaHoraria: "America/Managua",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -390,7 +395,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: false,
     zonaHoraria: "America/Panama",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -410,7 +415,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: false,
     zonaHoraria: "America/Asuncion",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -446,7 +451,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/Santo_Domingo",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
@@ -482,7 +487,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/Caracas",
-    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
+    mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
 ];

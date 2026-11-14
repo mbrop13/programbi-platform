@@ -6,6 +6,8 @@ import type { EnlaceCurso } from "./tipos";
  */
 export const ENLACES_ANALISIS_DE_DATOS: EnlaceCurso[] = [
   { href: "/analisis-de-datos-mineria", label: "Análisis de datos para minería" },
+  { href: "/curso-sql-online", label: "Guía y temario SQL online" },
+  { href: "/curso-python", label: "Guía y temario Python para datos" },
   { href: "/cursos/sql-server", label: "Curso SQL online en vivo" },
   { href: "/cursos/power-bi", label: "Curso Power BI en vivo" },
   { href: "/cursos/python", label: "Curso Python para datos" },

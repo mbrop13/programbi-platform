@@ -78,7 +78,7 @@ export default async function ClaseGratisPage({ params }: { params: Params }) {
   });
 
   return (
-    <main className="min-h-screen bg-canvas px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+    <div className="min-h-screen bg-canvas px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
       <div className="mx-auto max-w-3xl">
         <nav className="mb-8 text-sm text-mute" aria-label="Migas">
           <Link href={href("/")} className="no-underline hover:text-ink">
@@ -200,6 +200,6 @@ export default async function ClaseGratisPage({ params }: { params: Params }) {
           </ul>
         </section>
       </div>
-    </main>
+    </div>
   );
 }

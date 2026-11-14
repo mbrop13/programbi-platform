@@ -8,7 +8,7 @@ export const excelSyllabus: CourseSyllabusData = {
     {
       id: "nivel1",
       label: "Nivel I: Básico",
-      shortLabel: "Fundamentos (16h)",
+      shortLabel: "Fundamentos (20h)",
       theme: "#107C41",
       audience:
         "Administrativos principiantes o con conocimientos mínimos de Excel que realizan tareas diarias simples como ingreso de datos, organización de listas y cálculos básicos en informes.",
@@ -33,8 +33,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-2",
-          title: "Ingreso y Manejo de Datos (3 horas)",
-          hours: 3,
+          title: "Ingreso y Manejo de Datos (4 horas)",
+          hours: 4,
           topics: [
             "Tipos de datos: texto, números, fechas.",
             "Formateo de celdas y tablas.",
@@ -44,8 +44,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-3",
-          title: "Fórmulas y Funciones Básicas (4 horas)",
-          hours: 4,
+          title: "Fórmulas y Funciones Básicas (5 horas)",
+          hours: 5,
           topics: [
             "Operadores aritméticos y referencias de celdas.",
             "Funciones esenciales: SUMA, PROMEDIO, CONTAR, MAX, MIN.",
@@ -55,8 +55,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-4",
-          title: "Gráficos y Visualización de Datos (3 horas)",
-          hours: 3,
+          title: "Gráficos y Visualización de Datos (4 horas)",
+          hours: 4,
           topics: [
             "Creación de gráficos básicos (barras, líneas, pastel).",
             "Formateo de gráficos para informes claros.",
@@ -66,8 +66,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-5",
-          title: "Herramientas de Organización y Filtros (2 horas)",
-          hours: 2,
+          title: "Herramientas de Organización y Filtros (3 horas)",
+          hours: 3,
           topics: [
             "Ordenamiento y filtros básicos.",
             "Uso de tablas dinámicas para resúmenes simples.",
@@ -90,7 +90,7 @@ export const excelSyllabus: CourseSyllabusData = {
     {
       id: "nivel2",
       label: "Nivel II: Intermedio",
-      shortLabel: "Análisis & Tablas (16h)",
+      shortLabel: "Análisis & Tablas (20h)",
       theme: "#7C3AED",
       audience:
         "Administrativos con conocimientos básicos que manejan volúmenes moderados de datos y necesitan automatizar resúmenes mensuales o búsquedas complejas.",
@@ -104,8 +104,8 @@ export const excelSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n2-1",
-          title: "Fórmulas Avanzadas y Referencias (3 horas)",
-          hours: 3,
+          title: "Fórmulas Avanzadas y Referencias (4 horas)",
+          hours: 4,
           topics: [
             "Referencias absolutas, relativas y mixtas.",
             "Funciones lógicas: SI, Y, O.",
@@ -115,8 +115,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n2-2",
-          title: "Manejo de Datos Grandes (3 horas)",
-          hours: 3,
+          title: "Manejo de Datos Grandes (4 horas)",
+          hours: 4,
           topics: [
             "Validación de datos y listas desplegables.",
             "Consolidación de datos de múltiples hojas.",
@@ -126,8 +126,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n2-3",
-          title: "Tablas Dinámicas (4 horas)",
-          hours: 4,
+          title: "Tablas Dinámicas (5 horas)",
+          hours: 5,
           topics: [
             "Creación y configuración de tablas dinámicas.",
             "Agrupamiento, cálculos y campos calculados.",
@@ -137,8 +137,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n2-4",
-          title: "Funciones de Fecha, Texto y Matemáticas (3 horas)",
-          hours: 3,
+          title: "Funciones de Fecha, Texto y Matemáticas (4 horas)",
+          hours: 4,
           topics: [
             "Funciones de fecha: HOY, FECHA, DIASEM.",
             "Funciones de texto: CONCATENAR, IZQUIERDA, DERECHA.",
@@ -172,7 +172,7 @@ export const excelSyllabus: CourseSyllabusData = {
     {
       id: "nivel3",
       label: "Nivel III: Avanzado",
-      shortLabel: "Macros & PQ (16h)",
+      shortLabel: "Macros & PQ (20h)",
       theme: "#EA580C",
       audience:
         "Administrativos experimentados que gestionan grandes volúmenes de datos y requieren automatización completa con Macros y Power Query.",
@@ -186,8 +186,8 @@ export const excelSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n3-1",
-          title: "Funciones Avanzadas y Matrices (3 horas)",
-          hours: 3,
+          title: "Funciones Avanzadas y Matrices (4 horas)",
+          hours: 4,
           topics: [
             "Funciones de matriz: SUMAPRODUCTO, INDICE, COINCIDIR.",
             "Fórmulas anidadas y condicionales complejas.",
@@ -196,8 +196,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-2",
-          title: "Power Query para Importación y Limpieza (4 horas)",
-          hours: 4,
+          title: "Power Query para Importación y Limpieza (5 horas)",
+          hours: 5,
           topics: [
             "Introducción a Power Query.",
             "Transformaciones: filtrado, combinación y limpieza.",
@@ -206,8 +206,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-3",
-          title: "Macros y VBA Básico (4 horas)",
-          hours: 4,
+          title: "Macros y VBA Básico (5 horas)",
+          hours: 5,
           topics: [
             "Grabación de macros para tareas repetitivas.",
             "Introducción a VBA: editor, variables, bucles.",
@@ -216,8 +216,8 @@ export const excelSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-4",
-          title: "Análisis Avanzado y Dashboards (3 horas)",
-          hours: 3,
+          title: "Análisis Avanzado y Dashboards (4 horas)",
+          hours: 4,
           topics: [
             "Creación de dashboards interactivos con slicers.",
             "Uso de Power Pivot para modelado de datos.",

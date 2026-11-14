@@ -94,7 +94,7 @@ export function levelTopicCount(level: SyllabusLevelContent): number {
 export function levelHours(level: SyllabusLevelContent): number {
   const fromModules = level.modules.reduce((sum, m) => sum + (m.hours ?? 0), 0);
   if (fromModules > 0) return fromModules;
-  // Parse "(16h)" or "(16 horas)" from shortLabel / titles
+  // Parse "(20h)" or "(20 horas)" from shortLabel / titles
   const fromLabel = level.shortLabel?.match(/(\d+)\s*h/i);
   if (fromLabel) return Number(fromLabel[1]);
   return 0;

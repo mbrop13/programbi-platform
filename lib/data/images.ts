@@ -84,14 +84,14 @@ export const contactGallery = [
   {
     label: "Visualización",
     subtitle: "Power BI Avanzado",
-    url: "/images/chv.jpg",
+    url: "/images/chv.webp",
     tall: true,
     object: "object-[center_82%]",
   },
   {
     label: "Ecosistema Completo",
     subtitle: "SQL + PBI + Python + IA",
-    url: "/images/tottus.jpg",
+    url: "/images/tottus.webp",
     tall: false,
     object: "object-[70%_42%]",
   },

@@ -6,19 +6,21 @@ import {
   breadcrumbJsonLd,
   jsonLdString,
   pageOg,
-  tituloSeo,
+  tituloLocal,
 } from "@/lib/seo";
 import { PAISES_INDEXABLES, getPais, normalizarPais, type Pais } from "@/config/paises";
-import { cuotasSinInteres } from "@/config/cuotas";
+import { textoCuotas } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
-import { localizarMercado } from "@/lib/paises/precios";
+import { formatMoneda, localizarMercado } from "@/lib/paises/precios";
 import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagina";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
 import { courseBrochurePath } from "@/lib/pricing-gate";
 import PreciosGateClient, { type CursoPrecioGate } from "@/components/marketing/PreciosGateClient";
 import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
+import { getPaginaBloqueLocal } from "@/lib/paises/contenido-local";
 import { aplicarSeoLocal } from "@/lib/paises/contenido-local/seo";
+import { esRutaIndexablePais } from "@/lib/seo/indexabilidad";
 
 export const revalidate = 86400;
 
@@ -31,8 +33,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const iso = normalizarPais((await params).pais);
   const pais = getPais(iso);
-  const title = tituloSeo(`Precios de cursos en vivo en ${pais.nombre}`);
-  const description = `Precios publicados en ${pais.moneda} para ${pais.nombre}: duración, qué incluye, medios de pago y cuotas sin interés.`;
+  const title = tituloLocal(`Precios de cursos Power BI y datos en ${pais.nombre}`);
+  const description = `Precios en ${pais.moneda} para ${pais.nombre}: cursos en vivo de Power BI, SQL y Python, temario PDF, medios de pago y ${textoCuotas(iso)}.`;
   const share = pageOg({
     title,
     description,
@@ -86,7 +88,7 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
     },
     {
       q: `¿Cuánto cuesta el curso de Power BI en ${pais.nombre}?`,
-      a: `El arancel vigente de Power BI, por ${horasPowerBi}, se descarga en el PDF de temario y precios del curso, con las fechas en hora de ${pais.nombre} y el detalle de las ${cuotasSinInteres(pais.iso)} cuotas sin interés. Está publicado en ${moneda}.`,
+      a: `El arancel vigente de Power BI, por ${horasPowerBi}, se descarga en el PDF de temario y precios del curso, con las fechas en hora de ${pais.nombre} y el detalle de las ${textoCuotas(pais.iso)}. Está publicado en ${moneda}.`,
     },
     {
       q: "¿Cuál es el mejor curso de Power BI en vivo en LatAm?",
@@ -98,7 +100,7 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
     },
     {
       q: "¿Hay cuotas sin interés?",
-      a: `Sí: todos los cursos se pueden pagar en ${cuotasSinInteres(pais.iso)} cuotas sin interés, sin recargo por financiamiento. El detalle está en el PDF de temario y precios de cada curso.`,
+      a: `Sí: todos los cursos se pueden pagar en ${textoCuotas(pais.iso)}, sin recargo por financiamiento. El detalle está en el PDF de temario y precios de cada curso.`,
     },
   ];
 }
@@ -111,17 +113,34 @@ export default async function PreciosPage({
   const iso = normalizarPais((await params).pais);
   const { pais, cursos, moneda, cobroLocal } = await preciosDePais(iso);
   const bloque = getBloqueLocal(iso);
+  const paginaBloque = getPaginaBloqueLocal(iso, "precios");
+  const cuotas = textoCuotas(iso);
+  const resolverCuotas = (texto: string) => texto.replaceAll("{cuotas}", cuotas);
+  const faqsBloque = paginaBloque?.faqs.map((faq) => ({
+    q: resolverCuotas(faq.q),
+    a: resolverCuotas(faq.a),
+  }));
   // Con bloque local, la FAQ de la página es la del mercado (4-6 preguntas):
   // el texto visible y el FAQPage JSON-LD salen de la misma lista.
-  const faqs = bloque?.faqs ?? faqsDe(pais, cursos, moneda);
+  const faqs = faqsBloque ?? bloque?.faqs ?? faqsDe(pais, cursos, moneda);
+  const otrosPaises = PAISES_INDEXABLES.filter(
+    (otro) => otro.iso !== pais.iso && esRutaIndexablePais(otro.iso, PATH)
+  );
   const powerBi = cursos.find((curso) => curso.slug === "power-bi");
   const L = (texto: string) => localizarMercado(texto, iso);
   const href = (destino: string) => rutaLocal(iso, destino);
   const courseUrl = (slug: string) => absoluteUrl(href(`/cursos/${slug}`));
 
-  // La tabla de precios es cliente: recibe solo títulos, nivel y horas. Los
-  // montos se calculan con `precioVenta` recién al desbloquear, así el HTML
-  // inicial nunca contiene un precio (ni como texto ni en el flight data).
+  const priceValues = cursos
+    .map((curso) => curso.priceValue)
+    .filter((value): value is number => value != null);
+  const minPrice = priceValues.length > 0 ? Math.min(...priceValues) : null;
+  const minPriceLabel = minPrice != null ? formatMoneda(pais.iso, minPrice) : null;
+
+  // La tabla de precios es cliente: recibe solo títulos, nivel y horas. El
+  // resumen SSR muestra el arancel mínimo ("Desde ...") cuando hay monto
+  // publicado; la matriz por curso, descuentos y cuotas se calculan con
+  // `precioVenta` recién al desbloquear el formulario del PDF.
   const cursosGate: CursoPrecioGate[] = cursos.map((curso) => ({
     slug: curso.slug,
     title: curso.title,
@@ -202,13 +221,27 @@ export default async function PreciosPage({
             {L("Precios de cursos en vivo en Chile")}
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-mute">
-            Aranceles publicados en {moneda} para {pais.nombre}. El detalle de cada
-            curso, con las fechas y las cuotas sin interés, se descarga en su PDF de
-            temario y precios.
+            Aranceles publicados en {moneda} para {pais.nombre}, con pago en{" "}
+            {textoCuotas(pais.iso)}. El detalle de cada curso y sus fechas se descarga en
+            su PDF de temario y precios.
           </p>
 
           {powerBi ? (
-            <dl className="mt-6 grid gap-4 rounded-2xl border border-line bg-paper p-5 text-sm sm:grid-cols-3">
+            <dl
+              className={`mt-6 grid gap-4 rounded-2xl border border-line bg-paper p-5 text-sm sm:grid-cols-2 ${
+                minPriceLabel ? "lg:grid-cols-5" : "lg:grid-cols-4"
+              }`}
+            >
+              {minPriceLabel ? (
+                <div>
+                  <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                    Arancel
+                  </dt>
+                  <dd className="mt-1 font-semibold text-ink tabular-nums">
+                    Desde {minPriceLabel}
+                  </dd>
+                </div>
+              ) : null}
               <div>
                 <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
                   Curso Power BI
@@ -236,6 +269,12 @@ export default async function PreciosPage({
                 </dt>
                 <dd className="mt-1 font-semibold text-ink">En vivo por Zoom</dd>
               </div>
+              <div>
+                <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                  Financiamiento
+                </dt>
+                <dd className="mt-1 font-semibold text-ink">{textoCuotas(pais.iso)}</dd>
+              </div>
             </dl>
           ) : null}
 
@@ -244,6 +283,7 @@ export default async function PreciosPage({
             pais={pais.iso}
             moneda={moneda}
             cobroLocal={cobroLocal}
+            minPriceLabel={minPriceLabel}
           />
 
           {/* Datos del mercado: horario local, pago internacional, cuotas,
@@ -282,42 +322,46 @@ export default async function PreciosPage({
             </section>
           )}
 
-          <section className="mt-14" aria-labelledby="preguntas-frecuentes">
-            <h2
-              id="preguntas-frecuentes"
-              className="text-2xl font-bold tracking-tight text-ink"
-            >
-              Preguntas frecuentes
-            </h2>
-            <div className="mt-6 divide-y divide-line border-y border-line">
-              {faqs.map((faq) => (
-                <details key={faq.q} className="group py-4">
-                  <summary className="cursor-pointer list-none text-base font-semibold text-ink">
-                    {faq.q}
-                  </summary>
-                  <p className="mt-2 text-sm leading-relaxed text-mute">{faq.a}</p>
-                </details>
-              ))}
-            </div>
-          </section>
+          {paginaBloque ? null : (
+            <section className="mt-14" aria-labelledby="preguntas-frecuentes">
+              <h2
+                id="preguntas-frecuentes"
+                className="text-2xl font-bold tracking-tight text-ink"
+              >
+                Preguntas frecuentes
+              </h2>
+              <div className="mt-6 divide-y divide-line border-y border-line">
+                {faqs.map((faq) => (
+                  <details key={faq.q} className="group py-4">
+                    <summary className="cursor-pointer list-none text-base font-semibold text-ink">
+                      {faq.q}
+                    </summary>
+                    <p className="mt-2 text-sm leading-relaxed text-mute">{faq.a}</p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )}
 
-          <section className="mt-14 border-t border-line pt-8" aria-labelledby="otros-paises">
-            <h2 id="otros-paises" className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-              Precios en otros países
-            </h2>
-            <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-              {PAISES_INDEXABLES.filter((otro) => otro.iso !== pais.iso).map((otro) => (
-                <li key={otro.iso}>
-                  <Link
-                    href={rutaLocal(otro.iso, PATH)}
-                    className="text-sm font-semibold text-ink no-underline hover:text-mute"
-                  >
-                    {otro.nombre}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {otrosPaises.length > 0 ? (
+            <section className="mt-14 border-t border-line pt-8" aria-labelledby="otros-paises">
+              <h2 id="otros-paises" className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                Precios en otros países
+              </h2>
+              <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+                {otrosPaises.map((otro) => (
+                  <li key={otro.iso}>
+                    <Link
+                      href={rutaLocal(otro.iso, PATH)}
+                      className="text-sm font-semibold text-ink no-underline hover:text-mute"
+                    >
+                      {otro.nombre}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           <div className="mt-12 flex flex-col gap-3 sm:flex-row">
             <Link

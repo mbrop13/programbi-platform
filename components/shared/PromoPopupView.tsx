@@ -1,9 +1,29 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, Zap, Shield, Users, Star, TrendingUp } from "lucide-react";
 import { sanitizeHtml } from "@/lib/security/sanitize";
+
+const OPTIMIZED_IMAGE_HOSTS = new Set([
+  "cdn.shopify.com",
+  "images.unsplash.com",
+  "img.youtube.com",
+  "mail.programbi.com",
+  "flagcdn.com",
+  "i.pravatar.cc",
+]);
+
+function isOptimizedImageSrc(src: string): boolean {
+  if (src.startsWith("/")) return true;
+  try {
+    const url = new URL(src);
+    return url.protocol === "https:" && OPTIMIZED_IMAGE_HOSTS.has(url.hostname);
+  } catch {
+    return false;
+  }
+}
 
 export interface PromoPopupData {
   id: string;
@@ -248,12 +268,15 @@ export default function PromoPopupView({ visiblePopup, isVisible, handleDismiss 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6 }}
-                    className="mt-4 rounded-xl overflow-hidden border border-white/[0.06]"
+                    className="relative mt-4 h-32 w-full rounded-xl overflow-hidden border border-white/[0.06]"
                   >
-                    <img
+                    <Image
                       src={visiblePopup.image_url}
                       alt="promo"
-                      className="w-full h-32 object-cover"
+                      fill
+                      sizes="(max-width: 640px) 100vw, 400px"
+                      className="object-cover"
+                      unoptimized={!isOptimizedImageSrc(visiblePopup.image_url)}
                     />
                   </motion.div>
                 )}

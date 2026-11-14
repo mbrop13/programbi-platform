@@ -6,9 +6,9 @@ hreflang: es-BO
 curso: power-bi
 url_curso: https://www.programbi.com/bo/cursos/power-bi
 title: "Cómo aprender Power BI en Bolivia | ProgramBI"
-meta: "Guía para aprender Power BI en Bolivia: mapa de niveles, temario, ejemplos y curso en vivo de 20 h desde el 23 de noviembre, 18:30 hora de Bolivia."
+meta: "Guía para aprender Power BI en Bolivia: mapa de niveles, temario, ejemplos y curso en vivo de 20 h a las 18:30 hora de Bolivia (inicios mensuales)."
 h1: "Cómo aprender Power BI en Bolivia: guía completa y curso en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/bo/cursos/power-bi
   - https://learn.microsoft.com/es-es/power-bi/fundamentals/desktop-get-the-desktop
@@ -23,11 +23,11 @@ nota_hermes: |
 
 # Cómo aprender Power BI en Bolivia: guía completa y curso en vivo
 
-**Respuesta corta:** para aprender Power BI desde Bolivia, el [curso de Power BI de ProgramBI](https://www.programbi.com/bo/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas en vivo por Zoom** con Power Query, modelo y relaciones, DAX inicial, dashboards y publicación con roles. La cohorte comienza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 18:30 a 20:30, hora de Bolivia**. Precio: **{precio_local}**.
+**Respuesta corta:** para aprender Power BI desde Bolivia, el [curso de Power BI de ProgramBI](https://www.programbi.com/bo/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas en vivo por Zoom** con Power Query, modelo y relaciones, DAX inicial, dashboards y publicación con roles. Abrimos **cohortes todos los meses** (próxima fecha en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de Bolivia**. Precio: **{precio_local}**.
 
 Las clases se graban y quedan en el campus de por vida, hay certificado digital al finalizar y, para seguir avanzando, un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Datos de la ficha del curso, consultada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 18:30 hora de Bolivia · «Ver el curso».
+**[CTA-TOP]** — Inicios mensuales · 18:30 hora de Bolivia · «Ver el curso».
 
 ## ¿Por qué aprender Power BI ahora?
 
@@ -121,7 +121,7 @@ Las clases son en vivo, pero quedan grabadas en el campus. Si un día tu interne
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** nuevos grupos cada mes (consulta la próxima fecha en la ficha).
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de Bolivia (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -131,7 +131,7 @@ Las clases son en vivo, pero quedan grabadas en el campus. Si un día tu interne
 
 **[CTA-MID]** — Descarga el temario de Power BI.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Cupos abiertos · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -139,7 +139,7 @@ Las clases son en vivo, pero quedan grabadas en el campus. Si un día tu interne
 {precio_local}. Escríbenos por WhatsApp para confirmar el monto y la forma de pago.
 
 **¿Cuándo empieza y en qué horario?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 18:30 a 20:30, hora de Bolivia.
+Hay inicios mensuales; las clases van lunes y miércoles de 18:30 a 20:30, hora de Bolivia (ver fecha vigente en la ficha).
 
 **¿Necesito experiencia previa?**
 No. Con un manejo básico de Excel puedes empezar; el nivel básico-intermedio parte desde cero y avanza paso a paso, con ejercicios guiados.

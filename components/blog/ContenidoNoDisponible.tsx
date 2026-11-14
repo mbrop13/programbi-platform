@@ -3,19 +3,19 @@ import Link from "next/link";
 /**
  * Estado de respaldo cuando Supabase no responde y no hay versión cacheada.
  * Responde 200 (nunca 500) y no inventa contenido: solo explica el problema
- * y ofrece volver al listado.
+ * y ofrece volver al listado del blog.
  */
 export default function ContenidoNoDisponible({
   seccion,
 }: {
-  seccion: "blog" | "newsletter";
-}) {
-  const esBlog = seccion === "blog";
+  seccion?: "blog" | "newsletter";
+} = {}) {
+  void seccion;
 
   return (
     <section className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-6 py-24 text-center">
       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-        {esBlog ? "Blog" : "Newsletter"}
+        Blog
       </p>
       <h1 className="mt-4 font-serif text-3xl font-bold text-slate-950 sm:text-4xl">
         No pudimos cargar este artículo
@@ -25,10 +25,10 @@ export default function ContenidoNoDisponible({
         minutos.
       </p>
       <Link
-        href={esBlog ? "/blog" : "/newsletter"}
+        href="/blog"
         className="mt-8 inline-flex h-11 items-center rounded-full bg-slate-950 px-6 text-sm font-semibold text-white no-underline"
       >
-        {esBlog ? "Volver al blog" : "Volver a la newsletter"}
+        Volver al blog
       </Link>
     </section>
   );

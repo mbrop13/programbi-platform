@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/mx/cursos/python
 title: "Curso de Python en México en vivo: guía 2026 | ProgramBI"
 meta: "Curso de Python online en vivo en México: Python para datos desde cero en 20 h, lunes y miércoles 16:30 CDMX. Pandas, ejemplos con CFDI y automatización."
 h1: "Curso de Python en México: aprende Python para datos en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/mx/cursos/python
   - https://www.programbi.com/mx/cursos/sql-server
@@ -26,11 +26,11 @@ nota_hermes: |
 
 # Curso de Python en México: aprende Python para datos en vivo
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI en México](https://www.programbi.com/mx/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Las clases son **lunes y miércoles de 16:30 a 18:30, hora del centro de México**, inicia el **lunes 23 de noviembre de 2026** y la inversión es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI en México](https://www.programbi.com/mx/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Las clases son **lunes y miércoles de 16:30 a 18:30, hora del centro de México**, abre **nuevos grupos todos los meses** (fecha disponible en la ficha) y la inversión es **{precio_local}**. Incluye grabaciones de por vida y certificado.
 
 **¿Qué vas a aprender?** Python desde cero con enfoque en análisis: fundamentos del lenguaje, estructuras de datos y, sobre todo, Pandas para limpiar, transformar, agrupar y unir tablas; gráficos con Matplotlib y conexión a bases de datos y APIs. El objetivo práctico es que el reporte que hoy armas a mano cada semana se genere con un script.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 16:30 CDMX · «Ver el curso».
+**[CTA-TOP]** — Grupos mensuales · lunes y miércoles 16:30 CDMX · «Ver el curso».
 
 ## Por qué Python le sirve a quien trabaja con datos en México
 
@@ -166,7 +166,7 @@ Datos de la [ficha del curso para México](https://www.programbi.com/mx/cursos/p
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **lunes 23 de noviembre de 2026**. Inversión: **{precio_local}**.
+- Inicio: **cohortes mensuales** (consulta el próximo arranque en la ficha). Inversión: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

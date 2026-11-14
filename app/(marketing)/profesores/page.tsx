@@ -9,7 +9,7 @@ import {
 } from "@/lib/seo/course-jsonld";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg, tituloSeo } from "@/lib/seo";
 
-const TITULO = "Profesores y equipo docente";
+const TITULO = "Profesores de Power BI, SQL y Python en vivo";
 const DESCRIPCION =
   "El equipo docente de ProgramBI: los profesionales que dictan los cursos en vivo de Power BI, SQL, Python y análisis de datos, con su formación y credenciales.";
 const TITLE_FINAL = tituloSeo(TITULO);
@@ -45,9 +45,16 @@ const jsonLd = {
   "@graph": [
     getOrganizacionEquipoJsonLd(DESCRIPCION_ORG),
     ...EQUIPO_INDEXABLE.map(getPersonaJsonLd),
-    ...getEquipoCollectionJsonLd(EQUIPO_INDEXABLE, CANONICAL, TITLE_FINAL, DESCRIPCION),
+    ...getEquipoCollectionJsonLd(
+      EQUIPO_INDEXABLE,
+      CANONICAL,
+      TITLE_FINAL,
+      DESCRIPCION,
+      "es-CL"
+    ),
     {
       "@type": "BreadcrumbList",
+      "@id": `${CANONICAL}#breadcrumb`,
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
         { "@type": "ListItem", position: 2, name: "Profesores", item: CANONICAL },

@@ -4,20 +4,29 @@ import { comparisons } from "@/lib/data/comparisons";
 import { comparativasAcademiaHub } from "@/lib/data/comparativas";
 import { ArrowRight, GitCompare, GraduationCap } from "lucide-react";
 import { ogImageUrl } from "@/lib/og/url";
-import { twitterShare } from "@/lib/seo";
+import {
+  ORG_ID,
+  SITE_URL,
+  WEBSITE_ID,
+  absoluteUrl,
+  jsonLdString,
+  twitterShare,
+} from "@/lib/seo";
+import { lastmodDe } from "@/lib/seo/lastmod";
+
+const DESCRIPCION =
+  "Comparamos Power BI vs Excel, SQL Server vs PostgreSQL, Python vs R y academias de datos en Chile y Latinoamérica con horas, precios y fuentes.";
 
 export const metadata: Metadata = {
   title: "Comparativas técnicas de datos (Versus)",
-  description:
-    "Comparamos las herramientas de datos más demandadas de la industria: Power BI vs Excel, SQL Server vs PostgreSQL y Python vs R. Toma decisiones informadas sobre qué aprender.",
+  description: DESCRIPCION,
   alternates: {
     canonical: "/versus",
   },
   openGraph: {
-    title: "Comparativas de Herramientas de Datos (Versus) | ProgramBI",
-    description:
-      "Análisis profundos, pros y contras de las herramientas líderes en análisis de datos, bases de datos y programación.",
-    url: "https://www.programbi.com/versus",
+    title: "Comparativas de Herramientas y Academias de Datos (Versus) | ProgramBI",
+    description: DESCRIPCION,
+    url: absoluteUrl("/versus"),
     type: "website",
     images: [
       {
@@ -25,7 +34,7 @@ export const metadata: Metadata = {
           kicker: "Comparativas",
           title: "¿Qué herramienta de datos aprender?",
           description:
-            "Análisis profundos con pros y contras de las herramientas líderes de la industria.",
+            "Análisis profundos con pros y contras de las herramientas líderes y academias de la industria.",
           tags: ["Power BI", "SQL", "Python", "Excel"],
           path: "versus",
         }),
@@ -36,13 +45,13 @@ export const metadata: Metadata = {
     ],
   },
   twitter: twitterShare(
-    "Comparativas de Herramientas de Datos (Versus) | ProgramBI",
-    "Análisis profundos, pros y contras de las herramientas líderes en análisis de datos, bases de datos y programación.",
+    "Comparativas de Herramientas y Academias de Datos (Versus) | ProgramBI",
+    DESCRIPCION,
     ogImageUrl({
       kicker: "Comparativas",
       title: "¿Qué herramienta de datos aprender?",
       description:
-        "Análisis profundos con pros y contras de las herramientas líderes de la industria.",
+        "Análisis profundos con pros y contras de las herramientas líderes y academias de la industria.",
       tags: ["Power BI", "SQL", "Python", "Excel"],
       path: "versus",
     })
@@ -50,24 +59,55 @@ export const metadata: Metadata = {
 };
 
 export default function VersusPage() {
-  const itemListJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    numberOfItems: comparisons.length,
-    itemListElement: comparisons.map((comp, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      url: `https://www.programbi.com/versus/${comp.slug}`,
+  const canonical = absoluteUrl("/versus");
+  const academias = comparativasAcademiaHub();
+  const itemList = [
+    ...comparisons.map((comp) => ({
       name: comp.title,
+      url: absoluteUrl(`/versus/${comp.slug}`),
     })),
-  };
+    ...academias.map((comp) => ({
+      name: comp.title,
+      url: absoluteUrl(comp.href),
+    })),
+  ];
 
-  const breadcrumbJsonLd = {
+  const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.programbi.com" },
-      { "@type": "ListItem", position: 2, name: "Comparativas", item: "https://www.programbi.com/versus" },
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#webpage`,
+        url: canonical,
+        name: "Comparativas de herramientas y academias de datos | ProgramBI",
+        description: DESCRIPCION,
+        inLanguage: "es-CL",
+        dateModified: lastmodDe("/versus"),
+        isPartOf: { "@id": WEBSITE_ID },
+        about: { "@id": ORG_ID },
+        breadcrumb: { "@id": `${canonical}#breadcrumb` },
+        mainEntity: { "@id": `${canonical}#itemlist` },
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${canonical}#itemlist`,
+        name: "Comparativas de herramientas y academias de datos",
+        numberOfItems: itemList.length,
+        itemListElement: itemList.map((entry, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: entry.url,
+          name: entry.name,
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Comparativas", item: canonical },
+        ],
+      },
     ],
   };
 
@@ -75,14 +115,10 @@ export default function VersusPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
 
-      <main className="bg-[#FAFBFC] min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-32">
+      <div className="bg-[#FAFBFC] min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-32">
         <div className="max-w-[1000px] mx-auto px-5 lg:px-10">
           {/* Breadcrumbs Row */}
           <div className="flex items-center gap-2 text-xs text-slate-500 mb-6">
@@ -185,7 +221,7 @@ export default function VersusPage() {
           <section className="bg-slate-900 rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden mt-16 shadow-xl">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#1890FF]/15 rounded-full blur-3xl" />
             <div className="relative z-10 max-w-xl">
-              <h3 className="font-display font-black text-2xl mb-3">¿Necesitas arquitectura o consultoría?</h3>
+              <h2 className="font-display font-black text-2xl mb-3">¿Necesitas arquitectura o consultoría?</h2>
               <p className="text-slate-350 text-sm leading-relaxed mb-6">
                 Te ayudamos a elegir e implementar la infraestructura de datos y reportería óptima para tu negocio corporativo en Chile y Latinoamérica.
               </p>
@@ -200,7 +236,7 @@ export default function VersusPage() {
           </section>
 
         </div>
-      </main>
+      </div>
     </>
   );
 }

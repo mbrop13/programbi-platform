@@ -196,7 +196,7 @@ function parseMarkdownToHtml(markdown: string): string {
     if (h1Match) {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
-      parsedLines.push(`<h1 class="font-serif text-3xl sm:text-4xl font-bold text-slate-950 mt-10 mb-5 leading-tight">${applyInlineMarkdown(h1Match[1])}</h1>`);
+      parsedLines.push(`<h2 class="font-serif text-3xl sm:text-4xl font-bold text-slate-950 mt-10 mb-5 leading-tight">${applyInlineMarkdown(h1Match[1])}</h2>`);
       continue;
     }
 

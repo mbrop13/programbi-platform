@@ -121,7 +121,7 @@ export default function TestNivelClient({
 
   if (terminado) {
     return (
-      <main className="bg-[#FAFBFC] min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-28">
+      <div className="bg-[#FAFBFC] min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-28">
         <div className="max-w-[900px] mx-auto px-5 lg:px-10">
           <section className="bg-white border border-slate-100 rounded-3xl shadow-sm p-7 sm:p-10">
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-10">
@@ -291,12 +291,12 @@ export default function TestNivelClient({
             </details>
           </section>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="bg-[#FAFBFC] min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-28">
+    <div className="bg-[#FAFBFC] min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-28">
       <div className="max-w-[860px] mx-auto px-5 lg:px-10">
         <nav className="flex items-center gap-2 text-xs text-slate-400 font-semibold mb-7">
           <Link href={inicioUrl} className="text-slate-500 hover:text-[#1890FF] no-underline transition-colors">
@@ -402,6 +402,6 @@ export default function TestNivelClient({
           No necesitas iniciar sesión. Tus respuestas se evalúan en este navegador.
         </p>
       </div>
-    </main>
+    </div>
   );
 }

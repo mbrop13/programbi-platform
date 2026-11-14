@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/cursos/power-bi
 title: "Curso online vs presencial de Power BI: cuál elegir"
 meta: "Curso de Power BI online en vivo vs presencial: ventajas reales, costos ocultos y preguntas clave para elegir mejor según tu ritmo."
 h1: "Curso online en vivo vs presencial: cómo elegir dónde aprender Power BI y análisis de datos"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/power-bi
   - https://www.programbi.com/cursos/analisis-de-datos
@@ -149,7 +149,7 @@ ProgramBI trabaja con **clases en vivo por Zoom** y grabaciones para repasar. Es
 
 - **[Power BI](https://www.programbi.com/cursos/power-bi):** nivel básico-intermedio de 20 horas en 8 módulos y nivel avanzado de 20 horas, que incluye Power BI Service y seguridad a nivel de fila (RLS).
 - **[Análisis de datos](https://www.programbi.com/cursos/analisis-de-datos):** dos niveles de 60 horas cada uno, con 20 horas de SQL, 20 de Power BI y 20 de Python.
-- **Próximo inicio:** lunes 23 de noviembre de 2026, con clases lunes y miércoles. El horario depende de tu país.
+- **Próximo inicio:** abrimos nuevas cohortes todos los meses (consulta la fecha vigente en cada ficha), con clases lunes y miércoles o martes y jueves según el curso. El horario depende de tu país.
 - **Certificado:** al terminar el curso recibes un certificado.
 - **Valor:** {precio_local}. Para fechas, horarios y formas de pago, consulta por WhatsApp. Puedes pagar en 3 cuotas sin interés.
 
@@ -178,7 +178,7 @@ No. Son clases en vivo por Zoom, con grabaciones.
 El valor es {precio_local}. Escríbenos por WhatsApp para conocer el precio vigente en tu país y las formas de pago.
 
 **¿En qué horario son las clases?**
-Los cursos parten el lunes 23 de noviembre de 2026, con clases los lunes y miércoles. El horario se ajusta a cada país; confírmalo por WhatsApp.
+Hay inicios nuevos todos los meses, con sesiones dos veces por semana (lunes y miércoles o martes y jueves, según el programa). El horario se ajusta a cada país; confírmalo en la ficha o por WhatsApp.
 
 **¿Necesito experiencia previa para el curso online?**
 El nivel básico-intermedio de Power BI parte desde los fundamentos. Si tienes dudas sobre tu nivel, consulta por WhatsApp antes de inscribirte.

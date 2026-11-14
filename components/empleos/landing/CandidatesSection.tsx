@@ -32,7 +32,7 @@ export default function CandidatesSection() {
       {/* Imagen de fondo: /images/bolsa-perfil.jpg (pendiente) con fallback al hero 2 */}
       <CineImage
         src="/images/bolsa-perfil.jpg"
-        fallbackSrc="/images/bolsa-hero-2.jpg"
+        fallbackSrc="/images/bolsa-hero-2.webp"
         alt="Candidatos de datos con certificados verificados de ProgramBI"
         dimClass="opacity-45"
       />

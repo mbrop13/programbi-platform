@@ -14,7 +14,7 @@ export default async function AiChatPage({ params }: PageProps) {
   const profile = await getCurrentUserProfile();
   if (!profile) {
     const { id } = await params;
-    redirect(`/auth/login?next=/ai/${id}`);
+    redirect(`/login?next=/ai/${id}`);
   }
 
   // Ensure params are resolved (Next 15+) without blocking shell

@@ -6,7 +6,7 @@ country: cl
 lang: es-CL
 slug: como-aprender-power-bi-en-chile
 path: /guias/como-aprender-power-bi-en-chile
-updated: 2026-11-04
+updated: 2026-11-14
 course: power-bi
 url_curso: https://www.programbi.com/cursos/power-bi
 sources:
@@ -94,7 +94,7 @@ Solo se puede: la documentación de Microsoft es buena y hay mucho video. El pro
 ##### El curso Power BI en vivo de ProgramBI
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30**, hora de Chile, después de la pega.
-- **20 horas, 8 módulos**, nivel básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
+- **20 horas, 8 módulos**, nivel básico-intermedio. Inicios todos los meses; revisa la próxima fecha confirmada en la ficha del curso.
 - Temario: Power Query, parámetros y funciones M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH y funciones de IA de Power BI (preguntas en lenguaje natural e insights automáticos).
 - **Grabaciones de por vida** en el campus y **certificado** al completar.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.

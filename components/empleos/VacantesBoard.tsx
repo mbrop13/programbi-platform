@@ -48,9 +48,9 @@ export default function VacantesBoard({
 
       <section className="border-t border-line px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-[1400px]">
-          <p className="text-sm text-mute">
+          <h2 className="text-sm font-normal text-mute">
             {total} {total === 1 ? "vacante disponible" : "vacantes disponibles"}
-          </p>
+          </h2>
           {jobs.length === 0 ? (
             <div className="flex flex-col items-center py-20 text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-line bg-wash text-faint">

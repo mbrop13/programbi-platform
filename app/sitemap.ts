@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 import { courses } from "@/lib/data/courses";
-import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
 import {
   ACTUALIZADO as COMPARATIVAS_ACTUALIZADO,
@@ -226,7 +225,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entrada("/empleos/para-empresas", 0.4, "monthly"),
     entrada("/empleos/talento", 0.4, "daily"),
     entrada("/versus", 0.4, "monthly"),
-    entrada("/newsletter", 0.3, "weekly"),
     entrada("/privacidad", 0.1, "yearly"),
     entrada("/terminos", 0.1, "yearly"),
   ];
@@ -238,10 +236,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entrada(`/cursos/${course.slug}`, coursePriority(course.slug), "weekly")
   );
 
-  // Casos de uso: páginas reales, con canonical propio y sin noindex.
-  const casePages: EntradaPosible[] = casesOfUse.map((caso) =>
-    entrada(`/casos/${caso.slug}`, 0.45, "monthly")
-  );
+  // Los casos de uso (/casos/[slug]) usan marcas de demostración y llevan
+  // robots: { index: false, follow: true }, por lo que quedan fuera del sitemap.
+  // La página índice /casos (testimonios reales) sí se mantiene en staticPages.
 
   const comparativasLastModified = COMPARATIVAS_ACTUALIZADO;
 
@@ -257,10 +254,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const blogPages = await publishedBlogUrls();
 
   /**
-   * Rutas con versión por país. Se mantienen TODAS aquí (incluidas las que hoy
-   * son noindex/301) y el filtro real lo aplica `esRutaIndexablePais`: una
-   * sola fuente, sin listas duplicadas. Así WS6 (`/test-nivel` país), WS3
-   * (`curso-power-bi` país) y WS9 (variantes thin) se resuelven en el helper.
+   * Rutas con versión por país. El filtro final lo aplica `esRutaIndexablePais`
+   * (incluidas WS6 `/test-nivel` país y WS9 variantes thin) desde una sola
+   * fuente, sin listas duplicadas. `/curso-power-bi` ya es 301 en WS3 y no entra aquí.
    */
   const localizedPaths: {
     path: string;
@@ -272,7 +268,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/implementacion-power-bi", priority: 0.9, changeFrequency: "monthly" },
     { path: "/migrar-excel-a-power-bi", priority: 0.9, changeFrequency: "monthly" },
     { path: "/por-que-fallan-proyectos-power-bi", priority: 0.8, changeFrequency: "monthly" },
-    { path: "/curso-power-bi", priority: 0.85, changeFrequency: "monthly" },
     { path: "/curso-power-bi-vs-pack-adopcion", priority: 0.8, changeFrequency: "monthly" },
     { path: "/curso-sql-online", priority: 0.85, changeFrequency: "weekly" },
     { path: "/curso-python", priority: 0.85, changeFrequency: "weekly" },
@@ -362,7 +357,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return uniqueEntries([
     ...staticPages,
     ...coursePages,
-    ...casePages,
     ...versusPages,
     ...blogPages,
     ...countryPages,

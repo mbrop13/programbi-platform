@@ -30,9 +30,9 @@ const CUOTAS = `${CUOTAS_SIN_INTERES} cuotas sin interés`;
  * - Paraguay no tiene precio público: se muestra «consulta por WhatsApp».
  */
 
-export const ACTUALIZADO = "2026-11-04";
+export const ACTUALIZADO = "2026-11-14";
 
-export const PROXIMO_INICIO = "lunes 23 de noviembre de 2026";
+export const PROXIMO_INICIO = "Nuevos inicios cada mes; consulta la fecha exacta al inscribirte";
 
 /** Cursos con columna propia en la tabla de precios. */
 export const CURSOS_TABLA = [
@@ -248,8 +248,8 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
     : `En ${nombre}, el arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de la ficha del curso.`;
 
   const introHorario = esChile
-    ? `El próximo inicio es el ${PROXIMO_INICIO}, con clases de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} (hora de Chile) los lunes y miércoles o los martes y jueves.`
-    : `El próximo inicio es el ${PROXIMO_INICIO}, con clases de ${inicioLocal} a ${finLocal}, ${etiquetaLocal}, los lunes y miércoles.`;
+    ? `Abrimos cohortes cada mes, con clases de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} (hora de Chile) los lunes y miércoles o los martes y jueves; la fecha exacta de inicio se confirma al inscribirte.`
+    : `Abrimos cohortes cada mes, con clases de ${inicioLocal} a ${finLocal}, ${etiquetaLocal}, los lunes y miércoles; la fecha exacta de inicio se confirma al inscribirte.`;
 
   const fichaHorario = esChile
     ? `${HORA_CLASE_CHILE.inicio}–${HORA_CLASE_CHILE.fin} (hora de Chile)`
@@ -273,7 +273,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           pregunta: "¿Los cursos son en vivo o son solo videos grabados?",
           respuesta:
             "Los cursos son en vivo por Zoom: cada clase tiene un docente en tiempo real y además cuentas con acceso al campus virtual con las clases y el material usado durante el curso. No son cursos solo de video sin fecha ni profesor.",
-          enlace: { href: href("/curso-online-vs-presencial"), texto: "Ver la diferencia entre curso online y presencial" },
+          enlace: { href: href("/guias/curso-online-vs-presencial-power-bi"), texto: "Ver la diferencia entre curso online y presencial" },
         },
         {
           id: "grabaciones-de-por-vida",
@@ -352,7 +352,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
         {
           id: "proximo-inicio",
           pregunta: "¿Cuándo empieza el próximo curso?",
-          respuesta: `El próximo inicio es el ${PROXIMO_INICIO}, con clases dos veces por semana. La fecha de cada cohorte se confirma en la página de Inscripción al momento de pagar.`,
+          respuesta: `${PROXIMO_INICIO}. Las clases son dos veces por semana y la fecha vigente de cada cohorte se confirma en la página de Inscripción al momento de pagar.`,
         },
         {
           id: "a-que-hora",
@@ -387,8 +387,8 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "cuanto-cuestan",
           pregunta: "¿Cuánto cuestan los cursos?",
           respuesta: sinPrecio
-            ? `En Paraguay el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado. El PDF de temario y precios de cada curso se pide al mismo canal y el próximo inicio es el ${PROXIMO_INICIO}.`
-            : `El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en su PDF de temario y precios. El PDF se pide con tu nombre, email y WhatsApp, y el precio de venta de tu país lo confirma el checkout. El próximo inicio es el ${PROXIMO_INICIO}.`,
+            ? "En Paraguay el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado. El PDF de temario y precios de cada curso y la fecha del próximo inicio se piden por el mismo canal."
+            : "El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en su PDF de temario y precios. El PDF se pide con tu nombre, email y WhatsApp, y tanto el precio de venta de tu país como la fecha de inicio vigente se confirman en el checkout.",
         },
         {
           id: "moneda-local",
@@ -642,7 +642,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       { dato: "Formato", detalle: "Clases en vivo por Zoom, con campus virtual con clases y material" },
       { dato: "Power BI", detalle: "Básico-intermedio: 20 h en 8 módulos · Avanzado: 20 h" },
       { dato: "Análisis de datos", detalle: "2 niveles de 60 h: 20 h SQL + 20 h Power BI + 20 h Python" },
-      { dato: "Próximo inicio", detalle: PROXIMO_INICIO.charAt(0).toUpperCase() + PROXIMO_INICIO.slice(1) },
+      { dato: "Próximo inicio", detalle: PROXIMO_INICIO },
       { dato: "Días", detalle: esChile ? "Lunes y miércoles, o martes y jueves" : "Lunes y miércoles" },
       { dato: "Horario", detalle: fichaHorario },
       { dato: "Precio", detalle: sinPrecio ? "Se consulta por WhatsApp" : "Arancel vigente, descuentos y 3 cuotas sin interés en el PDF de temario y precios de cada curso" },

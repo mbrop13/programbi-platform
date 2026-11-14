@@ -1,12 +1,19 @@
+import { ISO_CHILE } from "@/config/paises";
+import { precioPublico } from "@/config/pricing";
 import type { Guia } from "@/lib/guias/tipos";
+import { formatMoneda } from "@/lib/paises/precios";
 
 /**
- * Texto que reemplaza los marcadores `{{precio}}` / `{precio_local}` del
- * Markdown de las guías. Ya no es un monto: el arancel de cada país vive solo
- * en el brochure PDF del curso, que la guía enlaza en sus CTA.
+ * Texto de respaldo para superficies sin contexto de guía (comparativas o
+ * tarjetas sin país/curso), donde no se expone un monto fijo.
  */
 export const TEXTO_PRECIO_BROCHURE =
   "el arancel vigente de tu país (está en el PDF de temario y precios del curso)";
+
+/**
+ * Marcadores explícitos de precio dentro del Markdown o FAQs de las guías.
+ */
+const MARCADOR_PRECIO = /\{\{\s*precio\s*\}\}|\{precio_local\}/gi;
 
 /**
  * Montos de curso que quedaron escritos en el Markdown histórico. Se cubren
@@ -16,9 +23,27 @@ export const TEXTO_PRECIO_BROCHURE =
 const MONTO_CURSO =
   /(?:\$\s?)?\b(?:169|338|349|159|319|235|236)[.,]?(?:000|900)\b(?:\s*(?:CLP|ARS|MXN|PEN|COP|UYU))?/gi;
 
-/** Devuelve el texto sin precios de curso: solo queda la referencia al brochure. */
-export function sinMontosDeCurso(texto: string): string {
-  return texto.replace(MONTO_CURSO, TEXTO_PRECIO_BROCHURE);
+/**
+ * Combina marcadores y montos históricos en una sola pasada para no volver a
+ * coincidir sobre el monto recién resuelto por `precioTextoGuia`.
+ */
+const TOKEN_PRECIO_GUIA = new RegExp(
+  `${MARCADOR_PRECIO.source}|${MONTO_CURSO.source}`,
+  "gi"
+);
+
+/**
+ * Reemplaza montos históricos de curso: si recibe `guia`, usa el precio inicial
+ * público de ese país/curso (`precioTextoGuia`); sin `guia`, mantiene la
+ * referencia al brochure para títulos, tarjetas o comparativas.
+ */
+export function sinMontosDeCurso(
+  texto: string,
+  guia?: Pick<Guia, "country" | "course">
+): string {
+  if (!guia) return texto.replace(MONTO_CURSO, TEXTO_PRECIO_BROCHURE);
+  const textoPrecio = precioTextoGuia(guia);
+  return texto.replace(MONTO_CURSO, () => textoPrecio);
 }
 
 /**
@@ -28,7 +53,7 @@ export function sinMontosDeCurso(texto: string): string {
  */
 export function metaDescripcionGuia(texto: string, max = 155): string {
   const limpia = texto
-    .replace(MONTO_CURSO, "arancel local vigente (ver PDF)")
+    .replace(TOKEN_PRECIO_GUIA, "arancel local vigente (ver PDF)")
     .replace(/\s+/g, " ")
     .trim();
   if (limpia.length <= max) return limpia;
@@ -38,16 +63,30 @@ export function metaDescripcionGuia(texto: string, max = 155): string {
   return `${base.replace(/[.,;:–-]+$/, "")}.`;
 }
 
-/** Texto de precio para las guías: siempre apunta al brochure PDF. */
-export function precioTextoGuia(_guia: Pick<Guia, "country" | "course">): string {
-  return TEXTO_PRECIO_BROCHURE;
+/**
+ * Texto visible de precio para guías, calculado desde `config/pricing.ts`.
+ * Paraguay (y cualquier curso/país sin monto público) nunca expone cifras.
+ */
+export function precioTextoGuia(guia: Pick<Guia, "country" | "course">): string {
+  const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
+  const precio = precioPublico(iso, guia.course);
+  if (precio == null) {
+    return "consulta el valor vigente por WhatsApp";
+  }
+  const monto = formatMoneda(iso, precio).replace(/\u00a0/g, " ");
+  if (guia.country === "transversal") {
+    return `desde ${monto} (ref. Chile; arancel por país en el PDF)`;
+  }
+  return `desde ${monto} (arancel detallado y descuentos en el PDF)`;
 }
 
-/** Reemplaza `{{precio}}` o `{precio_local}` del Markdown por la referencia al brochure. */
+/**
+ * Reemplaza `{{precio}}`, `{precio_local}` y montos históricos del Markdown
+ * en una sola pasada usando el precio vigente de `config/pricing.ts`.
+ */
 export function resolverPrecios(body: string, guia: Pick<Guia, "country" | "course">): string {
-  return sinMontosDeCurso(
-    body.replace(/\{\{\s*precio\s*\}\}|\{precio_local\}/gi, precioTextoGuia(guia))
-  );
+  const textoPrecio = precioTextoGuia(guia);
+  return body.replace(TOKEN_PRECIO_GUIA, () => textoPrecio);
 }
 
 /** Fecha legible y estable para el «Actualizado» visible. */

@@ -133,16 +133,40 @@ function Hero({ paisNombre }: { paisNombre: string }) {
           </p>
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-mute">
             <Link
-              href="/casos/dashboards-ventas-bi"
+              href="/implementacion-power-bi"
               className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
             >
-              Caso Power BI
+              Implementación Power BI
             </Link>
             <Link
-              href="/casos/automatizacion-conciliaciones"
+              href="/migrar-excel-a-power-bi"
               className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
             >
-              Caso Excel → automatización
+              Migrar de Excel a Power BI
+            </Link>
+            <Link
+              href="/casos"
+              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
+            >
+              Testimonios de alumnos
+            </Link>
+            <Link
+              href="/capacitacion-empresas"
+              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
+            >
+              Programas in-company
+            </Link>
+            <Link
+              href="/curso-power-bi-vs-pack-adopcion"
+              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
+            >
+              Curso vs. pack de adopción
+            </Link>
+            <Link
+              href="/por-que-fallan-proyectos-power-bi"
+              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
+            >
+              Por qué fallan proyectos Power BI
             </Link>
           </p>
         </div>

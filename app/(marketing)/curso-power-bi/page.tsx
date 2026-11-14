@@ -11,7 +11,6 @@ import { permanentRedirect } from "next/navigation";
  * `permanentRedirect` (308, equivalente para buscadores) cubre previews, dev y
  * cualquier despliegue que no aplique la configuración.
  */
-export const dynamic = "force-dynamic";
 
 export default function Page(): never {
   permanentRedirect("/cursos/power-bi");

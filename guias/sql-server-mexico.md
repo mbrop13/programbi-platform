@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/mx/cursos/sql-server
 title: "Curso de SQL Server en México en vivo: guía 2026 | ProgramBI"
 meta: "Curso de SQL Server en vivo en México: consultas SQL desde cero en 20 h (martes y jueves 16:30 CDMX) con ejercicios locales y Power BI."
 h1: "Curso de SQL Server en México: SQL online, en vivo y desde cero"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/mx/cursos/sql-server
   - https://www.programbi.com/mx/cursos/power-bi
@@ -25,11 +25,11 @@ nota_hermes: |
 
 # Curso de SQL Server en México: SQL online, en vivo y desde cero
 
-**Respuesta corta:** el [curso de SQL Server de ProgramBI para México](https://www.programbi.com/mx/cursos/sql-server) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Las clases son **martes y jueves de 16:30 a 18:30, hora del centro de México**, inicia el **martes 24 de noviembre de 2026** y la inversión es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de SQL Server de ProgramBI para México](https://www.programbi.com/mx/cursos/sql-server) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Las clases son **martes y jueves de 16:30 a 18:30, hora del centro de México**, abre **nuevos grupos todos los meses** (fecha publicada en la ficha) y la inversión es **{precio_local}**. Incluye grabaciones de por vida y certificado.
 
 **¿Qué vas a poder hacer?** Consultar una base de datos sin depender de sistemas: filtrar, agrupar, cruzar tablas con `JOIN`, usar CTEs, tablas temporales, funciones de ventana y `PIVOT`. Es la base que piden las vacantes de analista y la forma más directa de alimentar Power BI con datos confiables.
 
-**[CTA-TOP]** — Próxima clase en vivo: martes 24 de noviembre de 2026 · 16:30 CDMX · «Ver el curso».
+**[CTA-TOP]** — Grupos mensuales · martes y jueves 16:30 CDMX · «Ver el curso».
 
 ## Por qué aprender SQL si trabajas en México
 
@@ -139,7 +139,7 @@ Datos de la [ficha del curso para México](https://www.programbi.com/mx/cursos/s
 - Temario: SELECT, WHERE y ORDER BY; funciones y operadores; GROUP BY y HAVING; subconsultas; JOINs (INNER, LEFT, RIGHT, FULL) y vistas; CTEs y tablas temporales; funciones de ventana; PIVOT y UNPIVOT; uso de IA en SQL Server.
 - **Nivel avanzado** (20 h): procedimientos almacenados y diseño de esquemas.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **martes 24 de noviembre de 2026**. Inversión: **{precio_local}**.
+- Inicio: **cohortes mensuales** (revisa el próximo arranque en la ficha). Inversión: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

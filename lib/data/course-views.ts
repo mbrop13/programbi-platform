@@ -216,8 +216,8 @@ export function offerSyllabusSections(
 }
 
 export function coursePath(slug: string, view: CourseOfferView = "publico"): string {
-  if (view === "avanzado") return `/cursos/${slug}/avanzado`;
-  if (view === "empresas") return `/cursos/${slug}/empresas`;
+  if (view === "avanzado") return `/cursos/${slug}?nivel=Avanzado`;
+  if (view === "empresas") return `/cursos/${slug}?para=empresas`;
   return `/cursos/${slug}`;
 }
 

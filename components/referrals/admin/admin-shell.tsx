@@ -29,10 +29,11 @@ export function AdminShell({ email, children }: { email: string; children: React
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
           <Link href="/referidos/admin" className="flex items-center gap-2 no-underline">
             <Image
-              src="/images/logo.png"
+              src="/images/logo-nav.webp"
               alt="ProgramBI"
-              width={108}
+              width={92}
               height={24}
+              unoptimized
               className="h-6 w-auto object-contain"
             />
             <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-faint">

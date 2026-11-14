@@ -5,10 +5,10 @@ pais: ar
 hreflang: es-AR
 curso: claude
 url_curso: https://www.programbi.com/ar/cursos/claude
-title: "Curso de Claude en Argentina: en vivo, 23/11 | ProgramBI"
-meta: "Curso de Claude en Argentina en vivo: 20 h para usar la IA de Anthropic en oficina, planillas y documentos. Inicio 23/11, 19:30 hora argentina."
+title: "Curso de Claude en Argentina online en vivo | ProgramBI"
+meta: "Curso de Claude en Argentina en vivo: 20 h para usar la IA de Anthropic en oficina, planillas y documentos. Clases 19:30 hora argentina; inicios cada mes."
 h1: "Curso de Claude en Argentina: sacale provecho a la IA de Anthropic en tu laburo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/ar/cursos/claude
   - https://www.argentina.gob.ar/normativa/nacional/ley-25326-64790/texto
@@ -16,18 +16,18 @@ nota_hermes: |
   ELEMENTO VISUAL: tabla de los cinco módulos + checklist «Cómo llegar a la primera clase con ventaja».
   Intención: "curso claude argentina", "curso claude ia en vivo" (transaccional) → click_registro en /ar/cursos/claude. country=ar, course=claude.
   - PRECIO: {precio_local} = placeholder de config/pricing.ts (WS1), clave claude × ar. Manu aún no define el monto: NO escribas cifras. Sin valor → "Consulta el valor por WhatsApp".
-  - FECHA: la ficha confirma inicio lunes 23 de noviembre de 2026, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
+  - FECHA: inicios mensuales con cupos abiertos, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Claude para Argentina en programbi.com y quiero info del curso en vivo".
 ---
 
 # Curso de Claude en Argentina: sacale provecho a la IA de Anthropic en tu laburo
 
-**Lo esencial:** el [curso de Claude de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/claude) son **20 horas en vivo por Zoom**, repartidas en cinco módulos de cuatro horas, para que uses Claude —el asistente de IA de Anthropic— en tareas administrativas: escribir y resumir, ordenar planillas, armar presentaciones y automatizar cosas simples, **sin programar**. Empieza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 19:30 a 21:30, hora argentina**. El precio es **{precio_local}**.
+**Lo esencial:** el [curso de Claude de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/claude) son **20 horas en vivo por Zoom**, repartidas en cinco módulos de cuatro horas, para que uses Claude —el asistente de IA de Anthropic— en tareas administrativas: escribir y resumir, ordenar planillas, armar presentaciones y automatizar cosas simples, **sin programar**. Abre **nuevas cohortes todos los meses** (próxima fecha en la ficha), con clases **lunes y miércoles de 19:30 a 21:30, hora argentina**. El precio es **{precio_local}**.
 
 Tenés las grabaciones para siempre, certificado digital al terminar y un proyecto final sobre un proceso de tu propio trabajo. Pagás en pesos argentinos con Mercado Pago o transferencia. Todo esto sale de la ficha del curso, revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Arranca el 23/11 · lunes y miércoles 19:30 · «Ver el curso».
+**[CTA-TOP]** — Inicios mensuales · lunes y miércoles 19:30 (Argentina) · «Ver el curso».
 
 ## ¿Para qué te sirve, concretamente?
 
@@ -109,7 +109,7 @@ La ficha lo orienta a **trabajo administrativo**, con el mismo temario para part
 
 ## Fechas, horario y qué incluye
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** todos los meses abre un grupo nuevo (consultá la fecha en la ficha).
 - **Días y hora:** lunes y miércoles, 19:30 a 21:30, hora argentina (misma hora que en Chile y Uruguay, según la ficha).
 - **Duración:** 20 horas, cinco módulos de cuatro.
 - **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
@@ -120,7 +120,7 @@ La ficha lo orienta a **trabajo administrativo**, con el mismo temario para part
 
 Anotá durante una semana cada tarea repetitiva que hacés y cuánto tiempo te lleva. Elegí las tres que más te pesan y juntá los archivos que usás para cada una. Con eso vas a practicar desde el módulo 2 y probablemente sea el punto de partida de tu proyecto final.
 
-**[CTA-END]** — {precio_local} · Inicio 23/11 · «Inscribirme» · «Escribinos por WhatsApp».
+**[CTA-END]** — {precio_local} · Cupos abiertos · «Inscribirme» · «Escribinos por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -128,7 +128,7 @@ Anotá durante una semana cada tarea repetitiva que hacés y cuánto tiempo te l
 {precio_local}, en pesos argentinos con Mercado Pago o transferencia.
 
 **¿Cuándo empieza?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 19:30 a 21:30, hora argentina.
+Abrimos cohortes todos los meses; cursamos lunes y miércoles de 19:30 a 21:30, hora argentina (revisá la fecha exacta en la ficha).
 
 **¿Tengo que saber programar?**
 No. Claude Code se explica en lenguaje simple y no hace falta escribir código.

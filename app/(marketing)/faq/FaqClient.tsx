@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { usePaisRuta } from "@/lib/paises/cliente";
+import { rutaLocal } from "@/lib/paises/rutas";
 
 interface FaqItem {
   question: string;
@@ -19,6 +21,7 @@ const CATEGORIES = [
 ] as const;
 
 export default function FaqClient({ faqItems }: { faqItems: FaqItem[] }) {
+  const pais = usePaisRuta();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
 
@@ -38,12 +41,24 @@ export default function FaqClient({ faqItems }: { faqItems: FaqItem[] }) {
   );
 
   return (
-    <main className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <div className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[860px]">
         <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Preguntas frecuentes</h1>
         <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
           Dudas sobre clases, certificados, pagos y el día a día del curso.
         </p>
+
+        <div className="mt-6 flex flex-col gap-2 rounded-xl border border-line bg-paper px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-mute">
+            ¿Buscas precios en moneda local, horarios por país o el paso a paso de inscripción?
+          </p>
+          <Link
+            href={rutaLocal(pais, "/preguntas-frecuentes")}
+            className="shrink-0 text-sm font-semibold text-ink underline underline-offset-4 hover:text-mute"
+          >
+            Ver guía completa en preguntas frecuentes
+          </Link>
+        </div>
 
         <div className="relative mt-8">
           <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint" />
@@ -95,6 +110,6 @@ export default function FaqClient({ faqItems }: { faqItems: FaqItem[] }) {
           </Link>
         </p>
       </div>
-    </main>
+    </div>
   );
 }

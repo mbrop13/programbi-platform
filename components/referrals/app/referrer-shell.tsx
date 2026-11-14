@@ -100,10 +100,11 @@ export function ReferrerShell({
         <div className="flex h-14 items-center gap-2.5 border-b border-line px-4">
           <Link href="/referidos/app" className="flex items-center gap-2 no-underline">
             <Image
-              src="/images/logo.png"
+              src="/images/logo-nav.webp"
               alt="ProgramBI"
-              width={108}
+              width={92}
               height={24}
+              unoptimized
               className="h-6 w-auto object-contain"
             />
           </Link>

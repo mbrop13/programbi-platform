@@ -3,16 +3,18 @@ import { ArrowRight, BadgeCheck, CalendarDays, Clock, MessageCircle, MonitorPlay
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
+import { precioPublico } from "@/config/pricing";
 import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import type { Guia } from "@/lib/guias/tipos";
 import { horarioLocal } from "@/lib/paises/horarios";
+import { formatMoneda } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
- * Bloque «En 30 segundos» que abre cada guía: enlace directo al desbloqueo
- * de temario y precios, duración, horario local, modalidad y CTAs. Renderizado
- * 100% en servidor (GEO-ready). El arancel nunca se expone en HTML inicial.
+ * Bloque «En 30 segundos» que abre cada guía: precio inicial público (salvo
+ * Paraguay), enlace al desbloqueo de temario y precios, duración, horario
+ * local, modalidad y CTAs. Renderizado 100% en servidor (GEO-ready).
  */
 export default function Bloque30Segundos({ guia }: { guia: Guia }) {
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
@@ -23,6 +25,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
   const nombreCurso = esGeneral ? "Cursos de ProgramBI" : curso.nombre;
   const rutaCurso = esGeneral ? rutaLocal(iso, "/cursos") : rutaFichaCurso(iso, guia.course);
   const rutaTemario = esGeneral ? rutaCurso : "#temario-curso";
+  const precio = esGeneral ? null : precioPublico(iso, guia.course);
 
   return (
     <section
@@ -45,14 +48,25 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
             <BadgeCheck size={13} aria-hidden /> Precio y temario
           </dt>
           <dd className="mt-1.5">
+            {precio != null ? (
+              <span className="block text-lg font-bold tracking-tight text-ink">
+                Desde {formatMoneda(iso, precio)}
+              </span>
+            ) : null}
             <Link
               href={rutaTemario}
-              className="text-sm font-bold leading-snug text-ink no-underline hover:underline"
+              className={
+                precio != null
+                  ? "mt-0.5 inline-block text-xs font-semibold leading-snug text-ink underline underline-offset-4 hover:text-mute"
+                  : "text-sm font-bold leading-snug text-ink no-underline hover:underline"
+              }
             >
               Ver temario y precios (PDF) →
             </Link>
             <span className="mt-0.5 block text-xs text-mute">
-              {curso.porNivel ? "por nivel · " : ""}{textoCuotas(iso)}
+              {iso === "py" && !esGeneral ? "Valor por WhatsApp · " : ""}
+              {curso.porNivel ? "por nivel · " : ""}
+              {textoCuotas(iso)}
             </span>
           </dd>
         </div>

@@ -6,7 +6,7 @@ country: ar
 lang: es-AR
 slug: como-aprender-power-bi-en-argentina
 path: /ar/guias/como-aprender-power-bi-en-argentina
-updated: 2026-11-04
+updated: 2026-11-14
 course: power-bi
 url_curso: https://www.programbi.com/ar/cursos/power-bi
 sources:
@@ -119,7 +119,7 @@ Solo se puede, y en Argentina hay una comunidad tech muy activa. El tema es que 
 ##### El curso Power BI en vivo de ProgramBI (versión Argentina)
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30, hora de Argentina**.
-- **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
+- **20 horas, 8 módulos**, básico-intermedio. Nuevas cohortes todos los meses; consultá la próxima fecha en la ficha del curso.
 - Aranceles actualizados en ARS disponibles en el PDF del [curso de Power BI en Argentina](/ar/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores (como SUMX), tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.

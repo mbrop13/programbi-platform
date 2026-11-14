@@ -18,7 +18,7 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
     {
       id: "nivel1",
       label: "Nivel I: Básico",
-      shortLabel: "Fundamentos (16h)",
+      shortLabel: "Fundamentos (20h)",
       theme: "#B45309",
       intro:
         "Ideal para quienes inician. Establece las bases en las tres tecnologías, enfocándose en la automatización de la captura de datos de turnos.",
@@ -26,8 +26,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n1-pbi",
           title: "Módulo Power BI",
-          hours: 16,
-          subtitle: "16 Horas • Dashboards de Operación",
+          hours: 7,
+          subtitle: "7 Horas • Dashboards de Operación",
           icon: "powerbi",
           topics: [
             "Comprensión del flujo de datos en minería e instalaciones.",
@@ -40,8 +40,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n1-sql",
           title: "Módulo SQL Server",
-          hours: 16,
-          subtitle: "16 Horas • Consultas a Bases de la Mina",
+          hours: 7,
+          subtitle: "7 Horas • Consultas a Bases de la Mina",
           icon: "sql",
           topics: [
             "SELECT, filtrado de sensores (TOP) y funciones de turno.",
@@ -54,8 +54,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n1-py",
           title: "Módulo Python",
-          hours: 16,
-          subtitle: "16 Horas • Automatización y Análisis Tabular",
+          hours: 6,
+          subtitle: "6 Horas • Automatización y Análisis Tabular",
           icon: "python",
           topics: [
             "Control de flujo para alertas de presión y temperatura.",
@@ -70,7 +70,7 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
     {
       id: "nivel2",
       label: "Nivel II: Intermedio",
-      shortLabel: "Análisis & KPIs (16h)",
+      shortLabel: "Análisis & KPIs (20h)",
       theme: "#B45309",
       intro:
         "Consolida datos de diferentes áreas, crea relaciones robustas y visualiza las leyes de mineral y eficiencia avanzada.",
@@ -78,8 +78,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n2-pbi",
           title: "Módulo Power BI",
-          hours: 16,
-          subtitle: "16 Horas • DAX y Relaciones de Área",
+          hours: 7,
+          subtitle: "7 Horas • DAX y Relaciones de Área",
           icon: "powerbi",
           topics: [
             "Mapas geolocalizados de faena y matrices operativas.",
@@ -92,8 +92,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n2-sql",
           title: "Módulo SQL Server",
-          hours: 16,
-          subtitle: "16 Horas • Agrupaciones y Resúmenes Consolidados",
+          hours: 7,
+          subtitle: "7 Horas • Agrupaciones y Resúmenes Consolidados",
           icon: "sql",
           topics: [
             "Auditoría de inventario vs extracción (FULL JOIN).",
@@ -106,8 +106,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n2-py",
           title: "Módulo Python",
-          hours: 16,
-          subtitle: "16 Horas • DataFrames y Gráficos Exploratorios",
+          hours: 6,
+          subtitle: "6 Horas • DataFrames y Gráficos Exploratorios",
           icon: "python",
           topics: [
             "Pandas: Evaluación de neumáticos y consumo eléctrico.",
@@ -122,7 +122,7 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
     {
       id: "nivel3",
       label: "Nivel III: Avanzado",
-      shortLabel: "Predictividad (16h)",
+      shortLabel: "Predictividad (20h)",
       theme: "#B45309",
       intro:
         "Nivel definitivo: domina proyecciones, automatiza Data Warehouse y desarrolla modelos predictivos para adelantarte a fallos.",
@@ -130,8 +130,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n3-pbi",
           title: "Módulo Power BI",
-          hours: 16,
-          subtitle: "16 Horas • Inteligencia de Tiempo y RLS Dinámico",
+          hours: 7,
+          subtitle: "7 Horas • Inteligencia de Tiempo y RLS Dinámico",
           icon: "powerbi",
           topics: [
             "Producción acumulada (YTD) y proyecciones de extracción.",
@@ -144,8 +144,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n3-sql",
           title: "Módulo SQL Server",
-          hours: 16,
-          subtitle: "16 Horas • Procedimientos y Automatización Servidor",
+          hours: 7,
+          subtitle: "7 Horas • Procedimientos y Automatización Servidor",
           icon: "sql",
           topics: [
             "T-SQL: Alertas de maquinaria mediante CASE WHEN.",
@@ -158,8 +158,8 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
         {
           id: "n3-py",
           title: "Módulo Python",
-          hours: 16,
-          subtitle: "16 Horas • Análisis Predictivo y Dashboards Plotly",
+          hours: 6,
+          subtitle: "6 Horas • Análisis Predictivo y Dashboards Plotly",
           icon: "bot",
           topics: [
             "Merge masivo de Operaciones, Mantenimiento y RRHH.",

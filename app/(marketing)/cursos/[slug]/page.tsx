@@ -19,7 +19,7 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
-import { robotsLocal } from "@/lib/paises/metadata";
+import { conPais, robotsLocal } from "@/lib/paises/metadata";
 import { getBloqueLocal, getSeoBloque, esRutaSeoLocal } from "@/lib/data/contenido-paises";
 import { detalleCursoLocal } from "@/lib/paises/detalle-curso";
 import { horarioDeCohorte } from "@/lib/paises/horarios";
@@ -86,7 +86,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // Perú y México tienen title/meta escritos para su mercado; el resto sigue
   // localizando el título chileno.
   const seoLocal = esRutaSeoLocal(slug) ? getSeoBloque(pais, slug) : null;
-  const title = seoLocal ? tituloLocal(seoLocal.title) : tituloLocal(localizarMercado(titleBase, pais));
+  const title = seoLocal
+    ? tituloLocal(seoLocal.title)
+    : tituloLocal(conPais(localizarMercado(titleBase, pais), pais));
   const dbDescription = await getMarketingDescription(slug);
   // Chile puede declarar el precio en la meta; los demás mercados usan la
   // versión sin monto porque su precio va en otra moneda.

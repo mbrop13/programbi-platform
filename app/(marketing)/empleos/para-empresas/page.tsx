@@ -3,10 +3,20 @@ import Link from "next/link";
 import { BadgeCheck, ShieldCheck, LayoutList, Bell } from "lucide-react";
 import RegisterCompanyForm from "@/components/empleos/RegisterCompanyForm";
 import { ogImageUrl } from "@/lib/og/url";
+import { twitterShare } from "@/lib/seo";
 
 // Copy con vencimiento: ajustar cuando termine el período de lanzamiento
 const LAUNCH_BADGE = "Gratis durante el lanzamiento";
 const LAUNCH_APPROVAL_SLA = "menos de 24 horas hábiles";
+
+const ogImg = ogImageUrl({
+  kicker: LAUNCH_BADGE,
+  title: "Deja de adivinar. Contrata certificado.",
+  description:
+    "Publica vacantes y recibe postulantes con certificados que respaldan sus habilidades.",
+  tags: ["Python", "Power BI", "SQL Server"],
+  path: "empleos/para-empresas",
+});
 
 export const metadata: Metadata = {
   title: "Publica vacantes en la Bolsa de Trabajo",
@@ -20,20 +30,18 @@ export const metadata: Metadata = {
     url: "/empleos/para-empresas",
     images: [
       {
-        url: ogImageUrl({
-          kicker: LAUNCH_BADGE,
-          title: "Deja de adivinar. Contrata certificado.",
-          description:
-            "Publica vacantes y recibe postulantes con certificados que respaldan sus habilidades.",
-          tags: ["Python", "Power BI", "SQL Server"],
-          path: "empleos/para-empresas",
-        }),
+        url: ogImg,
         width: 1200,
         height: 630,
         alt: "Bolsa de Trabajo para empresas — ProgramBI",
       },
     ],
   },
+  twitter: twitterShare(
+    "Publica vacantes en la Bolsa de Trabajo | ProgramBI",
+    "Recibe postulantes con certificados verificados en Python, Power BI y SQL Server. Gratis durante el lanzamiento.",
+    ogImg
+  ),
 };
 
 const BENEFITS = [

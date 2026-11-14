@@ -69,7 +69,7 @@ import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
-import { cuotasSinInteres } from "@/config/cuotas";
+import { cuotasSinInteres, textoCuotas } from "@/config/cuotas";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { courseBrochureUrl } from "@/lib/pricing-gate";
@@ -290,9 +290,9 @@ export default function CourseDetailClient({
   const levels = levelsForView(course, view);
   const catalogLevelCount = course.levels?.length ?? 0;
 
-  // Gate de precios: el monto se calcula solo en cliente y nunca sale en el
-  // HTML del servidor. El arancel vive en el Brochure PDF; el bloque gated de la
-  // tarjeta recién lo muestra con `canSeePrice` (sesión o gate desbloqueado).
+  // Gate de precios: antes de desbloquear se muestra el precio de entrada
+  // ("Desde <arancel>"); el desglose completo (cuotas, valor por hora y
+  // Brochure PDF) recién aparece con `canSeePrice` (sesión o gate desbloqueado).
   const { unlocked: priceUnlocked, unlock } = usePriceUnlock();
   const canSeePrice = isLoggedIn || priceUnlocked;
   const precioLocalCliente = precioVenta(pais, course.slug);
@@ -716,11 +716,11 @@ export default function CourseDetailClient({
               </div>
 
               <div className="mb-5 border-t border-line pt-5">
-                {/* El precio numérico no sale en el HTML del servidor: el
-                    arancel vive en el Brochure PDF y solo el bloque cliente de
-                    abajo (`canSeePrice`) muestra el monto con su contexto. Aquí
-                    solo se distingue empresa, país sin arancel aprobado
-                    (Paraguay) y venta individual con formulario. */}
+                {/* Antes del gate mostramos solo el precio de entrada ("Desde")
+                    cuando el país tiene arancel publicado; el desglose completo
+                    y el Brochure PDF quedan detrás de `canSeePrice`. Aquí se
+                    distingue empresa, país sin arancel aprobado (Paraguay) y
+                    venta individual con formulario. */}
                 {isEmpresa ? (
                   <p className="text-sm leading-relaxed text-mute">
                     {tiered
@@ -729,47 +729,69 @@ export default function CourseDetailClient({
                         ? "La cotización incluye los dos niveles de 60 horas. Eliges el nivel y el tamaño del equipo."
                         : "Armamos la cotización según el equipo y el calendario de tu empresa."}
                   </p>
-                ) : precioLocalCliente == null ? (
-                  // Paraguay todavía no tiene monto aprobado: se consulta por WhatsApp.
-                  <div>
-                    <p className="text-sm leading-relaxed text-mute">
-                      El valor de este curso se confirma por WhatsApp según tu país.
-                    </p>
-                    <WhatsAppCta
-                      page={`/cursos/${course.slug}`}
-                      intent="curso"
-                      course={course.title}
-                      courseSlug={course.slug}
-                      country={pais}
-                      className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
-                    >
-                      <MessageCircle size={16} />
-                      Consultar el valor
-                    </WhatsAppCta>
-                  </div>
                 ) : (
-                  <div>
-                    <BrochureGateForm
-                      slug={course.slug}
-                      courseTitle={course.title}
-                      pais={pais}
-                      source="course_detail_gate"
-                      buttonLabel="Ver temario y precios"
-                      idPrefix="brochure-gate"
-                      onUnlocked={() => unlock()}
-                    />
-                    <div className="mt-4 text-center">
-                      <p className="text-xs font-medium text-mute">¿Ya viste el temario y los precios?</p>
-                      <button
-                        type="button"
-                        onClick={handleCheckoutCTA}
-                        className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-semibold text-ink hover:bg-wash"
-                      >
-                        Inscribirme ahora
-                        <ArrowRight size={16} />
-                      </button>
-                    </div>
-                  </div>
+                  <>
+                    {!canSeePrice || precioLocalCliente == null ? (
+                      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl border border-line bg-canvas px-3.5 py-2.5 text-xs">
+                        {!canSeePrice && precioLocalCliente != null ? (
+                          <span className="w-full text-base font-bold tracking-tight text-ink tabular-nums">
+                            Desde {formatMoneda(pais, precioLocalCliente)}
+                          </span>
+                        ) : null}
+                        <span className="font-semibold text-ink">
+                          Pago en {textoCuotas(pais)}
+                        </span>
+                        <Link
+                          href={facturaHref}
+                          className="font-semibold text-mute underline decoration-line underline-offset-2 hover:text-ink hover:decoration-ink"
+                        >
+                          Factura disponible para empresas
+                        </Link>
+                      </div>
+                    ) : null}
+                    {precioLocalCliente == null ? (
+                      // Paraguay todavía no tiene monto aprobado: se consulta por WhatsApp.
+                      <div>
+                        <p className="text-sm leading-relaxed text-mute">
+                          El valor de este curso se confirma por WhatsApp según tu país.
+                        </p>
+                        <WhatsAppCta
+                          page={`/cursos/${course.slug}`}
+                          intent="curso"
+                          course={course.title}
+                          courseSlug={course.slug}
+                          country={pais}
+                          className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
+                        >
+                          <MessageCircle size={16} />
+                          Consultar el valor
+                        </WhatsAppCta>
+                      </div>
+                    ) : (
+                      <div>
+                        <BrochureGateForm
+                          slug={course.slug}
+                          courseTitle={course.title}
+                          pais={pais}
+                          source="course_detail_gate"
+                          buttonLabel="Ver temario y precios"
+                          idPrefix="brochure-gate"
+                          onUnlocked={() => unlock()}
+                        />
+                        <div className="mt-4 text-center">
+                          <p className="text-xs font-medium text-mute">¿Ya viste el temario y los precios?</p>
+                          <button
+                            type="button"
+                            onClick={handleCheckoutCTA}
+                            className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-semibold text-ink hover:bg-wash"
+                          >
+                            Inscribirme ahora
+                            <ArrowRight size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -782,7 +804,7 @@ export default function CourseDetailClient({
                     <span className="text-[11px] text-faint">arancel del curso</span>
                   </p>
                   <p className="text-xs text-mute">
-                    {formatMoneda(pais, precioLocalCliente / numCuotas)} en {numCuotas} cuotas sin interés
+                    {formatMoneda(pais, precioLocalCliente / numCuotas)} en {textoCuotas(pais)}
                   </p>
                   {precioHora != null ? (
                     <p className="text-xs text-mute">

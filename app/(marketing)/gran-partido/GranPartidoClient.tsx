@@ -226,13 +226,13 @@ function TeamFlag({
     <div
       className={`relative ${dims} rounded-lg overflow-hidden shadow-md ring-1 ring-black/10 bg-slate-100 shrink-0`}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={size === "lg" ? team.flagUrlLg : team.flagUrl}
         alt={`Bandera de ${team.name}`}
-        className="absolute inset-0 w-full h-full object-cover"
-        loading="eager"
-        decoding="async"
+        fill
+        sizes={size === "lg" ? "144px" : size === "sm" ? "48px" : "96px"}
+        priority
+        className="object-cover"
       />
     </div>
   );

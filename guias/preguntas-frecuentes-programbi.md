@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/cursos
 title: "Preguntas frecuentes de ProgramBI: cursos, clases y pagos"
 meta: "Preguntas frecuentes de ProgramBI: cursos de Power BI y Análisis de datos en vivo por Zoom, horarios por país, grabaciones y certificación PL-300."
 h1: "Preguntas frecuentes sobre ProgramBI"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/power-bi
   - https://www.programbi.com/cursos/analisis-de-datos
@@ -18,7 +18,7 @@ sources:
 nota_hermes: |
   ELEMENTO VISUAL: acordeón por categorías (Sobre ProgramBI · Cursos · Clases y horarios · Precios y pagos · Requisitos · Certificación · Después del curso) con ancla por pregunta; resumen tipo "ficha" arriba (formato, duración, próximo inicio).
   Intención: navegacional/informacional sobre la marca ("programbi opiniones", "programbi cómo funciona", "programbi precio") y consultas conversacionales en buscadores con IA. Cada respuesta se abre con una frase autocontenida y citable (GEO).
-  - Datos SOLO de las páginas de curso y de Microsoft. Próximo inicio: lunes 23 nov 2026, lunes y miércoles. Horarios por país usados en las guías: Chile según su página; SV/CR/GT 16:30, EC 17:30, VE/DO/BO 18:30 (hora local). ACTUALIZAR fechas en cada ciclo.
+  - Datos SOLO de las páginas de curso y de Microsoft. Cohortes mensuales, lunes y miércoles o martes y jueves según curso. Horarios por país usados en las guías: Chile según su página; SV/CR/GT 16:30, EC 17:30, VE/DO/BO 18:30 (hora local). ACTUALIZAR fechas en cada ciclo.
   - Precio: {precio_local} / "consulta por WhatsApp". No copiar montos del sitio (hay montos USD no aprobados en páginas de países secundarios).
   - CONFIRMADO por Manu (4 nov 2026): certificado al terminar; Chile 19:30–21:30 lun/mié o mar/jue; Mac → Power BI web; 3 cuotas sin interés en todos los países.
   - NO afirmar: cantidad de alumnos, % de empleabilidad, convenios, acreditaciones, garantías, cupos, certificados con valor oficial, si no hay fuente. El certificado al terminar ya está confirmado.
@@ -31,7 +31,7 @@ nota_hermes: |
 
 **Respuesta corta:** ProgramBI es una escuela online de inteligencia de negocios y análisis de datos que dicta cursos de **Power BI** y de **Análisis de datos (SQL, Power BI y Python)** con **clases en vivo por Zoom** y grabaciones para repasar. El curso de Power BI tiene un nivel básico-intermedio de 20 horas en 8 módulos y un nivel avanzado de 20 horas; el de Análisis de datos tiene dos niveles de 60 horas cada uno.
 
-El próximo inicio es el **lunes 23 de noviembre de 2026**, con clases los lunes y miércoles en un horario adaptado a cada país. Los valores se informan en moneda local: {precio_local}, y se pueden pagar en 3 cuotas sin interés en todos los países. Al terminar, recibes un certificado. Para el precio vigente y las formas de pago, consulta por WhatsApp.
+Abrimos **nuevas cohortes todos los meses**, con clases dos veces por semana en un horario adaptado a cada país (consulta la fecha vigente en cada ficha). Los valores se informan en moneda local: {precio_local}, y se pueden pagar en 3 cuotas sin interés en todos los países. Al terminar, recibes un certificado. Para el precio vigente y las formas de pago, consulta por WhatsApp.
 
 **[CTA-TOP]** — «Ver todos los cursos» · «Escribir por WhatsApp».
 
@@ -42,7 +42,7 @@ El próximo inicio es el **lunes 23 de noviembre de 2026**, con clases los lunes
 | Formato | Clases en vivo por Zoom, con grabaciones |
 | Power BI | Básico-intermedio: 20 h, 8 módulos · Avanzado: 20 h (incluye Power BI Service y RLS) |
 | Análisis de datos | 2 niveles de 60 h: 20 h SQL + 20 h Power BI + 20 h Python |
-| Próximo inicio | Lunes 23 de noviembre de 2026 |
+| Próximo inicio | Inicios todos los meses (ver ficha de cada curso) |
 | Días | Lunes y miércoles |
 | Precio | {precio_local}, en 3 cuotas sin interés (consulta por WhatsApp) |
 | Certificado | Sí, al terminar el curso |
@@ -82,7 +82,7 @@ Ambas son herramientas de inteligencia de negocios. Power BI Desktop es una desc
 ## Clases y horarios
 
 **¿Cuándo empieza el próximo curso?**
-El próximo inicio es el lunes 23 de noviembre de 2026, con clases los lunes y miércoles.
+Abrimos nuevas cohortes todos los meses, con clases lunes y miércoles o martes y jueves según el programa; revisa la fecha vigente en la ficha de cada curso.
 
 **¿A qué hora son las clases?**
 El horario se adapta a cada país. En Chile, las clases son de 19:30 a 21:30, con dos opciones de días: lunes y miércoles, o martes y jueves. En otros países, en El Salvador, Costa Rica y Guatemala las clases son a las 16:30; en Ecuador, a las 17:30; y en Venezuela, República Dominicana y Bolivia, a las 18:30, siempre en hora local. Confirma el horario de tu país en la guía correspondiente o por WhatsApp.

@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/uy/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Uruguay: guía 2026 | ProgramBI"
 meta: "Curso de análisis de datos en Uruguay en vivo: SQL Server, Power BI y Python en 60 h (19:30 h). Cómo empezar y referencias del mercado."
 h1: "Curso de Análisis de Datos en Uruguay: cómo llegar a analista de datos"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/uy/cursos/analisis-de-datos
   - https://www.programbi.com/uy/cursos/power-bi
@@ -27,11 +27,11 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Uruguay: cómo llegar a analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio combina **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**, el próximo inicio es el **lunes 23 de noviembre de 2026** y el valor es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio combina **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**, abre **inscripciones todos los meses** (fecha vigente en la ficha) y el valor es **{precio_local}**. Incluye grabaciones de por vida y certificado.
 
 **¿Qué hay que saber para ser analista de datos en Uruguay?** SQL para consultar bases, Power BI para armar modelos y tableros, Python para limpiar y explorar datos que en planilla se vuelven inmanejables, y un proyecto que muestre cómo pasás de un dato a una decisión. Es la combinación que aparece tanto en llamados públicos como en empresas que trabajan para el exterior.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 19:30 hora de Uruguay · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · lunes y miércoles 19:30 (hora de Uruguay) · «Ver el curso».
 
 ## Un mercado chico, muy medido
 
@@ -127,7 +127,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/a
 - Temario: SQL desde cero, modelado y DAX, análisis exploratorio, dashboards y reportes automáticos, ETL con Power Query, proyecto final con datos reales, IA como apoyo en cada módulo.
 - **Nivel avanzado** de 60 horas más: automatización, inteligencia de tiempo y modelos.
 - **Grabaciones de por vida** y **certificado** al completar.
-- Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **ediciones mensuales** (mirá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

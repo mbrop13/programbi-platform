@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/py/cursos/python
 title: "Curso de Python Paraguay en vivo: guía 2026 | ProgramBI"
 meta: "Curso de Python online en vivo en Paraguay: Python para datos desde cero en 20 h (lunes y miércoles 19:30). Pandas y automatización."
 h1: "Curso de Python en Paraguay: Python para datos, online y en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/py/cursos/python
   - https://www.programbi.com/py/cursos/sql-server
@@ -25,11 +25,11 @@ nota_hermes: |
 
 # Curso de Python en Paraguay: Python para datos, online y en vivo
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/python) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**. Empieza el **lunes 23 de noviembre de 2026** y el valor es **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/python) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**. Lanza **nuevas cohortes cada mes** (fecha confirmada en la ficha) y el valor es **{precio_local}**. Tenés grabaciones de por vida y certificado.
 
 **¿Qué vas a aprender?** Python desde cero con foco en análisis de datos: las bases del lenguaje y, sobre todo, Pandas para limpiar, transformar, agrupar y cruzar tablas; gráficos con Matplotlib y conexión a bases de datos y APIs. En el trabajo, eso significa que el consolidado que hoy armás con planillas que llegan por correo o por WhatsApp se genera con un script.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 19:30 hora de Paraguay · «Ver el curso».
+**[CTA-TOP]** — Nuevos grupos cada mes · lunes y miércoles 19:30 (Paraguay) · «Ver el curso».
 
 ## Por qué aprender Python en Paraguay
 
@@ -172,7 +172,7 @@ Según la [ficha del curso para Paraguay](https://www.programbi.com/py/cursos/py
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **inicios cada mes** (confirmá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

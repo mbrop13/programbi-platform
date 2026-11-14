@@ -84,17 +84,17 @@ export default function Page() {
         ]}
         sections={[
           {
-            h2: "Qué duele en faena (sin inventar KPIs de cliente)",
+            h2: "Qué duele en faena",
             paragraphs: [
               "Reportes de turno que se arman a mano. OEE en un Excel que nadie audita. Cruce de flota, combustible y personal en tres archivos. El jefe de área pide “el número de ayer” y llega pasado mañana.",
-              "No publicamos métricas de clientes ni logos que no estén en este sitio. El patrón es el mismo: dato nativo (SQL, PI, SCADA o extractos) + modelo + hábito de uso.",
+              "En faena el patrón se repite: dato nativo (SQL, PI, SCADA o extractos), modelo consistente y hábito de uso semanal.",
             ],
           },
           {
             h2: "Dos caminos",
             paragraphs: [
               "Persona / analista de mina: curso Análisis de datos para la minería (Power BI, SQL y Python). Básico-intermedio y avanzado, 20 horas cada uno. Temario de turnos, OEE y predictivo a nivel de formación.",
-              "Empresa minera / área: Pack Adopción. Construimos 1–3 dashboards con tus datos y capacitamos al equipo 4–6 semanas. Mentores con experiencia en minería citada en el sitio (CAP, AngloAmerican, Pucobre, SQM en el contexto de instructores y logos reales).",
+              "Empresa minera / área: Pack Adopción. Construimos 1–3 dashboards con tus datos y capacitamos al equipo 4–6 semanas, junto a mentores con experiencia en faenas y empresas como CAP, AngloAmerican, Pucobre y SQM.",
             ],
           },
         ]}

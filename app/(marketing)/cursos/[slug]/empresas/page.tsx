@@ -1,5 +1,11 @@
 import { notFound, permanentRedirect } from "next/navigation";
-import { getCourseBySlug } from "@/lib/data/courses";
+import { courses, getCourseBySlug } from "@/lib/data/courses";
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return courses.map((course) => ({ slug: course.slug }));
+}
 
 type Params = Promise<{ slug: string }>;
 

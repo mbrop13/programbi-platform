@@ -17,12 +17,18 @@ export function isVideoUrl(url?: string): boolean {
   );
 }
 
+/**
+ * Return a direct share image URL for OpenGraph/Twitter/JSON-LD tags.
+ * External `http(s)://` hosts are returned directly instead of proxying via
+ * `/_next/image`, avoiding HTTP 400 on unlisted `remotePatterns` hosts and
+ * Image Optimizer quota usage from social bots.
+ */
 export function getOptimizedShareImage(url?: string): string {
-  if (!url) return "/default-og.png";
-  if (url.startsWith("/")) return url;
-  
-  // Use Next.js native image optimization endpoint to compress images to < 100KB
-  return `/_next/image?url=${encodeURIComponent(url)}&w=1200&q=75`;
+  const trimmed = url?.trim();
+  if (!trimmed) return "/default-og.png";
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) return trimmed;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return "/default-og.png";
 }
 
 /** Relative date formatting used by Maverlang chat UI */

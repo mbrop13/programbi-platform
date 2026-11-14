@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/mx/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos en México: guía 2026 | ProgramBI"
 meta: "Curso de análisis de datos en México en vivo: SQL Server, Power BI y Python en 60 h (16:30 CDMX). Sueldos y guía para entrar al área."
 h1: "Curso de Análisis de Datos en México: la ruta para ser analista de datos"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/mx/cursos/analisis-de-datos
   - https://www.programbi.com/mx/cursos/power-bi
@@ -28,11 +28,11 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en México: la ruta para ser analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI para México](https://www.programbi.com/mx/cursos/analisis-de-datos) es un programa en vivo por Zoom con **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta) en su nivel básico-intermedio. Las clases son **lunes y miércoles de 16:30 a 18:30, hora del centro de México (CDMX)**, el próximo inicio es el **lunes 23 de noviembre de 2026** y la inversión es de **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI para México](https://www.programbi.com/mx/cursos/analisis-de-datos) es un programa en vivo por Zoom con **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta) en su nivel básico-intermedio. Las clases son **lunes y miércoles de 16:30 a 18:30, hora del centro de México (CDMX)**, hay **cohortes nuevas cada mes** (consulta la fecha vigente en la ficha) y la inversión es de **{precio_local}**. Incluye grabaciones de por vida y certificado.
 
 **¿Cómo convertirte en analista de datos en México?** Domina tres herramientas en este orden —SQL para sacar datos, Power BI para modelarlos y presentarlos, Python para limpiar y explorar volúmenes grandes— y arma un proyecto con datos de una operación real. Con eso cubres lo que piden la mayoría de las vacantes de «data analyst» en OCC o LinkedIn.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 16:30 CDMX · «Ver el curso».
+**[CTA-TOP]** — Grupos cada mes · lunes y miércoles 16:30 CDMX · «Ver el curso».
 
 ## Por qué el análisis de datos pesa tanto en México
 
@@ -125,7 +125,7 @@ Información de la [ficha del curso para México](https://www.programbi.com/mx/c
 - Temario: SQL desde cero, modelado y DAX, análisis exploratorio con Pandas, dashboards y reportes automáticos, ETL con Power Query, proyecto final con datos reales e IA como apoyo en cada módulo.
 - **Nivel avanzado** de otras 60 horas (automatización, inteligencia de tiempo y modelos): 120 horas en total.
 - **Grabaciones de por vida** y **certificado** digital al completar.
-- Próximo inicio: **lunes 23 de noviembre de 2026**. Inversión: **{precio_local}**.
+- Próximo inicio: **nuevas cohortes mensuales** (fecha exacta en la ficha). Inversión: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

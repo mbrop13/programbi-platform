@@ -6,9 +6,9 @@ hreflang: es-SV
 curso: power-bi
 url_curso: https://www.programbi.com/sv/cursos/power-bi
 title: "Cómo aprender Power BI en El Salvador | ProgramBI"
-meta: "Guía para aprender Power BI en El Salvador: ruta en 4 etapas, temario y curso en vivo de 20 h desde el 23 de noviembre, 16:30 hora de El Salvador."
+meta: "Guía para aprender Power BI en El Salvador: ruta en 4 etapas, temario y curso en vivo de 20 h a las 16:30 hora de El Salvador; inicios mensuales."
 h1: "Cómo aprender Power BI en El Salvador: guía práctica y curso en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/sv/cursos/power-bi
   - https://learn.microsoft.com/es-es/power-bi/fundamentals/desktop-get-the-desktop
@@ -23,11 +23,11 @@ nota_hermes: |
 
 # Cómo aprender Power BI en El Salvador: guía práctica y curso en vivo
 
-**Respuesta corta:** para aprender Power BI en El Salvador con una ruta ordenada, el [curso de Power BI de ProgramBI](https://www.programbi.com/sv/cursos/power-bi) ofrece un nivel **básico-intermedio de 20 horas en vivo por Zoom**: Power Query para limpiar datos, modelo y relaciones, DAX inicial, dashboards y publicación con roles. La próxima cohorte empieza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 16:30 a 18:30, hora de El Salvador**. El precio es **{precio_local}**.
+**Respuesta corta:** para aprender Power BI en El Salvador con una ruta ordenada, el [curso de Power BI de ProgramBI](https://www.programbi.com/sv/cursos/power-bi) ofrece un nivel **básico-intermedio de 20 horas en vivo por Zoom**: Power Query para limpiar datos, modelo y relaciones, DAX inicial, dashboards y publicación con roles. Contamos con **inicios todos los meses** (revisa la próxima fecha en la ficha), con clases **lunes y miércoles de 16:30 a 18:30, hora de El Salvador**. El precio es **{precio_local}**.
 
 Las clases quedan grabadas en el campus de por vida y al final recibes un certificado digital. Existe además un nivel avanzado de 20 horas, centrado en publicación en Power BI Service y seguridad a nivel de fila. Datos tomados de la ficha del curso, revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · lunes y miércoles 16:30 hora de El Salvador · «Ver el curso».
+**[CTA-TOP]** — Inicios todos los meses · lunes y miércoles 16:30 hora de El Salvador · «Ver el curso».
 
 ## Por qué Power BI vale la pena
 
@@ -108,7 +108,7 @@ El nivel avanzado, también de 20 horas, cubre **publicación en Power BI Servic
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** todos los meses inicia una cohorte (consulta la fecha en la ficha).
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de El Salvador (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -118,7 +118,7 @@ El nivel avanzado, también de 20 horas, cubre **publicación en Power BI Servic
 
 **[CTA-MID]** — Descarga el temario completo de Power BI.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Nuevas cohortes cada mes · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -126,7 +126,7 @@ El nivel avanzado, también de 20 horas, cubre **publicación en Power BI Servic
 {precio_local}. Para confirmar el monto y la forma de pago, escríbenos por WhatsApp.
 
 **¿Cuándo empieza?**
-El lunes 23 de noviembre de 2026, con clases lunes y miércoles de 16:30 a 18:30, hora de El Salvador.
+Tenemos grupos nuevos todos los meses, con clases lunes y miércoles de 16:30 a 18:30, hora de El Salvador (ver próxima fecha en la ficha).
 
 **¿Necesito experiencia previa?**
 No. El nivel básico-intermedio parte desde cero; basta con manejar Excel a nivel básico.

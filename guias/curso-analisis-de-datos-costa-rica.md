@@ -6,9 +6,9 @@ hreflang: es-CR
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/cr/cursos/analisis-de-datos
 title: "Curso de Análisis de datos en Costa Rica | ProgramBI"
-meta: "Curso de análisis de datos en Costa Rica en vivo: SQL Server, Power BI y Python, 60 h por nivel. Inicio 23 de noviembre, 16:30 hora de Costa Rica."
+meta: "Curso de análisis de datos en Costa Rica en vivo: SQL Server, Power BI y Python, 60 h por nivel. Horario 16:30 de Costa Rica; cupos abiertos."
 h1: "Curso de Análisis de datos en Costa Rica: SQL Server, Power BI y Python en una sola ruta"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/cr/cursos/analisis-de-datos
 nota_hermes: |
@@ -22,11 +22,11 @@ nota_hermes: |
 
 # Curso de Análisis de datos en Costa Rica: SQL Server, Power BI y Python en una sola ruta
 
-**Respuesta directa:** el [curso de Análisis de datos de ProgramBI para Costa Rica](https://www.programbi.com/cr/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**, dividido en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para quienes desean asumir funciones de analista: extraer información de bases de datos, construir modelos y tableros, y explorar datos con código. El nivel básico-intermedio inicia el **lunes 23 de noviembre de 2026**, con sesiones **lunes y miércoles de 16:30 a 18:30, hora de Costa Rica**. Precio: **{precio_local}**.
+**Respuesta directa:** el [curso de Análisis de datos de ProgramBI para Costa Rica](https://www.programbi.com/cr/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**, dividido en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para quienes desean asumir funciones de analista: extraer información de bases de datos, construir modelos y tableros, y explorar datos con código. El nivel básico-intermedio tiene **inicios mensuales** (fecha confirmada en la ficha), con sesiones **lunes y miércoles de 16:30 a 18:30, hora de Costa Rica**. Precio: **{precio_local}**.
 
 La ficha ofrece dos niveles de 60 horas —básico-intermedio y avanzado—, grabaciones con acceso de por vida, certificado digital y un proyecto final con datos reales. En cada módulo se incorpora inteligencia artificial para generar y revisar consultas, medidas y scripts. Información verificada en la ficha el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 16:30 hora de Costa Rica · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · 16:30 hora de Costa Rica · «Ver el curso».
 
 ## ¿Qué distingue a un analista de datos?
 
@@ -116,7 +116,7 @@ Un buen proyecto incluye las tres piezas: la consulta SQL que prepara los datos,
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** inscripciones abiertas cada mes; consulta la próxima fecha en la ficha.
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de Costa Rica.
 - **Duración:** 60 horas por nivel (20 por herramienta).
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -126,7 +126,7 @@ Un buen proyecto incluye las tres piezas: la consulta SQL que prepara los datos,
 
 **[CTA-MID]** — Descargue el temario completo.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Inicios mensuales · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -137,7 +137,7 @@ Un buen proyecto incluye las tres piezas: la consulta SQL que prepara los datos,
 60 horas por nivel: 20 de SQL Server, 20 de Power BI y 20 de Python.
 
 **¿Cuándo inicia?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 16:30 a 18:30, hora de Costa Rica.
+Se abren grupos todos los meses, lunes y miércoles de 16:30 a 18:30, hora de Costa Rica; confirma la próxima fecha en la ficha.
 
 **¿Necesito conocimientos de programación?**
 No. El nivel básico-intermedio parte de cero en cada herramienta.

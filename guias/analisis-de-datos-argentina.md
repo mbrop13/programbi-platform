@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/ar/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Argentina: guía 2026 | ProgramBI"
 meta: "Curso de análisis de datos en Argentina en vivo: SQL Server, Power BI y Python en 60 h (lunes y miércoles 19:30). Sueldos Sysarmy y ruta."
 h1: "Curso de Análisis de Datos en Argentina: cómo ser analista de datos"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/ar/cursos/analisis-de-datos
   - https://www.programbi.com/ar/cursos/power-bi
@@ -28,11 +28,11 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Argentina: cómo ser analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/analisis-de-datos) es en vivo por Zoom y en su nivel básico-intermedio cubre **SQL Server, Power BI y Python en 60 horas** (20 por herramienta). Se cursa **lunes y miércoles de 19:30 a 21:30, hora de Argentina**, empieza el **lunes 23 de noviembre de 2026** y cuesta **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/analisis-de-datos) es en vivo por Zoom y en su nivel básico-intermedio cubre **SQL Server, Power BI y Python en 60 horas** (20 por herramienta). Se cursa **lunes y miércoles de 19:30 a 21:30, hora de Argentina**, abre nuevas cohortes todos los meses (próxima fecha en la ficha) y cuesta **{precio_local}**. Tenés grabaciones de por vida y certificado.
 
 **¿Cómo ser analista de datos en Argentina?** Aprendé a consultar bases con SQL, a modelar y mostrar resultados en Power BI y a usar Python para limpiar y explorar lo que Excel no banca. Sumale un proyecto propio y, si apuntás a laburos remotos para afuera, inglés. Con eso cubrís lo que se repite en la mayoría de los avisos.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 19:30 hora de Argentina · «Ver el curso».
+**[CTA-TOP]** — Inicios mensuales en vivo · lunes y miércoles 19:30 (Argentina) · «Ver el curso».
 
 ## Por qué el análisis de datos rinde tanto en Argentina
 
@@ -129,7 +129,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 - Temas: SQL desde cero, modelado y DAX, análisis exploratorio, dashboards y reportes automáticos, ETL con Power Query, proyecto final con datos reales, IA de apoyo en cada módulo.
 - **Nivel avanzado** con 60 horas más: automatización, inteligencia de tiempo y modelos.
 - **Grabaciones de por vida** y **certificado** al completar.
-- Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **inicios todos los meses** (consultá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

@@ -8,7 +8,7 @@ export const sqlServerSyllabus: CourseSyllabusData = {
     {
       id: "nivel1",
       label: "Nivel I: Básico",
-      shortLabel: "Fundamentos (16h)",
+      shortLabel: "Fundamentos (20h)",
       theme: "#0891B2",
       audience:
         "Este curso es ideal para principiantes que desean aprender SQL Server desde cero, enfocándose en consultas básicas y manipulación inicial de datos para automatizar reportes simples en entornos empresariales.",
@@ -21,8 +21,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n1-1",
-          title: "Introducción a SQL (4 horas)",
-          hours: 4,
+          title: "Introducción a SQL (5 horas)",
+          hours: 5,
           topics: [
             "Funciones: SELECT (Recuperación de datos), WHERE (Filtrado), TOP (Límite de filas), MONTH() (Mes de fecha), YEAR() (Año de fecha).",
             "Problemas resueltos: Seleccionar datos de tablas, filtrar por código, crear columnas calculadas, creación de vista básica.",
@@ -30,8 +30,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-2",
-          title: "Filtros y Operaciones Básicas (4 horas)",
-          hours: 4,
+          title: "Filtros y Operaciones Básicas (5 horas)",
+          hours: 5,
           topics: [
             "Funciones: Operadores (=, >=, <=), lógicos (AND, OR), IN (Conjunto de valores).",
             "Problemas resueltos: Filtrar por año/mes, vista filtrada, múltiples condiciones, lista de códigos, columna constante.",
@@ -39,8 +39,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-3",
-          title: "Cruce de Tablas Básico (JOIN) (4 horas)",
-          hours: 4,
+          title: "Cruce de Tablas Básico (JOIN) (5 horas)",
+          hours: 5,
           topics: [
             "Funciones: INNER JOIN (Coincidentes), LEFT JOIN (Izquierda completa), IS NULL/NOT NULL (Nulos), COUNT() (Contar filas).",
             "Problemas resueltos: Cruce de tablas (ventas/productos), identificar no vendidos, comparación de joins.",
@@ -48,8 +48,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-4",
-          title: "Introducción a IA en SQL Server (4 horas)",
-          hours: 4,
+          title: "Introducción a IA en SQL Server (5 horas)",
+          hours: 5,
           icon: "star",
           highlight: true,
           topics: [
@@ -61,7 +61,7 @@ export const sqlServerSyllabus: CourseSyllabusData = {
     {
       id: "nivel2",
       label: "Nivel II: Intermedio",
-      shortLabel: "Joins & Reporting (16h)",
+      shortLabel: "Joins & Reporting (20h)",
       theme: "#16A34A",
       audience:
         "Este curso construye sobre los fundamentos, enfocándose en joins avanzados, ordenamiento y agrupaciones para generar informes consolidados en empresas.",
@@ -74,8 +74,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n2-1",
-          title: "Tipos de JOIN y Vistas de Control (4 horas)",
-          hours: 4,
+          title: "Tipos de JOIN y Vistas de Control (5 horas)",
+          hours: 5,
           topics: [
             "Funciones: FULL JOIN (Todas filas), RIGHT JOIN (Derecha completa).",
             "Problemas resueltos: Vista de control, margen de utilidad, comparación de todos los joins.",
@@ -83,8 +83,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
         },
         {
           id: "n2-2",
-          title: "Ordenamiento y Filtrado Avanzado (4 horas)",
-          hours: 4,
+          title: "Ordenamiento y Filtrado Avanzado (5 horas)",
+          hours: 5,
           topics: [
             "Funciones: ORDER BY (Ordenar), DESC (Descendente), operadores de fecha, GROUP BY (Agrupar), SUM() (Suma).",
             "Problemas resueltos: Top ventas ordenadas, rango de fechas, cruce de tres tablas, vista de valorización.",
@@ -92,16 +92,16 @@ export const sqlServerSyllabus: CourseSyllabusData = {
         },
         {
           id: "n2-3",
-          title: "Requerimientos Complejos (4 horas)",
-          hours: 4,
+          title: "Requerimientos Complejos (5 horas)",
+          hours: 5,
           topics: [
             "Problemas resueltos: Cruce de cuatro/cinco tablas, columnas calculadas (Utilidad Total, Impuesto), vista agrupada por país, consultas condicionales.",
           ],
         },
         {
           id: "n2-4",
-          title: "Integración de IA Intermedia (4 horas)",
-          hours: 4,
+          title: "Integración de IA Intermedia (5 horas)",
+          hours: 5,
           icon: "star",
           highlight: true,
           topics: [
@@ -114,7 +114,7 @@ export const sqlServerSyllabus: CourseSyllabusData = {
     {
       id: "nivel3",
       label: "Nivel III: Avanzado",
-      shortLabel: "Admin & Stored Procs (16h)",
+      shortLabel: "Admin & Stored Procs (20h)",
       theme: "#EA580C",
       audience:
         "Este curso avanzado profundiza en vistas complejas, procedimientos almacenados y análisis predictivos, perfecto para optimizar reportes automatizados consolidados.",
@@ -127,8 +127,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n3-1",
-          title: "Creación de Vistas Complejas (4 horas)",
-          hours: 4,
+          title: "Creación de Vistas Complejas (5 horas)",
+          hours: 5,
           topics: [
             "Funciones: LEFT() (Extraer texto), CASE WHEN (Condicionales), CONCAT() (Concatenar).",
             "Problemas resueltos: Cruce con múltiples joins, columna Tipo_Transporte por país, vistas agrupadas.",
@@ -136,8 +136,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-2",
-          title: "Tablas de Reportes y Procedimientos (3 horas)",
-          hours: 3,
+          title: "Tablas de Reportes y Procedimientos (4 horas)",
+          hours: 4,
           topics: [
             "Funciones: SELECT INTO, DROP TABLE, CREATE PROC, EXECUTE.",
             "Problemas resueltos: Tabla de vista, actualización de reportes, procs para múltiples tablas.",
@@ -145,8 +145,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-3",
-          title: "Análisis de Datos y Reportes (3 horas)",
-          hours: 3,
+          title: "Análisis de Datos y Reportes (4 horas)",
+          hours: 4,
           topics: [
             "Funciones: ALTER TABLE, ADD CONSTRAINT, UPDATE, CAST().",
             "Problemas resueltos: Modificar claves primarias, actualización de vistas, estrategia de metas vs. ventas.",
@@ -154,8 +154,8 @@ export const sqlServerSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-4",
-          title: "Trabajo Final Aplicado (3 horas)",
-          hours: 3,
+          title: "Trabajo Final Aplicado (4 horas)",
+          hours: 4,
           topics: [
             "Aplicación integral: Trabajo práctico con todas las herramientas, certificación al aprobar.",
           ],

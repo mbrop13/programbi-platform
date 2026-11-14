@@ -451,7 +451,7 @@ function displayLevel(course: Course, levelName: string): string {
 function quoteHours(course: Course, levelName: string): number {
   if (isTieredCourse(course)) return PARTICULAR_COURSE_HOURS;
   const level = findLevel(course, levelName);
-  return level?.durationHours || course.durationHours || 16;
+  return level?.durationHours || course.durationHours || 20;
 }
 
 function presentedPrice(

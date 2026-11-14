@@ -6,9 +6,9 @@ hreflang: es-GT
 curso: power-bi
 url_curso: https://www.programbi.com/gt/cursos/power-bi
 title: "Cómo aprender Power BI en Guatemala | ProgramBI"
-meta: "Guía para aprender Power BI en Guatemala: temario en 8 piezas, ejemplos, hábitos de estudio y curso en vivo de 20 h desde el 23 de noviembre, 16:30."
+meta: "Guía para aprender Power BI en Guatemala: temario en 8 piezas, ejemplos, hábitos de estudio y curso en vivo de 20 h a las 16:30, con cupos abiertos."
 h1: "Cómo aprender Power BI en Guatemala: guía práctica para arrancar y curso en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/gt/cursos/power-bi
   - https://learn.microsoft.com/es-es/power-bi/fundamentals/desktop-get-the-desktop
@@ -23,11 +23,11 @@ nota_hermes: |
 
 # Cómo aprender Power BI en Guatemala: guía práctica para arrancar y curso en vivo
 
-**La respuesta rápida:** para aprender Power BI desde Guatemala con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/gt/cursos/power-bi) tiene un **nivel básico-intermedio de 20 horas por Zoom**, que va de la conexión y limpieza de datos con Power Query al modelo, DAX inicial, dashboards y publicación con roles. La próxima cohorte inicia el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 16:30 a 18:30, hora de Guatemala**. Precio: **{precio_local}**.
+**La respuesta rápida:** para aprender Power BI desde Guatemala con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/gt/cursos/power-bi) tiene un **nivel básico-intermedio de 20 horas por Zoom**, que va de la conexión y limpieza de datos con Power Query al modelo, DAX inicial, dashboards y publicación con roles. Abre **nuevas cohortes cada mes** (fecha actualizada en la ficha), con clases **lunes y miércoles de 16:30 a 18:30, hora de Guatemala**. Precio: **{precio_local}**.
 
 Todas las clases quedan grabadas con acceso de por vida, se entrega certificado digital y existe un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Datos de la ficha del curso, revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 16:30 hora de Guatemala · «Ver el curso».
+**[CTA-TOP]** — Cohortes cada mes · 16:30 hora de Guatemala · «Ver el curso».
 
 ## ¿Te suena esta escena?
 
@@ -116,7 +116,7 @@ Este recorrido coincide con el orden del curso, así que sirve tanto para prepar
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** inicios mensuales programados; confirma tu fecha en la ficha del curso.
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de Guatemala (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -126,7 +126,7 @@ Este recorrido coincide con el orden del curso, así que sirve tanto para prepar
 
 **[CTA-MID]** — Descarga el temario de Power BI.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Inicios todos los meses · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -134,7 +134,7 @@ Este recorrido coincide con el orden del curso, así que sirve tanto para prepar
 {precio_local}. Escríbenos por WhatsApp para confirmar el monto y la forma de pago.
 
 **¿Cuándo empieza y a qué hora?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 16:30 a 18:30, hora de Guatemala.
+Hay apertura mensual de cohortes, lunes y miércoles de 16:30 a 18:30, hora de Guatemala; revisa la próxima fecha en la ficha.
 
 **¿Necesito experiencia previa?**
 No. Con Excel básico puedes empezar; el nivel básico-intermedio parte desde cero.

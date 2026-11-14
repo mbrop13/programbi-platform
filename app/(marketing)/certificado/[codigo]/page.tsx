@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import CertificadoPublico from "@/components/certificado/CertificadoPublico";
 import { esCodigoCertificadoValido } from "@/lib/certificados/codigo";
 import { obtenerCertificadoPorCodigo } from "@/lib/certificados/consulta";
-import { DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { DEFAULT_OG_IMAGE, twitterShare } from "@/lib/seo";
 
 type Props = { params: Promise<{ codigo: string }> };
 
@@ -34,6 +34,10 @@ export const metadata: Metadata = {
     locale: "es_CL",
     images: [DEFAULT_OG_IMAGE],
   },
+  twitter: twitterShare(
+    "Certificado verificado | ProgramBI",
+    "Comprueba la autenticidad de un certificado emitido por ProgramBI y consulta el curso, la fecha de emisión y el código de validación."
+  ),
 };
 
 export default async function CertificadoPage({ params }: Props) {

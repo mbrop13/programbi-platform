@@ -19,7 +19,7 @@ function nombreParaTitulo(iso: string): string {
 }
 
 /** Agrega el país al título cuando no lo trae, antes de recortar a 60. */
-function conPais(texto: string, iso: string, max: number = 60): string {
+export function conPais(texto: string, iso: string, max: number = 60): string {
   if (iso === "cl") return texto;
   const nombre = getPais(iso).nombre;
   const corto = nombreParaTitulo(iso);

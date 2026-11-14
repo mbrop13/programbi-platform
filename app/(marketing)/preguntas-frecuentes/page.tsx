@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { normalizarPais } from "@/config/paises";
 import FaqContenido from "@/components/faq/FaqContenido";
 import { faqDePais } from "@/lib/faq/contenido";
-import { absoluteUrl, tituloSeo, twitterShare } from "@/lib/seo";
+import { absoluteUrl, pageOg, tituloSeo } from "@/lib/seo";
 import { hreflangDe } from "@/lib/paises/rutas";
 
 /**
@@ -14,7 +14,15 @@ export const revalidate = 86400;
 const PATH = "/preguntas-frecuentes";
 const TITLE = tituloSeo("Preguntas frecuentes: cursos, clases y pagos");
 const DESCRIPTION =
-  "Respuestas sobre los cursos de ProgramBI: clases en vivo por Zoom, campus virtual con clases y material, horarios por país, precios en moneda local, cuotas, requisitos y certificado.";
+  "Respuestas sobre cursos de ProgramBI: clases en vivo por Zoom, campus virtual, horarios por país, precios en moneda local, cuotas y certificado.";
+
+const share = pageOg({
+  title: TITLE,
+  description: DESCRIPTION,
+  path: "preguntas-frecuentes",
+  kicker: "Preguntas frecuentes",
+  tags: ["Clases en vivo", "Pagos", "Certificado"],
+});
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -29,8 +37,9 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: absoluteUrl(PATH),
     type: "website",
+    images: share.images,
   },
-  twitter: twitterShare(TITLE, DESCRIPTION),
+  twitter: share.twitter,
 };
 
 export default async function PreguntasFrecuentesPage({

@@ -534,7 +534,7 @@ function ChatLandingContent() {
   // ProgramBI: auth is a dedicated page, not Maverlang's modal
   const openAuthModal = (_view?: "login" | "register" | "forgot") => {
     if (typeof window !== "undefined") {
-      window.location.href = "/auth/login?next=/ai"
+      window.location.href = "/login?next=/ai"
     }
   }
 

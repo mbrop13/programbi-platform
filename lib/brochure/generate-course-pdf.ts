@@ -272,7 +272,7 @@ async function cargarActivo(
   return rasterizarLocal(ruta, maxSize);
 }
 
-/** `Manuel Oliva` → `/images/mentors/manuel-oliva.jpg`. */
+/** `Manuel Oliva` → `/images/mentors/manuel-oliva.webp`. */
 function rutaLocalProfesor(nombre: string): string | null {
   const slug = (nombre || "")
     .normalize("NFD")
@@ -280,7 +280,7 @@ function rutaLocalProfesor(nombre: string): string | null {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  return slug ? `/images/mentors/${slug}.jpg` : null;
+  return slug ? `/images/mentors/${slug}.webp` : null;
 }
 
 /**

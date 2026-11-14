@@ -379,10 +379,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
 
                 <div className="relative z-10">
                   <Image
-                    src="/images/logo.png"
+                    src="/images/logo-nav.webp"
                     alt="ProgramBI"
-                    width={160}
-                    height={40}
+                    width={123}
+                    height={32}
+                    unoptimized
                     className="h-8 w-auto mb-8"
                   />
                   <h3 className="text-3xl font-bold mb-4 leading-tight text-slate-900">

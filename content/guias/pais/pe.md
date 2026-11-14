@@ -6,7 +6,7 @@ country: pe
 lang: es-PE
 slug: como-aprender-power-bi-en-peru
 path: /pe/guias/como-aprender-power-bi-en-peru
-updated: 2026-11-04
+updated: 2026-11-14
 course: power-bi
 url_curso: https://www.programbi.com/pe/cursos/power-bi
 sources:
@@ -118,7 +118,7 @@ Solo es posible con constancia. Pero, como muestran los avisos, el diferencial e
 ##### El curso Power BI en vivo de ProgramBI (versión Perú)
 
 - **En vivo por Zoom**, lunes y miércoles de **17:30 a 19:30, hora de Perú**.
-- **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
+- **20 horas, 8 módulos**, básico-intermedio. Grupos nuevos cada mes; confirma la próxima fecha disponible en la ficha.
 - Revisa el costo en soles y opciones de pago descargando el PDF desde el [curso de Power BI en Perú](/pe/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.

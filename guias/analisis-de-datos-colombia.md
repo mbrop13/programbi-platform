@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/co/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Colombia: guía 2026 | ProgramBI"
 meta: "Curso de análisis de datos en Colombia en vivo: SQL Server, Power BI y Python en 60 h, lunes y miércoles 17:30. Cómo ser analista de datos y sueldos."
 h1: "Curso de Análisis de Datos en Colombia: cómo volverse analista de datos"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/co/cursos/analisis-de-datos
   - https://www.programbi.com/co/cursos/power-bi
@@ -28,11 +28,11 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Colombia: cómo volverse analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI en Colombia](https://www.programbi.com/co/cursos/analisis-de-datos) se dicta en vivo por Zoom y, en su nivel básico-intermedio, reúne **SQL Server, Power BI y Python en 60 horas** (20 por herramienta). Las clases son **lunes y miércoles de 17:30 a 19:30, hora de Colombia**, arranca el **lunes 23 de noviembre de 2026** y su valor es **{precio_local}**. Trae grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI en Colombia](https://www.programbi.com/co/cursos/analisis-de-datos) se dicta en vivo por Zoom y, en su nivel básico-intermedio, reúne **SQL Server, Power BI y Python en 60 horas** (20 por herramienta). Las clases son **lunes y miércoles de 17:30 a 19:30, hora de Colombia**, cuenta con **grupos nuevos cada mes** (fecha vigente en la ficha) y su valor es **{precio_local}**. Trae grabaciones de por vida y certificado.
 
 **¿Qué se necesita para ser analista de datos en Colombia?** Saber pedirle datos a una base con SQL, transformarlos en un tablero confiable con Power BI, apoyarte en Python cuando el volumen o el desorden superan a Excel y, sobre todo, poder explicarle el resultado a alguien del negocio. Eso, más un proyecto que puedas mostrar, es lo que filtran los reclutadores.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 17:30 hora de Colombia · «Ver el curso».
+**[CTA-TOP]** — Cohortes mensuales · lunes y miércoles 17:30 (Colombia) · «Ver el curso».
 
 ## El contexto colombiano: muchos datos, poco tiempo
 
@@ -129,7 +129,7 @@ Según la [ficha del curso para Colombia](https://www.programbi.com/co/cursos/an
 - Contenido: consultas SQL desde cero, modelado y DAX, análisis exploratorio con Pandas, dashboards y reportes automáticos, ETL con Power Query y conexión a bases de datos, proyecto final con datos reales, con IA como apoyo en cada módulo.
 - **Nivel avanzado** de 60 horas más (automatización, inteligencia de tiempo y modelos).
 - **Grabaciones de por vida** y **certificado** al completar.
-- Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **inicios mensuales** (revisa la fecha disponible en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

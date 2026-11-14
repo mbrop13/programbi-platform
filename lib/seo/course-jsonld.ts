@@ -1,4 +1,10 @@
-import type { Course } from "@/lib/data/courses";
+import { getCourseBySlug, type Course } from "@/lib/data/courses";
+import {
+  analisisDeDatosSlugs,
+  getNearestSchedule,
+  staticSchedules,
+  type CourseSchedule,
+} from "@/lib/data/course-schedules";
 import {
   advancedHeading,
   coursePath,
@@ -18,8 +24,11 @@ import {
   type MiembroEquipo,
 } from "@/lib/data/equipo";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import { PRECIOS_VALID_FROM, monedaPublica, precioPublico } from "@/config/pricing";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
+
+const OFFER_PRICE_VALID_UNTIL = "2026-12-31";
 
 const OCCUPATIONAL: Record<string, string> = {
   "analisis-de-datos": "Analista de Datos, Business Intelligence Analyst, Data Analyst",
@@ -42,10 +51,51 @@ const PREREQUISITES: Record<string, string> = {
     "Excel intermedio (tablas dinámicas, fórmulas avanzadas, gráficos y manejo de datos). No se requiere Python, SQL, Power BI ni Inteligencia Artificial.",
 };
 
+export interface CourseJsonLdOptions {
+  startDate?: string | null;
+  schedules?: CourseSchedule[];
+}
+
+function formatEducationalLevel(level: string): string {
+  const trimmed = level.trim();
+  if (!trimmed) return "Principiante";
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+}
+
+function toIsoDate(raw: string | null | undefined): string | undefined {
+  if (!raw) return undefined;
+  const trimmed = raw.trim();
+  if (!/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return undefined;
+  const dateOnly = trimmed.slice(0, 10);
+  const parsed = new Date(`${dateOnly}T12:00:00Z`);
+  return Number.isNaN(parsed.getTime()) ? undefined : dateOnly;
+}
+
+type ScheduleCandidate = Omit<CourseSchedule, "id"> & { id?: string };
+
+function resolveCourseStartDate(
+  courseSlug: string,
+  options?: CourseJsonLdOptions
+): string | undefined {
+  const explicit = toIsoDate(options?.startDate);
+  if (explicit) return explicit;
+  const pool: readonly ScheduleCandidate[] = options?.schedules ?? staticSchedules;
+  const matching: CourseSchedule[] = pool
+    .filter((s) =>
+      courseSlug === "analisis-de-datos"
+        ? s.course_slug === "analisis-de-datos" || analisisDeDatosSlugs.includes(s.course_slug)
+        : s.course_slug === courseSlug
+    )
+    .map((s, idx) => ({ ...s, id: s.id ?? String(idx) }));
+  const nearest = getNearestSchedule(matching);
+  return toIsoDate(nearest?.start_date);
+}
+
 export function getCourseJsonLd(
   course: Course,
   view: CourseOfferView = "publico",
-  iso: string = ISO_CHILE
+  iso: string = ISO_CHILE,
+  options?: CourseJsonLdOptions
 ) {
   const pais = normalizarPais(iso);
   const seo = COURSE_SEO[course.slug];
@@ -53,14 +103,18 @@ export function getCourseJsonLd(
   const name = view === "avanzado" ? advancedHeading(baseName) : baseName;
   const hours = offerHours(course, view);
   const path = rutaLocal(pais, coursePath(course.slug, view));
+  const courseUrl = absoluteUrl(path);
   // Chile publica en español neutro; los demás mercados, en su idioma.
   const idioma = pais === ISO_CHILE ? "es" : getPais(pais).idioma;
   // Cada curso declara a su profesor en `equipo.ts`; sin match, lo dicta el
   // fundador. El `sameAs` a la página de empresa era un dato incorrecto.
   const instructor = miembroPorCurso(course.slug);
+  const precio = view === "empresas" ? null : precioPublico(pais, course.slug);
+  const startDate = view === "empresas" ? undefined : resolveCourseStartDate(course.slug, options);
 
   return {
     "@type": "Course",
+    "@id": `${courseUrl}#course`,
     name,
     description: localizarMercado(
       view === "avanzado"
@@ -68,24 +122,12 @@ export function getCourseJsonLd(
         : seo?.description || course.description,
       pais
     ),
-    url: absoluteUrl(path),
-    provider: {
-      "@type": "Organization",
-      name: "ProgramBI",
-      url: SITE_URL,
-      "@id": `${SITE_URL}/#organization`,
-      sameAs: [
-        "https://www.instagram.com/programbi_capacitaciones/",
-        "https://www.tiktok.com/@programbi",
-        "https://cl.linkedin.com/company/programbi",
-        "https://www.youtube.com/@ProgramBi",
-      ],
-    },
-    image: course.imageUrl,
-    educationalLevel: view === "avanzado" ? "avanzado" : course.level,
+    url: courseUrl,
+    provider: { "@id": ORG_ID },
+    image: absoluteUrl(course.imageUrl),
+    educationalLevel: formatEducationalLevel(view === "avanzado" ? "Avanzado" : course.level),
     inLanguage: idioma,
     courseMode: course.modality === "online" ? "Online" : "Blended",
-    numberOfCredits: hours,
     timeRequired: `PT${hours}H`,
     teaches: offerTeaches(course, view).join(", "),
     coursePrerequisites:
@@ -101,31 +143,29 @@ export function getCourseJsonLd(
       // pide para Course info y así no la infiere del temario.
       courseWorkload: `PT${hours}H`,
       inLanguage: idioma,
+      ...(startDate ? { startDate } : {}),
       // `Course` no define `instructor` en schema.org; el lugar válido es la
       // instancia del curso. El @id es el mismo que usa /profesores/<slug>.
-      instructor: {
-        "@type": "Person",
-        "@id": idPersona(instructor.slug),
-        name: instructor.nombre,
-        jobTitle: instructor.cargo,
-        url: absoluteUrl(rutaPerfil(instructor.slug)),
-        worksFor: { "@id": ORG_ID },
-        ...(instructor.imageUrl ? { image: absoluteUrl(instructor.imageUrl) } : {}),
-        ...(instructor.linkedinUrl ? { sameAs: [instructor.linkedinUrl] } : {}),
-      },
+      instructor: getPersonaJsonLd(instructor),
     },
-    // Gate de precios (decisión vigente): el arancel numérico NUNCA viaja en el
-    // HTML del servidor, así que `offers` declara la oferta sin `price` ni
-    // `priceCurrency`; solo que el curso es de pago. El monto se descarga en el
-    // brochure PDF de la ficha, única superficie con precios. `category: "Paid"`
-    // va también en los mercados sin precio publicado (p. ej. Paraguay): el
-    // curso se vende igual y lo que falta es el monto, no la condición de pago.
-    // Sin `aggregateRating` ni `review`: no hay reseñas verificables en la ficha.
+    // Oferta comercial: incluye `price`, `priceCurrency`, `validFrom` y
+    // `priceValidUntil` en las vistas públicas cuando el país tiene arancel
+    // aprobado en `config/pricing.ts`. En vista empresas o mercados sin monto
+    // publicado (p. ej. Paraguay) declara solo `category: "Paid"`, `url` y
+    // `availability`.
     offers: {
       "@type": "Offer",
       category: "Paid",
-      url: absoluteUrl(path),
+      url: courseUrl,
       availability: "https://schema.org/InStock",
+      ...(precio != null
+        ? {
+            price: precio,
+            priceCurrency: monedaPublica(pais),
+            validFrom: PRECIOS_VALID_FROM,
+            priceValidUntil: OFFER_PRICE_VALID_UNTIL,
+          }
+        : {}),
     },
     syllabusSections: offerSyllabusSections(course, view).map((section) => ({
       "@type": "Syllabus",
@@ -155,7 +195,33 @@ export function idPersona(slug: string): string {
  * Nodo Person de un profesor. `description`, `image` y `sameAs` solo aparecen
  * cuando el dato existe: no se rellenan con texto ni URLs genéricas.
  */
+const ALUMNI_POR_PERSONA: Record<string, string[]> = {
+  "manuel-oliva": ["Universidad Adolfo Ibáñez", "Universidad de Concepción"],
+  "emanuel-berrocal": [
+    "Universidad de Chile",
+    "Pontificia Universidad Católica de Chile",
+  ],
+  "rodrigo-vega": ["Universidad de Chile"],
+};
+
+const KNOWS_ABOUT_POR_PERSONA: Record<string, string[]> = {
+  "manuel-oliva": [
+    "Data Science",
+    "Data Analytics para la toma de decisiones",
+    "Riesgo Financiero",
+    "Econometría",
+    "Power BI",
+    "Python",
+    "SQL Server",
+  ],
+  "emanuel-berrocal": ["Estadística", "Mercado Financiero", "Python"],
+  "rodrigo-vega": ["Business Intelligence", "Visualización de Datos", "Power BI", "Excel"],
+};
+
 export function getPersonaJsonLd(miembro: MiembroEquipo) {
+  const alumniNames = ALUMNI_POR_PERSONA[miembro.slug] ?? [];
+  const knowsAbout = KNOWS_ABOUT_POR_PERSONA[miembro.slug] ?? [];
+
   return {
     "@type": "Person",
     "@id": idPersona(miembro.slug),
@@ -166,20 +232,30 @@ export function getPersonaJsonLd(miembro: MiembroEquipo) {
     ...(miembro.bio ? { description: miembro.bio } : {}),
     ...(miembro.imageUrl ? { image: absoluteUrl(miembro.imageUrl) } : {}),
     ...(miembro.linkedinUrl ? { sameAs: [miembro.linkedinUrl] } : {}),
+    ...(alumniNames.length > 0
+      ? {
+          alumniOf: alumniNames.map((name) => ({
+            "@type": "EducationalOrganization",
+            name,
+          })),
+        }
+      : {}),
+    ...(knowsAbout.length > 0 ? { knowsAbout } : {}),
   };
 }
 
 /**
- * EducationalOrganization con el equipo enlazado por `@id`: el fundador en
- * `founder` y todos los perfiles publicados en `employee`. Los nodos Person se
- * incluyen aparte, en el mismo @graph de la página. Solo entran los miembros
- * que cumplen `perfilIndexable`: la organización no declara empleados con
- * ficha `noindex`.
+ * EducationalOrganization con el equipo enlazado por `@id`. Los nodos Person se
+ * incluyen aparte en el mismo `@graph` cuando corresponden a la página actual;
+ * en fichas individuales se pasa `[miembro]` para no dejar `@id` colgantes.
  */
 export function getOrganizacionEquipoJsonLd(
   descripcion: string,
   miembros: MiembroEquipo[] = EQUIPO_INDEXABLE
 ) {
+  const fundador = fundadorEquipo();
+  const incluyeFundador = miembros.some((m) => m.slug === fundador.slug);
+
   return {
     "@type": "EducationalOrganization",
     "@id": ORG_ID,
@@ -188,21 +264,50 @@ export function getOrganizacionEquipoJsonLd(
     url: SITE_URL,
     logo: { "@type": "ImageObject", url: LOGO_ORGANIZACION, width: 600, height: 160 },
     description: descripcion,
-    founder: { "@id": idPersona(fundadorEquipo().slug) },
-    employee: miembros.map((miembro) => ({ "@id": idPersona(miembro.slug) })),
+    ...(incluyeFundador ? { founder: { "@id": idPersona(fundador.slug) } } : {}),
+    ...(miembros.length > 0
+      ? { employee: miembros.map((miembro) => ({ "@id": idPersona(miembro.slug) })) }
+      : {}),
   };
 }
 
 /** ProfilePage de /profesores/<slug>, con la ficha Person como mainEntity. */
-export function getProfilePageJsonLd(miembro: MiembroEquipo) {
+export function getProfilePageJsonLd(miembro: MiembroEquipo, lang: string = "es-CL") {
   const url = absoluteUrl(rutaPerfil(miembro.slug));
+  const teachesCourses = miembro.cursos
+    .map((slug) => getCourseBySlug(slug))
+    .filter((course): course is Course => Boolean(course));
+
   return {
     "@type": "ProfilePage",
     "@id": `${url}#profilepage`,
     url,
     name: `${miembro.nombre} — Profesor ProgramBI`,
+    inLanguage: lang,
     isPartOf: { "@id": WEBSITE_ID },
+    breadcrumb: { "@id": `${url}#breadcrumb` },
     mainEntity: { "@id": idPersona(miembro.slug) },
+    ...(teachesCourses.length > 0
+      ? {
+          teaches: teachesCourses.map((course) => ({
+            "@type": "DefinedTerm",
+            name: course.title,
+            url: absoluteUrl(coursePath(course.slug, "publico")),
+          })),
+          mentions: teachesCourses.map((course) => {
+            const courseUrl = absoluteUrl(coursePath(course.slug, "publico"));
+            return {
+              "@type": "Course",
+              "@id": `${courseUrl}#course`,
+              name: course.title,
+              url: courseUrl,
+            };
+          }),
+          relatedLink: teachesCourses.map((course) =>
+            absoluteUrl(coursePath(course.slug, "publico"))
+          ),
+        }
+      : {}),
   };
 }
 
@@ -215,7 +320,8 @@ export function getEquipoCollectionJsonLd(
   miembros: MiembroEquipo[],
   url: string,
   nombre: string,
-  descripcion: string
+  descripcion: string,
+  lang: string = "es-CL"
 ) {
   return [
     {
@@ -224,8 +330,9 @@ export function getEquipoCollectionJsonLd(
       url,
       name: nombre,
       description: descripcion,
-      inLanguage: "es-CL",
+      inLanguage: lang,
       isPartOf: { "@id": WEBSITE_ID },
+      breadcrumb: { "@id": `${url}#breadcrumb` },
       mainEntity: { "@id": `${url}#equipo` },
     },
     {

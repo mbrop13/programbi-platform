@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/ar/cursos/sql-server
 title: "Curso de SQL Server Argentina en vivo: guía 2026 | ProgramBI"
 meta: "Curso de SQL online en vivo en Argentina: SQL Server desde cero en 20 h, martes y jueves 19:30. Temario, consultas de ejemplo y cómo sumarlo a Power BI."
 h1: "Curso de SQL Server en Argentina: aprendé SQL online y en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/ar/cursos/sql-server
   - https://www.programbi.com/ar/cursos/power-bi
@@ -26,11 +26,11 @@ nota_hermes: |
 
 # Curso de SQL Server en Argentina: aprendé SQL online y en vivo
 
-**Respuesta corta:** el [curso de SQL Server de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/sql-server) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Se cursa **martes y jueves de 19:30 a 21:30, hora de Argentina**, empieza el **martes 24 de noviembre de 2026** y cuesta **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de SQL Server de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/sql-server) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Se cursa **martes y jueves de 19:30 a 21:30, hora de Argentina**, abre **nuevas cohortes todos los meses** (fecha vigente en la ficha) y cuesta **{precio_local}**. Tenés grabaciones de por vida y certificado.
 
 **¿Qué vas a saber hacer?** Consultar bases de datos sin depender de nadie: filtrar, agrupar, cruzar tablas con `JOIN`, usar subconsultas, CTEs, tablas temporales, funciones de ventana y `PIVOT`. Es la habilidad más pedida en búsquedas de datos y la que hace que tus tableros de Power BI tengan números confiables.
 
-**[CTA-TOP]** — Próxima clase en vivo: martes 24 de noviembre de 2026 · 19:30 hora de Argentina · «Ver el curso».
+**[CTA-TOP]** — Inicios mensuales en vivo · martes y jueves 19:30 (Argentina) · «Ver el curso».
 
 ## Por qué SQL te cambia el laburo
 
@@ -162,7 +162,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 - Temario: SELECT, WHERE y ORDER BY; funciones y operadores; GROUP BY y HAVING; subconsultas; JOINs y vistas; CTEs y tablas temporales; funciones de ventana; PIVOT y UNPIVOT; IA aplicada a SQL Server.
 - **Nivel avanzado** (20 h): procedimientos almacenados y diseño de esquemas.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **martes 24 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **cohortes todos los meses** (consultá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

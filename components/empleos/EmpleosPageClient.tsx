@@ -88,9 +88,9 @@ export function EmpleosPageSkeleton({
       </section>
       <section className="border-t border-line px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-[1400px]">
-          <p className="text-sm text-mute">
+          <h2 className="text-sm font-normal text-mute">
             {total} {total === 1 ? "vacante disponible" : "vacantes disponibles"}
-          </p>
+          </h2>
           {total === 0 ? (
             <div className="flex flex-col items-center py-20 text-center">
               <h2 className="text-xl font-bold tracking-tight text-ink">
@@ -456,11 +456,11 @@ function EmpleosPageLive({
 
           {/* Resultados */}
           <div className="mt-6 flex items-center justify-between">
-            <p className="text-sm text-mute" aria-live="polite">
+            <h2 className="text-sm font-normal text-mute" aria-live="polite">
               {loading
                 ? "Buscando vacantes…"
                 : `${total} ${total === 1 ? "vacante disponible" : "vacantes disponibles"}`}
-            </p>
+            </h2>
           </div>
 
           {loadError && !loading && jobs.length === 0 && (

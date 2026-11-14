@@ -8,7 +8,7 @@ import JobCard, { CompanyAvatar } from "@/components/empleos/JobCard";
 import { mapJobRow } from "@/lib/jobs/queries";
 import { COMPANY_SIZE_LABELS } from "@/lib/jobs/types";
 import { ogImageUrl } from "@/lib/og/url";
-import { tituloSeo } from "@/lib/seo";
+import { tituloSeo, twitterShare } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -31,31 +31,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const company = await getCompanyBySlug(slug);
   if (!company) return { title: "Empresa no encontrada" };
   const description = company.description?.slice(0, 160) ?? `Vacantes abiertas en ${company.name}.`;
+  const ogTitle = `${company.name} | Bolsa de Trabajo ProgramBI`;
+  const ogImg = ogImageUrl({
+    kicker: "Empresa verificada",
+    title: company.name,
+    description:
+      "Contrata talento certificado en la Bolsa de Trabajo de ProgramBI.",
+    tags: company.industry ? [company.industry] : undefined,
+    verified: true,
+    path: `empleos/empresas/${company.slug}`,
+  });
   return {
     title: { absolute: tituloSeo(`${company.name} — Vacantes`) },
     description,
     alternates: { canonical: `/empleos/empresas/${company.slug}` },
     openGraph: {
-      title: `${company.name} | Bolsa de Trabajo ProgramBI`,
+      title: ogTitle,
       description,
       url: `/empleos/empresas/${company.slug}`,
       images: [
         {
-          url: ogImageUrl({
-            kicker: "Empresa verificada",
-            title: company.name,
-            description:
-              "Contrata talento certificado en la Bolsa de Trabajo de ProgramBI.",
-            tags: company.industry ? [company.industry] : undefined,
-            verified: true,
-            path: `empleos/empresas/${company.slug}`,
-          }),
+          url: ogImg,
           width: 1200,
           height: 630,
           alt: `${company.name} — Bolsa de Trabajo ProgramBI`,
         },
       ],
     },
+    twitter: twitterShare(ogTitle, description, ogImg),
   };
 }
 

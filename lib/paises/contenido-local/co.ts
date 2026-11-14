@@ -116,7 +116,7 @@ const datos: DatosBloqueLocal = {
       parrafos: [
         "El programa cubre Power Query y M para limpiar y combinar archivos, el modelo estrella, las medidas con CALCULATE y FILTER, inteligencia de tiempo, RANKX e iteradores como SUMX. Cierra con una introducción a IA en Power BI y un tablero propio que se puede mostrar en una entrevista o en el comité de área.",
         "En Colombia los ejercicios usan estructuras habituales del mercado local: ventas por sede y canal, cartera por producto, recaudo con PSE o Nequi y reportes de servicio. También se practica el formato de cifras grandes en COP —mostrar millones en las tarjetas— para que el tablero se lea de un vistazo y no dependa de zoom.",
-        "El curso avanzado, también de veinte horas, cubre publicación en Power BI Service y seguridad a nivel de fila. El curso abierto es el básico-intermedio; si la empresa necesita los tres niveles para un equipo, se cotiza la vista in-company con los datos de la organización.",
+        "El curso avanzado, también de veinte horas, cubre publicación en Power BI Service y seguridad a nivel de fila. El curso abierto es el básico-intermedio; si la empresa necesita los dos niveles (básico-intermedio y avanzado) para un equipo, se cotiza la vista in-company con los datos de la organización.",
       ],
       faqs: [
         {
@@ -199,7 +199,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuántas horas tiene el curso?",
-          a: "La ficha del curso declara la duración vigente: 16 horas en el catálogo. Antes de inscribirte, revisa esa ficha porque la carga horaria y el nivel son los que se muestran al momento de pagar.",
+          a: "La ficha del curso declara la duración vigente: 20 horas en el catálogo. Antes de inscribirte, revisa esa ficha porque la carga horaria y el nivel son los que se muestran al momento de pagar.",
         },
         {
           q: "¿Se aplica a datos de una empresa colombiana?",

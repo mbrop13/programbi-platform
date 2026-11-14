@@ -40,13 +40,59 @@ const categoryLabels: Record<string, string> = {
   general: "Cultura",
 };
 
+type RelatedCourse = { slug: string; label: string };
+
+const COURSE_BY_CATEGORY: Record<string, RelatedCourse> = {
+  "power-bi": { slug: "power-bi", label: "Power BI" },
+  sql: { slug: "sql-server", label: "SQL Server" },
+  python: { slug: "python", label: "Python para Datos" },
+  ia: { slug: "ia-productividad", label: "IA para productividad" },
+};
+
+/**
+ * Resuelve el curso más afín al artículo combinando slug, título y etiquetas
+ * antes de caer al mapa genérico por categoría editorial.
+ */
+function resolveRelatedCourse(article: {
+  slug?: string | null;
+  title?: string | null;
+  category?: string | null;
+  tags?: string[] | null;
+}): RelatedCourse {
+  const tags = Array.isArray(article.tags) ? article.tags.join(" ") : "";
+  const haystack = `${article.slug ?? ""} ${article.title ?? ""} ${tags}`.toLowerCase();
+
+  if (/(?:^|[^a-z])claude(?:[^a-z]|$)/.test(haystack)) {
+    return { slug: "claude", label: "Claude para Oficina y Datos" };
+  }
+  if (/(?:^|[^a-z])copilot(?:[^a-z]|$)/.test(haystack)) {
+    return { slug: "copilot", label: "Copilot y Copilot Studio" };
+  }
+  if (/power[- ]automate/.test(haystack)) {
+    return { slug: "power-automate", label: "Power Automate" };
+  }
+  if (/power[- ]?bi|\bdax\b/.test(haystack)) {
+    return { slug: "power-bi", label: "Power BI" };
+  }
+  if (/\bsql(?:[- ]?server)?\b|t-sql/.test(haystack)) {
+    return { slug: "sql-server", label: "SQL Server" };
+  }
+  if (/\bpython\b/.test(haystack)) {
+    return { slug: "python", label: "Python para Datos" };
+  }
+  if (/\bexcel\b/.test(haystack)) {
+    return { slug: "excel", label: "Excel Avanzado" };
+  }
+  return COURSE_BY_CATEGORY[article.category ?? ""] || COURSE_BY_CATEGORY["power-bi"];
+}
+
 interface BlogArticleClientProps {
   article: any;
   related: any[];
 }
 
 export default function BlogArticleClient({ article, related }: BlogArticleClientProps) {
-  const articleRef = useRef<HTMLElement>(null);
+  const articleRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
   const [prefs, setPrefs] = useState<BlogPrefs>(defaultPrefs);
@@ -142,16 +188,11 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
   const template = article.template || "default"; // default, tutorial, comparison
   const categoryLabel = categoryLabels[article.category] || article.category;
   /**
-   * Curso relacionado con el post, por categoría editorial. Se usa en el CTA
-   * final para mandar al lector a la ficha del curso y no solo al catálogo.
+   * Curso relacionado con el post, resuelto por tema/slug/tags y con respaldo
+   * por categoría editorial. Se usa en el CTA final para mandar al lector a
+   * la ficha del curso y no solo al catálogo.
    */
-  const courseByCategory: Record<string, { slug: string; label: string }> = {
-    "power-bi": { slug: "power-bi", label: "Power BI" },
-    sql: { slug: "sql-server", label: "SQL Server" },
-    python: { slug: "python", label: "Python para Datos" },
-    ia: { slug: "ia-productividad", label: "IA para productividad" },
-  };
-  const relatedCourse = courseByCategory[article.category] || courseByCategory["power-bi"];
+  const relatedCourse = resolveRelatedCourse(article);
   /**
    * Cursos para el bloque «Aprende con clases en vivo» al cierre del artículo.
    * Si el CTA por categoría ya apunta a uno de ellos, se omite para no duplicar.
@@ -417,18 +458,18 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
           {/* Main Article Content & Tutorial Layout */}
-          <main ref={articleRef} className={`${template === "tutorial" ? "lg:col-span-9" : "lg:col-span-12"} flex flex-col`}>
+          <div ref={articleRef} className={`${template === "tutorial" ? "lg:col-span-9" : "lg:col-span-12"} flex flex-col`}>
             
             {/* Table of Contents for Mobile Tutorial layout */}
             {template === "tutorial" && headings.length > 0 && (
               <div className={`border rounded-xl p-6 mb-8 lg:hidden ${
                 prefs.theme === "dark" ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-100"
               }`}>
-                <h3 className={`font-sans font-bold text-xs uppercase tracking-widest mb-4 ${
+                <h2 className={`font-sans font-bold text-xs uppercase tracking-widest mb-4 ${
                   prefs.theme === "dark" ? "text-slate-400" : "text-slate-400"
                 }`}>
                   Contenido de esta guía
-                </h3>
+                </h2>
                 <nav>
                   <ul className="space-y-3 pl-0 list-none my-0">
                     {headings.map((h, i) => (
@@ -484,7 +525,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                 {article.author_name ? article.author_name[0] : "P"}
               </div>
               <div className="flex-1">
-                <h4 className={`font-serif font-bold text-lg mb-2 flex items-center gap-2 ${
+                <h2 className={`font-serif font-bold text-lg mb-2 flex items-center gap-2 ${
                   prefs.theme === "dark" ? "text-white" : "text-slate-950"
                 }`}>
                   Escrito por {article.author_name || "Manuel Oliva"}
@@ -493,7 +534,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                   }`}>
                     {isManuel ? "CEO & Fundador" : "Docente"}
                   </span>
-                </h4>
+                </h2>
                 <p className={`text-sm leading-relaxed my-0 font-light ${
                   prefs.theme === "dark" ? "text-slate-400" : "text-slate-650"
                 }`}>
@@ -501,7 +542,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                 </p>
               </div>
             </div>
-          </main>
+          </div>
 
           {/* Table of Contents Sidebar (TUTORIAL LAYOUT ONLY) */}
           {template === "tutorial" && headings.length > 0 && (
@@ -510,9 +551,9 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
             }`}>
               <div className="space-y-6">
                 <div>
-                  <h3 className="font-sans font-bold text-[10px] tracking-widest text-slate-400 uppercase mb-4">
+                  <h2 className="font-sans font-bold text-[10px] tracking-widest text-slate-400 uppercase mb-4">
                     Contenido
-                  </h3>
+                  </h2>
                   <nav className="max-h-[350px] overflow-y-auto pr-1 scrollbar-thin">
                     <ul className="space-y-3.5 pl-0 list-none my-0">
                       {headings.map((h, i) => (
@@ -545,11 +586,11 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1890FF] mb-3 inline-block">
             PROGRAMBI CAPACITACIONES
           </span>
-          <h3 className={`font-serif font-bold text-2xl sm:text-3xl leading-tight mb-4 tracking-tight ${
+          <h2 className={`font-serif font-bold text-2xl sm:text-3xl leading-tight mb-4 tracking-tight ${
             prefs.theme === "dark" ? "text-white" : "text-slate-950"
           }`}>
-            Domina SQL, Power BI y Python con expertos activos
-          </h3>
+            Domina {relatedCourse.label} en vivo con expertos activos
+          </h2>
           <p className={`text-sm sm:text-base leading-relaxed mb-8 font-light max-w-xl mx-auto ${
             prefs.theme === "dark" ? "text-slate-350" : "text-slate-650"
           }`}>
@@ -582,11 +623,11 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
           <div className={`border-t pt-8 ${
             prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
           }`}>
-            <h3 className={`font-serif font-bold text-lg sm:text-xl tracking-tight mb-3 ${
+            <h2 className={`font-serif font-bold text-lg sm:text-xl tracking-tight mb-3 ${
               prefs.theme === "dark" ? "text-white" : "text-slate-950"
             }`}>
               Aprende con clases en vivo
-            </h3>
+            </h2>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8">
               {liveCourses.map((course) => (
                 <Link
@@ -613,11 +654,11 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
         <section className={`max-w-[1140px] mx-auto px-6 mt-28 pt-20 border-t ${
           prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
         }`}>
-          <h3 className={`font-serif font-bold text-2xl mb-8 tracking-tight text-center ${
+          <h2 className={`font-serif font-bold text-2xl mb-8 tracking-tight text-center ${
             prefs.theme === "dark" ? "text-white" : "text-slate-950"
           }`}>
             Artículos Relacionados
-          </h3>
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {related.map((art: any) => {
               return (
@@ -648,11 +689,11 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                       <span className="text-[9px] font-bold tracking-widest text-[#1890FF] uppercase mb-1.5">
                         {categoryLabels[art.category] || art.category}
                       </span>
-                      <h4 className={`font-serif font-bold text-base leading-snug group-hover:underline decoration-[#1890FF] decoration-2 underline-offset-4 mb-2 ${
+                      <h3 className={`font-serif font-bold text-base leading-snug group-hover:underline decoration-[#1890FF] decoration-2 underline-offset-4 mb-2 ${
                         prefs.theme === "dark" ? "text-slate-100" : "text-slate-950"
                       }`}>
                         {art.title}
-                      </h4>
+                      </h3>
                       <time className={`text-[10px] font-bold mt-auto block uppercase tracking-widest ${
                         prefs.theme === "dark" ? "text-slate-500" : "text-slate-400"
                       }`}>
@@ -754,9 +795,9 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                   <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest block mb-1 font-sans">
                     programbi.com
                   </span>
-                  <h4 className="font-serif font-bold text-slate-950 text-base leading-snug mb-1.5">
+                  <h3 className="font-serif font-bold text-slate-950 text-base leading-snug mb-1.5">
                     {article.title}
-                  </h4>
+                  </h3>
                   {article.excerpt && (
                     <p className="text-xs text-slate-450 leading-relaxed line-clamp-2 my-0 font-sans">
                       {article.excerpt}

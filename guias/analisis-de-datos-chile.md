@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/cursos/analisis-de-datos
 title: "Curso de Análisis de datos en Chile: guía 2026 | ProgramBI"
 meta: "Curso de análisis de datos en Chile en vivo: SQL Server, Power BI y Python en 60 h. Cómo ser analista de datos, sueldos y ruta paso a paso."
 h1: "Curso de Análisis de datos en Chile: cómo ser analista de datos en 2026"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/analisis-de-datos
   - https://www.programbi.com/cursos/power-bi
@@ -30,11 +30,11 @@ nota_hermes: |
 
 # Curso de Análisis de datos en Chile: cómo ser analista de datos en 2026
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI](https://www.programbi.com/cursos/analisis-de-datos) es un programa en vivo por Zoom, pensado para Chile, que en su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son los **lunes y miércoles de 19:30 a 21:30, hora de Chile**, el próximo inicio es el **lunes 23 de noviembre de 2026** y el valor es de **$338.000 CLP**. Incluye grabaciones de por vida en el campus y certificado al completar.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI](https://www.programbi.com/cursos/analisis-de-datos) es un programa en vivo por Zoom, pensado para Chile, que en su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son los **lunes y miércoles de 19:30 a 21:30, hora de Chile**, tiene **inicios todos los meses** (próxima fecha confirmada en la ficha) y el valor es de **$338.000 CLP**. Incluye grabaciones de por vida en el campus y certificado al completar.
 
 **¿Cómo ser analista de datos en Chile?** Necesitas tres cosas: sacar datos de una base (SQL), convertirlos en un modelo y un tablero que la gerencia entienda (Power BI) y limpiar o analizar lo que Excel no aguanta (Python). Con eso más un proyecto propio que puedas mostrar, ya tienes lo que piden la mayoría de los avisos de analista. El resto de esta guía te explica el camino, cuánto se gana y cómo elegir curso.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 19:30 hora de Chile · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · lunes y miércoles 19:30 (hora de Chile) · «Ver el curso».
 
 ## Qué hace un analista de datos (y qué no)
 
@@ -108,7 +108,7 @@ Datos tomados de la [ficha del curso](https://www.programbi.com/cursos/analisis-
 - **Nivel avanzado:** otras 60 horas con automatización, inteligencia de tiempo y modelos. El programa completo suma 120 horas.
 - **Para quién:** perfiles administrativos, financieros, comerciales, ingenieros y analistas, sobre todo de finanzas, control de gestión y operaciones que hoy viven en Excel.
 - **Incluye:** grabaciones de por vida en el campus y certificado digital al completar.
-- **Próximo inicio:** lunes 23 de noviembre de 2026.
+- **Próximo inicio:** inicios mensuales; revisa la fecha vigente en la ficha del curso.
 - **Valor:** $338.000 CLP. Puedes pagar en 3 cuotas sin interés.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM y más de 5.000 profesionales formados en SQL, Power BI, Python e IA.
 - **Empresas:** hay cotización para equipos en `/cursos/analisis-de-datos/empresas`.
@@ -123,7 +123,7 @@ Datos tomados de la [ficha del curso](https://www.programbi.com/cursos/analisis-
 El nivel básico-intermedio de ProgramBI cuesta $338.000 CLP e incluye 60 horas en vivo (SQL Server, Power BI y Python), grabaciones de por vida y certificado.
 
 **¿Cuánto dura y cuál es el horario?**
-60 horas por nivel, en clases en vivo por Zoom los lunes y miércoles de 19:30 a 21:30, hora de Chile. El próximo inicio es el lunes 23 de noviembre de 2026.
+60 horas por nivel, en clases en vivo por Zoom los lunes y miércoles de 19:30 a 21:30, hora de Chile. Abrimos nuevas cohortes cada mes; revisa la próxima fecha confirmada en la ficha del curso.
 
 **¿Necesito experiencia previa para ser analista de datos?**
 No en programación. El nivel básico-intermedio parte desde cero en SQL y Python. Ayuda manejar Excel a nivel de tablas y tablas dinámicas.

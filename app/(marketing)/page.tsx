@@ -18,11 +18,18 @@ import { courses } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
-import { SITE_URL, absoluteUrl, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import {
+  DEFAULT_OG_IMAGE,
+  ORG_ID,
+  SITE_URL,
+  WEBSITE_ID,
+  absoluteUrl,
+  jsonLdString,
+} from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { localizarMercado } from "@/lib/paises/precios";
-import { hreflangDe } from "@/lib/paises/rutas";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
 export const revalidate = 86400;
 
@@ -45,8 +52,6 @@ export const metadata: Metadata = {
   },
 };
 
-const faqJsonLdBase = { "@context": "https://schema.org", "@type": "FAQPage" };
-
 export default async function HomePage({
   params,
 }: {
@@ -56,6 +61,8 @@ export default async function HomePage({
   const pais = normalizarPais(raw);
   const contenido = getContenidoPais(pais);
   const bloque = getBloqueLocal(pais);
+  const homeUrl = absoluteUrl(rutaLocal(pais, "/"));
+  const idioma = getPais(pais).idioma;
   // La FAQ del hub es la del bloque local cuando existe: así el texto visible
   // y el FAQPage JSON-LD salen de la misma lista.
   const faqs = bloque
@@ -66,18 +73,47 @@ export default async function HomePage({
           q: localizarMercado(faq.q, pais),
           a: localizarMercado(faq.a, pais),
         }));
-  const faqJsonLd = {
-    ...faqJsonLdBase,
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: { "@type": "Answer", text: faq.a },
-    })),
+  const homeJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${homeUrl}#webpage`,
+        url: homeUrl,
+        name: localizarMercado(PAGE_SEO.home.title, pais),
+        description: localizarMercado(PAGE_SEO.home.description, pais),
+        inLanguage: idioma,
+        isPartOf: { "@id": WEBSITE_ID },
+        about: { "@id": ORG_ID },
+        mainEntity: { "@id": `${homeUrl}#cursos` },
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${homeUrl}#cursos`,
+        name: localizarMercado("Cursos de análisis de datos en vivo | ProgramBI", pais),
+        numberOfItems: courses.length,
+        itemListElement: courses.map((course, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: localizarMercado(course.title, pais),
+          url: absoluteUrl(rutaLocal(pais, `/cursos/${course.slug}`)),
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${homeUrl}#faq`,
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: { "@type": "Answer", text: faq.a },
+        })),
+      },
+    ],
   };
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(homeJsonLd) }} />
       <HeroSection pais={pais} contenido={contenido} />
       <LogoSlider />
       <Metrics />

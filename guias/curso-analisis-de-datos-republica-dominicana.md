@@ -6,9 +6,9 @@ hreflang: es-DO
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/do/cursos/analisis-de-datos
 title: "Curso de Análisis de datos en República Dominicana"
-meta: "Curso de análisis de datos en República Dominicana en vivo: SQL Server, Power BI y Python, 60 h por nivel. Inicio 23 de noviembre, 18:30 hora RD."
+meta: "Curso de análisis de datos en República Dominicana en vivo: SQL Server, Power BI y Python, 60 h por nivel. Clases 18:30 hora RD, inicios mensuales."
 h1: "Curso de Análisis de datos en República Dominicana: de Excel a analista con SQL, Power BI y Python"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/do/cursos/analisis-de-datos
 nota_hermes: |
@@ -22,11 +22,11 @@ nota_hermes: |
 
 # Curso de Análisis de datos en República Dominicana: de Excel a analista con SQL, Power BI y Python
 
-**Respuesta corta:** el [curso de Análisis de datos de ProgramBI para República Dominicana](https://www.programbi.com/do/cursos/analisis-de-datos) es una formación **en vivo por Zoom de 60 horas por nivel**, repartidas en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para dar el salto de "el que hace los reportes" a analista de datos. El nivel básico-intermedio empieza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 18:30 a 20:30, hora de República Dominicana**. Precio: **{precio_local}**.
+**Respuesta corta:** el [curso de Análisis de datos de ProgramBI para República Dominicana](https://www.programbi.com/do/cursos/analisis-de-datos) es una formación **en vivo por Zoom de 60 horas por nivel**, repartidas en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para dar el salto de "el que hace los reportes" a analista de datos. El nivel básico-intermedio abre **grupos todos los meses** (consulta la fecha exacta en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de República Dominicana**. Precio: **{precio_local}**.
 
 En la misma ficha hay dos niveles de 60 horas —básico-intermedio y avanzado—, y el programa incluye grabaciones con acceso de por vida, certificado digital, proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información de la ficha del curso, revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 18:30 hora RD · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · 18:30 hora RD · «Ver el curso».
 
 ## Del "dame el reporte" al "esto es lo que está pasando"
 
@@ -135,7 +135,7 @@ Ese paquete te sirve para tu trabajo actual, para una entrevista o para tu porta
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** todos los meses inicia una cohorte nueva (ver ficha).
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de República Dominicana.
 - **Duración:** 60 horas por nivel (20 por herramienta).
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -145,7 +145,7 @@ Ese paquete te sirve para tu trabajo actual, para una entrevista o para tu porta
 
 **[CTA-MID]** — Descarga el temario completo.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Inicios cada mes · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -156,7 +156,7 @@ Ese paquete te sirve para tu trabajo actual, para una entrevista o para tu porta
 60 horas por nivel: 20 de SQL Server, 20 de Power BI y 20 de Python.
 
 **¿Cuándo empieza y a qué hora?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 18:30 a 20:30, hora de República Dominicana.
+Tenemos inicios mensuales; nos conectamos lunes y miércoles de 18:30 a 20:30, hora de República Dominicana (próxima fecha en la ficha).
 
 **¿Necesito saber programar?**
 No. El nivel básico-intermedio parte desde cero en cada herramienta.

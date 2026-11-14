@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { getPais } from "@/config/paises";
+import { usePaisRuta } from "@/lib/paises/cliente";
 import {
   BarChart3,
   Bug,
@@ -39,7 +41,115 @@ const CHANNELS = [
   { name: "Online", color: "#D9B300" },
 ] as const;
 
+type DemoPais = {
+  pbix: string;
+  locale: string;
+  cortas: readonly [string, string, string];
+  regiones: readonly [string, string, string];
+  sqlRegiones: readonly [string, string, string, string];
+};
+
+const DEMO_POR_PAIS: Record<string, Omit<DemoPais, "pbix" | "locale">> = {
+  cl: {
+    cortas: ["RM", "Valparaíso", "Biobío"],
+    regiones: ["Metropolitana", "Valparaíso", "Biobío"],
+    sqlRegiones: ["Metropolitana", "Valparaíso", "Biobío", "Antofagasta"],
+  },
+  ar: {
+    cortas: ["CABA", "Córdoba", "Santa Fe"],
+    regiones: ["Buenos Aires", "Córdoba", "Santa Fe"],
+    sqlRegiones: ["Buenos Aires", "Córdoba", "Santa Fe", "Mendoza"],
+  },
+  mx: {
+    cortas: ["CDMX", "Nuevo León", "Jalisco"],
+    regiones: ["Ciudad de México", "Nuevo León", "Jalisco"],
+    sqlRegiones: ["Ciudad de México", "Nuevo León", "Jalisco", "Querétaro"],
+  },
+  co: {
+    cortas: ["Bogotá", "Antioquia", "Valle"],
+    regiones: ["Bogotá D.C.", "Antioquia", "Valle del Cauca"],
+    sqlRegiones: ["Bogotá D.C.", "Antioquia", "Valle del Cauca", "Atlántico"],
+  },
+  pe: {
+    cortas: ["Lima", "Arequipa", "La Libertad"],
+    regiones: ["Lima", "Arequipa", "La Libertad"],
+    sqlRegiones: ["Lima", "Arequipa", "La Libertad", "Piura"],
+  },
+  uy: {
+    cortas: ["Montevideo", "Canelones", "Maldonado"],
+    regiones: ["Montevideo", "Canelones", "Maldonado"],
+    sqlRegiones: ["Montevideo", "Canelones", "Maldonado", "Colonia"],
+  },
+  bo: {
+    cortas: ["La Paz", "Santa Cruz", "Cochabamba"],
+    regiones: ["La Paz", "Santa Cruz", "Cochabamba"],
+    sqlRegiones: ["La Paz", "Santa Cruz", "Cochabamba", "Tarija"],
+  },
+  ec: {
+    cortas: ["Pichincha", "Guayas", "Azuay"],
+    regiones: ["Pichincha", "Guayas", "Azuay"],
+    sqlRegiones: ["Pichincha", "Guayas", "Azuay", "Manabí"],
+  },
+  cr: {
+    cortas: ["San José", "Alajuela", "Cartago"],
+    regiones: ["San José", "Alajuela", "Cartago"],
+    sqlRegiones: ["San José", "Alajuela", "Cartago", "Heredia"],
+  },
+  do: {
+    cortas: ["Dist. Nac.", "Santiago", "La Romana"],
+    regiones: ["Santo Domingo", "Santiago", "La Romana"],
+    sqlRegiones: ["Santo Domingo", "Santiago", "La Romana", "Punta Cana"],
+  },
+  gt: {
+    cortas: ["Guatemala", "Quetzalten.", "Escuintla"],
+    regiones: ["Guatemala", "Quetzaltenango", "Escuintla"],
+    sqlRegiones: ["Guatemala", "Quetzaltenango", "Escuintla", "Sacatepéquez"],
+  },
+  sv: {
+    cortas: ["San Salvador", "La Libertad", "Santa Ana"],
+    regiones: ["San Salvador", "La Libertad", "Santa Ana"],
+    sqlRegiones: ["San Salvador", "La Libertad", "Santa Ana", "San Miguel"],
+  },
+  ve: {
+    cortas: ["Caracas", "Miranda", "Zulia"],
+    regiones: ["Caracas", "Miranda", "Zulia"],
+    sqlRegiones: ["Caracas", "Miranda", "Zulia", "Carabobo"],
+  },
+  hn: {
+    cortas: ["F. Morazán", "Cortés", "Atlántida"],
+    regiones: ["Tegucigalpa", "San Pedro Sula", "La Ceiba"],
+    sqlRegiones: ["Tegucigalpa", "San Pedro Sula", "La Ceiba", "Comayagua"],
+  },
+  ni: {
+    cortas: ["Managua", "León", "Granada"],
+    regiones: ["Managua", "León", "Granada"],
+    sqlRegiones: ["Managua", "León", "Granada", "Masaya"],
+  },
+  pa: {
+    cortas: ["Panamá", "Colón", "Chiriquí"],
+    regiones: ["Panamá", "Colón", "Chiriquí"],
+    sqlRegiones: ["Panamá", "Colón", "Chiriquí", "Veraguas"],
+  },
+  py: {
+    cortas: ["Asunción", "Central", "Alto Paraná"],
+    regiones: ["Asunción", "Central", "Alto Paraná"],
+    sqlRegiones: ["Asunción", "Central", "Alto Paraná", "Itapúa"],
+  },
+};
+
+function getDemoPais(iso: string): DemoPais {
+  const pais = getPais(iso);
+  const datos = DEMO_POR_PAIS[pais.iso] ?? DEMO_POR_PAIS.cl;
+  return {
+    pbix: `Ventas ${pais.nombre}.pbix`,
+    locale: pais.locale,
+    ...datos,
+  };
+}
+
 export default function HeroPreview() {
+  const pais = usePaisRuta();
+  const demo = useMemo(() => getDemoPais(pais), [pais]);
   const [active, setActive] = useState<TabId>("python");
   const [paused, setPaused] = useState(false);
 
@@ -54,7 +164,7 @@ export default function HeroPreview() {
 
   const current = TABS.find((t) => t.id === active)!;
   const file =
-    active === "python" ? "ventas.py" : active === "sql" ? "consulta.sql" : "Ventas Chile.pbix";
+    active === "python" ? "ventas.py" : active === "sql" ? "consulta.sql" : demo.pbix;
 
   const pause = () => setPaused(true);
 
@@ -83,9 +193,9 @@ export default function HeroPreview() {
         </div>
 
         <div className="relative min-h-0 flex-1 bg-canvas">
-          {active === "python" && <PythonEditor onOpenSql={() => setActive("sql")} />}
-          {active === "sql" && <SqlEditor />}
-          {active === "bi" && <PowerBiCanvas />}
+          {active === "python" && <PythonEditor demo={demo} onOpenSql={() => setActive("sql")} />}
+          {active === "sql" && <SqlEditor demo={demo} />}
+          {active === "bi" && <PowerBiCanvas demo={demo} />}
         </div>
       </div>
 
@@ -210,7 +320,7 @@ function Sidebar({
   );
 }
 
-function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
+function PythonEditor({ demo, onOpenSql }: { demo: DemoPais; onOpenSql: () => void }) {
   const [panel, setPanel] = useState("files");
   const [file, setFile] = useState("ventas.py");
   const [ran, setRan] = useState(false);
@@ -270,14 +380,14 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
               </thead>
               <tbody>
                 {[
-                  ["Ene", "RM", "18.200.000"],
-                  ["Feb", "Valparaíso", "9.400.000"],
-                  ["Mar", "Biobío", "7.150.000"],
-                  ["Abr", "RM", "21.800.000"],
-                ].map((row) => (
-                  <tr key={row.join()} className="border-b border-line/60">
-                    {row.map((c) => (
-                      <td key={c} className="px-3 py-1">
+                  ["Ene", demo.cortas[0], "18.200.000"],
+                  ["Feb", demo.cortas[1], "9.400.000"],
+                  ["Mar", demo.cortas[2], "7.150.000"],
+                  ["Abr", demo.cortas[0], "21.800.000"],
+                ].map((row, rowIdx) => (
+                  <tr key={`${row[0]}-${rowIdx}`} className="border-b border-line/60">
+                    {row.map((c, colIdx) => (
+                      <td key={`${row[0]}-${colIdx}`} className="px-3 py-1">
                         {c}
                       </td>
                     ))}
@@ -347,7 +457,7 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
   );
 }
 
-function SqlEditor() {
+function SqlEditor({ demo }: { demo: DemoPais }) {
   const [panel, setPanel] = useState("files");
   const [running, setRunning] = useState(false);
   const [show, setShow] = useState(true);
@@ -356,13 +466,13 @@ function SqlEditor() {
 
   const rows = useMemo(() => {
     const data = [
-      ["Metropolitana", "128.450.000"],
-      ["Valparaíso", "64.210.000"],
-      ["Biobío", "41.880.000"],
-      ["Antofagasta", "29.140.000"],
+      [demo.sqlRegiones[0], "128.450.000"],
+      [demo.sqlRegiones[1], "64.210.000"],
+      [demo.sqlRegiones[2], "41.880.000"],
+      [demo.sqlRegiones[3], "29.140.000"],
     ];
     return sortDesc ? data : [...data].reverse();
-  }, [sortDesc]);
+  }, [sortDesc, demo.sqlRegiones]);
 
   const run = () => {
     setRunning(true);
@@ -444,17 +554,18 @@ function SqlEditor() {
   );
 }
 
-type Region = "Todas" | "Metropolitana" | "Valparaíso" | "Biobío";
+type RegionKey = "all" | 0 | 1 | 2;
 
-function PowerBiCanvas() {
-  const [region, setRegion] = useState<Region>("Todas");
+function PowerBiCanvas({ demo }: { demo: DemoPais }) {
+  const [region, setRegion] = useState<RegionKey>("all");
   const [year, setYear] = useState<"2025" | "2026">("2026");
   const [page, setPage] = useState<"informe" | "detalle">("informe");
   const [channel, setChannel] = useState<string | null>(null);
   const [hoverBar, setHoverBar] = useState<number | null>(null);
   const [visual, setVisual] = useState("bar");
 
-  const data = useMemo(() => compute(region, year, channel), [region, year, channel]);
+  const regionLabel = region === "all" ? "Todas" : demo.regiones[region];
+  const data = useMemo(() => compute(region, year, channel, demo), [region, year, channel, demo]);
   const visuals = [
     { id: "bar", Icon: BarChart3 },
     { id: "line", Icon: LineChart },
@@ -492,18 +603,21 @@ function PowerBiCanvas() {
 
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden p-2">
           <div className="mb-2 flex flex-wrap items-center gap-1.5">
-            {(["Todas", "Metropolitana", "Valparaíso", "Biobío"] as const).map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRegion(r)}
-                className={`min-h-12 border px-3 text-[10px] font-medium ${
-                  region === r ? "border-ink bg-paper text-ink" : "border-line bg-paper/70 text-mute hover:text-ink"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
+            {(["all", 0, 1, 2] as const).map((r) => {
+              const label = r === "all" ? "Todas" : demo.regiones[r];
+              return (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setRegion(r)}
+                  className={`min-h-12 border px-3 text-[10px] font-medium ${
+                    region === r ? "border-ink bg-paper text-ink" : "border-line bg-paper/70 text-mute hover:text-ink"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
             <span className="mx-1 h-3 w-px bg-line-strong" />
             {(["2025", "2026"] as const).map((y) => (
               <button
@@ -524,7 +638,7 @@ function PowerBiCanvas() {
               <Kpi label="Ingresos" value={data.ingresos} hint={`${data.delta > 0 ? "+" : ""}${data.delta}% YoY`} />
               <Kpi label="Órdenes" value={data.ordenes} hint={year} />
               <Kpi label="Ticket" value={data.ticket} hint="promedio" />
-              <Kpi label="Regiones" value={region === "Todas" ? "3" : "1"} hint={region} />
+              <Kpi label="Regiones" value={region === "all" ? "3" : "1"} hint={regionLabel} />
 
               <div className="relative col-span-7 flex flex-col border border-line bg-paper p-2 shadow-sm">
                 <p className="mb-1 text-[10px] text-mute">Ventas por mes</p>
@@ -576,7 +690,7 @@ function PowerBiCanvas() {
                       <li key={c.name}>
                         <button
                           type="button"
-                          aria-label={`Canal ${c.name}`}
+                          aria-label={`${c.name} ${c.pct}% — filtrar canal`}
                           onClick={() => setChannel(channel === c.name ? null : c.name)}
                           className={`flex min-h-12 w-full items-center gap-1.5 text-[10px] ${
                             channel === c.name ? "font-semibold text-ink" : "text-mute hover:text-ink"
@@ -602,10 +716,10 @@ function PowerBiCanvas() {
                 <p className="mb-1 text-[10px] text-mute">Por región</p>
                 {data.byRegion.map((r) => (
                   <button
-                    key={r.name}
+                    key={r.key}
                     type="button"
-                    aria-label={`Región ${r.name}`}
-                    onClick={() => setRegion(r.name as Region)}
+                    aria-label={`${r.name} ${r.pct}% — filtrar región`}
+                    onClick={() => setRegion(r.key)}
                     className="mb-1 flex min-h-12 items-center gap-2 text-[10px]"
                   >
                     <span className="w-16 truncate text-left text-mute">{r.name}</span>
@@ -620,7 +734,7 @@ function PowerBiCanvas() {
           ) : (
             <div className="flex min-h-0 flex-1 flex-col border border-line bg-paper shadow-sm">
               <div className="border-b border-line px-2 py-1 text-[10px] text-mute">
-                Detalle · {region} · {year}
+                Detalle · {regionLabel} · {year}
                 {channel ? ` · ${channel}` : ""}
               </div>
               <table className="w-full text-[10px] sm:text-[11px]">
@@ -711,9 +825,9 @@ function Kpi({ label, value, hint }: { label: string; value: string; hint: strin
   );
 }
 
-function compute(region: Region, year: "2025" | "2026", channel: string | null) {
+function compute(region: RegionKey, year: "2025" | "2026", channel: string | null, demo: DemoPais) {
   const yf = year === "2025" ? 0.86 : 1;
-  const rf = region === "Todas" ? 1 : region === "Metropolitana" ? 0.55 : region === "Valparaíso" ? 0.27 : 0.18;
+  const rf = region === "all" ? 1 : region === 0 ? 0.55 : region === 1 ? 0.27 : 0.18;
   const cf = channel === "Retail" ? 0.46 : channel === "B2B" ? 0.28 : channel === "Online" ? 0.26 : 1;
   const f = yf * rf * (channel ? cf / 0.33 : 1);
   const ingresos = 234.5 * f;
@@ -724,10 +838,10 @@ function compute(region: Region, year: "2025" | "2026", channel: string | null) 
     if (channel && c.name !== channel) return { ...c, pct: Math.max(6, Math.round(raw * 0.35)) };
     return { ...c, pct: channel ? Math.round(raw * 1.4) : raw };
   });
-  const byRegion = [
-    { name: "Metropolitana", pct: region === "Valparaíso" || region === "Biobío" ? 18 : 55 },
-    { name: "Valparaíso", pct: region === "Valparaíso" ? 62 : 27 },
-    { name: "Biobío", pct: region === "Biobío" ? 58 : 18 },
+  const byRegion: { key: 0 | 1 | 2; name: string; pct: number }[] = [
+    { key: 0, name: demo.regiones[0], pct: region === 1 || region === 2 ? 18 : 55 },
+    { key: 1, name: demo.regiones[1], pct: region === 1 ? 62 : 27 },
+    { key: 2, name: demo.regiones[2], pct: region === 2 ? 58 : 18 },
   ];
   const detail = MONTHS.slice(0, 5).flatMap((mes, i) =>
     (channel ? CHANNELS.filter((c) => c.name === channel) : CHANNELS.slice(0, 2)).map((c) => ({
@@ -738,7 +852,7 @@ function compute(region: Region, year: "2025" | "2026", channel: string | null) 
   );
   return {
     ingresos: `$${ingresos.toFixed(1)}M`,
-    ordenes: ordenes.toLocaleString("es-CL"),
+    ordenes: ordenes.toLocaleString(demo.locale),
     ticket: `$${(27.8 * yf).toFixed(1)}k`,
     delta: year === "2026" ? 12 : -4,
     bars,

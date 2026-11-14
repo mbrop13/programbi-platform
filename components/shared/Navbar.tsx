@@ -22,7 +22,8 @@ import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
 import { trackNavRegistro } from "@/lib/analytics/marketing";
 import { ISO_CHILE } from "@/config/paises";
 import { etiquetaBoton } from "@/config/textos";
-import { paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
+import { esRutaLocalizable, paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
+import { esRutaIndexablePais } from "@/lib/seo/indexabilidad";
 import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
 const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 const SupportModal = dynamic(() => import("./SupportModal"), { ssr: false });
@@ -30,6 +31,8 @@ const ProfileSettingsModal = dynamic(() => import("./ProfileSettingsModal"), { s
 
 const navLinks = [
   { href: "/cursos", label: "Ver Cursos", hasMega: true },
+  { href: "/precios", label: "Precios" },
+  { href: "/guias", label: "Guías" },
   { href: "/empresas", label: "Empresas" },
   { href: "/empleos", label: "Empleos" },
   ...(COMUNIDAD_PUBLICA ? [{ href: "/comunidad", label: "Comunidad" }] : []),
@@ -55,7 +58,10 @@ export default function Navbar() {
   });
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{
+    email?: string;
+    user_metadata?: { full_name?: string };
+  } | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -64,9 +70,17 @@ export default function Navbar() {
   const pathname = usePathname();
   const paisNav = paisDesdeRuta(pathname) ?? ISO_CHILE;
   const hrefLocal = (href: string) => rutaLocal(paisNav, href);
-  const isNewsletter = pathname?.startsWith("/newsletter");
+  const hrefNav = (href: string) => {
+    if (paisNav === ISO_CHILE) return href;
+    const base = href.split("?")[0]?.split("#")[0] || "/";
+    if (!esRutaLocalizable(base)) return href;
+    return esRutaIndexablePais(paisNav, base) ? hrefLocal(href) : href;
+  };
+  const isNewsletter = pathname?.startsWith("/blog");
 
-  const [nlCategories, setNlCategories] = useState<any[]>([]);
+  const [nlCategories, setNlCategories] = useState<
+    { id: string; slug: string; name: string }[]
+  >([]);
   const [nlActiveCategory, setNlActiveCategory] = useState("all");
 
   const keepVisible =
@@ -282,12 +296,11 @@ export default function Navbar() {
               width={150}
               height={32}
               className="h-8 w-[150px] object-contain object-left"
-              fetchPriority="low"
               unoptimized
             />
           </Link>
 
-          <nav className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-7 text-[14.5px] font-medium text-mute lg:flex" aria-label="Principal">
+          <nav className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-5 text-[14.5px] font-medium text-mute lg:flex xl:gap-7" aria-label="Principal">
             {navLinks.map((link) =>
               link.hasMega ? (
                 <div
@@ -296,7 +309,7 @@ export default function Navbar() {
                   onMouseEnter={handleMegaEnter}
                   onMouseLeave={handleMegaLeave}
                 >
-                  <Link href={hrefLocal(link.href)} className="inline-flex items-center gap-1 transition-colors hover:text-ink no-underline">
+                  <Link href={hrefNav(link.href)} className="inline-flex items-center gap-1 transition-colors hover:text-ink no-underline">
                     {link.label}
                     <ChevronDown size={14} className={isMegaOpen ? "rotate-180" : ""} />
                   </Link>
@@ -325,7 +338,6 @@ export default function Navbar() {
                                           alt={course.title}
                                           fill
                                           sizes="56px"
-                                          unoptimized
                                           className="object-cover"
                                         />
                                       </span>
@@ -354,7 +366,7 @@ export default function Navbar() {
                   ) : null}
                 </div>
               ) : (
-                <Link key={link.href} href={hrefLocal(link.href)} className="transition-colors hover:text-ink no-underline">
+                <Link key={link.href} href={hrefNav(link.href)} className="transition-colors hover:text-ink no-underline">
                   {link.label}
                 </Link>
               )
@@ -371,7 +383,7 @@ export default function Navbar() {
                   className="inline-flex h-10 items-center gap-2 rounded-full border border-line bg-paper px-2 pr-3 text-sm font-semibold text-ink"
                 >
                   <span className="flex size-7 items-center justify-center rounded-full bg-ink text-[11px] font-bold text-canvas">
-                    {getInitials(user.user_metadata?.full_name || user.email)}
+                    {getInitials(user.user_metadata?.full_name || user.email || "")}
                   </span>
                   <span className="max-w-[90px] truncate">
                     {user.user_metadata?.full_name?.split(" ")[0] || "Cuenta"}
@@ -579,7 +591,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     key={link.href}
-                    href={hrefLocal(link.href)}
+                    href={hrefNav(link.href)}
                     onClick={() => setIsMobileOpen(false)}
                     className="border-b border-line py-3 text-lg font-medium text-ink no-underline"
                   >

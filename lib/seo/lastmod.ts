@@ -24,9 +24,6 @@ export const SITE_ACTUALIZADO = "2026-11-05";
 /** Fecha de `lib/data/courses.ts`: contenido de todas las fichas de curso. */
 const LASTMOD_CURSOS = "2026-11-04";
 
-/** Fecha de `lib/data/cases.ts`: las ocho fichas de caso de uso. */
-const LASTMOD_CASOS = "2026-11-04";
-
 /** Rutas de Chile y páginas compartidas. */
 const LASTMOD: Record<string, string> = {
   "/": "2026-11-03",
@@ -34,7 +31,6 @@ const LASTMOD: Record<string, string> = {
   "/implementacion-power-bi": "2026-11-03",
   "/migrar-excel-a-power-bi": "2026-11-03",
   "/por-que-fallan-proyectos-power-bi": "2026-11-03",
-  "/curso-power-bi": "2026-11-03",
   "/curso-power-bi-vs-pack-adopcion": "2026-11-03",
   "/curso-sql-online": "2026-11-03",
   "/curso-python": "2026-11-03",
@@ -63,7 +59,6 @@ const LASTMOD: Record<string, string> = {
   "/empleos/para-empresas": "2026-08-22",
   "/empleos/talento": "2026-08-22",
   "/versus": "2026-11-04",
-  "/newsletter": "2026-09-12",
   "/privacidad": "2026-09-12",
   "/terminos": "2026-11-03",
   "/guias": "2026-11-04",
@@ -77,7 +72,6 @@ const LASTMOD_PAIS: Record<string, string> = {
   "/implementacion-power-bi": "2026-11-03",
   "/migrar-excel-a-power-bi": "2026-11-03",
   "/por-que-fallan-proyectos-power-bi": "2026-11-03",
-  "/curso-power-bi": "2026-11-03",
   "/curso-power-bi-vs-pack-adopcion": "2026-10-21",
   "/curso-sql-online": "2026-11-03",
   "/curso-python": "2026-11-03",
@@ -105,8 +99,6 @@ function fechaDeRuta(ruta: string): string | undefined {
   if (ruta.startsWith("/cursos/")) return LASTMOD_CURSOS;
   // Perfiles del equipo: la fecha la marca el archivo de datos del equipo.
   if (ruta.startsWith("/profesores/")) return LASTMOD["/profesores"];
-  // Fichas de caso de uso: /casos/<slug>.
-  if (ruta.startsWith("/casos/")) return LASTMOD_CASOS;
   return undefined;
 }
 

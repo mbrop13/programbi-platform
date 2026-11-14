@@ -3,17 +3,25 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getComparisonBySlug, comparisons } from "@/lib/data/comparisons";
 import { courses } from "@/lib/data/courses";
+import { fundadorEquipo, rutaPerfil } from "@/lib/data/equipo";
 import { ogImageUrl } from "@/lib/og/url";
-import { tituloSeo } from "@/lib/seo";
+import {
+  ORG_ID,
+  SITE_URL,
+  WEBSITE_ID,
+  absoluteUrl,
+  jsonLdString,
+  tituloSeo,
+  twitterShare,
+} from "@/lib/seo";
+import { getPersonaJsonLd, idPersona } from "@/lib/seo/course-jsonld";
+import { lastmodDe } from "@/lib/seo/lastmod";
 import { 
   ArrowLeft, 
   ChevronRight, 
   ArrowUpRight, 
   CheckCircle, 
   XCircle, 
-  HelpCircle, 
-  Award,
-  ShieldCheck,
   Zap
 } from "lucide-react";
 
@@ -34,6 +42,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const comp = getComparisonBySlug(slug);
   if (!comp) return { title: "Comparativa no encontrada" };
 
+  const ogUrl = ogImageUrl({
+    kicker: "Comparativa",
+    title: `${comp.toolA.name} vs. ${comp.toolB.name}`,
+    description: comp.seoDescription,
+    tags: [comp.toolA.name, comp.toolB.name],
+    path: `versus/${slug}`,
+  });
+  const ogTitle = `${comp.seoTitle} | ProgramBI`;
+
   return {
     title: { absolute: tituloSeo(comp.seoTitle) },
     description: comp.seoDescription,
@@ -41,25 +58,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       canonical: `/versus/${slug}`,
     },
     openGraph: {
-      title: `${comp.seoTitle} | ProgramBI`,
+      title: ogTitle,
       description: comp.seoDescription,
       url: `https://www.programbi.com/versus/${slug}`,
       type: "website",
       images: [
         {
-          url: ogImageUrl({
-            kicker: "Comparativa",
-            title: `${comp.toolA.name} vs. ${comp.toolB.name}`,
-            description: comp.seoDescription,
-            tags: [comp.toolA.name, comp.toolB.name],
-            path: `versus/${slug}`,
-          }),
+          url: ogUrl,
           width: 1200,
           height: 630,
           alt: `${comp.toolA.name} vs. ${comp.toolB.name}`,
         },
       ],
     },
+    twitter: twitterShare(ogTitle, comp.seoDescription, ogUrl),
   };
 }
 
@@ -70,34 +82,85 @@ export default async function VersusDetailPage({ params }: PageProps) {
 
   // Find related course for CTA
   const relatedCourse = courses.find((c) => c.slug === comp.ctaCourseSlug);
+  const canonical = absoluteUrl(`/versus/${slug}`);
+  const autor = fundadorEquipo();
+  const dateModified = lastmodDe(`/versus/${slug}`);
 
-  const productJsonLd = {
+  const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: comp.title,
-    description: comp.seoDescription,
-    author: {
-      "@type": "Organization",
-      name: "ProgramBI",
-      url: "https://www.programbi.com",
-    },
-    publisher: {
-      "@id": "https://www.programbi.com/#organization",
-    },
-    mainEntityOfPage: `https://www.programbi.com/versus/${slug}`,
-    about: [
-      { "@type": "Thing", name: comp.toolA.name },
-      { "@type": "Thing", name: comp.toolB.name }
-    ]
-  };
-
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.programbi.com" },
-      { "@type": "ListItem", position: 2, name: "Comparativas", item: "https://www.programbi.com/versus" },
-      { "@type": "ListItem", position: 3, name: comp.toolA.name + " vs " + comp.toolB.name, item: `https://www.programbi.com/versus/${slug}` },
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#webpage`,
+        url: canonical,
+        name: comp.title,
+        description: comp.seoDescription,
+        inLanguage: "es-CL",
+        dateModified,
+        isPartOf: { "@id": WEBSITE_ID },
+        breadcrumb: { "@id": `${canonical}#breadcrumb` },
+        mainEntity: { "@id": `${canonical}#article` },
+      },
+      {
+        "@type": "Article",
+        "@id": `${canonical}#article`,
+        headline: comp.title,
+        description: comp.seoDescription,
+        inLanguage: "es-CL",
+        datePublished: dateModified,
+        dateModified,
+        author: { "@id": idPersona(autor.slug) },
+        reviewedBy: { "@id": idPersona(autor.slug) },
+        publisher: { "@id": ORG_ID },
+        isPartOf: { "@id": WEBSITE_ID },
+        mainEntityOfPage: { "@id": `${canonical}#webpage` },
+        about: [
+          { "@type": "Thing", name: comp.toolA.name, description: comp.toolA.desc },
+          { "@type": "Thing", name: comp.toolB.name, description: comp.toolB.desc },
+        ],
+        hasPart: { "@id": `${canonical}#comparacion` },
+      },
+      getPersonaJsonLd(autor),
+      {
+        "@type": "ItemList",
+        "@id": `${canonical}#comparacion`,
+        name: `Comparación directa: ${comp.toolA.name} vs ${comp.toolB.name}`,
+        numberOfItems: comp.features.length,
+        itemListElement: comp.features.map((f, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: f.feature,
+          item: {
+            "@type": "PropertyValue",
+            name: f.feature,
+            value: `${comp.toolA.name}: ${f.toolAVal} | ${comp.toolB.name}: ${f.toolBVal}`,
+            ...(f.winner === "A"
+              ? { description: `Ventaja: ${comp.toolA.name}` }
+              : f.winner === "B"
+                ? { description: `Ventaja: ${comp.toolB.name}` }
+                : {}),
+          },
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Comparativas",
+            item: absoluteUrl("/versus"),
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: `${comp.toolA.name} vs ${comp.toolB.name}`,
+            item: canonical,
+          },
+        ],
+      },
     ],
   };
 
@@ -105,14 +168,10 @@ export default async function VersusDetailPage({ params }: PageProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
 
-      <main className="bg-[#FAFBFC] min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-32">
+      <div className="bg-[#FAFBFC] min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-32">
         <div className="max-w-[900px] mx-auto px-5 lg:px-10">
           
           {/* Back Button & Breadcrumbs */}
@@ -144,8 +203,19 @@ export default async function VersusDetailPage({ params }: PageProps) {
             <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-slate-900 tracking-tight leading-[1.1] mb-6">
               {comp.title}
             </h1>
-            <p className="text-slate-650 text-base sm:text-lg leading-relaxed mb-0">
+            <p className="text-slate-650 text-base sm:text-lg leading-relaxed mb-4">
               {comp.intro}
+            </p>
+            <p className="text-xs text-slate-500 mb-0">
+              Revisado por{" "}
+              <Link
+                href={rutaPerfil(autor.slug)}
+                className="font-semibold text-slate-700 hover:text-[#1890FF] underline-offset-2"
+              >
+                {autor.nombre}
+              </Link>{" "}
+              ({autor.cargo}) · Actualizado{" "}
+              <time dateTime={dateModified}>{dateModified}</time>
             </p>
           </header>
 
@@ -174,9 +244,9 @@ export default async function VersusDetailPage({ params }: PageProps) {
 
           {/* Comparison Table */}
           <section className="mb-16">
-            <h3 className="font-display font-black text-2xl text-slate-900 tracking-tight mb-6">
+            <h2 className="font-display font-black text-2xl text-slate-900 tracking-tight mb-6">
               Matriz de Comparación Directa
-            </h3>
+            </h2>
             
             <div className="bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
@@ -212,12 +282,12 @@ export default async function VersusDetailPage({ params }: PageProps) {
           <section className="grid sm:grid-cols-2 gap-8 mb-16">
             {/* Tool A Pros/Cons */}
             <div className="space-y-6">
-              <h3 className="font-display font-black text-xl text-slate-900 tracking-tight">
+              <h2 className="font-display font-black text-xl text-slate-900 tracking-tight">
                 Análisis de {comp.toolA.name}
-              </h3>
+              </h2>
               
               <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-                <h4 className="text-xs font-black text-emerald-600 uppercase tracking-widest my-0">Ventajas</h4>
+                <h3 className="text-xs font-black text-emerald-600 uppercase tracking-widest my-0">Ventajas</h3>
                 <ul className="space-y-3 pl-0 list-none my-0">
                   {comp.prosA.map((p, idx) => (
                     <li key={idx} className="flex gap-2.5 items-start text-xs sm:text-sm text-slate-600 pl-0">
@@ -227,7 +297,7 @@ export default async function VersusDetailPage({ params }: PageProps) {
                   ))}
                 </ul>
 
-                <h4 className="text-xs font-black text-rose-600 uppercase tracking-widest pt-4 border-t border-slate-50 my-0">Desventajas</h4>
+                <h3 className="text-xs font-black text-rose-600 uppercase tracking-widest pt-4 border-t border-slate-50 my-0">Desventajas</h3>
                 <ul className="space-y-3 pl-0 list-none my-0">
                   {comp.consA.map((c, idx) => (
                     <li key={idx} className="flex gap-2.5 items-start text-xs sm:text-sm text-slate-500 pl-0">
@@ -241,12 +311,12 @@ export default async function VersusDetailPage({ params }: PageProps) {
 
             {/* Tool B Pros/Cons */}
             <div className="space-y-6">
-              <h3 className="font-display font-black text-xl text-slate-900 tracking-tight">
+              <h2 className="font-display font-black text-xl text-slate-900 tracking-tight">
                 Análisis de {comp.toolB.name}
-              </h3>
+              </h2>
               
               <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-                <h4 className="text-xs font-black text-emerald-600 uppercase tracking-widest my-0">Ventajas</h4>
+                <h3 className="text-xs font-black text-emerald-600 uppercase tracking-widest my-0">Ventajas</h3>
                 <ul className="space-y-3 pl-0 list-none my-0">
                   {comp.prosB.map((p, idx) => (
                     <li key={idx} className="flex gap-2.5 items-start text-xs sm:text-sm text-slate-600 pl-0">
@@ -256,7 +326,7 @@ export default async function VersusDetailPage({ params }: PageProps) {
                   ))}
                 </ul>
 
-                <h4 className="text-xs font-black text-rose-600 uppercase tracking-widest pt-4 border-t border-slate-50 my-0">Desventajas</h4>
+                <h3 className="text-xs font-black text-rose-600 uppercase tracking-widest pt-4 border-t border-slate-50 my-0">Desventajas</h3>
                 <ul className="space-y-3 pl-0 list-none my-0">
                   {comp.consB.map((c, idx) => (
                     <li key={idx} className="flex gap-2.5 items-start text-xs sm:text-sm text-slate-500 pl-0">
@@ -271,10 +341,10 @@ export default async function VersusDetailPage({ params }: PageProps) {
 
           {/* Conclusion */}
           <section className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-100 shadow-sm mb-16">
-            <h3 className="font-display font-black text-xl sm:text-2xl text-slate-900 tracking-tight mb-4 flex items-center gap-2">
+            <h2 className="font-display font-black text-xl sm:text-2xl text-slate-900 tracking-tight mb-4 flex items-center gap-2">
               <Zap className="w-5 h-5 text-amber-500" />
               Veredicto y Conclusión
-            </h3>
+            </h2>
             <p className="text-slate-650 text-sm sm:text-base leading-relaxed my-0">
               {comp.conclusion}
             </p>
@@ -290,9 +360,9 @@ export default async function VersusDetailPage({ params }: PageProps) {
                   <span className="text-[10px] font-black uppercase tracking-widest text-[#1890FF] bg-[#1890FF]/10 px-3 py-1 rounded-full inline-block">
                     Curso en Vivo Relacionado
                   </span>
-                  <h4 className="font-display font-black text-2xl text-white leading-tight my-0">
+                  <h2 className="font-display font-black text-2xl text-white leading-tight my-0">
                     Aprende a dominar {comp.ctaCourseSlug === "python" ? "Python" : comp.ctaCourseSlug === "sql-server" ? "SQL Server" : "Power BI"} de forma práctica
-                  </h4>
+                  </h2>
                   <p className="text-slate-300 text-sm sm:text-base leading-relaxed my-0">
                     {relatedCourse.shortDescription} Programa en vivo con soporte de instructores y proyectos finales para tu portafolio corporativo.
                   </p>
@@ -312,7 +382,7 @@ export default async function VersusDetailPage({ params }: PageProps) {
           )}
 
         </div>
-      </main>
+      </div>
     </>
   );
 }

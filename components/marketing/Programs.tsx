@@ -10,7 +10,6 @@ import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
-import { courseBrochurePath } from "@/lib/pricing-gate";
 import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 
 const ORDER = [
@@ -73,7 +72,6 @@ export default function Programs({
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
   if (!ALL.length) return null;
-  const visible = expanded ? ALL : ALL.slice(0, VISIBLE_COUNT);
 
   return (
     <section id="programas" className="cv-auto border-t border-line py-20 lg:py-28">
@@ -92,13 +90,17 @@ export default function Programs({
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((course) => (
-            <Link
-              key={course.slug}
-              href={hrefLocal(`/cursos/${course.slug}`)}
-              onClick={() => trackCourseCardClick(course.slug, "home_programs")}
-              className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
-            >
+          {ALL.map((course, idx) => {
+            const precio = precioVenta(pais, course.slug);
+            return (
+              <Link
+                key={course.slug}
+                href={hrefLocal(`/cursos/${course.slug}`)}
+                onClick={() => trackCourseCardClick(course.slug, "home_programs")}
+                className={`group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20${
+                  !expanded && idx >= VISIBLE_COUNT ? " hidden" : ""
+                }`}
+              >
               <div className="relative aspect-[16/10] overflow-hidden bg-wash">
                 <CourseImage
                   src={course.imageUrl}
@@ -132,9 +134,11 @@ export default function Programs({
                   <Clock size={12} /> {course.durationHours} h · En vivo
                   {course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                 </p>
-                {unlocked && precioVenta(pais, course.slug) != null ? (
+                {precio != null ? (
                   <p className="mt-2 text-sm font-semibold text-ink">
-                    {formatMoneda(pais, precioVenta(pais, course.slug) as number)}
+                    {unlocked
+                      ? formatMoneda(pais, precio)
+                      : `Desde ${formatMoneda(pais, precio)}`}
                   </p>
                 ) : (
                   <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-ink">
@@ -143,7 +147,8 @@ export default function Programs({
                 )}
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
 
         {ALL.length > VISIBLE_COUNT ? (

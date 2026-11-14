@@ -168,6 +168,16 @@
       "statusCode": 301
     },
     {
+      "source": "/newsletter",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/newsletter/:slug",
+      "destination": "/blog/:slug",
+      "statusCode": 301
+    },
+    {
       "source": "/products/curso-analisis-de-datos-para-la-mineria",
       "destination": "/cursos/analitica-mineria",
       "statusCode": 301
@@ -263,6 +273,26 @@
       "statusCode": 301
     },
     {
+      "source": "/cursos/copilot-studio/brochure",
+      "destination": "/cursos/copilot/brochure",
+      "statusCode": 301
+    },
+    {
+      "source": "/cursos/copilot-studio/:rest*",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/cursos/sql",
+      "destination": "/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/cursos/sql/:rest*",
+      "destination": "/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
       "source": "/cursos/analitica-financiera",
       "destination": "/cursos/mercado-financiero",
       "statusCode": 301
@@ -270,6 +300,106 @@
     {
       "source": "/cursos/analitica-financiera/:rest*",
       "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/curso-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/cursos/copilot-studio",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/cursos/copilot-studio/:rest*",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/cursos/sql",
+      "destination": "/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/cursos/analitica-financiera",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/cursos/analitica-financiera/:rest*",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/curso-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/cursos/copilot-studio",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/cursos/copilot-studio/:rest*",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/cursos/sql",
+      "destination": "/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/cursos/analitica-financiera",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/cursos/analitica-financiera/:rest*",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/curso-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cursos/copilot-studio",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cursos/copilot-studio/:rest*",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cursos/sql",
+      "destination": "/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cursos/analitica-financiera",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cursos/analitica-financiera/:rest*",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/cursos/copilot-studio",
+      "destination": "/:pais/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/cursos/sql",
+      "destination": "/:pais/cursos/sql-server",
       "statusCode": 301
     },
     {
@@ -296,66 +426,26 @@
       "source": "/comunidad/ai/:rest*",
       "destination": "/ai/:rest*",
       "statusCode": 301
+    }
+  ],
+  "headers": [
+    {
+      "source": "/images/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
     },
     {
-      "source": "/cl/curso-power-bi",
-      "destination": "/cursos/power-bi",
-      "statusCode": 301
-    },
-    {
-      "source": "/cl/cursos/copilot-studio",
-      "destination": "/cursos/copilot",
-      "statusCode": 301
-    },
-    {
-      "source": "/cl/cursos/analitica-financiera",
-      "destination": "/cursos/mercado-financiero",
-      "statusCode": 301
-    },
-    {
-      "source": "/cl/cursos/analitica-financiera/:rest*",
-      "destination": "/cursos/mercado-financiero",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/curso-power-bi",
-      "destination": "/cursos/power-bi",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/cursos/copilot-studio",
-      "destination": "/cursos/copilot",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/cursos/analitica-financiera",
-      "destination": "/cursos/mercado-financiero",
-      "statusCode": 301
-    },
-    {
-      "source": "/es/cursos/analitica-financiera/:rest*",
-      "destination": "/cursos/mercado-financiero",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/curso-power-bi",
-      "destination": "/cursos/power-bi",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/cursos/copilot-studio",
-      "destination": "/cursos/copilot",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/cursos/analitica-financiera",
-      "destination": "/cursos/mercado-financiero",
-      "statusCode": 301
-    },
-    {
-      "source": "/en/cursos/analitica-financiera/:rest*",
-      "destination": "/cursos/mercado-financiero",
-      "statusCode": 301
+      "source": "/videos/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
     }
   ],
   "crons": [

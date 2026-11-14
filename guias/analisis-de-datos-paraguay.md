@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/py/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Paraguay: guía 2026 | ProgramBI"
 meta: "Curso de análisis de datos en Paraguay en vivo: SQL Server, Power BI y Python en 60 h, lunes y miércoles 19:30. Qué aprender para ser analista de datos."
 h1: "Curso de Análisis de Datos en Paraguay: cómo ser analista de datos"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/py/cursos/analisis-de-datos
   - https://www.programbi.com/py/cursos/power-bi
@@ -27,11 +27,11 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Paraguay: cómo ser analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**, empieza el **lunes 23 de noviembre de 2026** y el valor es **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**, inicia nuevos grupos cada mes (fecha disponible en la ficha) y el valor es **{precio_local}**. Tenés grabaciones de por vida y certificado.
 
 **¿Cómo ser analista de datos en Paraguay?** Aprendé a sacar información de una base con SQL, a ordenarla y mostrarla en Power BI y a limpiar con Python lo que en planilla se vuelve imposible. Después aplicalo a un caso conocido —cartera de una cooperativa, acopio de granos, ventas de una distribuidora— y tenés lo que piden bancos, financieras y empresas exportadoras.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 19:30 hora de Paraguay · «Ver el curso».
+**[CTA-TOP]** — Nuevas cohortes cada mes · lunes y miércoles 19:30 (Paraguay) · «Ver el curso».
 
 ## Mucha información, poca automatización
 
@@ -136,7 +136,7 @@ Según la [ficha del curso para Paraguay](https://www.programbi.com/py/cursos/an
 - Temario: SQL desde cero, modelado y DAX, análisis exploratorio con Pandas, dashboards y reportes automáticos, ETL con Power Query, proyecto final con datos reales e IA de apoyo en cada módulo.
 - **Nivel avanzado** de 60 horas más: automatización, inteligencia de tiempo y modelos.
 - **Grabaciones de por vida** y **certificado** al completar.
-- Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **cohortes mensuales** (confirmá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

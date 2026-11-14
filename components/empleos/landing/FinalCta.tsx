@@ -14,7 +14,7 @@ export default function FinalCta() {
     <section className="relative overflow-hidden bg-ink">
       <CineImage
         src="/images/bolsa-cta.jpg"
-        fallbackSrc="/images/bolsa-hero-1.jpg"
+        fallbackSrc="/images/bolsa-hero-1.webp"
         alt="Bolsa de trabajo ProgramBI: preinscripción para talento y empresas"
         dimClass="opacity-50"
       />

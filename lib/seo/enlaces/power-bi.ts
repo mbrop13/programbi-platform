@@ -16,5 +16,14 @@ export const ENLACES_POWER_BI: EnlaceCurso[] = [
     href: "/guias/certificacion-pl-300-power-bi",
     label: "Guía: certificación PL-300",
   },
+  {
+    href: "/curso-power-bi-vs-pack-adopcion",
+    label: "Curso Power BI vs. pack de adopción",
+  },
+  {
+    href: "/por-que-fallan-proyectos-power-bi",
+    label: "Por qué fallan proyectos Power BI",
+  },
+  { href: "/capacitacion-empresas", label: "Capacitación in-company para empresas" },
   { href: "/empresas", label: "Capacitación para empresas" },
 ];

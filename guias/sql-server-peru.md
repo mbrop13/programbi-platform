@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/pe/cursos/sql-server
 title: "Curso de SQL Server en Perú en vivo: guía 2026 | ProgramBI"
 meta: "Curso de SQL Server en vivo en Perú: consultas SQL desde cero en 20 h (martes y jueves 17:30 Lima) con ejercicios prácticos y Power BI."
 h1: "Curso de SQL Server en Perú: aprende SQL online, en vivo y desde cero"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/pe/cursos/sql-server
   - https://www.programbi.com/pe/cursos/power-bi
@@ -25,11 +25,11 @@ nota_hermes: |
 
 # Curso de SQL Server en Perú: aprende SQL online, en vivo y desde cero
 
-**Respuesta corta:** el [curso de SQL Server de ProgramBI en Perú](https://www.programbi.com/pe/cursos/sql-server) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **martes y jueves de 17:30 a 19:30, hora de Perú**. Empieza el **martes 24 de noviembre de 2026** y cuesta **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de SQL Server de ProgramBI en Perú](https://www.programbi.com/pe/cursos/sql-server) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **martes y jueves de 17:30 a 19:30, hora de Perú**. Tiene **inicios todos los meses** (revisa la próxima fecha en la ficha) y cuesta **{precio_local}**. Incluye grabaciones de por vida y certificado.
 
 **¿Qué aprendes?** A sacar tú mismo la información de una base de datos: consultas con `SELECT` y `WHERE`, resúmenes con `GROUP BY`, cruces con `JOIN`, subconsultas, CTEs, tablas temporales, funciones de ventana y `PIVOT`. Es la habilidad que más se repite en las convocatorias de analista y la que alimenta tus tableros de Power BI.
 
-**[CTA-TOP]** — Próxima clase en vivo: martes 24 de noviembre de 2026 · 17:30 hora de Perú · «Ver el curso».
+**[CTA-TOP]** — Inicios todos los meses · martes y jueves 17:30 (Perú) · «Ver el curso».
 
 ## Por qué SQL es clave para tu chamba en Perú
 
@@ -164,7 +164,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/sql-s
 - Temario: SELECT, WHERE y ORDER BY; funciones y operadores; GROUP BY y HAVING; subconsultas; JOINs y vistas; CTEs y tablas temporales; funciones de ventana; PIVOT y UNPIVOT; IA aplicada a SQL Server.
 - **Nivel avanzado** (20 h): procedimientos almacenados y diseño de esquemas.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **martes 24 de noviembre de 2026**. Precio: **{precio_local}**.
+- Inicio: **grupos todos los meses** (próxima fecha en la ficha). Precio: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

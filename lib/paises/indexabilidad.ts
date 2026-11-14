@@ -35,6 +35,20 @@ export const PAISES_SECUNDARIOS = [
 export type PaisSecundario = (typeof PAISES_SECUNDARIOS)[number];
 
 /**
+ * Países secundarios sin contenido editorial propio en rutas informativas:
+ * comparten copia raíz de Chile y solo cambian moneda/horario.
+ */
+export const PAISES_SIN_CONTENIDO_LOCAL: readonly PaisSecundario[] = [
+  "bo",
+  "cr",
+  "do",
+  "ec",
+  "gt",
+  "sv",
+  "ve",
+];
+
+/**
  * Rutas (sin prefijo de país) que se consolidan como noindex en cada país.
  * El valor es la lista de países afectados; permite excepciones por país sin
  * duplicar la regla.
@@ -48,7 +62,7 @@ export const RUTAS_NOINDEX_PAIS: Readonly<Record<string, readonly PaisSecundario
   // Uruguay queda indexable: su FAQ usa contenido propio (agro, frigoríficos,
   // horario de Montevideo, pago en UYU) y mide 7,1 % de similitud con /faq.
   "/preguntas-frecuentes": PAISES_SECUNDARIOS,
-  "/faq": ["ec", "cr", "do", "gt", "ve", "bo", "sv"],
+  "/faq": PAISES_SIN_CONTENIDO_LOCAL,
   "/curso-sql-online": PAISES_SECUNDARIOS,
   "/curso-python": PAISES_SECUNDARIOS,
   "/curso-power-bi-vs-pack-adopcion": PAISES_SECUNDARIOS,
@@ -57,7 +71,8 @@ export const RUTAS_NOINDEX_PAIS: Readonly<Record<string, readonly PaisSecundario
   // con la raíz (contenido propio de agro/frigoríficos), bajo el umbral 70 %.
   "/implementacion-power-bi": ["ec", "cr", "do", "gt", "bo", "sv"],
   // Uruguay queda indexable: 38,7 % de similitud con la raíz.
-  "/migrar-excel-a-power-bi": ["ec", "cr", "do", "gt", "ve", "bo", "sv"],
+  "/migrar-excel-a-power-bi": PAISES_SIN_CONTENIDO_LOCAL,
+  "/nosotros": PAISES_SIN_CONTENIDO_LOCAL,
   "/por-que-fallan-proyectos-power-bi": PAISES_SECUNDARIOS,
   // Hoy estas URLs no existen para los países secundarios (el segmento
   // /[pais]/versus solo genera mx, co y ar, y el layout fija
@@ -87,6 +102,8 @@ export const MOTIVOS_NOINDEX_PAIS: Readonly<Record<string, string>> = {
     "Reexporta la raíz (92,8–93,9 %). Excepciones: /ve con 1 clic se mantiene index; /uy con 38,9 % de similitud y contenido propio también.",
   "/migrar-excel-a-power-bi":
     "Reexporta la raíz (92,7–93,9 %). Excepción: /uy con 38,7 % de similitud y contenido propio se mantiene index.",
+  "/nosotros":
+    "Declara sede en Santiago de Chile sin contenido local propio en países secundarios sin contexto propio. Uruguay se exceptúa.",
   "/por-que-fallan-proyectos-power-bi":
     "Guía idéntica a la raíz. Similitud 90,6–97,2 %; sin clics GSC por URL.",
   "/versus/*":

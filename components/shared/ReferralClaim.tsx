@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
+import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 
 const KEY = "pb_ref_claimed";
 
 /** Si hay sesión y cookie/metadata de referido, atribuye una vez. */
 export default function ReferralClaim() {
   useEffect(() => {
+    if (!document.cookie.includes("sb-") && readBrowserReferralCode() === null) {
+      return;
+    }
+
     let unsubscribe = () => {};
     let dropped = false;
 

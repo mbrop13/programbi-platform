@@ -1,51 +1,37 @@
 /**
  * Contenido de `/llms.txt` y `/llms-full.txt`.
  *
- * Regla de la casa: acá no se escribe a mano ningún monto, hora, cuota ni
- * cantidad de cursos. Las horas y los cursos salen de `config/` y `lib/data/`;
- * el arancel vigente no se publica en este archivo: se descarga en el brochure
- * PDF de cada curso, que es la única superficie pública con precios.
- *
- * `construirLlmsTxt()` es el resumen (el archivo corto que leen los asistentes
- * primero) y `construirLlmsFullTxt()` la versión extendida: todos los cursos
- * con su PDF de temario y precios, los aranceles por país, todas las guías publicadas, las
- * comparativas, las preguntas frecuentes principales y las políticas.
- *
- * `/profesores` es siempre indexable (listado) y las fichas se publican por
- * miembro con `perfilIndexable`; por eso se anuncia sin depender de flags.
+ * Regla de la casa: acá no se escribe a mano ningún monto, hora, cuota,
+ * credencial ni cantidad de cursos. Los precios públicos (`Desde <precio>`)
+ * salen de `config/pricing.ts` + `lib/paises/precios.ts`; las cuotas de
+ * `config/cuotas.ts`; las horas, niveles y cursos de `lib/data/courses.ts` y
+ * `lib/data/course-views.ts`; y el equipo docente de `lib/data/mentors.ts` y
+ * `lib/data/equipo.ts`. Los descuentos promocionales vigentes y las fechas
+ * exactas de inicio se descargan en el PDF de temario y precios de cada curso.
  */
 
 import { MEDIOS_CUOTAS, NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
 import { esIndexable, getPais, ISO_CHILE, PAISES } from "@/config/paises";
-import { tienePrecioPublico } from "@/config/pricing";
-import { comparativasAcademiaHub } from "@/lib/data/academias";
+import { precioPublico, tienePrecioPublico } from "@/config/pricing";
+import { comparativasAcademiaHub, RUTA_LISTICLE } from "@/lib/data/academias";
 import { comparisons } from "@/lib/data/comparisons";
 import { courses, getGroupedCourses, type Course } from "@/lib/data/courses";
 import { catalogHours, levelsForView } from "@/lib/data/course-views";
-import { EQUIPO_INDEXABLE } from "@/lib/data/equipo";
+import { EQUIPO_INDEXABLE, rutaPerfil } from "@/lib/data/equipo";
+import { mentors } from "@/lib/data/mentors";
 import { faqDePais } from "@/lib/faq/contenido";
 import { GUIAS } from "@/lib/guias/generado";
 import { HORA_CLASE_CHILE } from "@/lib/paises/horarios";
+import { formatMoneda } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { courseBrochurePath } from "@/lib/pricing-gate";
 import { SITE_URL } from "@/lib/seo";
 
 /** Resumen que encabeza los dos archivos. Debe ser el mismo en ambos. */
 const RESUMEN =
-  "ProgramBI es una academia de datos en español: cursos en vivo de Power BI, SQL Server, Python, análisis de datos e IA, con campus virtual con clases y material durante el curso y certificado. Se dicta desde Chile para toda Latinoamérica, con horarios por país y el arancel vigente en el PDF de temario y precios de cada curso.";
+  "ProgramBI es una academia de datos en español (+5.000 estudiantes formados, 4.9/5 de satisfacción promedio y 30+ clientes corporativos): cursos en vivo por Zoom de Power BI, SQL Server, Python, análisis de datos e IA, con campus virtual con clases y material durante el curso y certificado verificable. Se dicta desde Chile para Latinoamérica, con precios públicos Desde en moneda local (3 cuotas sin interés) y detalle de descuentos y fechas en el PDF de temario de cada curso.";
 
 const url = (ruta: string) => `${SITE_URL}${ruta}`;
-
-/**
- * Quita montos de los textos heredados (guías, comparativas) antes de
- * servirlos: el arancel vigente solo se publica en el PDF de temario y precios del curso.
- */
-const MONTO_RE =
-  /(?:US\$|\$)\s?\d[\d.,]*(?:\s?(?:CLP|ARS|MXN|COP|PEN|UYU))?|\b\d{1,3}(?:\.\d{3})+\s?(?:CLP|ARS|MXN|COP|PEN|UYU)\b/g;
-
-function sinMontos(texto: string): string {
-  return texto.replace(MONTO_RE, "el arancel vigente en el PDF de temario y precios");
-}
 
 /**
  * Enlace en sintaxis Markdown, como pide llmstxt.org. Lighthouse (auditoría de
@@ -79,6 +65,10 @@ function cursosEnOrden(): Course[] {
 }
 
 const CURSOS = cursosEnOrden();
+
+/** Mercados principales con tabla propia en moneda local para la matriz detallada. */
+const MERCADOS_MATRIZ = ["cl", "ar", "mx", "pe", "co", "uy"] as const;
+const MERCADOS_MATRIZ_SET = new Set<string>(MERCADOS_MATRIZ);
 
 /** Guías publicadas: las de país indexable más las transversales. Mismo filtro que el sitemap. */
 const GUIAS_PUBLICADAS = GUIAS.filter(
@@ -120,10 +110,6 @@ const LANDINGS_NICHO = [
  * responder precio, horario, modalidad, certificado y requisitos; el listado
  * completo vive en `/preguntas-frecuentes`. Se resuelven por id contra
  * `lib/faq/contenido.ts`, así que si una cambia, cambia acá.
- *
- * Quedan fuera las respuestas que enumeran países o cursos con una lista fija
- * («Chile, Argentina, México…»): esa lista se desactualiza frente a
- * `config/paises.ts` y al catálogo, y contradiría las tablas de este archivo.
  */
 const IDS_FAQ = new Set([
   "que-es-programbi",
@@ -151,20 +137,64 @@ const IDS_FAQ = new Set([
 /** Países que se publican: los indexables más los que todavía no tienen precio (hoy Paraguay). */
 const PAISES_PUBLICADOS = PAISES.filter((pais) => pais.indexable || !tienePrecioPublico(pais.iso));
 
+/** Formatea un monto con `formatMoneda` normalizando espacios no separables y explicitando la moneda. */
+function montoTexto(iso: string, monto: number): string {
+  const pais = getPais(iso);
+  const texto = formatMoneda(iso, monto).replace(/\u00a0/g, " ").trim();
+  return texto.includes(pais.moneda) ? texto : `${texto} ${pais.moneda}`;
+}
+
+/** Precio público «Desde <monto>» desde `config/pricing.ts`, o consulta WhatsApp si no está aprobado. */
+function precioDesdeTexto(iso: string, slug: string): string {
+  const valor = precioPublico(iso, slug);
+  if (valor == null) return "Consulta por WhatsApp";
+  return `Desde ${montoTexto(iso, valor)}`;
+}
+
+/** Menor arancel público publicado en un país (para la tabla resumen). */
+function precioMinimoPais(iso: string): string {
+  const valores = CURSOS.map((curso) => precioPublico(iso, curso.slug)).filter(
+    (valor): valor is number => valor != null
+  );
+  if (valores.length === 0) return "Consulta por WhatsApp";
+  return `Desde ${montoTexto(iso, Math.min(...valores))}`;
+}
+
 /** Nivel del curso tal como está cargado en el catálogo, con la inicial en mayúscula. */
 function nivelTexto(curso: Course): string {
   const nivel = curso.level.trim();
   return nivel ? nivel.charAt(0).toUpperCase() + nivel.slice(1) : "No declarado";
 }
 
-/** «20 horas por nivel · 2 niveles: Básico-Intermedio, Avanzado». */
+/** Horas totales reales sumando todos los niveles públicos del programa. */
+function horasTotalesCurso(curso: Course): number {
+  const niveles = levelsForView(curso, "publico");
+  if (niveles.length === 0) return catalogHours(curso);
+  const suma = niveles.reduce((total, nivel) => total + (nivel.durationHours ?? catalogHours(curso)), 0);
+  return suma > 0 ? suma : catalogHours(curso);
+}
+
+/** Resumen corto de estructura y horas para listados y tablas. */
+function duracionCorta(curso: Course): string {
+  const niveles = levelsForView(curso, "publico");
+  const horasNivel = catalogHours(curso);
+  const total = horasTotalesCurso(curso);
+  if (niveles.length <= 1) {
+    return `${horasNivel} h · 1 nivel (${niveles[0]?.name ?? "Completo"})`;
+  }
+  return `${niveles.length} niveles × ${horasNivel} h = ${total} h (${niveles.map((n) => n.name).join(" + ")})`;
+}
+
+/** «20 horas por nivel (40 horas en total) · 2 niveles: Básico-Intermedio, Avanzado». */
 function duracionTexto(curso: Course): string {
   const niveles = levelsForView(curso, "publico");
-  const horas = catalogHours(curso);
-  const unidad = niveles.length > 1 ? `${horas} horas por nivel` : `${horas} horas`;
-  if (niveles.length === 0) return unidad;
-  const etiqueta = niveles.length === 1 ? "1 nivel" : `${niveles.length} niveles`;
-  return `${unidad} · ${etiqueta}: ${niveles.map((nivel) => nivel.name).join(", ")}`;
+  const horasNivel = catalogHours(curso);
+  const total = horasTotalesCurso(curso);
+  if (niveles.length === 0) return `${horasNivel} horas`;
+  if (niveles.length === 1) {
+    return `${horasNivel} horas · 1 nivel (${niveles[0].name})`;
+  }
+  return `${horasNivel} horas por nivel (${total} horas en total) · ${niveles.length} niveles: ${niveles.map((nivel) => nivel.name).join(", ")}`;
 }
 
 /** Encabezado común: título, resumen y las líneas propias de cada archivo. */
@@ -172,12 +202,25 @@ function encabezado(titulo: string, propias: string[]): string[] {
   return [`# ${titulo}`, "", `> ${RESUMEN}`, "", ...propias, ""];
 }
 
-/** Cursos en una línea cada uno: nombre, URL, horas y resumen. */
+/** Cursos agrupados en 1 nivel vs 2 niveles, con horas reales y precio Desde en Chile. */
 function bloqueCursos(): string[] {
-  const lineas = [`## Cursos (${CURSOS.length})`];
-  for (const curso of CURSOS) {
+  const unNivel = CURSOS.filter((curso) => levelsForView(curso, "publico").length <= 1);
+  const dosNiveles = CURSOS.filter((curso) => levelsForView(curso, "publico").length > 1);
+  const lineas = [
+    `## Cursos (${CURSOS.length})`,
+    `El catálogo distingue entre ${unNivel.length} cursos de 1 nivel y ${dosNiveles.length} cursos de 2 niveles (cada nivel se inscribe por separado):`,
+    "",
+    `### Cursos de 1 nivel (${unNivel.length})`,
+  ];
+  for (const curso of unNivel) {
     lineas.push(
-      `- ${md(curso.title, url(`/cursos/${curso.slug}`))}: ${catalogHours(curso)} horas · ${sinMontos(curso.shortDescription)}`
+      `- ${md(curso.title, url(`/cursos/${curso.slug}`))}: ${duracionCorta(curso)} · ${precioDesdeTexto(ISO_CHILE, curso.slug)} · ${curso.shortDescription}`
+    );
+  }
+  lineas.push("", `### Cursos de 2 niveles (${dosNiveles.length})`);
+  for (const curso of dosNiveles) {
+    lineas.push(
+      `- ${md(curso.title, url(`/cursos/${curso.slug}`))}: ${duracionCorta(curso)} · ${precioDesdeTexto(ISO_CHILE, curso.slug)} por nivel · ${curso.shortDescription}`
     );
   }
   lineas.push("");
@@ -188,17 +231,17 @@ function bloqueCursos(): string[] {
 function bloqueCursosDetalle(): string[] {
   const lineas = [`## Cursos (${CURSOS.length})`];
   lineas.push(
-    "Cada ficha declara horas, nivel y el PDF de temario y precios con el arancel vigente de tu país, los descuentos y las 3 cuotas sin interés.",
+    `Cada ficha declara horas por nivel y totales, requisitos y el precio público en Chile (${textoCuotas(ISO_CHILE)}). Los descuentos promocionales vigentes y las fechas de inicio se descargan en el PDF de temario y precios de cada curso.`
   );
   lineas.push("");
   for (const curso of CURSOS) {
     lineas.push(`### ${curso.title}`);
     lineas.push(`- URL: ${md(curso.title, url(`/cursos/${curso.slug}`))}`);
-    lineas.push(`- Resumen: ${sinMontos(curso.shortDescription)}`);
+    lineas.push(`- Resumen: ${curso.shortDescription}`);
     lineas.push(`- Nivel: ${nivelTexto(curso)}`);
-    lineas.push(`- Duración: ${duracionTexto(curso)}`);
+    lineas.push(`- Duración y estructura: ${duracionTexto(curso)}`);
     lineas.push(
-      `- Arancel: ${md("PDF de temario y precios", url(courseBrochurePath(curso.slug, ISO_CHILE)))} con el monto vigente, los descuentos y las 3 cuotas sin interés.`,
+      `- Arancel Chile: ${precioDesdeTexto(ISO_CHILE, curso.slug)} (${textoCuotas(ISO_CHILE)}) · ${md("PDF de temario y precios", url(courseBrochurePath(curso.slug, ISO_CHILE)))} con descuentos vigentes y próximas fechas.`
     );
     lineas.push("");
   }
@@ -214,41 +257,95 @@ function bloqueLandings(): string[] {
   return lineas;
 }
 
-/** Una línea por país: dónde se descarga el arancel, sin publicar montos. */
+/** Tabla resumen por país para `/llms.txt` con aranceles públicos «Desde» desde `config/pricing.ts`. */
 function bloquePrecios(): string[] {
-  const lineas = ["## Precios por país"];
-  lineas.push(
-    "El arancel vigente, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de cada curso. La página de precios de cada país abre ese PDF y muestra el arancel local.",
+  const lineas = [
+    "## Precios por país",
+    `Precios públicos publicados en la moneda de cada país, todos con ${textoCuotas()}. Los descuentos promocionales vigentes y las fechas de cada cohorte se descargan en el PDF de temario y precios de cada curso.`,
+    "",
+    "| País | Moneda | Estándar (20 h*) | Análisis de Datos / Minería | Mercado Financiero (30 h) | Cuotas | Página |",
+    "|---|---|---|---|---|---|---|",
+  ];
+
+  const mercadosPrincipales = MERCADOS_MATRIZ.map((iso) => getPais(iso));
+  const otrosPublicados = PAISES_PUBLICADOS.filter(
+    (pais) => !MERCADOS_MATRIZ_SET.has(pais.iso) && tienePrecioPublico(pais.iso)
   );
-  for (const pais of PAISES_PUBLICADOS) {
+  const sinPrecio = PAISES_PUBLICADOS.filter((pais) => !tienePrecioPublico(pais.iso));
+
+  for (const pais of [...mercadosPrincipales, ...otrosPublicados]) {
     const href = url(rutaLocal(pais.iso, "/precios"));
     lineas.push(
-      tienePrecioPublico(pais.iso)
-        ? `- ${md(pais.nombre, href)}: arancel vigente, descuentos y cuotas en el PDF de temario y precios de cada curso.`
-        : `- ${md(pais.nombre, href)}: sin precio público aprobado; el arancel se consulta por WhatsApp y se descarga en el PDF de temario y precios de cada curso.`,
+      `| ${pais.nombre} | ${pais.moneda} | ${precioDesdeTexto(pais.iso, "power-bi")} | ${precioDesdeTexto(pais.iso, "analisis-de-datos")} | ${precioDesdeTexto(pais.iso, "mercado-financiero")} | ${textoCuotas(pais.iso)} | ${md(`/precios`, href)} |`
     );
   }
-  lineas.push("");
+  for (const pais of sinPrecio) {
+    const href = url(rutaLocal(pais.iso, "/precios"));
+    lineas.push(
+      `| ${pais.nombre} | ${pais.moneda} | Consulta por WhatsApp | Consulta por WhatsApp | Consulta por WhatsApp | ${textoCuotas(pais.iso)} | ${md(`/precios`, href)} |`
+    );
+  }
+
+  lineas.push(
+    "",
+    "* Cursos estándar de 20 h por nivel: Power BI, SQL Server, Python, Excel, Machine Learning, Copilot, Claude, Power Automate, IA en Productividad y Microsoft Access. Paraguay no tiene precio público aprobado (se consulta por WhatsApp).",
+    ""
+  );
   return lineas;
 }
 
-/** Detalle país por país: remite al brochure, sin tabla de montos. */
+/** Matriz detallada por curso y por país para `/llms-full.txt`, desde `config/pricing.ts`. */
 function bloquePreciosDetalle(): string[] {
-  const lineas = ["## Aranceles por país y por curso"];
-  lineas.push(
-    "El arancel se publica en la moneda de cada país y se descarga en el PDF de temario y precios de la ficha del curso, junto con los descuentos vigentes y las 3 cuotas sin interés. Los enlaces a cada PDF están en la sección de cursos.",
+  const mercados = MERCADOS_MATRIZ.map((iso) => getPais(iso));
+  const otrosUsd = PAISES_PUBLICADOS.filter(
+    (pais) => !MERCADOS_MATRIZ_SET.has(pais.iso) && tienePrecioPublico(pais.iso)
   );
-  lineas.push("");
-  for (const pais of PAISES_PUBLICADOS) {
-    lineas.push(`### ${pais.nombre} — ${pais.moneda}`);
-    lineas.push(md(`Precios de ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios"))));
-    lineas.push(
-      tienePrecioPublico(pais.iso)
-        ? "Arancel vigente, descuentos y 3 cuotas sin interés: PDF de temario y precios de cada curso."
-        : "Sin precio público aprobado: el arancel se consulta por WhatsApp. El PDF de temario y precios de cada curso se pide al mismo canal.",
-    );
-    lineas.push("");
+  const sinPrecio = PAISES_PUBLICADOS.filter((pais) => !tienePrecioPublico(pais.iso));
+
+  const lineas = [
+    "## Aranceles por país y por curso",
+    `Los montos «Desde» corresponden al arancel público vigente por nivel/programa en la moneda de cada mercado (fuente: \`config/pricing.ts\`), pagaderos en ${textoCuotas()}. Los descuentos vigentes y fechas exactas de inicio se descargan en el PDF de temario y precios de cada curso.`,
+    "",
+    "### Mercados principales en moneda local (Chile, Argentina, México, Perú, Colombia y Uruguay)",
+    "",
+    `| Curso | Estructura | ${mercados.map((p) => `${p.nombre} (${p.moneda})`).join(" | ")} |`,
+    `|---|---|${mercados.map(() => "---").join("|")}|`,
+  ];
+
+  for (const curso of CURSOS) {
+    const celdas = mercados.map((pais) => precioDesdeTexto(pais.iso, curso.slug));
+    lineas.push(`| ${md(curso.title, url(`/cursos/${curso.slug}`))} | ${duracionCorta(curso)} | ${celdas.join(" | ")} |`);
   }
+
+  if (otrosUsd.length > 0) {
+    lineas.push(
+      "",
+      "### Otros mercados indexables publicados (USD)",
+      "",
+      "| País | Moneda | Estándar | Análisis de Datos / Minería | Mercado Financiero | Cuotas | Página |",
+      "|---|---|---|---|---|---|---|"
+    );
+    for (const pais of otrosUsd) {
+      lineas.push(
+        `| ${pais.nombre} | ${pais.moneda} | ${precioDesdeTexto(pais.iso, "power-bi")} | ${precioDesdeTexto(pais.iso, "analisis-de-datos")} | ${precioDesdeTexto(pais.iso, "mercado-financiero")} | ${textoCuotas(pais.iso)} | ${md(`Precios ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios")))} |`
+      );
+    }
+  }
+
+  if (sinPrecio.length > 0) {
+    lineas.push("", "### Países sin precio público aprobado");
+    for (const pais of sinPrecio) {
+      lineas.push(
+        `- ${pais.nombre} (${md(`Precios ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios")))}): sin precio público aprobado; el arancel vigente y el PDF de temario y precios se consultan por WhatsApp (${md(WHATSAPP_TEXTO, WHATSAPP)}), con ${textoCuotas(pais.iso)}.`
+      );
+    }
+  }
+
+  lineas.push(
+    "",
+    "Nota: los precios detallados de promociones vigentes, descuentos por nivel o cupón y las fechas de próximas cohortes se entregan en el PDF de temario y precios de cada curso.",
+    ""
+  );
   return lineas;
 }
 
@@ -266,28 +363,40 @@ function bloquePoliticas(): string[] {
   ];
 }
 
-/** Lista corta y consistente con las fichas, para el resumen. */
+/** Lista corta y consistente con las fichas y config real, para el resumen. */
 function bloqueDatosClave(): string[] {
-  const horas = CURSOS.map((curso) => catalogHours(curso));
+  const unNivel20 = CURSOS.filter(
+    (c) => levelsForView(c, "publico").length === 1 && catalogHours(c) === 20
+  );
+  const unNivel30 = CURSOS.filter(
+    (c) => levelsForView(c, "publico").length === 1 && catalogHours(c) === 30
+  );
+  const dosNiveles20 = CURSOS.filter(
+    (c) => levelsForView(c, "publico").length === 2 && catalogHours(c) === 20
+  );
+  const dosNiveles60 = CURSOS.filter(
+    (c) => levelsForView(c, "publico").length === 2 && catalogHours(c) === 60
+  );
+
   return [
     "## Datos clave",
-    `- Cursos: ${CURSOS.length} en el catálogo, cada uno con ficha, nivel y horas propias.`,
-    `- Duración: de ${Math.min(...horas)} a ${Math.max(...horas)} horas por curso, según el programa; cada ficha declara las horas de su nivel.`,
-    `- Modalidad: clases en vivo por Zoom, dos veces por semana, de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile; la ficha de cada país muestra su hora local.`,
-    "- Certificado: incluido al completar el curso, con código público que se verifica en línea.",
-    `- Cuotas: ${textoCuotas()}.`,
+    `- Trayectoria y respaldo (E-E-A-T): +5.000 estudiantes formados, 4.9/5 de satisfacción promedio, 30+ empresas capacitadas y 100% clases en vivo.`,
+    `- Catálogo: ${CURSOS.length} cursos con ficha propia, divididos en programas de 1 nivel y de 2 niveles.`,
+    `- Cursos de 1 nivel: ${unNivel20.map((c) => c.title).join(", ")} (20 horas cada uno) y ${unNivel30.map((c) => c.title).join(", ")} (30 horas).`,
+    `- Cursos de 2 niveles: ${dosNiveles20.map((c) => c.title).join(", ")} (Básico-Intermedio 20 h + Avanzado 20 h = 40 h totales) y ${dosNiveles60.map((c) => c.title).join(", ")} (Básico-Intermedio 60 h + Avanzado 60 h = 120 h totales).`,
+    `- Modalidad: clases en vivo por Zoom, dos veces por semana, de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile; cada versión por país muestra su hora local.`,
+    "- Certificado: incluido al completar el curso, con código público verificable en línea.",
+    `- Precios públicos: en Chile ${precioMinimoPais(ISO_CHILE)} (${textoCuotas(ISO_CHILE)}), con tablas en moneda local para Argentina, México, Perú, Colombia, Uruguay y mercados USD; Paraguay se consulta por WhatsApp y el detalle de descuentos y fechas está en el PDF de temario y precios de cada curso.`,
     "- Campus virtual: acceso al campus virtual con las clases y material usado para que puedas practicar durante el curso.",
-    "- Arancel: el monto vigente por país, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de cada curso.",
-    `- Precios por país: cada página de precios (${md("precios", url("/precios"))}) y la versión extendida (${md("llms-full.txt", url("/llms-full.txt"))}) enlazan el PDF de temario y precios con el arancel de ese mercado.`,
     "",
   ];
 }
 
-/** Todas las guías publicadas, agrupadas por país. */
+/** Todas las guías publicadas, agrupadas por país, incluyendo el listicle Power BI Chile 2026. */
 function bloqueGuiasDetalle(): string[] {
-  const lineas = [`## Guías publicadas (${GUIAS_PUBLICADAS.length})`];
+  const lineas = [`## Guías publicadas (${GUIAS_PUBLICADAS.length + 1})`];
   lineas.push(
-    "Las transversales aplican a todos los países; el resto tiene la versión de su mercado. Cada línea indica la fecha de actualización.",
+    "Las transversales aplican a todos los países; el resto tiene la versión de su mercado. Cada línea indica la fecha de actualización."
   );
   lineas.push("");
 
@@ -295,17 +404,22 @@ function bloqueGuiasDetalle(): string[] {
   if (transversal.length > 0) {
     lineas.push("### Transversales");
     for (const guia of transversal) {
-      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${sinMontos(guia.description)} · actualizada ${guia.updated}`);
+      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${guia.description} · actualizada ${guia.updated}`);
     }
     lineas.push("");
   }
 
   for (const pais of PAISES) {
     const guias = GUIAS_PUBLICADAS.filter((guia) => guia.country === pais.iso);
-    if (guias.length === 0) continue;
+    if (guias.length === 0 && pais.iso !== ISO_CHILE) continue;
     lineas.push(`### ${pais.nombre}`);
+    if (pais.iso === ISO_CHILE) {
+      lineas.push(
+        `- ${md("Mejores cursos de Power BI en Chile (2026)", url(RUTA_LISTICLE))} — Comparativa con datos de precio, horas en vivo, formato y certificado de opciones verificadas en Chile.`
+      );
+    }
     for (const guia of guias) {
-      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${sinMontos(guia.description)} · actualizada ${guia.updated}`);
+      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${guia.description} · actualizada ${guia.updated}`);
     }
     lineas.push("");
   }
@@ -316,15 +430,13 @@ function bloqueGuiasDetalle(): string[] {
 function bloqueComparativas(): string[] {
   const lineas = ["## Comparativas"];
   lineas.push(
-    `- ${md("Índice de comparativas", url("/versus"))}: todas las comparativas, su veredicto y la fecha de revisión.`
+    `- ${md("Índice de comparativas", url("/versus"))}: todas las comparativas de herramientas y academias, su veredicto y la fecha de revisión.`
   );
   for (const comp of comparisons) {
-    lineas.push(`- ${md(comp.title, url(`/versus/${comp.slug}`))}: ${sinMontos(comp.seoDescription)}`);
+    lineas.push(`- ${md(comp.title, url(`/versus/${comp.slug}`))}: ${comp.seoDescription}`);
   }
-  // El listicle de academias vive en /guias, no en /versus: se filtra para no duplicarlo.
   for (const tarjeta of comparativasAcademiaHub()) {
-    if (!tarjeta.href.startsWith("/versus/")) continue;
-    lineas.push(`- ${md(tarjeta.title, url(tarjeta.href))}: ${sinMontos(tarjeta.description)}`);
+    lineas.push(`- ${md(tarjeta.title, url(tarjeta.href))}: ${tarjeta.description}`);
   }
   lineas.push("");
   return lineas;
@@ -335,7 +447,7 @@ function bloqueFaq(): string[] {
   const contenido = faqDePais(ISO_CHILE);
   const lineas = ["## Preguntas frecuentes"];
   lineas.push(
-    `Selección de las preguntas principales. El listado completo, con la tabla de horarios por país y el acceso al PDF de temario y precios con el arancel de cada curso, está en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`,
+    `Selección de las preguntas principales. El resumen interactivo está en ${md("FAQ", url("/faq"))} y el listado completo con horarios por país en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`
   );
   lineas.push("");
   for (const seccion of contenido.secciones) {
@@ -351,22 +463,33 @@ function bloqueFaq(): string[] {
 }
 
 /**
- * Institucional.
- *
- * `/profesores` es siempre indexable: el listado no depende de flags y las
- * fichas se publican una por una con `perfilIndexable`.
+ * Institucional y E-E-A-T: credenciales verificables de `lib/data/mentors.ts` y
+ * métricas públicas de `/nosotros`.
  */
-function bloqueInstitucional(): string[] {
-  return [
-    "## Institucional",
-    `- ${md("Nosotros", url("/nosotros"))}: origen de la academia, metodología de clases en vivo y quién dicta los cursos.`,
-    `- ${md("Profesores", url("/profesores"))}: equipo docente, con ${
-      EQUIPO_INDEXABLE.length
-    } perfiles publicados y los cursos que dicta cada uno.`,
+function bloqueInstitucional(conDetalleDocente = false): string[] {
+  const lineas = [
+    "## Institucional y respaldo (E-E-A-T)",
+    `- Métricas verificadas (${md("Nosotros", url("/nosotros"))}): +5.000 estudiantes formados, 4.9/5 de satisfacción promedio, 100% clases en vivo e interactivas y 30+ clientes corporativos.`,
+    `- ${md("Equipo docente", url("/profesores"))}: ${EQUIPO_INDEXABLE.length} profesores con perfil publicado y formación en la Universidad de Concepción (UdeC), Universidad Adolfo Ibáñez (UAI), Universidad de Chile y UC.`,
+    `- ${md("Testimonios de alumnos", url("/casos"))}: citas verificables de egresados de Power BI, SQL Server, Python y Análisis de Datos.`,
     `- ${md("Política de privacidad", url("/privacidad"))}.`,
     `- ${md("Términos y condiciones", url("/terminos"))}.`,
-    "",
   ];
+
+  if (conDetalleDocente) {
+    lineas.push("", "### Cuerpo docente");
+    const ordenados = [...mentors].sort((a, b) => a.sortOrder - b.sortOrder);
+    for (const mentor of ordenados) {
+      const miembro = EQUIPO_INDEXABLE.find((item) => item.nombre === mentor.name);
+      const etiqueta = miembro ? md(mentor.name, url(rutaPerfil(miembro.slug))) : mentor.name;
+      lineas.push(
+        `- ${etiqueta} (${mentor.role} · ${mentor.title}): ${mentor.credentials.join(" ")} (${mentor.studentCount.toLocaleString("es-CL")}+ alumnos, ${mentor.yearsExperience}+ años de experiencia).`
+      );
+    }
+  }
+
+  lineas.push("");
+  return lineas;
 }
 
 function bloqueOtrasPaginas(): string[] {
@@ -377,10 +500,13 @@ function bloqueOtrasPaginas(): string[] {
     `- ${md("Capacitación para empresas", url("/empresas"))}`,
     `- ${md("Implementación de Power BI", url("/implementacion-power-bi"))}`,
     `- ${md("Migrar Excel a Power BI", url("/migrar-excel-a-power-bi"))}`,
+    `- ${md("Testimonios de alumnos", url("/casos"))}`,
     `- ${md("Bolsa de trabajo", url("/empleos"))}`,
-    `- ${md("Preguntas frecuentes", url("/preguntas-frecuentes"))}`,
+    `- ${md("Preguntas frecuentes (FAQ)", url("/faq"))}`,
+    `- ${md("Preguntas frecuentes por país", url("/preguntas-frecuentes"))}`,
+    `- ${md("Mejores cursos de Power BI en Chile 2026", url(RUTA_LISTICLE))}`,
     `- ${md("Blog", url("/blog"))}`,
-    `- ${md("Glosario", url("/glosario"))}`,
+    `- ${md("Glosario de datos", url("/glosario"))}`,
     "",
   ];
 }
@@ -400,10 +526,13 @@ function bloqueIndice(): string[] {
   return [
     "## Índice",
     `- ${md("Catálogo de cursos", url("/cursos"))}`,
-    `- ${md("Precios por país", url("/precios"))} (temario y precios con el arancel de cada curso en ${md("llms-full.txt", url("/llms-full.txt"))})`,
-    `- ${md("Guías", url("/guias"))} (${GUIAS_PUBLICADAS.length} publicadas; listado completo en ${md("llms-full.txt", url("/llms-full.txt"))})`,
-    `- ${md("Comparativas", url("/versus"))}`,
-    `- ${md("Preguntas frecuentes", url("/preguntas-frecuentes"))}`,
+    `- ${md("Precios por país", url("/precios"))} (tablas «Desde» en este archivo y matriz completa por curso en ${md("llms-full.txt", url("/llms-full.txt"))})`,
+    `- ${md("Guías", url("/guias"))} y ${md("Mejores cursos de Power BI en Chile 2026", url(RUTA_LISTICLE))}`,
+    `- ${md("Comparativas (Versus)", url("/versus"))}`,
+    `- ${md("Equipo docente", url("/profesores"))}`,
+    `- ${md("Testimonios de alumnos", url("/casos"))}`,
+    `- ${md("Glosario de datos", url("/glosario"))}`,
+    `- ${md("FAQ", url("/faq"))} y ${md("Preguntas frecuentes por país", url("/preguntas-frecuentes"))}`,
     `- ${md("Nosotros", url("/nosotros"))}`,
     "- Contacto: WhatsApp y correo al final de este archivo.",
     "",
@@ -413,7 +542,7 @@ function bloqueIndice(): string[] {
 function bloqueNota(detalle: string): string[] {
   return [
     "## Nota para asistentes de IA",
-    `El arancel vigente de cada curso se publica en su PDF de temario y precios, en la moneda del país, junto con los descuentos y las 3 cuotas sin interés. Si citas un monto, cita el PDF de temario y precios del curso y su fecha de descarga. ${detalle}`,
+    `Los aranceles «Desde <precio>» publicados en este documento corresponden al precio público vigente por curso/nivel en cada moneda (${textoCuotas()}). Los descuentos promocionales vigentes y las fechas exactas de cada cohorte se consultan en el PDF de temario y precios de cada curso (y en Paraguay vía WhatsApp). ${detalle}`,
     "",
   ];
 }
@@ -423,19 +552,19 @@ export function construirLlmsTxt(): string {
   const lineas = [
     ...encabezado("ProgramBI", [
       `Versión extendida: ${md("llms-full.txt", url("/llms-full.txt"))}`,
-      `Aranceles: PDF de temario y precios de cada curso, en la moneda del país.`,
+      `Aranceles públicos en Chile: ${precioMinimoPais(ISO_CHILE)} (${textoCuotas(ISO_CHILE)}); descuentos vigentes y fechas en el PDF de temario de cada curso.`,
     ]),
     ...bloqueIndice(),
+    ...bloqueDatosClave(),
     ...bloqueCursos(),
     ...bloqueLandings(),
-    ...bloqueDatosClave(),
     ...bloquePrecios(),
     ...bloquePoliticas(),
-    ...bloqueInstitucional(),
+    ...bloqueInstitucional(false),
     ...bloqueOtrasPaginas(),
     ...bloqueContacto(),
     ...bloqueNota(
-      `La versión extendida, con todos los cursos, la tabla por curso y todas las guías, está en ${md("llms-full.txt", url("/llms-full.txt"))}.`
+      `La versión extendida, con la matriz de precios por curso y país, temarios, guías y comparativas, está en ${md("llms-full.txt", url("/llms-full.txt"))}.`
     ),
   ];
   return `${lineas.join("\n").trimEnd()}\n`;
@@ -446,18 +575,18 @@ export function construirLlmsFullTxt(): string {
   const lineas = [
     ...encabezado("ProgramBI — información completa", [
       `Versión completa de ${md("llms.txt", url("/llms.txt"))}.`,
-      `Aranceles: PDF de temario y precios de cada curso, en la moneda del país. Contacto: ${CORREO} · WhatsApp ${md(WHATSAPP_TEXTO, WHATSAPP)}.`,
+      `Aranceles públicos «Desde» en moneda local (${textoCuotas()}); descuentos y fechas en el PDF de temario y precios. Contacto: ${CORREO} · WhatsApp ${md(WHATSAPP_TEXTO, WHATSAPP)}.`,
       "",
       "## Índice",
-      `- Cursos (${CURSOS.length}), con URL, nivel, horas y enlace al PDF de temario y precios`,
-      "- Datos clave: duración, modalidad, certificado, cuotas y PDF de temario y precios",
-      "- Aranceles por país y por curso, con el enlace al PDF de temario y precios",
-      `- Guías publicadas (${GUIAS_PUBLICADAS.length}), con título, URL, descripción y fecha de actualización`,
+      "- Datos clave y trayectoria E-E-A-T (+5.000 estudiantes, 4.9/5, 30+ empresas)",
+      `- Cursos (${CURSOS.length}): distinción entre programas de 1 nivel y 2 niveles, horas, precio Chile y PDF`,
+      "- Aranceles por país y por curso (matriz en moneda local + mercados USD + Paraguay WhatsApp)",
+      `- Guías publicadas (${GUIAS_PUBLICADAS.length + 1}), con título, URL, descripción y fecha de actualización`,
       "- Comparativas de herramientas y academias",
       "- Preguntas frecuentes principales",
       "- Políticas y condiciones",
       "- Landings de nicho",
-      "- Institucional, otras páginas y contacto",
+      "- Institucional, docentes, otras páginas y contacto",
     ]),
     ...bloqueDatosClave(),
     ...bloqueCursosDetalle(),
@@ -467,7 +596,7 @@ export function construirLlmsFullTxt(): string {
     ...bloqueComparativas(),
     ...bloqueFaq(),
     ...bloquePoliticas(),
-    ...bloqueInstitucional(),
+    ...bloqueInstitucional(true),
     ...bloqueOtrasPaginas(),
     ...bloqueContacto(),
     ...bloqueNota(

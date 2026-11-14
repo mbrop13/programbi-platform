@@ -6,9 +6,9 @@ hreflang: es-VE
 curso: power-bi
 url_curso: https://www.programbi.com/ve/cursos/power-bi
 title: "Cómo aprender Power BI en Venezuela | ProgramBI"
-meta: "Guía para aprender Power BI en Venezuela: autoevaluación, temario, casos y curso en vivo de 20 h desde el 23 de noviembre, 18:30 hora de Venezuela."
+meta: "Guía para aprender Power BI en Venezuela: autoevaluación, temario, casos y curso en vivo de 20 h a las 18:30 hora de Venezuela; cupos abiertos."
 h1: "Cómo aprender Power BI en Venezuela: ruta, temario y curso en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/ve/cursos/power-bi
   - https://learn.microsoft.com/es-es/power-bi/fundamentals/desktop-get-the-desktop
@@ -23,11 +23,11 @@ nota_hermes: |
 
 # Cómo aprender Power BI en Venezuela: ruta, temario y curso en vivo
 
-**Respuesta directa:** si quieres aprender Power BI desde Venezuela con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/ve/cursos/power-bi) tiene un **nivel básico-intermedio de 20 horas por Zoom** que cubre limpieza de datos con Power Query, relaciones, DAX inicial, dashboards y publicación con roles. La próxima cohorte comienza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 18:30 a 20:30, hora de Venezuela**. Precio: **{precio_local}**.
+**Respuesta directa:** si quieres aprender Power BI desde Venezuela con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/ve/cursos/power-bi) tiene un **nivel básico-intermedio de 20 horas por Zoom** que cubre limpieza de datos con Power Query, relaciones, DAX inicial, dashboards y publicación con roles. Tiene **grupos nuevos cada mes** (próxima fecha confirmada en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de Venezuela**. Precio: **{precio_local}**.
 
 Todas las sesiones quedan grabadas con acceso de por vida, recibes certificado digital al terminar y, si después quieres ir más lejos, hay un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Información de la ficha del curso, consultada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Arranca el 23 de noviembre · 18:30 hora de Venezuela · «Ver el curso».
+**[CTA-TOP]** — Nuevas cohortes cada mes · 18:30 hora de Venezuela · «Ver el curso».
 
 ## Por qué tantos profesionales están aprendiendo Power BI
 
@@ -108,7 +108,7 @@ Las clases son en vivo por Zoom. Si en algún momento falla la conexión o la lu
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** cohortes todos los meses; mira la próxima fecha en la ficha del curso.
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de Venezuela (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
 - **Modalidad:** en vivo por Zoom, grabaciones de por vida.
@@ -118,7 +118,7 @@ Las clases son en vivo por Zoom. Si en algún momento falla la conexión o la lu
 
 **[CTA-MID]** — Descarga el temario de Power BI.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Cohortes mensuales · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -126,7 +126,7 @@ Las clases son en vivo por Zoom. Si en algún momento falla la conexión o la lu
 {precio_local}. Escríbenos por WhatsApp para confirmar el monto y las opciones de pago.
 
 **¿A qué hora son las clases?**
-Lunes y miércoles de 18:30 a 20:30, hora de Venezuela, desde el 23 de noviembre de 2026.
+Lunes y miércoles de 18:30 a 20:30, hora de Venezuela, con nuevos inicios cada mes (revisa la fecha vigente en la ficha).
 
 **¿Necesito experiencia previa?**
 No. Basta con manejar Excel a nivel básico; el nivel básico-intermedio parte desde cero y avanza paso a paso.

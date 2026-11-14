@@ -80,7 +80,7 @@ export default async function TestNivelHubPage({ params }: { params: Params }) {
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
 
-      <main className="min-h-screen bg-[#FAFBFC] pt-28 pb-20 lg:pt-32 lg:pb-28">
+      <div className="min-h-screen bg-[#FAFBFC] pt-28 pb-20 lg:pt-32 lg:pb-28">
         <div className="mx-auto max-w-[900px] px-5 lg:px-10">
           <nav className="mb-7 flex items-center gap-2 text-xs font-semibold text-slate-400">
             <Link href={href("/")} className="text-slate-500 no-underline transition-colors hover:text-[#1890FF]">
@@ -150,7 +150,7 @@ export default async function TestNivelHubPage({ params }: { params: Params }) {
             </ul>
           </section>
         </div>
-      </main>
+      </div>
     </>
   );
 }

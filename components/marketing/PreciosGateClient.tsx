@@ -37,6 +37,8 @@ type Props = {
   moneda: string;
   /** `false` cuando el checkout no cobra en la moneda local. */
   cobroLocal: boolean;
+  /** Arancel mínimo formateado del país para mostrar "Desde ..." antes del gate. */
+  minPriceLabel?: string | null;
 };
 
 const FUENTE_NOTA = "Precios publicados y sujetos a cambios. El monto final se confirma en el checkout.";
@@ -44,12 +46,18 @@ const FUENTE_NOTA = "Precios publicados y sujetos a cambios. El monto final se c
 /**
  * Tabla de precios de `/precios` detrás del gate.
  *
- * Con los precios bloqueados no se renderiza ningún monto: cada fila muestra
+ * Con los precios bloqueados no se renderiza ningún monto por curso: cada fila muestra
  * «En el PDF de temario y precios» y el nombre del curso abre el temario de su
  * país. Arriba aparece el formulario que desbloquea la tabla completa (Nombre,
  * Email, Teléfono con prefijo y curso principal) y abre el PDF en una pestaña.
  */
-export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: Props) {
+export default function PreciosGateClient({
+  cursos,
+  pais,
+  moneda,
+  cobroLocal,
+  minPriceLabel,
+}: Props) {
   const { unlocked, unlock } = usePriceUnlock();
   const [slug, setSlug] = useState(() => cursos[0]?.slug ?? "power-bi");
   const [name, setName] = useState("");
@@ -158,7 +166,9 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
             </>
           ) : (
             <>
-              <LockKeyhole size={13} aria-hidden /> Aranceles en el PDF de temario y precios
+              <LockKeyhole size={13} aria-hidden />{" "}
+              {minPriceLabel ? `Desde ${minPriceLabel} · ` : ""}Aranceles en {moneda} ·{" "}
+              {textoCuotas(pais)} · en el PDF de temario y precios
             </>
           )}
         </p>
@@ -188,12 +198,15 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
           className="mt-5 rounded-[26px] border border-line-strong bg-paper p-5 sm:p-6"
         >
           <p className="text-lg font-bold tracking-tight text-ink">
-            Desbloquea todos los precios y llévate el temario con precios
+            {minPriceLabel
+              ? `Desde ${minPriceLabel} · Desbloquea todos los precios y llévate el temario`
+              : "Desbloquea todos los precios y llévate el temario con precios"}
           </p>
           <p className="mt-1 max-w-[52rem] text-sm leading-relaxed text-mute">
-            Los aranceles de cada curso se publican en su PDF de temario y precios, con el descuento
-            vigente, las fechas en hora de tu país y las 3 cuotas sin interés. Completa tus datos y
-            abrimos el PDF de tu curso principal en una pestaña nueva.
+            {minPriceLabel ? `Desde ${minPriceLabel} en ${moneda}. ` : ""}Los aranceles de cada
+            curso se publican en su PDF de temario y precios, con el descuento vigente, las fechas
+            en hora de tu país y las {textoCuotas(pais)}. Completa tus datos y abrimos el PDF de tu
+            curso principal en una pestaña nueva.
           </p>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-2">

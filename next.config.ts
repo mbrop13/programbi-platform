@@ -94,6 +94,18 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
 
+      // ── Canibalización `/curso-power-bi` → `/cursos/power-bi` ───────────
+      {
+        source: "/curso-power-bi",
+        destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/curso-power-bi",
+        destination: "/:pais/cursos/power-bi",
+        statusCode: 301,
+      },
+
       // ── Legacy WordPress (`/pages/*`) ───────────────────────────────────
       // `/pages/` (con barra final) lo normaliza la plataforma con un 308 a
       // `/pages` antes de evaluar esta tabla; por eso no hay regla propia.
@@ -235,7 +247,7 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
 
-      // ── Blog legacy (WordPress) ─────────────────────────────────────────
+      // ── Blog legacy (WordPress) y consolidación /newsletter → /blog ─────
       {
         source: "/blogs/news",
         destination: "/blog",
@@ -244,6 +256,16 @@ const nextConfig: NextConfig = {
       {
         source: "/blogs/:rest*",
         destination: "/blog",
+        statusCode: 301,
+      },
+      {
+        source: "/newsletter",
+        destination: "/blog",
+        statusCode: 301,
+      },
+      {
+        source: "/newsletter/:slug",
+        destination: "/blog/:slug",
         statusCode: 301,
       },
 
@@ -350,6 +372,26 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
+        source: "/cursos/copilot-studio/brochure",
+        destination: "/cursos/copilot/brochure",
+        statusCode: 301,
+      },
+      {
+        source: "/cursos/copilot-studio/:rest*",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/cursos/sql",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/cursos/sql/:rest*",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
         source: "/cursos/analitica-financiera",
         destination: "/cursos/mercado-financiero",
         statusCode: 301,
@@ -357,6 +399,111 @@ const nextConfig: NextConfig = {
       {
         source: "/cursos/analitica-financiera/:rest*",
         destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+
+      // ── 301 directos (espejo de vercel.json): van ANTES de los genéricos
+      // `/:pais/...` para evitar cadenas de 2 saltos y ahorro de Fluid CPU.
+      {
+        source: "/cl/curso-power-bi",
+        destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/cl/cursos/copilot-studio",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/cl/cursos/copilot-studio/:rest*",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/cl/cursos/sql",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/cl/cursos/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/cl/cursos/analitica-financiera/:rest*",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/es/curso-power-bi",
+        destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/es/cursos/copilot-studio",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/es/cursos/copilot-studio/:rest*",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/es/cursos/sql",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/es/cursos/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/es/cursos/analitica-financiera/:rest*",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/en/curso-power-bi",
+        destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/en/cursos/copilot-studio",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/en/cursos/copilot-studio/:rest*",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/en/cursos/sql",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/en/cursos/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/en/cursos/analitica-financiera/:rest*",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+
+      // ── Slugs de curso renombrados por país ─────────────────────────────
+      {
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/cursos/copilot-studio",
+        destination: "/:pais/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/cursos/sql",
+        destination: "/:pais/cursos/sql-server",
         statusCode: 301,
       },
       {
@@ -384,68 +531,6 @@ const nextConfig: NextConfig = {
       {
         source: "/comunidad/ai/:rest*",
         destination: "/ai/:rest*",
-        statusCode: 301,
-      },
-      // ── 301 directos (espejo de vercel.json): evitan el doble salto que
-      // hoy resuelve proxy.ts en la función Node (0 Fluid CPU en el edge).
-      {
-        source: "/cl/curso-power-bi",
-        destination: "/cursos/power-bi",
-        statusCode: 301,
-      },
-      {
-        source: "/cl/cursos/copilot-studio",
-        destination: "/cursos/copilot",
-        statusCode: 301,
-      },
-      {
-        source: "/cl/cursos/analitica-financiera",
-        destination: "/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/cl/cursos/analitica-financiera/:rest*",
-        destination: "/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/es/curso-power-bi",
-        destination: "/cursos/power-bi",
-        statusCode: 301,
-      },
-      {
-        source: "/es/cursos/copilot-studio",
-        destination: "/cursos/copilot",
-        statusCode: 301,
-      },
-      {
-        source: "/es/cursos/analitica-financiera",
-        destination: "/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/es/cursos/analitica-financiera/:rest*",
-        destination: "/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/en/curso-power-bi",
-        destination: "/cursos/power-bi",
-        statusCode: 301,
-      },
-      {
-        source: "/en/cursos/copilot-studio",
-        destination: "/cursos/copilot",
-        statusCode: 301,
-      },
-      {
-        source: "/en/cursos/analitica-financiera",
-        destination: "/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/en/cursos/analitica-financiera/:rest*",
-        destination: "/cursos/mercado-financiero",
         statusCode: 301,
       },
     ];
@@ -491,6 +576,24 @@ const nextConfig: NextConfig = {
           {
             key: "Strict-Transport-Security",
             value: "max-age=31536000; includeSubDomains; preload",
+          },
+        ],
+      },
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/videos/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
           },
         ],
       },

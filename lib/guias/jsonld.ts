@@ -1,14 +1,47 @@
-import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
+import { miembroPorCurso } from "@/lib/data/equipo";
 import { ilustracionDeGuia, palabrasDeGuia, tiempoLecturaMinutos } from "@/lib/guias/ilustraciones";
 import { nombreCurso } from "@/lib/guias/opciones";
 import { metaDescripcionGuia, resolverPrecios } from "@/lib/guias/precio";
 import type { Guia } from "@/lib/guias/tipos";
-import { absoluteUrl, ORG_ID } from "@/lib/seo";
-import { idPersona } from "@/lib/seo/course-jsonld";
+import { CANONICAL_HOST, ORG_ID, WEBSITE_ID, absoluteUrl } from "@/lib/seo";
+import { getPersonaJsonLd, idPersona } from "@/lib/seo/course-jsonld";
+
+function externalCitations(sources: string[] | undefined) {
+  if (!sources || sources.length === 0) return [];
+  const urls: string[] = [];
+  const seen = new Set<string>();
+
+  for (const raw of sources) {
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+    try {
+      const parsed = new URL(trimmed);
+      const host = parsed.hostname.toLowerCase();
+      if (
+        host === CANONICAL_HOST ||
+        host === "programbi.com" ||
+        host.endsWith(".programbi.com")
+      ) {
+        continue;
+      }
+      if (!seen.has(trimmed)) {
+        seen.add(trimmed);
+        urls.push(trimmed);
+      }
+    } catch {
+      // Omit non-URL citation strings safely
+    }
+  }
+
+  return urls.map((url) => ({
+    "@type": "CreativeWork",
+    url,
+  }));
+}
 
 /**
  * Schema JSON-LD completo de cada guía:
- * - Article (con imagen 1280x720, author Person real ligado por @id, wordCount, timeRequired y about)
+ * - Article (con imagen 1280x720, author/reviewedBy Person real ligado por @id, wordCount, timeRequired y about)
  * - FAQPage (con precios limpios)
  * - BreadcrumbList
  * Nunca declara Course/Offer en guías (se reserva exclusivamente a /cursos/[slug]).
@@ -26,6 +59,7 @@ export function buildGuiaJsonLd(
   const mins = tiempoLecturaMinutos(body);
   const faqs = guia.faqs.map((faq) => ({ q: faq.q, a: resolverPrecios(faq.a, guia) }));
   const topicName = guia.course === "general" ? "Analítica de datos e IA" : nombreCurso(guia.course);
+  const citations = externalCitations(guia.sources);
 
   return {
     "@context": "https://schema.org",
@@ -54,16 +88,16 @@ export function buildGuiaJsonLd(
             caption: ilustracion.caption,
           },
         ],
-        mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
-        author: {
-          "@type": "Person",
-          "@id": idPersona(instructor.slug),
-          name: instructor.nombre,
-          jobTitle: instructor.cargo,
-          url: absoluteUrl(rutaPerfil(instructor.slug)),
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": canonical,
+          isPartOf: { "@id": WEBSITE_ID },
+          breadcrumb: { "@id": `${canonical}#breadcrumb` },
         },
+        author: getPersonaJsonLd(instructor),
+        reviewedBy: { "@id": idPersona(instructor.slug) },
         publisher: { "@id": ORG_ID },
-        ...(guia.sources && guia.sources.length > 0 ? { citation: guia.sources } : {}),
+        ...(citations.length > 0 ? { citation: citations } : {}),
       },
       ...(faqs.length > 0
         ? [

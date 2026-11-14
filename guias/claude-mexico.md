@@ -5,28 +5,28 @@ pais: mx
 hreflang: es-MX
 curso: claude
 url_curso: https://www.programbi.com/mx/cursos/claude
-title: "Curso de Claude en México: en vivo desde 23/11 | ProgramBI"
-meta: "Curso de Claude en México en vivo: 20 h para usar la IA de Anthropic en trabajo administrativo, Excel y documentos. Desde el 23 de noviembre, 16:30 CDMX."
+title: "Curso de Claude en México online en vivo | ProgramBI"
+meta: "Curso de Claude en México en vivo: 20 h para usar la IA de Anthropic en oficina, Excel y documentos. Clases 16:30 CDMX con inicios mensuales."
 h1: "Curso de Claude en México: aprende a usar la IA de Anthropic en tu chamba diaria"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/mx/cursos/claude
 nota_hermes: |
   ELEMENTO VISUAL: tabla de los 5 módulos (horas y qué aprendes) + bloque «En 30 segundos».
   Intención: "curso claude méxico", "curso claude ai en vivo" (transaccional; la guía piloto §5.2 cubre la informacional) → click_registro en /mx/cursos/claude. country=mx, course=claude.
   - PRECIO: {precio_local} = placeholder de config/pricing.ts (WS1), clave claude × mx. Manu aún no define el monto: NO escribas cifras. Sin valor → "Consulta el valor por WhatsApp".
-  - FECHA: la ficha confirma inicio lunes 23 de noviembre de 2026, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
+  - FECHA: inicios mensuales con cupos abiertos, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Claude para México en programbi.com y quiero info del curso en vivo".
 ---
 
 # Curso de Claude en México: aprende a usar la IA de Anthropic en tu chamba diaria
 
-**Respuesta corta:** el [curso de Claude de ProgramBI para México](https://www.programbi.com/mx/cursos/claude) son **20 horas en vivo por Zoom**, en 5 módulos de 4 horas, para usar Claude —el asistente de IA de Anthropic— en el trabajo administrativo: prompts efectivos, Projects, Docs y Slides, Excel y automatización ligera, **sin programar**. Inicia el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 16:30 a 18:30, hora del centro de México**. El precio es **{precio_local}**.
+**Respuesta corta:** el [curso de Claude de ProgramBI para México](https://www.programbi.com/mx/cursos/claude) son **20 horas en vivo por Zoom**, en 5 módulos de 4 horas, para usar Claude —el asistente de IA de Anthropic— en el trabajo administrativo: prompts efectivos, Projects, Docs y Slides, Excel y automatización ligera, **sin programar**. Cuenta con **inicios cada mes** (fecha actualizada en la ficha), con clases **lunes y miércoles de 16:30 a 18:30, hora del centro de México**. El precio es **{precio_local}**.
 
 Incluye grabaciones de por vida, certificado digital y un proyecto final con un proceso real de tu trabajo. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Datos según la ficha, revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio lunes 23 de noviembre · lunes y miércoles 16:30 CDMX · «Ver el curso».
+**[CTA-TOP]** — Grupos cada mes · lunes y miércoles 16:30 CDMX · «Ver el curso».
 
 ## Qué vas a poder hacer al terminar
 
@@ -122,7 +122,7 @@ Claude no reemplaza a Power BI: ayuda a explorar, limpiar y redactar, mientras P
 
 ## Horario y datos de la cohorte
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** nuevas ediciones todos los meses; revisa la fecha en la ficha del curso.
 - **Días:** lunes y miércoles.
 - **Horario:** 16:30 a 18:30, hora del centro de México. Confirma la hora exacta en la ficha de la cohorte antes de inscribirte.
 - **Duración:** 20 horas en 5 módulos de 4 horas.
@@ -130,7 +130,7 @@ Claude no reemplaza a Power BI: ayuda a explorar, limpiar y redactar, mientras P
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Hablar por WhatsApp».
+**[CTA-END]** — {precio_local} · Nuevas cohortes cada mes · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -138,7 +138,7 @@ Claude no reemplaza a Power BI: ayuda a explorar, limpiar y redactar, mientras P
 {precio_local}, en pesos mexicanos con Mercado Pago México (tarjeta, SPEI, OXXO o Wallet).
 
 **¿Cuándo empieza?**
-El lunes 23 de noviembre de 2026, con clases lunes y miércoles de 16:30 a 18:30, hora del centro de México.
+Inicia una nueva edición cada mes, con clases lunes y miércoles de 16:30 a 18:30, hora del centro de México (consulta la ficha).
 
 **¿Necesito saber programar?**
 No. El curso es para trabajo administrativo y se usa sin programar.

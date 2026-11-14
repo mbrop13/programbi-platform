@@ -789,16 +789,17 @@ async function bloqueFijo() {
     estadoBasico("/test-nivel/sql", { status: 200, robotsMax: 1, index: true })
   );
 
-  for (const path of ["/blog", "/newsletter"]) {
-    await revisar(path, "200 (no 500)", async () => {
-      const respuesta = await obtener(path);
-      if (!respuesta.ok) return { actual: "ERROR", issues: [respuesta.error] };
-      return {
-        actual: `status ${respuesta.status}`,
-        issues: respuesta.status === 200 ? [] : [`status ${respuesta.status} (esperado 200)`],
-      };
-    });
-  }
+  await revisar("/blog", "200 (no 500)", async () => {
+    const respuesta = await obtener("/blog");
+    if (!respuesta.ok) return { actual: "ERROR", issues: [respuesta.error] };
+    return {
+      actual: `status ${respuesta.status}`,
+      issues: respuesta.status === 200 ? [] : [`status ${respuesta.status} (esperado 200)`],
+    };
+  });
+  await revisar("/newsletter", "301 → /blog → 200", () =>
+    estadoRedirect("/newsletter", "/blog")
+  );
 
   for (const pais of ["pe", "mx", "ar", "co"]) {
     const path = `/${pais}/cursos/power-bi`;

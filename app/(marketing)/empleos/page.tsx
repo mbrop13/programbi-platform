@@ -11,7 +11,7 @@ import { ogImageUrl } from "@/lib/og/url";
 import { jsonLdString, twitterShare } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Bolsa de Trabajo",
+  title: "Bolsa de Trabajo: Datos, Power BI, SQL, Python",
   description:
     "La bolsa de trabajo de datos de ProgramBI: perfiles estilo LinkedIn con certificados verificados. Pre-inscripción abierta para candidatos y empresas.",
   alternates: { canonical: "/empleos" },

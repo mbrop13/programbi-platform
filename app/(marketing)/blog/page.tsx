@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPublishedArticles } from "@/lib/blog/data";
 import BlogClient from "./BlogClient";
 import { ogImageUrl } from "@/lib/og/url";
-import { absoluteUrl, tituloSeo } from "@/lib/seo";
+import { absoluteUrl, jsonLdString, tituloSeo } from "@/lib/seo";
 import { blogIcpScore } from "@/lib/seo/money";
 
 export const revalidate = 3600;
@@ -112,11 +112,11 @@ export default async function BlogPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(blogJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbJsonLd) }}
       />
       <BlogClient articles={articles} />
     </>

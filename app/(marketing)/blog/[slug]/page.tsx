@@ -4,7 +4,7 @@ import { getArticuloPorSlug, getPublishedArticles } from "@/lib/blog/data";
 import BlogArticleClient from "./BlogArticleClient";
 import { isVideoUrl, getOptimizedShareImage } from "@/lib/utils";
 import { ogImageUrl } from "@/lib/og/url";
-import { absoluteUrl, tituloSeo } from "@/lib/seo";
+import { SITE_URL, absoluteUrl, jsonLdString, tituloSeo } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -75,23 +75,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const rawShareImage = getArticlePoster(article);
   const shareImage = getOptimizedShareImage(rawShareImage);
   const description = articleDescription(article);
+  const title = tituloSeo(article.title);
 
   return {
-    title: { absolute: tituloSeo(article.title) },
+    title: { absolute: title },
     description,
     alternates: { canonical: absoluteUrl(`/blog/${slug}`) },
     openGraph: {
-      title: `${article.title} | ProgramBI`,
+      title,
       description,
       url: `https://www.programbi.com/blog/${slug}`,
       type: "article",
       publishedTime: article.published_at,
       authors: [article.author_name || "ProgramBI"],
-      images: [{ url: shareImage, width: 1200, height: 630 }],
+      images: [{ url: shareImage, width: 1200, height: 630, alt: article.title }],
     },
     twitter: {
       card: "summary_large_image",
-      title: article.title,
+      title,
       description,
       images: [shareImage],
     },
@@ -113,6 +114,10 @@ export default async function BlogArticlePage({ params }: PageProps) {
 
   const rawShareImage = getArticlePoster(article);
   const shareImage = getOptimizedShareImage(rawShareImage);
+  const imageUrl =
+    shareImage.startsWith("/") && shareImage.includes("?")
+      ? `${SITE_URL}${shareImage}`
+      : absoluteUrl(shareImage);
 
   // JSON-LD for BlogPosting
   const articleJsonLd = {
@@ -130,7 +135,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
     },
     publisher: { "@id": "https://www.programbi.com/#organization" },
     mainEntityOfPage: `https://www.programbi.com/blog/${slug}`,
-    image: shareImage,
+    image: imageUrl,
     inLanguage: "es",
     keywords: article.tags?.join(", "),
     wordCount: article.reading_time_min ? article.reading_time_min * 200 : undefined,
@@ -148,8 +153,8 @@ export default async function BlogArticlePage({ params }: PageProps) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(articleJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbJsonLd) }} />
       <BlogArticleClient article={article} related={related} />
     </>
   );

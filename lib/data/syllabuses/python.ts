@@ -8,7 +8,7 @@ export const pythonSyllabus: CourseSyllabusData = {
     {
       id: "nivel1",
       label: "Nivel I: Básico",
-      shortLabel: "Fundamentos (16h)",
+      shortLabel: "Fundamentos (20h)",
       theme: "#306998",
       audience:
         "Este curso es ideal para principiantes que desean aprender Python desde cero, enfocándose en conceptos fundamentales para automatizar tareas básicas y manipular datos en entornos empresariales. Dirigido a perfiles administrativos, financieros, comerciales, ingenieros y data analytics.",
@@ -22,8 +22,8 @@ export const pythonSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n1-1",
-          title: "Introducción a Python (4 horas)",
-          hours: 4,
+          title: "Introducción a Python (6 horas)",
+          hours: 6,
           topics: [
             "Objetivo: Familiarizarse con el entorno de Python y los tipos de datos básicos.",
             "Variables y Tipos de Datos: int, float, str.",
@@ -47,8 +47,8 @@ export const pythonSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-3",
-          title: "Introducción a Pandas (4 horas)",
-          hours: 4,
+          title: "Introducción a Pandas (6 horas)",
+          hours: 6,
           topics: [
             "Objetivo: Aprender a cargar y explorar datos con Pandas.",
             "DataFrames: Creación a partir de archivos Excel.",
@@ -76,7 +76,7 @@ export const pythonSyllabus: CourseSyllabusData = {
     {
       id: "nivel2",
       label: "Nivel II: Intermedio",
-      shortLabel: "Análisis & Viz (16h)",
+      shortLabel: "Análisis & Viz (20h)",
       theme: "#059669",
       audience:
         "Este curso construye sobre los fundamentos, enfocándose en manipulación de datos intermedia y visualizaciones básicas para generar informes más complejos en empresas.",
@@ -90,8 +90,8 @@ export const pythonSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n2-1",
-          title: "Manipulación y Filtrado con Pandas (4 horas)",
-          hours: 4,
+          title: "Manipulación y Filtrado con Pandas (6 horas)",
+          hours: 6,
           topics: [
             "Objetivo: Manipular y filtrar DataFrames para crear reportes.",
             "Agrupación de datos: df.groupby().",
@@ -105,8 +105,8 @@ export const pythonSyllabus: CourseSyllabusData = {
         },
         {
           id: "n2-2",
-          title: "Visualización con Matplotlib (4 horas)",
-          hours: 4,
+          title: "Visualización con Matplotlib (5 horas)",
+          hours: 5,
           topics: [
             "Objetivo: Crear visualizaciones básicas con Matplotlib.",
             "Gráficos de líneas: plt.plot().",
@@ -117,8 +117,8 @@ export const pythonSyllabus: CourseSyllabusData = {
         },
         {
           id: "n2-3",
-          title: "Visualización con Seaborn (4 horas)",
-          hours: 4,
+          title: "Visualización con Seaborn (5 horas)",
+          hours: 5,
           topics: [
             "Objetivo: Crear visualizaciones más avanzadas con Seaborn.",
             "Gráficos de líneas: sns.lineplot().",
@@ -143,7 +143,7 @@ export const pythonSyllabus: CourseSyllabusData = {
     {
       id: "nivel3",
       label: "Nivel III: Avanzado",
-      shortLabel: "Data Science & AI (16h)",
+      shortLabel: "Data Science & AI (20h)",
       theme: "#7C3AED",
       audience:
         "Este curso avanzado profundiza en visualizaciones interactivas, combinación de datos y proyectos aplicados, perfecto para profesionales que buscan optimizar análisis predictivos.",
@@ -157,8 +157,8 @@ export const pythonSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n3-1",
-          title: "Gráficos con Plotnine (3 horas)",
-          hours: 3,
+          title: "Gráficos con Plotnine (4 horas)",
+          hours: 4,
           topics: [
             "Objetivo: Aprender la sintaxis declarativa de Plotnine.",
             "Creación: ggplot() + aes() + geom_line().",
@@ -169,8 +169,8 @@ export const pythonSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-2",
-          title: "Manipulación de DataFrames Compleja (3 horas)",
-          hours: 3,
+          title: "Manipulación de DataFrames Compleja (4 horas)",
+          hours: 4,
           topics: [
             "Objetivo: Combinar DataFrames y cálculos.",
             "Unión: pd.merge().",
@@ -180,8 +180,8 @@ export const pythonSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-3",
-          title: "Gráficos Interactivos con Plotly (4 horas)",
-          hours: 4,
+          title: "Gráficos Interactivos con Plotly (5 horas)",
+          hours: 5,
           topics: [
             "Objetivo: Crear gráficos interactivos con Plotly.",
             "Dispersión, barras, histogramas, tortas.",
@@ -191,8 +191,8 @@ export const pythonSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-4",
-          title: "Proyecto Aplicado (3 horas)",
-          hours: 3,
+          title: "Proyecto Aplicado (4 horas)",
+          hours: 4,
           topics: [
             "Objetivo: Aplicar todo en un proyecto práctico.",
             "Análisis completo de un dataset real.",

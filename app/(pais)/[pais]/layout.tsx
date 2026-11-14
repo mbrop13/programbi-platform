@@ -33,6 +33,7 @@ export async function generateMetadata({
   const indexable = esIndexable(pais);
   return {
     ...METADATA_BASE,
+    keywords: [],
     // Cada página por país lleva su canonical propio (lo define la página).
     alternates: { canonical: null },
     ...(indexable ? {} : { robots: robotsLocal(pais) }),

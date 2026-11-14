@@ -96,10 +96,12 @@ export default function LandingHero() {
         {/* Capa 1: noche ejecutiva */}
         <motion.div style={{ x: x1, y: y1 }} className="absolute inset-[-3%]">
           <Image
-            src="/images/bolsa-hero-1.jpg"
+            src="/images/bolsa-hero-1.webp"
             alt="Profesionales de datos en un entorno de trabajo ejecutivo"
             fill
-            priority
+            preload
+            fetchPriority="high"
+            decoding="async"
             sizes="100vw"
             quality={75}
             className="bolsa-ken-a object-cover"
@@ -109,10 +111,12 @@ export default function LandingHero() {
         {/* Capa 2: data-tech (el cursor decide cuánto pesa) */}
         <motion.div style={{ x: x2, y: y2, opacity: img2Base }} className="absolute inset-[-3%]">
           <Image
-            src="/images/bolsa-hero-2.jpg"
+            src="/images/bolsa-hero-2.webp"
             alt="Visualización de datos y tecnología aplicada a negocios"
             fill
-            priority
+            loading="eager"
+            fetchPriority="low"
+            decoding="async"
             sizes="100vw"
             quality={75}
             className="bolsa-ken-b bolsa-fade object-cover"

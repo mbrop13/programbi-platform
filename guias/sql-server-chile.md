@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/cursos/sql-server
 title: "Curso de SQL Server en Chile en vivo: guía 2026 | ProgramBI"
 meta: "Curso de SQL Server online en vivo en Chile: consultas SQL desde cero en 20 h (martes y jueves 19:30) y conexión práctica con Power BI."
 h1: "Curso de SQL Server en Chile: aprende SQL en vivo y online"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/sql-server
   - https://www.programbi.com/cursos/power-bi
@@ -26,11 +26,11 @@ nota_hermes: |
 
 # Curso de SQL Server en Chile: aprende SQL en vivo y online
 
-**Respuesta corta:** el [curso de SQL Server de ProgramBI](https://www.programbi.com/cursos/sql-server) es un curso de SQL **online y en vivo por Zoom** para Chile: **20 horas, 8 módulos, nivel básico-intermedio**, los **martes y jueves de 19:30 a 21:30, hora de Chile**. El próximo inicio es el **martes 24 de noviembre de 2026** y el valor es **$169.000 CLP**, con grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de SQL Server de ProgramBI](https://www.programbi.com/cursos/sql-server) es un curso de SQL **online y en vivo por Zoom** para Chile: **20 horas, 8 módulos, nivel básico-intermedio**, los **martes y jueves de 19:30 a 21:30, hora de Chile**. Hay **inicios todos los meses** (revisa la fecha en la ficha) y el valor es **$169.000 CLP**, con grabaciones de por vida y certificado.
 
 **¿Qué aprendes?** A escribir consultas desde cero (`SELECT`, `WHERE`, `ORDER BY`), agrupar con `GROUP BY` y `HAVING`, cruzar tablas con todos los tipos de `JOIN`, usar subconsultas, CTEs, tablas temporales, funciones de ventana y `PIVOT`. En la práctica: dejar de pedirle a TI el Excel de cada lunes y sacarlo tú directo de la base.
 
-**[CTA-TOP]** — Próxima clase en vivo: martes 24 de noviembre de 2026 · 19:30 hora de Chile · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · martes y jueves 19:30 (hora de Chile) · «Ver el curso».
 
 ## Por qué SQL es la habilidad que más rinde en la pega
 
@@ -136,7 +136,7 @@ Datos de la [ficha del curso](https://www.programbi.com/cursos/sql-server), revi
 - Temario: SELECT, WHERE y ORDER BY; funciones y operadores; GROUP BY y HAVING; subconsultas y filtrado avanzado; JOINs (INNER, LEFT, RIGHT, FULL) y vistas; CTEs y tablas temporales; funciones de ventana; PIVOT y UNPIVOT; e introducción al uso de IA en SQL Server.
 - **Nivel avanzado** (20 h) con procedimientos almacenados y diseño de esquemas.
 - **Grabaciones de por vida**, **certificado** al completar y proyectos con datos reales.
-- Próximo inicio: **martes 24 de noviembre de 2026**. Valor: **$169.000 CLP**.
+- Próximo inicio: **nuevas ediciones cada mes** (fecha confirmada en la ficha). Valor: **$169.000 CLP**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 - Para equipos: cotización en `/cursos/sql-server/empresas`.
 

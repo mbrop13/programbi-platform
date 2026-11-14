@@ -6,7 +6,7 @@ country: mx
 lang: es-MX
 slug: como-aprender-power-bi-en-mexico
 path: /mx/guias/como-aprender-power-bi-en-mexico
-updated: 2026-11-04
+updated: 2026-11-14
 course: power-bi
 url_curso: https://www.programbi.com/mx/cursos/power-bi
 sources:
@@ -111,7 +111,7 @@ Con disciplina, se puede aprender solo con la documentación de Microsoft y prá
 ##### El curso Power BI en vivo de ProgramBI (versión México)
 
 - **En vivo por Zoom**, lunes y miércoles de **16:30 a 18:30, hora de México**.
-- **20 horas, 8 módulos**, nivel básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
+- **20 horas, 8 módulos**, nivel básico-intermedio. Cohortes mensuales con cupo abierto; revisa la siguiente fecha en la ficha.
 - Consulta aranceles vigentes en pesos mexicanos al descargar el PDF en la ficha del [curso de Power BI en México](/mx/cursos/power-bi).
 - Temario: Power Query y funciones M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado** al completar.

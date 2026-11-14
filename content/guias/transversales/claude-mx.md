@@ -6,7 +6,7 @@ country: mx
 lang: es-MX
 slug: como-usar-claude-para-analisis-de-datos
 path: /mx/guias/como-usar-claude-para-analisis-de-datos
-updated: 2026-11-04
+updated: 2026-11-14
 course: claude
 url_curso: https://www.programbi.com/mx/cursos/claude
 sources:
@@ -96,7 +96,7 @@ Antes de usar Claude con datos de la empresa, confirma con tu área de TI o de c
 
 ##### El curso Claude en vivo de ProgramBI (versión México)
 
-- **En vivo por Zoom**, lunes y miércoles de **16:30 a 18:30, hora de México**. Próximo inicio: **lunes 23 de noviembre de 2026**.
+- **En vivo por Zoom**, lunes y miércoles de **16:30 a 18:30, hora de México**. Abrimos grupos todos los meses; consulta la próxima fecha en la ficha del curso.
 - **Inversión local en MXN:** revisa el arancel vigente y opciones de pago descargando el PDF de temario y precios en esta página o en la [guía del curso Claude para México](/mx/guias/curso-claude-mexico).
 - **20 horas, 5 módulos**: primeros pasos y privacidad; prompting práctico; Projects, Artifacts, Docs y Slides; Claude para Excel y tareas administrativas; automatización ligera y proyecto final con un proceso real de tu trabajo.
 - **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**. Revisa los detalles en la ficha del [curso Claude en vivo](/mx/cursos/claude).

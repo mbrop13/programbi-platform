@@ -6,7 +6,7 @@ country: py
 lang: es-PY
 slug: como-aprender-power-bi-en-paraguay
 path: /py/guias/como-aprender-power-bi-en-paraguay
-updated: 2026-11-04
+updated: 2026-11-14
 course: power-bi
 url_curso: https://www.programbi.com/py/cursos/power-bi
 sources:
@@ -117,7 +117,7 @@ Podés empezar solo con la documentación de Microsoft. Pero la parte que da tra
 ##### El curso Power BI en vivo de ProgramBI (para Paraguay)
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30, hora de Paraguay** (misma hora que Chile en esta temporada; verificar cuando Chile cambie de horario).
-- **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
+- **20 horas, 8 módulos**, básico-intermedio. Inicios mensuales y cupos abiertos; consultá la fecha vigente en la ficha.
 - Consultá la inversión en el PDF del [curso de Power BI en Paraguay](/py/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.

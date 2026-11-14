@@ -428,7 +428,7 @@ export function comparativaCoderhouse(iso: PaisComparativa): ComparativaAcademia
     hreflang: hreflangCoderhouse(),
     h1: "¿Coderhouse o ProgramBI para aprender Power BI? Te lo contamos claro.",
     metaTitle: `Coderhouse vs ProgramBI: Power BI en ${nombre} y precio`,
-    metaDescription: `Comparamos Coderhouse y ProgramBI para aprender Power BI en ${nombre}: horas en vivo, precio, precio por hora, cuotas y certificado. Con fuentes y fecha de revisión.`,
+    metaDescription: `Comparamos Coderhouse y ProgramBI para aprender Power BI en ${nombre}: horas en vivo, precio, precio por hora, cuotas y certificado. Con fuentes y fecha.`,
     subtitulo:
       "Las dos son en vivo. La diferencia está en las horas de clase y en cuánto pagas por cada una.",
     intro: esChile

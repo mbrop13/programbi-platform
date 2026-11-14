@@ -29,9 +29,25 @@ import {
   SENIORITY_LABELS,
 } from "@/lib/jobs/types";
 import { ogImageUrl } from "@/lib/og/url";
-import { tituloSeo } from "@/lib/seo";
+import { absoluteUrl, jsonLdString, tituloSeo, twitterShare } from "@/lib/seo";
 
 export const revalidate = 3600;
+
+const SCHEMA_EMPLOYMENT_TYPE: Record<string, string> = {
+  full_time: "FULL_TIME",
+  part_time: "PART_TIME",
+  contrato: "CONTRACTOR",
+  freelance: "CONTRACTOR",
+  practica: "INTERN",
+  temporary: "TEMPORARY",
+  intern: "INTERN",
+  contractor: "CONTRACTOR",
+  other: "OTHER",
+};
+
+function schemaEmploymentType(employmentType: string): string {
+  return SCHEMA_EMPLOYMENT_TYPE[employmentType.trim().toLowerCase()] ?? "OTHER";
+}
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -45,30 +61,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     SENIORITY_LABELS[job.seniority as keyof typeof SENIORITY_LABELS] || job.seniority,
     ...job.skills.slice(0, 2).map((s) => getSkillLabel(s)),
   ].filter(Boolean);
+  const ogTitle = `${job.title} — ${job.company_name}`;
+  const ogUrl = ogImageUrl({
+    kicker: job.company_name,
+    title: job.title,
+    description,
+    tags,
+    verified: true,
+    path: `empleos/${job.slug}`,
+  });
   return {
-    title: { absolute: tituloSeo(`${job.title} — ${job.company_name}`) },
+    title: { absolute: tituloSeo(ogTitle) },
     description,
     alternates: { canonical: `/empleos/${job.slug}` },
     openGraph: {
-      title: `${job.title} — ${job.company_name}`,
+      title: ogTitle,
       description,
       url: `/empleos/${job.slug}`,
       images: [
         {
-          url: ogImageUrl({
-            kicker: job.company_name,
-            title: job.title,
-            description,
-            tags,
-            verified: true,
-            path: `empleos/${job.slug}`,
-          }),
+          url: ogUrl,
           width: 1200,
           height: 630,
-          alt: `${job.title} — ${job.company_name}`,
+          alt: ogTitle,
         },
       ],
     },
+    twitter: twitterShare(ogTitle, description, ogUrl),
   };
 }
 
@@ -81,31 +100,37 @@ export default async function JobDetailPage({ params }: Props) {
   const similar = await getSimilarJobs(job, 3);
   const salary = job.salary_visible ? formatSalaryCLP(job.salary_min_clp, job.salary_max_clp) : null;
 
+  const isRemote = job.modality === "remoto";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
     title: job.title,
     description: job.description,
+    url: absoluteUrl(`/empleos/${job.slug}`),
+    directApply: true,
     datePosted: job.published_at,
     validThrough: job.expires_at,
-    employmentType: job.employment_type.toUpperCase(),
+    employmentType: schemaEmploymentType(job.employment_type),
     hiringOrganization: {
       "@type": "Organization",
       name: job.company_name,
       logo: job.company_logo_url ?? undefined,
     },
-    jobLocationType: job.modality === "remoto" ? "TELECOMMUTE" : undefined,
-    jobLocation:
-      job.modality === "remoto"
-        ? undefined
-        : {
-            "@type": "Place",
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: job.location_city ?? "Chile",
-              addressCountry: "CL",
-            },
+    jobLocationType: isRemote ? "TELECOMMUTE" : undefined,
+    applicantLocationRequirements: isRemote
+      ? { "@type": "Country", name: "CL" }
+      : undefined,
+    jobLocation: isRemote
+      ? undefined
+      : {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: job.location_city ?? "Chile",
+            addressCountry: "CL",
           },
+        },
     baseSalary: job.salary_visible
       ? {
           "@type": "MonetaryAmount",
@@ -126,7 +151,7 @@ export default async function JobDetailPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
 
       <section className="px-4 pt-12 pb-10 sm:px-6 lg:px-8 lg:pt-16">

@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/co/cursos/python
 title: "Curso de Python en Colombia en vivo: guía 2026 | ProgramBI"
 meta: "Curso de Python online en vivo en Colombia: Python para datos desde cero en 20 h (lunes y miércoles 17:30 Bogotá). Pandas y reportes."
 h1: "Curso de Python en Colombia: Python para análisis de datos, en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/co/cursos/python
   - https://www.programbi.com/co/cursos/sql-server
@@ -26,11 +26,11 @@ nota_hermes: |
 
 # Curso de Python en Colombia: Python para análisis de datos, en vivo
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI en Colombia](https://www.programbi.com/co/cursos/python) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **lunes y miércoles de 17:30 a 19:30, hora de Colombia**. Arranca el **lunes 23 de noviembre de 2026** y su valor es **{precio_local}**. Trae grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI en Colombia](https://www.programbi.com/co/cursos/python) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **lunes y miércoles de 17:30 a 19:30, hora de Colombia**. Inicia **grupos nuevos cada mes** (próxima fecha en la ficha) y su valor es **{precio_local}**. Trae grabaciones de por vida y certificado.
 
 **¿Qué aprendes?** Python desde cero orientado a datos: lo básico del lenguaje (variables, funciones, listas y diccionarios) y luego Pandas para depurar, transformar, agrupar y cruzar bases; gráficos con Matplotlib y conexión a bases de datos y APIs. En el trabajo diario significa que la base de 500.000 filas que hoy bloquea tu Excel se procesa en segundos.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 17:30 hora de Colombia · «Ver el curso».
+**[CTA-TOP]** — Cohortes cada mes · lunes y miércoles 17:30 (Colombia) · «Ver el curso».
 
 ## El problema que Python resuelve en empresas colombianas
 
@@ -161,7 +161,7 @@ Según la [ficha del curso para Colombia](https://www.programbi.com/co/cursos/py
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **inscripciones mensuales** (revisa la fecha vigente en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

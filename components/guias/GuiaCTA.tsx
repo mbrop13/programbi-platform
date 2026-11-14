@@ -9,8 +9,8 @@ import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
-/** Fecha publicada en las fichas principales. */
-export const PROXIMO_INICIO = "lunes 23 de noviembre de 2026";
+/** Etiqueta evergreen de cohorte cuando no hay una fecha fija publicada. */
+export const PROXIMO_INICIO = OPEN_COHORT_LABEL;
 
 const CURSOS_CON_PLANTILLA_BI = new Set(["power-bi", "analisis-de-datos"]);
 

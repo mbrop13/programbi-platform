@@ -5,11 +5,10 @@ import { rutaLocal } from "@/lib/paises/rutas";
  * Datos de la ficha del curso que usan las guías (duración, nombre, imagen,
  * próximo inicio).
  *
- * Ojo con la duración: `lib/data/courses.ts` guarda 16 h por nivel para
- * Power BI, Python, SQL Server y Excel, pero el texto publicado en las
- * landings y en las guías dice 20 h. Acá se usa el dato publicado para que la
- * guía no se contradiga a sí misma; unificar ficha y textos queda pendiente de
- * Manu.
+ * Las duraciones publicadas en `HORAS_PUBLICADAS` (20 h por nivel para Power BI,
+ * Python, SQL Server, Excel, Machine Learning y Analítica Minería; 60 h para
+ * Análisis de datos; 30 h para Mercado financiero) coinciden con
+ * `lib/data/courses.ts`.
  */
 export type FichaCursoGuia = {
   slug: string;
@@ -27,18 +26,18 @@ export type FichaCursoGuia = {
 };
 
 const HORAS_PUBLICADAS: Record<string, { horas: number; inicio: string | null }> = {
-  "power-bi": { horas: 20, inicio: "lunes 23 de noviembre de 2026" },
-  python: { horas: 20, inicio: "lunes 23 de noviembre de 2026" },
-  "sql-server": { horas: 20, inicio: "martes 24 de noviembre de 2026" },
+  "power-bi": { horas: 20, inicio: null },
+  python: { horas: 20, inicio: null },
+  "sql-server": { horas: 20, inicio: null },
   excel: { horas: 20, inicio: null },
-  claude: { horas: 20, inicio: "lunes 23 de noviembre de 2026" },
+  claude: { horas: 20, inicio: null },
   copilot: { horas: 20, inicio: null },
   "ia-productividad": { horas: 20, inicio: null },
   "power-automate": { horas: 20, inicio: null },
   access: { horas: 20, inicio: null },
   "machine-learning": { horas: 20, inicio: null },
   "analitica-mineria": { horas: 20, inicio: null },
-  "analisis-de-datos": { horas: 60, inicio: "lunes 23 de noviembre de 2026" },
+  "analisis-de-datos": { horas: 60, inicio: null },
   "mercado-financiero": { horas: 30, inicio: null },
 };
 

@@ -10,7 +10,6 @@ import { esIsoPais } from "@/config/paises";
  * vercel.json/next.config.ts; este redirect cubre el resto de los países y los
  * entornos sin configuración.
  */
-export const dynamic = "force-dynamic";
 
 export default async function Page({
   params,

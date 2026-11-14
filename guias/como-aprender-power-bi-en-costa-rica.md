@@ -6,9 +6,9 @@ hreflang: es-CR
 curso: power-bi
 url_curso: https://www.programbi.com/cr/cursos/power-bi
 title: "Cómo aprender Power BI en Costa Rica | ProgramBI"
-meta: "Guía para aprender Power BI en Costa Rica: seis preguntas clave, temario, método de estudio y curso en vivo de 20 h desde el 23 de noviembre, 16:30."
+meta: "Guía para aprender Power BI en Costa Rica: seis preguntas clave, temario, método de estudio y curso en vivo de 20 h a las 16:30 (cupos abiertos)."
 h1: "Cómo aprender Power BI en Costa Rica: guía paso a paso y curso en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/cr/cursos/power-bi
   - https://learn.microsoft.com/es-es/power-bi/fundamentals/desktop-get-the-desktop
@@ -23,11 +23,11 @@ nota_hermes: |
 
 # Cómo aprender Power BI en Costa Rica: guía paso a paso y curso en vivo
 
-**En resumen:** para aprender Power BI desde Costa Rica con acompañamiento, el [curso de Power BI de ProgramBI](https://www.programbi.com/cr/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas en vivo por Zoom**: conexión de fuentes, limpieza con Power Query, relaciones, DAX inicial, dashboards y publicación con roles. La próxima cohorte inicia el **lunes 23 de noviembre de 2026**, con sesiones **lunes y miércoles de 16:30 a 18:30, hora de Costa Rica**. Precio: **{precio_local}**.
+**En resumen:** para aprender Power BI desde Costa Rica con acompañamiento, el [curso de Power BI de ProgramBI](https://www.programbi.com/cr/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas en vivo por Zoom**: conexión de fuentes, limpieza con Power Query, relaciones, DAX inicial, dashboards y publicación con roles. Iniciamos **nuevos grupos cada mes** (fecha confirmada en la ficha), con sesiones **lunes y miércoles de 16:30 a 18:30, hora de Costa Rica**. Precio: **{precio_local}**.
 
 Las clases quedan grabadas con acceso de por vida, se entrega certificado digital y existe un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Información tomada de la ficha del curso el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 16:30 hora de Costa Rica · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · 16:30 hora de Costa Rica · «Ver el curso».
 
 ## ¿Para quién tiene sentido?
 
@@ -114,7 +114,7 @@ Una computadora con Windows, ya que Microsoft indica que [Power BI Desktop](http
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** cohortes cada mes con cupos abiertos (consulta la ficha).
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de Costa Rica (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -124,7 +124,7 @@ Una computadora con Windows, ya que Microsoft indica que [Power BI Desktop](http
 
 **[CTA-MID]** — Descargue el temario de Power BI.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Inicios mensuales · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -132,7 +132,7 @@ Una computadora con Windows, ya que Microsoft indica que [Power BI Desktop](http
 {precio_local}. Escríbanos por WhatsApp para confirmar el monto y la forma de pago.
 
 **¿Cuándo inicia y en qué horario?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 16:30 a 18:30, hora de Costa Rica.
+Comenzamos un grupo nuevo cada mes, lunes y miércoles de 16:30 a 18:30, hora de Costa Rica (confirma la próxima fecha en la ficha).
 
 **¿Necesito experiencia previa?**
 No. El nivel básico-intermedio parte desde cero; basta con un manejo básico de Excel.

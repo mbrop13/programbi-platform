@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { EyeOff, FileSearch, ShieldCheck } from "lucide-react";
 
 import FormularioVerificacion from "@/components/certificado/FormularioVerificacion";
-import { absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { absoluteUrl, DEFAULT_OG_IMAGE, twitterShare } from "@/lib/seo";
 
 const PATH = "/verificar-certificado";
 const TITLE = "Verificar certificado de ProgramBI";
@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     locale: "es_CL",
     images: [DEFAULT_OG_IMAGE],
   },
+  twitter: twitterShare(TITLE, DESCRIPTION),
 };
 
 const AYUDAS = [

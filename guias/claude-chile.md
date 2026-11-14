@@ -5,10 +5,10 @@ pais: cl
 hreflang: es-CL
 curso: claude
 url_curso: https://www.programbi.com/cursos/claude
-title: "Curso de Claude en Chile: en vivo desde el 23/11 | ProgramBI"
-meta: "Curso de Claude en Chile en vivo: 20 h para usar la IA de Anthropic en trabajo administrativo, Excel y documentos. Inicio lunes 23 de noviembre."
+title: "Curso de Claude en Chile online en vivo | ProgramBI"
+meta: "Curso de Claude en Chile en vivo: 20 h para usar la IA de Anthropic en trabajo administrativo, Excel y documentos. Cupos abiertos, 19:30 hora Chile."
 h1: "Curso de Claude en Chile: IA para tu trabajo administrativo, en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/claude
   - https://www.bcn.cl/leychile/navegar?idNorma=1209272
@@ -16,18 +16,18 @@ nota_hermes: |
   ELEMENTO VISUAL: bloque «En 30 segundos» + tabla comparativa «Curso Claude vs. Curso IA en Productividad» (foco, herramientas, para quién).
   Intención: "curso claude chile", "curso claude ai en vivo" (transaccional; la guía piloto §5.1 cubre la informacional «cómo usar Claude para análisis de datos») → click_registro en /cursos/claude. country=cl, course=claude.
   - PRECIO: 169.000 CLP confirmado por Manu (4 nov 2026). Léelo igual como {precio_local} desde config/pricing.ts (clave claude × cl) para no desalinear guía, ficha, Offer y checkout.
-  - FECHA: la ficha confirma inicio lunes 23 de noviembre de 2026, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
+  - FECHA: inicios mensuales con cupos abiertos, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Claude para Chile en programbi.com y quiero info del curso en vivo".
 ---
 
 # Curso de Claude en Chile: IA para tu trabajo administrativo, en vivo
 
-**Respuesta corta:** el [curso de Claude de ProgramBI](https://www.programbi.com/cursos/claude) es un programa **en vivo por Zoom de 20 horas en 5 módulos de 4 horas** para usar Claude, el asistente de IA de Anthropic, en el trabajo administrativo: prompts que funcionan, Projects, Docs y Slides, Excel y automatización ligera, **sin programar**. Parte el **lunes 23 de noviembre de 2026**, con clases los **lunes y miércoles de 19:30 a 21:30, hora de Chile**, y cuesta **$169.000 CLP**.
+**Respuesta corta:** el [curso de Claude de ProgramBI](https://www.programbi.com/cursos/claude) es un programa **en vivo por Zoom de 20 horas en 5 módulos de 4 horas** para usar Claude, el asistente de IA de Anthropic, en el trabajo administrativo: prompts que funcionan, Projects, Docs y Slides, Excel y automatización ligera, **sin programar**. Tiene **inicios todos los meses** (próxima fecha en la ficha), con clases los **lunes y miércoles de 19:30 a 21:30, hora de Chile**, y cuesta **$169.000 CLP**.
 
 Incluye grabaciones de por vida, certificado y un proyecto final integrador con un proceso real de tu pega. Datos según la ficha del curso, revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio lunes 23 de noviembre · lunes y miércoles 19:30 a 21:30 · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · lunes y miércoles 19:30 a 21:30 (Chile) · «Ver el curso».
 
 ## ¿Por qué un curso de una sola herramienta?
 
@@ -93,7 +93,7 @@ La ficha lo define para el **trabajo administrativo**, con el mismo programa par
 | Foco | Una herramienta, a fondo | Varias herramientas comparadas |
 | Herramientas | Claude, Projects, Docs, Slides, Cowork | ChatGPT, Claude, Gemini, Copilot y flujos sin código |
 | Ideal si | Tu empresa ya usa o va a usar Claude | Aún no eliges herramienta |
-| Inicio | Lunes 23 de noviembre de 2026 | Cupos abiertos · consultar horario |
+| Inicio | Inicios mensuales (ver ficha) | Cupos abiertos · consultar horario |
 
 ## Tu primer mes después del curso
 
@@ -114,14 +114,14 @@ Claude no reemplaza a Power BI. Claude te ayuda a explorar, limpiar y redactar; 
 
 ## Ficha del curso en Chile
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** grupos nuevos cada mes; confirma la próxima fecha en la ficha del curso.
 - **Días y horario:** lunes y miércoles, 19:30 a 21:30, hora de Chile, en vivo por Zoom.
 - **Duración:** 20 horas en 5 módulos de 4 horas.
 - **Incluye:** grabaciones de por vida, certificado digital y proyecto final con un proceso real.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Valor:** $169.000 CLP. Puedes pagar en 3 cuotas sin interés.
 
-**[CTA-END]** — $169.000 CLP · Inicio 23 de noviembre · «Inscribirme» · «Hablar por WhatsApp».
+**[CTA-END]** — {precio_local} · Inicios mensuales · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -129,7 +129,7 @@ Claude no reemplaza a Power BI. Claude te ayuda a explorar, limpiar y redactar; 
 $169.000 CLP por las 20 horas en vivo, con grabaciones de por vida y certificado.
 
 **¿Cuándo empieza y a qué hora son las clases?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 19:30 a 21:30, hora de Chile.
+Hay inicios nuevos todos los meses; las clases son lunes y miércoles de 19:30 a 21:30, hora de Chile (fecha vigente en la ficha).
 
 **¿Necesito saber programar?**
 No. Está pensado para trabajo administrativo sin programar; incluso Claude Code se explica en lenguaje sencillo.

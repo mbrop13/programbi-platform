@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/uy/cursos/python
 title: "Curso de Python Uruguay en vivo: guía 2026 | ProgramBI"
 meta: "Curso de Python online en vivo en Uruguay: Python para datos desde cero en 20 h (lunes y miércoles 19:30). Pandas y automatización."
 h1: "Curso de Python en Uruguay: Python para datos, online y en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/uy/cursos/python
   - https://www.programbi.com/uy/cursos/sql-server
@@ -27,11 +27,11 @@ nota_hermes: |
 
 # Curso de Python en Uruguay: Python para datos, online y en vivo
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos**, nivel básico-intermedio. Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**, arranca el **lunes 23 de noviembre de 2026** y el valor es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos**, nivel básico-intermedio. Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**, tiene **ediciones nuevas todos los meses** (fecha actualizada en la ficha) y el valor es **{precio_local}**. Incluye grabaciones de por vida y certificado.
 
 **¿Qué vas a aprender?** Python desde cero con foco en análisis: fundamentos del lenguaje y, sobre todo, Pandas para limpiar, transformar, agrupar y cruzar datos; gráficos con Matplotlib y conexión a bases de datos y APIs. En la práctica, vas a poder automatizar el informe que hoy armás juntando planillas y a trabajar con datos abiertos sin abrirlos uno por uno.
 
-**[CTA-TOP]** — Próxima clase en vivo: lunes 23 de noviembre de 2026 · 19:30 hora de Uruguay · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · lunes y miércoles 19:30 (Uruguay) · «Ver el curso».
 
 ## Por qué Python tiene tanto sentido en Uruguay
 
@@ -167,7 +167,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/p
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **ediciones mensuales** (mirá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

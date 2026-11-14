@@ -247,7 +247,7 @@ const FINANZAS: NicheLanding = {
   ],
   related: [
     { href: "/cursos/power-bi", label: "Ficha del curso Power BI" },
-    { href: "/cursos/power-bi/avanzado", label: "Nivel avanzado de Power BI" },
+    { href: "/cursos/power-bi?nivel=Avanzado", label: "Nivel avanzado de Power BI" },
     { href: "/power-bi-sql-server-python", label: "Ruta Power BI, SQL Server y Python" },
     { href: "/capacitacion-empresas", label: "Capacitación para empresas" },
     { href: "/precios", label: "Precios y medios de pago" },
@@ -610,7 +610,7 @@ const MINERIA: NicheLanding = {
     },
     {
       q: "¿Cuántos niveles tiene?",
-      a: "Para particulares se vende en dos niveles de 20 horas: Básico-Intermedio y Avanzado. El temario se organiza en tres bloques (fundamentos operativos, análisis de faena y predictividad), y las empresas cotizan los tres niveles.",
+      a: "Se organiza en dos niveles de 20 horas: Básico-Intermedio y Avanzado. Cubre fundamentos operativos, análisis de faena y predictividad, y las empresas también cotizan ambos niveles para su equipo.",
     },
     {
       q: "¿Puedo usar datos de mi empresa en clase?",
@@ -652,7 +652,7 @@ const MINERIA: NicheLanding = {
   ],
   closing: {
     title: "Lleva el reporte de turno a un tablero que se mantenga",
-    text: "Tres niveles con Power BI, SQL y Python aplicados a faena, con ejercicios de turno, OEE, flota y mantenimiento.",
+    text: "Dos niveles de 20 horas (Básico-Intermedio y Avanzado) con Power BI, SQL y Python aplicados a faena, con ejercicios de turno, OEE, flota y mantenimiento.",
     label: "Ver curso de minería",
     href: "/cursos/analitica-mineria",
   },

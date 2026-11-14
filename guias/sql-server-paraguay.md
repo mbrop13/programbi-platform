@@ -8,7 +8,7 @@ url_curso: https://www.programbi.com/py/cursos/sql-server
 title: "Curso de SQL Server Paraguay en vivo: guía 2026 | ProgramBI"
 meta: "Curso de SQL Server en vivo en Paraguay: consultas SQL desde cero en 20 h (martes y jueves 19:30) con ejemplos locales y Power BI."
 h1: "Curso de SQL Server en Paraguay: aprendé SQL online y en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/py/cursos/sql-server
   - https://www.programbi.com/py/cursos/power-bi
@@ -24,11 +24,11 @@ nota_hermes: |
 
 # Curso de SQL Server en Paraguay: aprendé SQL online y en vivo
 
-**Respuesta corta:** el [curso de SQL Server de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/sql-server) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **martes y jueves de 19:30 a 21:30, hora de Paraguay**. Empieza el **martes 24 de noviembre de 2026** y el valor es **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de SQL Server de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/sql-server) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **martes y jueves de 19:30 a 21:30, hora de Paraguay**. Lanza **nuevas cohortes cada mes** (fecha vigente en la ficha) y el valor es **{precio_local}**. Tenés grabaciones de por vida y certificado.
 
 **¿Qué vas a saber hacer?** Sacar información de una base de datos sin esperar a sistemas: filtros, agrupaciones, cruces con `JOIN`, subconsultas, CTEs, tablas temporales, funciones de ventana y `PIVOT`. Es la base para cualquier puesto de análisis y para que tus tableros de Power BI muestren números confiables.
 
-**[CTA-TOP]** — Próxima clase en vivo: martes 24 de noviembre de 2026 · 19:30 hora de Paraguay · «Ver el curso».
+**[CTA-TOP]** — Nuevos grupos cada mes · martes y jueves 19:30 (Paraguay) · «Ver el curso».
 
 ## Por qué aprender SQL en Paraguay
 
@@ -162,7 +162,7 @@ Según la [ficha del curso para Paraguay](https://www.programbi.com/py/cursos/sq
 - Temario: SELECT, WHERE y ORDER BY; funciones y operadores; GROUP BY y HAVING; subconsultas; JOINs y vistas; CTEs y tablas temporales; funciones de ventana; PIVOT y UNPIVOT; IA aplicada a SQL Server.
 - **Nivel avanzado** (20 h): procedimientos almacenados y diseño de esquemas.
 - **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
-- Inicio: **martes 24 de noviembre de 2026**. Valor: **{precio_local}**.
+- Inicio: **inicios cada mes** (confirmá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.

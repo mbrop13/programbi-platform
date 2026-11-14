@@ -181,6 +181,26 @@ const RECURSOS = [
     title: "Vacantes publicadas",
     text: "Ofertas de datos y tecnología de empresas verificadas, con postulación en línea.",
   },
+  {
+    href: "/curso-sql-online",
+    title: "Curso SQL online en vivo",
+    text: "Consultas SELECT, JOINs, GROUP BY y procedimientos almacenados en SQL Server, 20 horas por nivel.",
+  },
+  {
+    href: "/curso-python",
+    title: "Curso Python para análisis de datos",
+    text: "Pandas, limpieza, visualización y automatización de reportes en vivo desde cero, 20 horas por nivel.",
+  },
+  {
+    href: "/curso-power-bi-vs-pack-adopcion",
+    title: "Curso Power BI vs. pack de adopción",
+    text: "Cuándo conviene formar al equipo con el curso y cuándo sumar implementación o pack in-company.",
+  },
+  {
+    href: "/por-que-fallan-proyectos-power-bi",
+    title: "Por qué fallan los proyectos de Power BI",
+    text: "Causas reales por las que los tableros quedan sin uso y cómo evitarlas antes de implementar.",
+  },
 ] as const;
 
 /** Bloque de recursos. `contexto` cambia solo el encabezado. */

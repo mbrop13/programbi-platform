@@ -29,7 +29,7 @@ export const mentors: Mentor[] = [
     ],
     icon: "UserCheck",
     linkedinUrl: "https://cl.linkedin.com/in/manuel-oliva-riesgo-inversion",
-    imageUrl: "/images/mentors/manuel-oliva.jpg",
+    imageUrl: "/images/mentors/manuel-oliva.webp",
     isFounder: true,
     founderBio:
       "Contador Auditor de la Universidad de Concepción (UdeC) y Magíster en Data Science (UAI). Experiencia laboral como Gerente de Riesgos Financieros en Renta 4 Corredores de Bolsa y Analista de Riesgos en Banco Itaú Chile, y profesor universitario de postgrado en el MBA de la UGM en la asignatura Data Analytics para la toma de decisiones. En ProgramBI lidera programas prácticos aplicados a Minería, Finanzas y Retail.",
@@ -59,8 +59,10 @@ export const mentors: Mentor[] = [
     ],
     icon: "BarChart3",
     linkedinUrl: "https://cl.linkedin.com/in/emanuelberrocal",
-    imageUrl: "/images/mentors/emanuel-berrocal.jpg",
+    imageUrl: "/images/mentors/emanuel-berrocal.webp",
     isFounder: false,
+    founderBio:
+      "Ingeniero Civil Matemático de la Universidad de Chile, Diplomado en Estadísticas UC y Portfolio Manager en Banco Itaú, con 10 años de experiencia y 800 estudiantes formados.",
     sortOrder: 2,
     studentCount: 800,
     yearsExperience: 10,
@@ -77,8 +79,10 @@ export const mentors: Mentor[] = [
     ],
     icon: "Monitor",
     linkedinUrl: "https://cl.linkedin.com/in/rodrigo-vega-olave-25581172?trk=org-employees",
-    imageUrl: "/images/mentors/rodrigo-vega.jpg",
+    imageUrl: "/images/mentors/rodrigo-vega.webp",
     isFounder: false,
+    founderBio:
+      "Ingeniero Comercial de la Universidad de Chile, Analista BI en Infracommerce y Experto en Visualización, con 6 años de experiencia y 400 estudiantes formados.",
     sortOrder: 4,
     studentCount: 400,
     yearsExperience: 6,

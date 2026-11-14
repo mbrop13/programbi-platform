@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Linkedin } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
 import { mentors } from "@/lib/data/mentors";
+import { LISTADO_PROFESORES_INDEXABLE } from "@/lib/seo/indexabilidad";
 
 export default function Team() {
   return (
@@ -70,7 +71,10 @@ export default function Team() {
         </div>
 
         <div className="mt-8">
-          <Link href="/nosotros" className="text-sm font-semibold text-ink no-underline hover:underline">
+          <Link
+            href={LISTADO_PROFESORES_INDEXABLE ? "/profesores" : "/nosotros"}
+            className="text-sm font-semibold text-ink no-underline hover:underline"
+          >
             Ver perfiles
           </Link>
         </div>

@@ -82,11 +82,12 @@ export default async function ProfesorPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      getProfilePageJsonLd(miembro),
+      getProfilePageJsonLd(miembro, "es-CL"),
       getPersonaJsonLd(miembro),
-      getOrganizacionEquipoJsonLd(DESCRIPCION_ORG),
+      getOrganizacionEquipoJsonLd(DESCRIPCION_ORG, [miembro]),
       {
         "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
           {

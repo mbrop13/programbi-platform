@@ -8,7 +8,7 @@ export const powerBiSyllabus: CourseSyllabusData = {
     {
       id: "nivel1",
       label: "Nivel I: Básico",
-      shortLabel: "Fundamentos (16h)",
+      shortLabel: "Fundamentos (20h)",
       theme: "#1890FF",
       audience:
         "Este curso es ideal para principiantes que desean aprender Power BI desde cero, enfocándose en los fundamentos para automatizar reportes básicos y procesos de análisis de datos en sus empresas.",
@@ -34,8 +34,8 @@ export const powerBiSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-2",
-          title: "Conectando Fuentes de Datos a Power BI (6 horas)",
-          hours: 6,
+          title: "Conectando Fuentes de Datos a Power BI (8 horas)",
+          hours: 8,
           topics: [
             "Importando Datos de Muestra.",
             "Explorando Conjuntos de Datos, Informes y Paneles.",
@@ -51,8 +51,8 @@ export const powerBiSyllabus: CourseSyllabusData = {
         },
         {
           id: "n1-3",
-          title: "Visualizaciones Básicas y Dashboards Iniciales (6 horas)",
-          hours: 6,
+          title: "Visualizaciones Básicas y Dashboards Iniciales (8 horas)",
+          hours: 8,
           topics: [
             "Guardando y Editando un Informe.",
             "Creando una Gráfica de Distribución.",
@@ -79,7 +79,7 @@ export const powerBiSyllabus: CourseSyllabusData = {
     {
       id: "nivel2",
       label: "Nivel II: Intermedio",
-      shortLabel: "Análisis y DAX (16h)",
+      shortLabel: "Análisis y DAX (20h)",
       theme: "#7C3AED",
       audience:
         "Ideal para alumnos con conocimiento básico en Power BI, que desean aprender más herramientas de análisis de datos, enfocándose en técnicas intermedias para mejorar visualizaciones y una introducción a DAX.",
@@ -92,8 +92,8 @@ export const powerBiSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n2-1",
-          title: "Visualizaciones Intermedias y Power Query Avanzado (6 horas)",
-          hours: 6,
+          title: "Visualizaciones Intermedias y Power Query Avanzado (7 horas)",
+          hours: 7,
           topics: [
             "Gráficas de Barras con Saturación de Color y Colores Personalizados.",
             "Importando Gráficos desde la Tienda de Office.",
@@ -107,8 +107,8 @@ export const powerBiSyllabus: CourseSyllabusData = {
         },
         {
           id: "n2-2",
-          title: "Introducción a DAX y Relaciones (5 horas)",
-          hours: 5,
+          title: "Introducción a DAX y Relaciones (8 horas)",
+          hours: 8,
           topics: [
             "Introducción a cálculos con DAX (Data Analysis Expressions).",
             "Administrando Relaciones entre Tablas.",
@@ -146,7 +146,7 @@ export const powerBiSyllabus: CourseSyllabusData = {
     {
       id: "nivel3",
       label: "Nivel III: Avanzado",
-      shortLabel: "Avanzado & AI (16h)",
+      shortLabel: "Avanzado & AI (20h)",
       theme: "#EA580C",
       audience:
         "Este curso avanzado profundiza en funciones complejas de DAX, integraciones externas y seguridad, perfecto para profesionales que buscan optimizar dashboards predictivos y automatizados.",
@@ -160,8 +160,8 @@ export const powerBiSyllabus: CourseSyllabusData = {
       modules: [
         {
           id: "n3-1",
-          title: "Inteligencia de Tiempo y Funciones Avanzadas (4 horas)",
-          hours: 4,
+          title: "Inteligencia de Tiempo y Funciones Avanzadas (6 horas)",
+          hours: 6,
           topics: [
             "Funciones Acumuladas en el tiempo (YTD, QTD, MTD).",
             "Funciones para cálculos diferidos (DATEADD, SAMEPERIODLASTYEAR).",
@@ -192,8 +192,8 @@ export const powerBiSyllabus: CourseSyllabusData = {
         },
         {
           id: "n3-4",
-          title: "Relaciones Duales, Seguridad y Roles, Sintáxis DAX (2 horas)",
-          hours: 2,
+          title: "Relaciones Duales, Seguridad y Roles, Sintáxis DAX (4 horas)",
+          hours: 4,
           topics: [
             "Uso de relaciones inactivas (USERELATIONSHIP).",
             "Reglas de Seguridad a Nivel de Filas (RLS).",

@@ -6,9 +6,9 @@ hreflang: es-BO
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/bo/cursos/analisis-de-datos
 title: "Curso de Análisis de datos en Bolivia | ProgramBI"
-meta: "Curso de análisis de datos en Bolivia en vivo: SQL Server, Power BI y Python, 60 h por nivel. Inicio 23 de noviembre, 18:30 hora de Bolivia."
+meta: "Curso de análisis de datos en Bolivia en vivo: SQL Server, Power BI y Python, 60 h por nivel. Clases 18:30 hora de Bolivia, con inicios mensuales."
 h1: "Curso de Análisis de datos en Bolivia: aprende SQL, Power BI y Python en vivo"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/bo/cursos/analisis-de-datos
   - https://learn.microsoft.com/es-es/power-bi/fundamentals/desktop-get-the-desktop
@@ -23,11 +23,11 @@ nota_hermes: |
 
 # Curso de Análisis de datos en Bolivia: aprende SQL, Power BI y Python en vivo
 
-**En pocas palabras:** el [curso de Análisis de datos de ProgramBI para Bolivia](https://www.programbi.com/bo/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**: **20 horas de SQL Server, 20 de Power BI y 20 de Python**, pensado para que puedas extraer datos, modelarlos en tableros y analizarlos con código como lo hace un analista profesional. El nivel básico-intermedio empieza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 18:30 a 20:30, hora de Bolivia**. Precio: **{precio_local}**.
+**En pocas palabras:** el [curso de Análisis de datos de ProgramBI para Bolivia](https://www.programbi.com/bo/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**: **20 horas de SQL Server, 20 de Power BI y 20 de Python**, pensado para que puedas extraer datos, modelarlos en tableros y analizarlos con código como lo hace un analista profesional. El nivel básico-intermedio abre **cohortes todos los meses** (próxima fecha en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de Bolivia**. Precio: **{precio_local}**.
 
 La ficha presenta dos niveles de 60 horas —básico-intermedio y avanzado—, con grabaciones de por vida en el campus, certificado digital, proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 18:30 hora de Bolivia · «Ver el curso».
+**[CTA-TOP]** — Inicios mensuales · 18:30 hora de Bolivia · «Ver el curso».
 
 ## ¿Qué significa "analizar datos" en una empresa?
 
@@ -131,7 +131,7 @@ Al terminar el nivel básico-intermedio deberías poder:
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** cada mes abre un nuevo grupo (revisa la próxima fecha en la ficha).
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de Bolivia.
 - **Duración:** 60 horas por nivel (20 por herramienta).
 - **Modalidad:** en vivo por Zoom; grabaciones de por vida.
@@ -141,7 +141,7 @@ Al terminar el nivel básico-intermedio deberías poder:
 
 **[CTA-MID]** — Descarga el temario completo.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Cupos abiertos · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -152,7 +152,7 @@ Al terminar el nivel básico-intermedio deberías poder:
 60 horas por nivel: 20 de SQL Server, 20 de Power BI y 20 de Python.
 
 **¿Cuándo empieza?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 18:30 a 20:30, hora de Bolivia.
+Hay inicios nuevos todos los meses; las clases son lunes y miércoles de 18:30 a 20:30, hora de Bolivia (ver fecha vigente en la ficha).
 
 **¿Necesito saber programar?**
 No. El nivel básico-intermedio parte desde cero en cada herramienta.

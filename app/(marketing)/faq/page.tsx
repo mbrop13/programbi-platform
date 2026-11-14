@@ -1,52 +1,48 @@
 import type { Metadata } from "next";
 import FaqClient from "./FaqClient";
 import { ogImageUrl } from "@/lib/og/url";
-import { jsonLdString, twitterShare } from "@/lib/seo";
+import { absoluteUrl, jsonLdString, tituloSeo, twitterShare } from "@/lib/seo";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
-import { normalizarPais } from "@/config/paises";
+import { ISO_CHILE, normalizarPais } from "@/config/paises";
+import { MEDIOS_CUOTAS, textoCuotas } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 
-export const metadata: Metadata = {
-  title: "Preguntas frecuentes — Soporte y consultas",
+const FAQ_PATH = "/faq";
+const FAQ_TITLE = "Preguntas frecuentes: soporte, SENCE y empresas";
+const FAQ_FULL_TITLE = tituloSeo(FAQ_TITLE);
+const FAQ_DESCRIPTION =
+  "Respuestas sobre metodología en vivo, proyectos finales, campus virtual, SENCE, medios de pago y capacitaciones para empresas en Chile.";
+const FAQ_OG_IMAGE = ogImageUrl({
+  kicker: "Soporte",
+  title: "Preguntas frecuentes",
   description:
-    "Resuelve tus dudas sobre los cursos de análisis de datos en vivo, metodologías, grabaciones de clases, certificados oficiales y asesorías corporativas de ProgramBI.",
+    "Metodología en vivo, proyectos finales, SENCE, medios de pago y capacitaciones para empresas.",
+  path: "faq",
+});
+
+export const metadata: Metadata = {
+  title: FAQ_TITLE,
+  description: FAQ_DESCRIPTION,
   alternates: {
-    canonical: "/faq",
-    languages: hreflangDe("/faq"),
+    canonical: absoluteUrl(FAQ_PATH),
+    languages: hreflangDe(FAQ_PATH),
   },
   openGraph: {
-    title: "Preguntas Frecuentes — Soporte y Consultas | ProgramBI",
-    description:
-      "Información detallada sobre requisitos de cursos, certificaciones, cuotas de pago y capacitaciones corporativas en Latinoamérica.",
-    url: "https://www.programbi.com/faq",
+    title: FAQ_FULL_TITLE,
+    description: FAQ_DESCRIPTION,
+    url: absoluteUrl(FAQ_PATH),
     type: "website",
     images: [
       {
-        url: ogImageUrl({
-          kicker: "Ayuda",
-          title: "Preguntas frecuentes",
-          description:
-            "Cursos en vivo, certificados, cuotas de pago y capacitaciones corporativas — todo lo que necesitas saber.",
-          path: "faq",
-        }),
+        url: FAQ_OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Preguntas frecuentes — ProgramBI",
+        alt: FAQ_FULL_TITLE,
       },
     ],
   },
-  twitter: twitterShare(
-    "Preguntas Frecuentes — Soporte y Consultas | ProgramBI",
-    "Información detallada sobre requisitos de cursos, certificaciones, cuotas de pago y capacitaciones corporativas en Latinoamérica.",
-    ogImageUrl({
-      kicker: "Ayuda",
-      title: "Preguntas frecuentes",
-      description:
-        "Cursos en vivo, certificados, cuotas de pago y capacitaciones corporativas — todo lo que necesitas saber.",
-      path: "faq",
-    })
-  ),
+  twitter: twitterShare(FAQ_FULL_TITLE, FAQ_DESCRIPTION, FAQ_OG_IMAGE),
 };
 
 const FAQ_DATA = [
@@ -82,12 +78,12 @@ const FAQ_DATA = [
   },
   {
     question: "¿Qué métodos de pago aceptan?",
-    answer: "Aceptamos pagos a través de Webpay (tarjetas de crédito, débito), transferencias bancarias directas nacionales y pagos internacionales mediante plataformas seguras como PayPal y Stripe.",
+    answer: `Aceptamos pagos a través de ${MEDIOS_CUOTAS.join(" y ")} (tarjetas de crédito y débito) y transferencias bancarias directas en pesos chilenos. En el checkout puedes pagar en ${textoCuotas(ISO_CHILE)} con ${MEDIOS_CUOTAS.join(" o ")}, según disponibilidad de la pasarela.`,
     category: "pagos"
   },
   {
     question: "¿Tienen opciones de pago en cuotas?",
-    answer: "Sí. Puedes pagar con tus tarjetas de crédito bancarias en las cuotas que estimes conveniente según tu entidad bancaria. También contamos con convenios de cuotas directas por transferencia coordinando con nuestro equipo de admisiones.",
+    answer: `Sí. Todos los cursos se pueden pagar en ${textoCuotas(ISO_CHILE)} con ${MEDIOS_CUOTAS.join(" o ")}; la disponibilidad final por país la confirma la pasarela en el checkout.`,
     category: "pagos"
   },
   {
@@ -124,7 +120,7 @@ function preguntasDe(pais: string) {
     if (item.question.startsWith("¿Qué métodos de pago")) {
       return {
         ...item,
-        answer: "El pago del curso se hace con Mercado Pago.",
+        answer: `El pago del curso se hace con ${MEDIOS_CUOTAS[0]} y puedes pagar en ${textoCuotas(pais)} con ${MEDIOS_CUOTAS.join(" o ")}, según disponibilidad de la pasarela en el checkout.`,
       };
     }
     return {

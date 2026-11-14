@@ -7,8 +7,9 @@ import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
-import { rutaLocal } from "@/lib/paises/rutas";
+import { esRutaLocalizable, rutaLocal } from "@/lib/paises/rutas";
 import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
+import { esRutaIndexablePais, LISTADO_PROFESORES_INDEXABLE } from "@/lib/seo/indexabilidad";
 import { whatsappHref } from "@/lib/whatsapp";
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
@@ -25,11 +26,12 @@ const companyLinks = [
   // anchors (publicar, talento, vacantes) y diluía el enlazado interno.
   { label: "Bolsa de trabajo", href: "/empleos" },
   ...(COMUNIDAD_PUBLICA ? [{ label: "Comunidad", href: "/comunidad" }] : []),
+  ...(LISTADO_PROFESORES_INDEXABLE ? [{ label: "Profesores", href: "/profesores" }] : []),
   { label: "Blog", href: "/blog" },
   { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
-  // Páginas de apoyo: FAQ corta, glosario y comparativas. No repiten las URLs
-  // que ya están arriba; el texto del enlace dice qué hay en cada una.
-  { label: "FAQ de cursos y pagos", href: "/faq" },
+  // Páginas de apoyo: empresas, verificación de certificados, casos, glosario y comparativas.
+  { label: "Capacitación para empresas", href: "/capacitacion-empresas" },
+  { label: "Verificar certificado", href: "/verificar-certificado" },
   { label: "Casos y testimonios de alumnos", href: "/casos" },
   { label: "Glosario de datos", href: "/glosario" },
   { label: "Comparativas de herramientas", href: "/versus" },
@@ -70,6 +72,12 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
   const pais = usePaisRuta();
   const pathname = usePathname();
   const hrefLocal = (href: string) => rutaLocal(pais, href);
+  const hrefIndexable = (href: string) => {
+    if (pais === ISO_CHILE) return href;
+    const base = href.split("?")[0]?.split("#")[0] || "/";
+    if (!esRutaLocalizable(base)) return href;
+    return esRutaIndexablePais(pais, base) ? hrefLocal(href) : href;
+  };
   const topCourses = NAV_COURSE_GROUPS.flatMap((g) => g.items).slice(0, 6);
 
   // El brochure se muestra como visor de documento a pantalla completa: sin footer.
@@ -102,11 +110,11 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
 
         <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Sitio">
           {companyLinks.map((item) => (
-            <Link key={item.href} href={hrefLocal(item.href)} className="no-underline hover:text-mute">
+            <Link key={item.href} href={hrefIndexable(item.href)} className="no-underline hover:text-mute">
               {item.label === "Registrarse" ? etiquetaBoton(pais, item.label) : item.label}
             </Link>
           ))}
-          {GUIAS_POR_PAIS.has(pais) ? (
+          {GUIAS_POR_PAIS.has(pais) && esRutaIndexablePais(pais, "/guias") ? (
             <Link
               href={pais === ISO_CHILE ? "/guias" : `/${pais}/guias`}
               className="no-underline hover:text-mute"
@@ -118,7 +126,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
 
         <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Cursos">
           {CURSOS_PRIORITARIOS.map((item) => (
-            <Link key={item.href} href={hrefLocal(item.href)} className="no-underline hover:text-mute">
+            <Link key={item.href} href={hrefIndexable(item.href)} className="no-underline hover:text-mute">
               {item.label}
             </Link>
           ))}
@@ -127,19 +135,19 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
             .map((course) => (
               <Link
                 key={course.slug}
-                href={hrefLocal(`/cursos/${course.slug}`)}
+                href={hrefIndexable(`/cursos/${course.slug}`)}
                 className="no-underline hover:text-mute"
               >
                 {course.title}
               </Link>
             ))}
-          <Link href={hrefLocal("/cursos/machine-learning")} className="no-underline hover:text-mute">
+          <Link href={hrefIndexable("/cursos/machine-learning")} className="no-underline hover:text-mute">
             Machine Learning
           </Link>
-          <Link href={hrefLocal("/cursos/mercado-financiero")} className="no-underline hover:text-mute">
+          <Link href={hrefIndexable("/cursos/mercado-financiero")} className="no-underline hover:text-mute">
             Mercado financiero
           </Link>
-          <Link href={hrefLocal("/empresas")} className="no-underline hover:text-mute">
+          <Link href={hrefIndexable("/empresas")} className="no-underline hover:text-mute">
             Power BI para empresas
           </Link>
         </nav>

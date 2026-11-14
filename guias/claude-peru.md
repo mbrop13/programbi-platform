@@ -5,10 +5,10 @@ pais: pe
 hreflang: es-PE
 curso: claude
 url_curso: https://www.programbi.com/pe/cursos/claude
-title: "Curso de Claude en Perú: en vivo desde el 23/11 | ProgramBI"
-meta: "Curso de Claude en Perú en vivo por Zoom: 20 h para aplicar la IA de Anthropic en oficina, Excel y reportes. Inicio 23/11, 17:30 hora Lima."
+title: "Curso de Claude en Perú online en vivo | ProgramBI"
+meta: "Curso de Claude en Perú en vivo por Zoom: 20 h para aplicar la IA de Anthropic en oficina, Excel y reportes. Horario 17:30 Lima; cupos abiertos."
 h1: "Curso de Claude en Perú: la IA de Anthropic aplicada a tu chamba administrativa"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/pe/cursos/claude
   - https://www.gob.pe/institucion/congreso-de-la-republica/normas-legales/243470-29733
@@ -16,22 +16,22 @@ nota_hermes: |
   ELEMENTO VISUAL: tabla del contenido del programa + recuadro «Ley 29733 y datos personales».
   Intención: "curso claude perú", "curso de claude ai lima" (transaccional) → click_registro en /pe/cursos/claude. country=pe, course=claude.
   - PRECIO: {precio_local} = placeholder de config/pricing.ts (WS1), clave claude × pe. Manu aún no define el monto: NO escribas cifras. Sin valor → "Consulta el valor por WhatsApp".
-  - FECHA: la ficha confirma inicio lunes 23 de noviembre de 2026, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
+  - FECHA: inicios mensuales con cupos abiertos, lunes y miércoles. Coherente con §5 de GUIAS_POWER_BI_PAISES.md (mismo horario, 5 módulos de 4 h, estructura de prompt «contexto, tarea, formato, tono y restricciones», regla de verificar). Esta guía es de intención «curso Claude {país}»; las guías piloto §5 (CL/MX) son de intención «cómo usar Claude para análisis de datos»: enlazarlas entre sí, no canibalizar. Si cambia la fecha en la ficha, actualizar ambas.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Claude para Perú en programbi.com y quiero info del curso en vivo".
 ---
 
 # Curso de Claude en Perú: la IA de Anthropic aplicada a tu chamba administrativa
 
-**Respuesta directa:** el [curso de Claude de ProgramBI para Perú](https://www.programbi.com/pe/cursos/claude) dura **20 horas en vivo por Zoom**, divididas en cinco módulos de cuatro horas, y enseña a usar Claude —el asistente de inteligencia artificial creado por Anthropic— en labores de oficina: correos, informes, hojas de Excel, presentaciones y pequeñas automatizaciones, **sin necesidad de programar**. Comienza el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 17:30 a 19:30, hora de Perú**. Precio: **{precio_local}**.
+**Respuesta directa:** el [curso de Claude de ProgramBI para Perú](https://www.programbi.com/pe/cursos/claude) dura **20 horas en vivo por Zoom**, divididas en cinco módulos de cuatro horas, y enseña a usar Claude —el asistente de inteligencia artificial creado por Anthropic— en labores de oficina: correos, informes, hojas de Excel, presentaciones y pequeñas automatizaciones, **sin necesidad de programar**. Abre **nuevos grupos todos los meses** (revisa la próxima fecha en la ficha), con clases **lunes y miércoles de 17:30 a 19:30, hora de Perú**. Precio: **{precio_local}**.
 
 El programa incluye grabaciones con acceso de por vida, certificado digital y un proyecto final construido sobre un proceso de tu propia chamba. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Los datos provienen de la ficha del curso, revisada el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio lunes 23 de noviembre · 17:30 hora de Perú · «Ver el curso».
+**[CTA-TOP]** — Inicios cada mes · lunes y miércoles 17:30 hora de Perú · «Ver el curso».
 
 ## La idea detrás del curso
 
-Quien trabaja en administración suele tener la misma queja: demasiado tiempo en tareas que no requieren criterio, como reformatear, resumir, pasar información de un documento a otro o redactar el mismo tipo de correo diez veces. Claude puede hacerse cargo de buena parte de ese trabajo mecánico, pero solo si sabes pedírselo y si organizas tu información para que la tenga a mano. Ese es el foco de las 20 horas: menos teoría sobre inteligencia artificial y más práctica con tus propios documentos.
+Quien trabaja en administración suele tener la misma queja: demasiado tiempo en tareas que no requieren criterio, como reformatear, resumir, pasar información de un documento a otro o redactar el mismo tipo de correo diez veces. Claude puede hacerse cargo de buena parte de ese trabajo mecánico, pero solo si sabes pedírselo y si organizas tu información para que la tenga a mano. Ese es el foco de las 20 horas: menos teoría sobre inteligencia artificial y más práctica con tus propios documentos. Si buscas prompts específicos para planillas y conciliaciones, revisa también la [guía práctica de Claude para análisis de datos en Perú](/pe/guias/como-usar-claude-para-analisis-de-datos).
 
 ## Contenido del programa
 
@@ -114,7 +114,7 @@ De acuerdo con la ficha, el curso apunta al **trabajo administrativo**, con el m
 
 ## Horario, duración e inclusiones
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** cohortes cada mes con cupos abiertos; verifica la fecha en la ficha.
 - **Clases:** lunes y miércoles, de 17:30 a 19:30, hora de Perú (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas en cinco módulos de cuatro horas.
 - **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
@@ -125,7 +125,7 @@ De acuerdo con la ficha, el curso apunta al **trabajo administrativo**, con el m
 
 Durante la semana previa, anota las tareas repetitivas que haces y cuánto tiempo te toma cada una. Escoge tres y reúne los archivos que usas para ellas. Serán tu material de práctica desde el segundo módulo y la base natural para tu proyecto final.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Consultar por WhatsApp».
+**[CTA-END]** — {precio_local} · Inicios todos los meses · «Inscribirme» · «Consultar por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -133,7 +133,7 @@ Durante la semana previa, anota las tareas repetitivas que haces y cuánto tiemp
 {precio_local}, en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
 **¿Cuándo empieza?**
-El lunes 23 de noviembre de 2026; lunes y miércoles de 17:30 a 19:30, hora de Perú.
+Cada mes inicia una nueva cohorte; cursamos lunes y miércoles de 17:30 a 19:30, hora de Perú (revisa la fecha en la ficha).
 
 **¿Necesito conocimientos de programación?**
 No. Todo se trabaja sin código.

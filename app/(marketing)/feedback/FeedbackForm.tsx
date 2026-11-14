@@ -197,7 +197,7 @@ export default function FeedbackForm() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-surface-1 flex items-center justify-center px-4 -mt-16 pt-32 pb-20">
+        <div className="min-h-screen bg-surface-1 flex items-center justify-center px-4 -mt-16 pt-32 pb-20">
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -255,7 +255,7 @@ export default function FeedbackForm() {
               </Link>
             </div>
           </motion.div>
-        </main>
+        </div>
       </>
     );
   }
@@ -350,7 +350,7 @@ export default function FeedbackForm() {
       </section>
 
       {/* ===== FORMULARIO ===== */}
-      <main className="bg-surface-1 pb-16">
+      <div className="bg-surface-1 pb-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 -mt-2">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* ============ 1. Datos básicos ============ */}
@@ -660,7 +660,7 @@ export default function FeedbackForm() {
             </motion.section>
           </form>
         </div>
-      </main>
+      </div>
     </>
   );
 }

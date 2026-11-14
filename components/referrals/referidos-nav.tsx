@@ -19,10 +19,11 @@ export function ReferidosNav({
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/referidos" className="flex items-center gap-2 no-underline">
           <Image
-            src="/images/logo.png"
+            src="/images/logo-nav.webp"
             alt="ProgramBI"
-            width={120}
+            width={108}
             height={28}
+            unoptimized
             className="h-7 w-auto object-contain dark:invert"
           />
           <span className="hidden text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground sm:inline">

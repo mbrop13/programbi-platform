@@ -6,9 +6,9 @@ hreflang: es-DO
 curso: power-bi
 url_curso: https://www.programbi.com/do/cursos/power-bi
 title: "Cómo aprender Power BI en República Dominicana | ProgramBI"
-meta: "Guía para aprender Power BI en República Dominicana: hoja de ruta en 7 pasos, ejemplos y curso en vivo de 20 h desde el 23 de noviembre, 18:30 hora RD."
+meta: "Guía para aprender Power BI en República Dominicana: hoja de ruta en 7 pasos, ejemplos y curso en vivo de 20 h a las 18:30 hora RD (inicios cada mes)."
 h1: "Cómo aprender Power BI en República Dominicana: la guía para empezar con buen pie"
-updated: 2026-11-04
+updated: 2026-11-14
 sources:
   - https://www.programbi.com/do/cursos/power-bi
   - https://learn.microsoft.com/es-es/power-bi/fundamentals/desktop-get-the-desktop
@@ -23,11 +23,11 @@ nota_hermes: |
 
 # Cómo aprender Power BI en República Dominicana: la guía para empezar con buen pie
 
-**Lo que necesitas saber:** para aprender Power BI desde República Dominicana con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/do/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas por Zoom** que va desde conectar y limpiar datos con Power Query hasta relaciones, DAX inicial, dashboards y publicación con roles. Arranca el **lunes 23 de noviembre de 2026**, con clases **lunes y miércoles de 18:30 a 20:30, hora de República Dominicana**. Precio: **{precio_local}**.
+**Lo que necesitas saber:** para aprender Power BI desde República Dominicana con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/do/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas por Zoom** que va desde conectar y limpiar datos con Power Query hasta relaciones, DAX inicial, dashboards y publicación con roles. Ofrece **inicios todos los meses** (consulta la próxima fecha en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de República Dominicana**. Precio: **{precio_local}**.
 
 Cada clase queda grabada con acceso de por vida, recibes certificado digital al terminar y, cuando quieras subir de nivel, hay un avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Datos tomados de la ficha del curso el 4 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicio 23 de noviembre · 18:30 hora RD · «Ver el curso».
+**[CTA-TOP]** — Cupos abiertos · 18:30 hora RD · «Ver el curso».
 
 ## La vaina con los reportes en Excel
 
@@ -115,7 +115,7 @@ Un tablero chévere no sirve de mucho si no se entiende la historia detrás. Al 
 
 ## Datos del curso
 
-- **Inicio:** lunes 23 de noviembre de 2026.
+- **Inicio:** fechas nuevas cada mes (verifica el próximo arranque en la ficha).
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de República Dominicana (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
 - **Modalidad:** en vivo por Zoom, grabaciones de por vida.
@@ -125,7 +125,7 @@ Un tablero chévere no sirve de mucho si no se entiende la historia detrás. Al 
 
 **[CTA-MID]** — Descarga el temario de Power BI.
 
-**[CTA-END]** — {precio_local} · Inicio 23 de noviembre · «Inscribirme» · «Escribir por WhatsApp».
+**[CTA-END]** — {precio_local} · Inicios cada mes · «Inscribirme» · «Escribir por WhatsApp».
 
 ## Preguntas frecuentes
 
@@ -133,7 +133,7 @@ Un tablero chévere no sirve de mucho si no se entiende la historia detrás. Al 
 {precio_local}. Escríbenos por WhatsApp para confirmar el monto y la forma de pago.
 
 **¿Cuándo empieza y a qué hora?**
-El lunes 23 de noviembre de 2026, lunes y miércoles de 18:30 a 20:30, hora de República Dominicana.
+Inicia una nueva edición cada mes, lunes y miércoles de 18:30 a 20:30, hora de República Dominicana (fecha vigente en la ficha).
 
 **¿Necesito saber programar?**
 No. Basta con un manejo básico de Excel: filtros, tablas y fórmulas sencillas. El nivel básico-intermedio parte desde cero.
