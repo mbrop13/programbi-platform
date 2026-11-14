@@ -6,7 +6,7 @@ hreflang: es-UY
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/uy/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Uruguay: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Uruguay en vivo: SQL Server, Power BI y Python en 60 h, lunes y miércoles 19:30. Cómo ser analista de datos y referencia salarial."
+meta: "Curso de análisis de datos en Uruguay en vivo: SQL Server, Power BI y Python en 60 h (19:30 h). Cómo empezar y referencias del mercado."
 h1: "Curso de Análisis de Datos en Uruguay: cómo llegar a analista de datos"
 updated: 2026-11-04
 sources:

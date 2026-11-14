@@ -6,7 +6,7 @@ hreflang: es-AR
 curso: claude
 url_curso: https://www.programbi.com/ar/cursos/claude
 title: "Curso de Claude en Argentina: en vivo, 23/11 | ProgramBI"
-meta: "Curso de Claude en Argentina en vivo: 20 h para usar la IA de Anthropic en tareas administrativas, planillas y presentaciones. Desde el 23/11, 19:30 hora argentina."
+meta: "Curso de Claude en Argentina en vivo: 20 h para usar la IA de Anthropic en oficina, planillas y documentos. Inicio 23/11, 19:30 hora argentina."
 h1: "Curso de Claude en Argentina: sacale provecho a la IA de Anthropic en tu laburo"
 updated: 2026-11-04
 sources:

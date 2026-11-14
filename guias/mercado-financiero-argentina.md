@@ -6,7 +6,7 @@ hreflang: es-AR
 curso: mercado-financiero
 url_curso: https://www.programbi.com/ar/cursos/mercado-financiero
 title: "Curso de Mercado Financiero Argentina: guía 2026 | ProgramBI"
-meta: "Curso de mercado financiero en Argentina en vivo: carteras con Python, SQL, Power BI e IA en 30 h, 19:30. Riesgo, retorno, tipo de cambio y tableros de cartera."
+meta: "Curso de mercado financiero en Argentina en vivo: carteras con Python, SQL, Power BI e IA en 30 h, 19:30 h. Riesgo, retorno y tableros."
 h1: "Curso de Mercado Financiero en Argentina: carteras con datos e IA"
 updated: 2026-11-04
 sources:

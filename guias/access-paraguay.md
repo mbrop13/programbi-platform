@@ -6,7 +6,7 @@ hreflang: es-PY
 curso: access
 url_curso: https://www.programbi.com/py/cursos/access
 title: "Curso de Access en Paraguay en vivo | ProgramBI"
-meta: "Curso de Microsoft Access en Paraguay: 20 h en vivo por Zoom, 7 módulos de tablas, consultas SQL, formularios, informes y macros. Cupos abiertos, 19:30 hora de Paraguay."
+meta: "Curso de Microsoft Access en Paraguay: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros a las 19:30 h."
 h1: "Curso de Access en Paraguay: aprendé a construir bases de datos para tu oficina"
 updated: 2026-11-04
 sources:
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Access en Paraguay: aprendé a construir bases de datos para tu oficina
 
-**En pocas palabras:** el [curso de Microsoft Access de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/access) tiene **20 horas de clases en vivo por Zoom** en **7 módulos** y está pensado para personal administrativo que necesita almacenar, organizar y consultar información sin depender de planillas frágiles: vas a diseñar tablas relacionadas, consultar con SQL básico, cargar datos con formularios validados, generar informes en PDF y Excel y automatizar tareas con macros. Inversión: **{precio_local}**. Hoy la ficha muestra **cupos abiertos con fecha a confirmar**.
+**En pocas palabras:** el [curso de Microsoft Access de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/access) tiene **20 horas de clases en vivo por Zoom** en **7 módulos** y está pensado para personal administrativo que necesita almacenar, organizar y consultar información sin depender de planillas frágiles: vas a diseñar tablas relacionadas, consultar con SQL básico, cargar datos con formularios validados, generar informes en PDF y Excel y automatizar tareas con macros. Inversión: **{precio_local}**. Hoy la ficha muestra **cupos abiertos · inicio próximo por grupo**.
 
 Incluye grabaciones de por vida en el campus, certificado al completar y un proyecto integrador sobre un proceso empresarial. Según las preguntas frecuentes de la ficha, las clases son de 19:30 a 21:30, hora de Paraguay. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información revisada el 4 de noviembre de 2026.
 
@@ -133,7 +133,7 @@ La ficha lo dirige al **personal administrativo que necesita almacenar, organiza
 {precio_local}. Para confirmar el monto y la forma de pago, escribí por WhatsApp.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha a confirmar; por WhatsApp te avisamos la próxima cohorte.
+La ficha muestra cupos abiertos con nueva fecha cercana; por WhatsApp te avisamos la próxima cohorte.
 
 **¿Tengo que saber programar?**
 No. El curso arranca desde cero y el SQL se aprende paso a paso.

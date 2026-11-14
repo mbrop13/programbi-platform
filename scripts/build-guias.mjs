@@ -150,8 +150,11 @@ function extraerFaq(body) {
 /** Normaliza los marcadores que escribe el bot de contenido. */
 function normalizarCuerpo(body) {
   return body
-    // **[CTA-TOP]** — copy de apoyo  →  <!-- CTA-TOP -->
-    .replace(/^\*\*\[CTA-(TOP|MID|END)\]\*\*.*$/gm, (_, variante) => `<!-- CTA-${variante} -->`)
+    // **[CTA-TOP]** — copy de apoyo  o  <!-- CTA-TOP --> — copy de apoyo  →  <!-- CTA-TOP -->
+    .replace(
+      /^\s*(?:<!--\s*CTA-(TOP|MID|END)\s*-->|\*\*\[CTA-(TOP|MID|END)\]\*\*).*$/gm,
+      (_, vHtml, vMd) => `<!-- CTA-${vHtml || vMd} -->`
+    )
     // {precio_local} y {{precio}} son el mismo placeholder.
     .replace(/\{\{\s*precio\s*\}\}|\{precio_local\}/gi, "{{precio}}")
     .replace(/\n{3,}/g, "\n\n")

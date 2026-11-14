@@ -6,7 +6,7 @@ hreflang: es-CO
 curso: machine-learning
 url_curso: https://www.programbi.com/co/cursos/machine-learning
 title: "Curso de Machine Learning Colombia: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en Colombia en vivo: 20 h de modelos predictivos con Python (regresión, clasificación, clustering), 17:30 hora de Bogotá. Requisito: Python."
+meta: "Curso de machine learning en Colombia en vivo: 20 h de modelos predictivos con Python (regresión, clasificación, clustering) a las 17:30 Bogotá."
 h1: "Curso de Machine Learning en Colombia: aprende a predecir con Python"
 updated: 2026-11-04
 sources:
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Machine Learning de ProgramBI en Colombia](https://www.programbi.com/co/cursos/machine-learning) es un programa **en vivo de 20 horas por Zoom**, de **17:30 a 19:30, hora de Colombia**, para quienes ya saben Python y quieren crear modelos predictivos aplicados a negocios. Cubre aprendizaje supervisado (regresión, clasificación, árboles, ensembles y validación) y no supervisado (K-Means, PCA, t-SNE, anomalías y reglas de asociación). El valor es **{precio_local}** e incluye grabaciones de por vida y certificado.
 
-Según la ficha consultada el 4 de noviembre de 2026, la próxima cohorte tiene **cupos abiertos y fecha por confirmar**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE o Nequi.
+Según la ficha consultada el 4 de noviembre de 2026, la próxima cohorte tiene **cupos abiertos · programación continua en vivo**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE o Nequi.
 
 **[CTA-TOP]** — Cupos abiertos · 17:30 a 19:30 (Colombia) · «Ver el curso».
 
@@ -121,7 +121,7 @@ La ficha indica clases de 17:30 a 19:30 en Bogotá. Como Colombia se mantiene en
 ## En resumen
 
 - 20 horas, 2 módulos: supervisado y no supervisado.
-- En vivo por Zoom, 17:30 a 19:30 hora de Colombia; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom, 17:30 a 19:30 hora de Colombia; cupos abiertos · próximas ediciones en marcha.
 - Grabaciones de por vida, certificado digital y proyectos con datos reales.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Valor: {precio_local}, en pesos colombianos.
@@ -139,7 +139,7 @@ La ficha indica clases de 17:30 a 19:30 en Bogotá. Como Colombia se mantiene en
 Python. El curso es para quienes ya lo manejan; si no, conviene empezar por el curso de Python para datos.
 
 **¿Cuándo es la próxima cohorte?**
-La ficha muestra cupos abiertos con fecha por confirmar; se puede consultar por WhatsApp.
+La ficha muestra cupos abiertos con calendario activo; se puede consultar por WhatsApp.
 
 **¿Hay certificado?**
 Sí, certificado digital de ProgramBI al completar el curso.

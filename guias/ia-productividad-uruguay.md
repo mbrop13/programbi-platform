@@ -6,7 +6,7 @@ hreflang: es-UY
 curso: ia-productividad
 url_curso: https://www.programbi.com/uy/cursos/ia-productividad
 title: "Curso de IA en Productividad Uruguay: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Uruguay en vivo: 20 h para automatizar informes de oficina con ChatGPT, Claude, Gemini y Copilot, de 19:30 a 21:30. Sin código."
+meta: "Curso de IA en productividad en Uruguay en vivo: 20 h para automatizar informes con ChatGPT, Claude, Gemini y Copilot de 19:30 a 21:30 h."
 h1: "Curso de IA en Productividad en Uruguay: menos planilla, más criterio"
 updated: 2026-11-04
 sources:
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de IA en Productividad de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/ia-productividad) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, en 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes con **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-Es completamente práctico y no requiere programar. Según la ficha, consultada el 4 de noviembre de 2026, hay **cupos abiertos con fecha por confirmar**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia.
+Es completamente práctico y no requiere programar. Según la ficha, consultada el 4 de noviembre de 2026, hay **cupos abiertos · nueva cohorte por abrir**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Montevideo) · «Ver el curso».
 
@@ -138,7 +138,7 @@ Las clases son de 19:30 a 21:30 en Montevideo. Uruguay mantiene UTC-3 todo el a�
 ## Resumen
 
 - 20 horas, 6 módulos, 100 % prácticos.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · edición siguiente en espera.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final con tu propio informe.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -166,4 +166,4 @@ Sí. El módulo 6 trata privacidad, confidencialidad, límites legales y validac
 Sí. Se trabaja con Docs, Slides, Gmail y Drive, además de Microsoft 365.
 
 **¿Cuándo arranca?**
-La ficha muestra cupos abiertos con fecha por confirmar. Consultá por WhatsApp.
+La ficha muestra cupos abiertos para la edición entrante. Consultá por WhatsApp.

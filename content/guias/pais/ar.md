@@ -1,6 +1,6 @@
 ---
 title: Cómo aprender Power BI en Argentina: guía 2026 | ProgramBI
-description: Sueldos de analista de datos y BI según Sysarmy, ruta de 8 semanas, DAX para ajustar por inflación y dónde buscar laburo en Argentina. Guía práctica y al día.
+description: Sueldos de analista BI según Sysarmy, ruta de 8 semanas, DAX ajustado por inflación y dónde buscar laburo en Argentina. Guía práctica.
 h1: Cómo aprender Power BI en Argentina (y analizar datos con inflación)
 country: ar
 lang: es-AR
@@ -8,6 +8,14 @@ slug: como-aprender-power-bi-en-argentina
 path: /ar/guias/como-aprender-power-bi-en-argentina
 updated: 2026-11-04
 course: power-bi
+url_curso: https://www.programbi.com/ar/cursos/power-bi
+sources:
+  - https://sysarmy.com/
+  - https://institutoiea.edu.ar/publicaciones/que-hace-un-analista-de-datos-y-cuanto-gana
+  - https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/
+  - https://www.programbi.com/ar/cursos/power-bi
+nota_hermes: |
+  ELEMENTO VISUAL: ruta de aprendizaje de 8 semanas en Power BI para analistas en Argentina.
 ---
 En Argentina, analizar datos tiene una dificultad que en otros países casi no existe: si comparás las ventas en pesos de este año con las del año pasado sin ajustar, cualquier negocio parece crecer muchísimo. Por eso un buen analista argentino no solo arma tableros: sabe expresar las cifras en moneda constante, comparar contra el dólar cuando corresponde y explicar qué pasó «en serio». Power BI es la herramienta ideal para eso. Esta guía te muestra cómo aprenderlo paso a paso, qué se paga en el mercado y cómo diferenciarte.
 
@@ -112,10 +120,11 @@ Solo se puede, y en Argentina hay una comunidad tech muy activa. El tema es que 
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30, hora de Argentina**.
 - **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
-- Precio para Argentina: **{{precio}}**
+- Aranceles actualizados en ARS disponibles en el PDF del [curso de Power BI en Argentina](/ar/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores (como SUMX), tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
+- Sumá base técnica con las [funciones DAX esenciales](/guias/funciones-dax-mas-importantes) o el programa de [Análisis de datos completo](/ar/cursos/analisis-de-datos).
 
 <!-- CTA-END -->
 

@@ -6,7 +6,7 @@ hreflang: es-UY
 curso: mercado-financiero
 url_curso: https://www.programbi.com/uy/cursos/mercado-financiero
 title: "Curso de Mercado Financiero Uruguay: guía 2026 | ProgramBI"
-meta: "Curso de mercado financiero en Uruguay en vivo: carteras con Python, SQL, Power BI e IA en 30 h, 19:30. Riesgo, retorno, tipo de cambio y tableros de portafolio."
+meta: "Curso de mercado financiero en Uruguay en vivo: carteras con Python, SQL, Power BI e IA en 30 h, 19:30 h. Riesgo, retorno y tableros."
 h1: "Curso de Mercado Financiero en Uruguay: carteras con datos e IA"
 updated: 2026-11-04
 sources:

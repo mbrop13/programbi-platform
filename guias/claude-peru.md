@@ -6,7 +6,7 @@ hreflang: es-PE
 curso: claude
 url_curso: https://www.programbi.com/pe/cursos/claude
 title: "Curso de Claude en Perú: en vivo desde el 23/11 | ProgramBI"
-meta: "Curso de Claude en Perú en vivo por Zoom: 20 h para aplicar la IA de Anthropic a tareas de oficina, Excel y documentos. Desde el 23 de noviembre, 17:30 hora de Perú."
+meta: "Curso de Claude en Perú en vivo por Zoom: 20 h para aplicar la IA de Anthropic en oficina, Excel y reportes. Inicio 23/11, 17:30 hora Lima."
 h1: "Curso de Claude en Perú: la IA de Anthropic aplicada a tu chamba administrativa"
 updated: 2026-11-04
 sources:

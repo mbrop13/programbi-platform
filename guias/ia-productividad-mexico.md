@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de IA en Productividad de ProgramBI para México](https://www.programbi.com/mx/cursos/ia-productividad) son **20 horas en vivo por Zoom**, de **16:30 a 18:30, hora del centro de México**, en 6 módulos prácticos para que el personal administrativo automatice reportes diarios, resúmenes ejecutivos y tareas repetitivas con **ChatGPT, Claude, Gemini, Copilot y automatizaciones sin código**. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-No necesitas programar. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos con fecha por confirmar**, y el pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO.
+No necesitas programar. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · fechas vigentes en calendario**, y el pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO.
 
 **[CTA-TOP]** — Cupos abiertos · 16:30 a 18:30 CDMX · «Ver el curso».
 
@@ -131,7 +131,7 @@ Las clases son de 16:30 a 18:30 en Ciudad de México. Como México dejó el hora
 ## Resumen
 
 - 20 horas, 6 módulos, 100 % prácticos.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · calendario vigente por Zoom.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final: tu propio informe diario automatizado.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -156,7 +156,7 @@ ChatGPT, Claude, Gemini, Copilot y alternativas, más automatizaciones sin códi
 Sí. El proyecto final consiste en automatizar tu informe diario real o el más frecuente de tu trabajo.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; pregunta por WhatsApp.
+La ficha muestra cupos abiertos con nuevas fechas por abrir; pregunta por WhatsApp.
 
 **¿Sirve si en mi empresa usamos Google Workspace?**
 Sí. El curso trabaja tanto con Word, PowerPoint y Outlook como con Docs, Slides y Gmail, así que se adapta a tu entorno.

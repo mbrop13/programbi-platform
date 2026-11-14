@@ -6,7 +6,7 @@ hreflang: es-PE
 curso: machine-learning
 url_curso: https://www.programbi.com/pe/cursos/machine-learning
 title: "Curso de Machine Learning en Perú: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en Perú en vivo por Zoom: 20 h de modelos predictivos con Python, de 17:30 a 19:30 hora de Lima. Supervisado, clustering y anomalías."
+meta: "Curso de machine learning en Perú en vivo por Zoom: 20 h de modelos predictivos, clustering y anomalías con Python de 17:30 a 19:30 Lima."
 h1: "Curso de Machine Learning en Perú: modelos predictivos para tu chamba"
 updated: 2026-11-04
 sources:
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Machine Learning de ProgramBI en Perú](https://www.programbi.com/pe/cursos/machine-learning) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Perú**, dirigido a personas que ya manejan Python y quieren construir modelos predictivos para el negocio. Se divide en dos módulos: aprendizaje supervisado (regresión, clasificación, árboles, ensembles y validación) y no supervisado (K-Means, PCA, t-SNE, detección de anomalías y reglas de asociación). El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos con fecha por confirmar**. El pago se hace en soles con Mercado Pago Perú, Yape, Plin o transferencia.
+La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · calendario mensual activo**. El pago se hace en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 17:30 a 19:30 (Lima) · «Ver el curso».
 
@@ -139,7 +139,7 @@ Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año
 ## Datos clave
 
 - 20 horas en 2 módulos.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · consulta de fechas al día.
 - Grabaciones de por vida, certificado digital y proyectos con datos reales.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
@@ -157,7 +157,7 @@ Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año
 Sí, en Python. El curso es para quienes ya lo manejan.
 
 **¿Cuándo inicia?**
-La ficha muestra cupos abiertos con fecha por confirmar; consulta la próxima fecha por WhatsApp.
+La ficha muestra cupos abiertos con nuevas sesiones pronto; consulta la próxima fecha por WhatsApp.
 
 **¿Puedo ver las clases grabadas?**
 Sí, con acceso de por vida en el campus virtual.

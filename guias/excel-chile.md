@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: excel
 url_curso: https://www.programbi.com/cursos/excel
 title: "Curso de Excel en Chile en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Excel online en vivo en Chile: 20 h, 12 módulos, de fórmulas a tablas dinámicas y Power Query, por $169.000 CLP. Temario, ejemplos y cómo seguir a Power BI."
+meta: "Curso de Excel online en vivo en Chile: 20 h en 12 módulos, de fórmulas a tablas dinámicas y Power Query, con ruta directa a Power BI."
 h1: "Curso de Excel en Chile: Excel online, en vivo y aplicado a la pega"
 updated: 2026-11-04
 sources:

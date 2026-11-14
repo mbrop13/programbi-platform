@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI para México](https://www.programbi.com/mx/cursos/copilot) son **20 horas en vivo por Zoom**, de **16:30 a 18:30, hora del centro de México**, en 5 módulos de 4 horas. Empiezas usando Microsoft Copilot en **Excel, Outlook, PowerPoint y Word**, y terminas diseñando, entrenando y publicando **un agente propio en Copilot Studio** con el conocimiento de tu empresa. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-No necesitas programar. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos con fecha por confirmar**; el pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO.
+No necesitas programar. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · fechas vigentes en calendario**; el pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO.
 
 **[CTA-TOP]** — Cupos abiertos · 16:30 a 18:30 CDMX · «Ver el curso».
 
@@ -120,7 +120,7 @@ La ficha indica clases de 16:30 a 18:30 en Ciudad de México. Como México dejó
 ## Resumen
 
 - 20 horas en 5 módulos de 4 horas.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · calendario vigente por Zoom.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final: un agente funcional sobre un caso real.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -148,4 +148,4 @@ Depende de cómo tu empresa contrate Copilot; confírmalo con TI.
 En Teams, SharePoint o sitios web.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; pregunta por WhatsApp.
+La ficha muestra cupos abiertos con nuevas fechas por abrir; pregunta por WhatsApp.

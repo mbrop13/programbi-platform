@@ -6,7 +6,7 @@ hreflang: es-PY
 curso: claude
 url_curso: https://www.programbi.com/py/cursos/claude
 title: "Curso de Claude en Paraguay: en vivo, 23/11 | ProgramBI"
-meta: "Curso de Claude en Paraguay en vivo por Zoom: 20 h para usar la IA de Anthropic en tareas de oficina, Excel y presentaciones. Desde el 23/11, 19:30 hora de Paraguay."
+meta: "Curso de Claude en Paraguay en vivo por Zoom: 20 h para tareas administrativas, Excel y presentaciones. Inicio 23/11, 19:30 hora Paraguay."
 h1: "Curso de Claude en Paraguay: aprendé a trabajar con la IA de Anthropic, en vivo"
 updated: 2026-11-04
 sources:

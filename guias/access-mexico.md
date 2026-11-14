@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Access en México: ordena la información de tu área con bases de datos
 
-**Respuesta corta:** el [curso de Microsoft Access de ProgramBI para México](https://www.programbi.com/mx/cursos/access) son **20 horas en vivo por Zoom** distribuidas en **7 módulos**, pensadas para personal administrativo que necesita dejar atrás las hojas de cálculo desbordadas: aprenderás a diseñar tablas relacionadas, consultar con SQL básico, capturar datos con formularios, generar informes de gestión y automatizar tareas con macros. El precio es **{precio_local}** y hoy hay **cupos abiertos con fecha por confirmar**.
+**Respuesta corta:** el [curso de Microsoft Access de ProgramBI para México](https://www.programbi.com/mx/cursos/access) son **20 horas en vivo por Zoom** distribuidas en **7 módulos**, pensadas para personal administrativo que necesita dejar atrás las hojas de cálculo desbordadas: aprenderás a diseñar tablas relacionadas, consultar con SQL básico, capturar datos con formularios, generar informes de gestión y automatizar tareas con macros. El precio es **{precio_local}** y hoy hay **cupos abiertos · fechas vigentes en calendario**.
 
 Incluye grabaciones de por vida en el campus, certificado al completar y un proyecto integrador sobre un proceso de empresa. La sección de preguntas frecuentes de la ficha ubica las clases a las 16:30, hora del centro de México. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Información revisada el 4 de noviembre de 2026.
 
@@ -133,7 +133,7 @@ Access resuelve muy bien la base de un área o de un proceso. Cuando la informac
 {precio_local}, en pesos mexicanos con Mercado Pago México (tarjeta, SPEI, OXXO o Wallet).
 
 **¿Cuándo inicia?**
-La ficha indica cupos abiertos con fecha por confirmar. Escríbenos por WhatsApp para conocer la siguiente cohorte.
+La ficha indica cupos abiertos con nuevas fechas por abrir. Escríbenos por WhatsApp para conocer la siguiente cohorte.
 
 **¿Necesito saber programar?**
 No. El curso parte desde los conceptos básicos y el SQL se enseña desde cero.

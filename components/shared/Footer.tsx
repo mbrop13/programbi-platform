@@ -36,8 +36,22 @@ const companyLinks = [
   { label: "Registrarse", href: "/?auth=register" },
 ];
 
-/** Países con guía publicada (/guias o /{pais}/guias). */
-const GUIAS_POR_PAIS = new Set(["cl", "mx", "ar", "pe", "co", "uy", "py"]);
+/** Países con hub indexable publicado (/guias o /{pais}/guias). */
+const GUIAS_POR_PAIS = new Set([
+  "cl",
+  "mx",
+  "ar",
+  "pe",
+  "co",
+  "uy",
+  "bo",
+  "cr",
+  "do",
+  "ec",
+  "gt",
+  "sv",
+  "ve",
+]);
 
 /**
  * Fichas que el pie enlaza primero y con anchor descriptivo ("Curso de…").
@@ -97,7 +111,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               href={pais === ISO_CHILE ? "/guias" : `/${pais}/guias`}
               className="no-underline hover:text-mute"
             >
-              Guías de Power BI
+              Guías prácticas
             </Link>
           ) : null}
         </nav>

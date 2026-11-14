@@ -6,7 +6,7 @@ hreflang: es-CO
 curso: python
 url_curso: https://www.programbi.com/co/cursos/python
 title: "Curso de Python en Colombia en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en Colombia: Python para datos desde cero en 20 h, lunes y miércoles 17:30. Pandas, ejemplos locales y automatización de informes."
+meta: "Curso de Python online en vivo en Colombia: Python para datos desde cero en 20 h (lunes y miércoles 17:30 Bogotá). Pandas y reportes."
 h1: "Curso de Python en Colombia: Python para análisis de datos, en vivo"
 updated: 2026-11-04
 sources:

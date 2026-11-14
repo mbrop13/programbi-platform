@@ -1,6 +1,6 @@
 ---
 title: Cómo aprender Power BI en Chile: guía 2026 | ProgramBI
-description: Ruta en 8 semanas, sueldos reales de analista BI en Chile, funciones DAX con ejemplos en pesos y dónde buscar pega. Guía práctica de ProgramBI, actualizada.
+description: Ruta de 8 semanas, sueldos reales de analista BI en Chile, DAX con ejemplos en pesos y dónde buscar pega. Guía práctica de ProgramBI.
 h1: Cómo aprender Power BI en Chile (y llegar a usarlo en tu pega)
 country: cl
 lang: es-CL
@@ -8,6 +8,14 @@ slug: como-aprender-power-bi-en-chile
 path: /guias/como-aprender-power-bi-en-chile
 updated: 2026-11-04
 course: power-bi
+url_curso: https://www.programbi.com/cursos/power-bi
+sources:
+  - https://www.chiletrabajos.cl/sueldos/analista/bi
+  - https://cl.indeed.com/career/analista-bi/salaries
+  - https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/
+  - https://www.programbi.com/cursos/power-bi
+nota_hermes: |
+  ELEMENTO VISUAL: ruta de aprendizaje de 8 semanas en Power BI aplicada al mercado chileno.
 ---
 En Chile, buena parte del trabajo de control de gestión todavía vive en un Excel que alguien actualiza a mano cada lunes: se bajan reportes del ERP, se pegan en una hoja, se arreglan fórmulas que se rompieron y, con suerte, el informe llega a gerencia el miércoles. Power BI existe para que eso no pase. Esta guía te muestra cómo aprenderlo en serio, qué pide hoy el mercado chileno y cómo pasar de «sé hacer gráficos» a «mantengo el dashboard que usa mi empresa».
 
@@ -90,10 +98,10 @@ Solo se puede: la documentación de Microsoft es buena y hay mucho video. El pro
 - Temario: Power Query, parámetros y funciones M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH y funciones de IA de Power BI (preguntas en lenguaje natural e insights automáticos).
 - **Grabaciones de por vida** en el campus y **certificado** al completar.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
-- ¿Ya dominas lo básico? Existe el nivel **Avanzado** (20 h) con Power BI Service y RLS.
-- Para equipos, hay una versión para empresas en `/empresas`.
+- Recursos y rutas relacionadas: ficha del [curso de Power BI en vivo](/cursos/power-bi), referencia práctica de [funciones DAX](/guias/funciones-dax-mas-importantes), comparativa [Power BI vs Excel](/guias/power-bi-vs-excel) y el programa de [Análisis de datos completo](/cursos/analisis-de-datos).
+- Para equipos corporativos, revisa [capacitación para empresas](/empresas).
 
-<!-- CTA-END --> — «Inscribirme» · «Hablar por WhatsApp».
+<!-- CTA-END -->
 
 ##### Preguntas frecuentes
 

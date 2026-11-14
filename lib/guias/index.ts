@@ -112,6 +112,11 @@ export function alternatesClaude(guia: Guia): Record<string, string> | undefined
   return guia.slug.startsWith("como-usar-claude-para-analisis-de-datos") ? alternatesCurso(guia) : undefined;
 }
 
+/** Alternates unificados de cualquier guía indexable (compartido por rutas y sitemap). */
+export function alternatesDeGuia(guia: Guia): Record<string, string> | undefined {
+  return alternatesGuiaPais(guia) ?? alternatesClaude(guia) ?? alternatesCurso(guia);
+}
+
 /** Ruta del índice de guías de un país. */
 export function indiceGuias(iso: string): string {
   return iso === "cl" ? "/guias" : `/${iso}/guias`;

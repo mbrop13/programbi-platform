@@ -13,8 +13,8 @@ import { guiasDePais, indiceGuias } from "@/lib/guias";
 import { opcionesCurso } from "@/lib/guias/opciones";
 import { tarjetasDeGuias } from "@/lib/guias/tarjetas";
 import { robotsLocal } from "@/lib/paises/metadata";
-import { localeOg } from "@/lib/paises/rutas";
-import { absoluteUrl, jsonLdString } from "@/lib/seo";
+import { hreflangDe, localeOg } from "@/lib/paises/rutas";
+import { absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 
 export const revalidate = false;
 export const dynamicParams = false;
@@ -38,12 +38,23 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   // se conserva la palabra clave corta y se suelta «Power BI».
   const title =
     titleLargo.length <= 60 ? titleLargo : `Guías de datos en ${nombre} — ProgramBI`;
-  const description = `Guías prácticas de Power BI, Excel, SQL Server, Python y análisis de datos para ${nombre}: ruta de estudio, sueldos del mercado, precios locales y el curso en vivo de ProgramBI.`;
+  const description = `Guías prácticas de Claude, Power BI, SQL, Python y Excel en ${nombre}: rutas de estudio, sueldos del mercado y cursos en vivo.`;
   const indexable = esIndexable(pais);
+  const share = pageOg({
+    title: `Guías prácticas de datos e IA en ${nombre}`,
+    description,
+    path,
+    kicker: `Biblioteca ProgramBI · ${nombre}`,
+    tags: ["Claude AI", "Power BI", "SQL y Python"],
+    alt: title,
+  });
   return {
     title: { absolute: title },
     description,
-    alternates: { canonical: absoluteUrl(path) },
+    alternates: {
+      canonical: absoluteUrl(path),
+      ...(indexable ? { languages: hreflangDe("/guias") } : {}),
+    },
     ...(indexable ? {} : { robots: robotsLocal(pais) }),
     openGraph: {
       title,
@@ -51,7 +62,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       url: absoluteUrl(path),
       locale: localeOg(pais),
       type: "website",
+      siteName: "ProgramBI",
+      images: share.images,
     },
+    twitter: share.twitter,
   };
 }
 
@@ -79,7 +93,7 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
         "@type": "ItemList",
         "@id": `${canonical}#list`,
         numberOfItems: tarjetas.length,
-        itemListElement: tarjetas.slice(0, 100).map((guia, index) => ({
+        itemListElement: tarjetas.map((guia, index) => ({
           "@type": "ListItem",
           position: index + 1,
           name: guia.h1,

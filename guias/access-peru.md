@@ -6,7 +6,7 @@ hreflang: es-PE
 curso: access
 url_curso: https://www.programbi.com/pe/cursos/access
 title: "Curso de Access en Perú para administrativos | ProgramBI"
-meta: "Curso de Microsoft Access en Perú: 20 h en vivo por Zoom, 7 módulos de tablas, consultas SQL, formularios, informes y macros. Cupos abiertos, 17:30 hora de Perú."
+meta: "Curso de Microsoft Access en Perú: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros a las 17:30 hora Lima."
 h1: "Curso de Access en Perú: organiza la información de tu chamba en bases de datos"
 updated: 2026-11-04
 sources:
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Access en Perú: organiza la información de tu chamba en bases de datos
 
-**Respuesta directa:** el [curso de Microsoft Access de ProgramBI para Perú](https://www.programbi.com/pe/cursos/access) dura **20 horas en vivo por Zoom**, repartidas en **7 módulos**, y está hecho para personal administrativo que quiere diseñar, construir y administrar bases de datos relacionales: tablas con claves y relaciones, consultas con criterios y SQL básico, formularios de registro con validaciones, informes exportables a PDF y Excel y macros para automatizar tareas frecuentes. El precio es **{precio_local}** y la ficha indica **cupos abiertos con fecha por confirmar**.
+**Respuesta directa:** el [curso de Microsoft Access de ProgramBI para Perú](https://www.programbi.com/pe/cursos/access) dura **20 horas en vivo por Zoom**, repartidas en **7 módulos**, y está hecho para personal administrativo que quiere diseñar, construir y administrar bases de datos relacionales: tablas con claves y relaciones, consultas con criterios y SQL básico, formularios de registro con validaciones, informes exportables a PDF y Excel y macros para automatizar tareas frecuentes. El precio es **{precio_local}** y la ficha indica **cupos abiertos · calendario mensual activo**.
 
 Incluye grabaciones con acceso de por vida, certificado al completar y un proyecto integrador basado en un proceso empresarial. De acuerdo con las preguntas frecuentes de la ficha, las clases son a las 17:30, hora de Perú. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Información revisada el 4 de noviembre de 2026.
 
@@ -139,7 +139,7 @@ Elige un proceso de tu chamba que hoy dependa de una hoja de cálculo y reúne e
 {precio_local}, en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
 **¿Cuándo empieza?**
-La ficha indica cupos abiertos con fecha por confirmar; escribe por WhatsApp para conocer la próxima cohorte.
+La ficha indica cupos abiertos con nuevas sesiones pronto; escribe por WhatsApp para conocer la próxima cohorte.
 
 **¿Necesito experiencia previa?**
 No. Se parte de los conceptos básicos y el SQL se enseña desde cero.

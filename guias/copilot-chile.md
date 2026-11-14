@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: copilot
 url_curso: https://www.programbi.com/cursos/copilot
 title: "Curso de Copilot y Copilot Studio en Chile | ProgramBI"
-meta: "Curso de Copilot en Chile en vivo: 20 h de Copilot en Excel, Outlook, PowerPoint y Word, y agentes propios con Copilot Studio, por $169.000 CLP."
+meta: "Curso de Copilot en Chile en vivo: 20 h de Copilot en Excel, Outlook, PowerPoint y Word, más agentes propios en Copilot Studio por Zoom."
 h1: "Curso de Copilot y Copilot Studio en Chile: IA en Office y agentes propios"
 updated: 2026-11-04
 sources:
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI](https://www.programbi.com/cursos/copilot) es un programa **en vivo por Zoom de 20 horas en 5 módulos de 4 horas**. La primera parte aplica Microsoft Copilot en **Excel, Outlook, PowerPoint y Word**; la segunda enseña a diseñar, entrenar y publicar **un agente propio en Copilot Studio**, con conocimiento de tu empresa, temas, entidades y diseño conversacional. Cuesta **$169.000 CLP** y las clases son de **19:30 a 21:30, hora de Chile**.
 
-La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos con fecha por confirmar**. Incluye grabaciones de por vida, certificado y un proyecto final: un agente funcional sobre un caso real de tu pega.
+La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · próxima edición disponible**. Incluye grabaciones de por vida, certificado y un proyecto final: un agente funcional sobre un caso real de tu pega.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Chile) · «Ver el curso».
 
@@ -112,7 +112,7 @@ Si te interesa automatizar procesos completos, el [curso de Power Automate](http
 Según la [ficha](https://www.programbi.com/cursos/copilot), consultada el 4 de noviembre de 2026:
 
 - **20 horas en 5 módulos** de 4 horas.
-- **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos, fecha por confirmar.
+- **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos · próxima fecha en consulta.
 - **Grabaciones de por vida** y **certificado digital**.
 - Proyecto final: un agente funcional sobre un caso real.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
@@ -140,7 +140,7 @@ Depende de cómo tu empresa contrate Copilot; conviene confirmarlo con TI antes 
 En Teams, SharePoint o sitios web, según el módulo 5.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; consúltala por WhatsApp.
+La ficha muestra cupos abiertos para la próxima edición; consúltala por WhatsApp.
 
 **¿Sirve si mi empresa todavía no tiene Copilot contratado?**
 Sí, para entender qué se puede hacer y preparar un caso de negocio. Para practicar en tu propia cuenta necesitarás acceso a las herramientas; consúltalo con TI antes de inscribirte.

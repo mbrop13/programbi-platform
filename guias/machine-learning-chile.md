@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: machine-learning
 url_curso: https://www.programbi.com/cursos/machine-learning
 title: "Curso de Machine Learning en Chile: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en Chile, en vivo por Zoom: 20 h de modelos supervisados y no supervisados con Python, por $169.000 CLP. Para quienes ya saben Python."
+meta: "Curso de machine learning en Chile en vivo por Zoom: 20 h de modelos supervisados, clustering y anomalías con Python aplicado al negocio."
 h1: "Curso de Machine Learning en Chile: modelos predictivos con Python"
 updated: 2026-11-04
 sources:
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Machine Learning de ProgramBI](https://www.programbi.com/cursos/machine-learning) es un programa **en vivo por Zoom de 20 horas** para quienes ya manejan Python y quieren construir modelos predictivos aplicados a negocios. Cuesta **$169.000 CLP**, las clases son de **19:30 a 21:30, hora de Chile**, y se divide en dos módulos: aprendizaje supervisado (regresión, clasificación, árboles, validación) y no supervisado (clustering, PCA, anomalías, reglas de asociación). Incluye grabaciones de por vida y certificado.
 
-La próxima cohorte figura con **cupos abiertos y fecha por confirmar** en la ficha, revisada el 4 de noviembre de 2026. Si ya escribes código en pandas y quieres dar el paso de describir datos a predecir con ellos, este es el curso siguiente natural.
+La próxima cohorte figura con **cupos abiertos · próxima edición disponible** en la ficha, revisada el 4 de noviembre de 2026. Si ya escribes código en pandas y quieres dar el paso de describir datos a predecir con ellos, este es el curso siguiente natural.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Chile) · «Ver el curso».
 
@@ -127,7 +127,7 @@ Las 20 horas pasan rápido. Lo que más rinde es llegar con un dataset propio en
 Según la [ficha del curso](https://www.programbi.com/cursos/machine-learning), consultada el 4 de noviembre de 2026:
 
 - **Nivel básico-intermedio, 20 horas en 2 módulos**: supervisado y no supervisado.
-- **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile. Cupos abiertos; fecha por confirmar.
+- **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile. Cupos abiertos · próxima fecha en consulta.
 - **Grabaciones de por vida** en el campus y **certificado digital** al completar.
 - Proyectos con datos reales.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
@@ -146,7 +146,7 @@ $169.000 CLP por las 20 horas en vivo, con grabaciones de por vida y certificado
 Sí. La ficha lo indica para quienes ya manejan Python. Si estás partiendo, conviene tomar antes el curso de Python para datos.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar. Puedes consultarla por WhatsApp.
+La ficha muestra cupos abiertos para la próxima edición. Puedes consultarla por WhatsApp.
 
 **¿Qué librerías se usan?**
 El temario cubre técnicas clásicas de machine learning en Python; scikit-learn es la librería estándar para regresión, clasificación, clustering y PCA.

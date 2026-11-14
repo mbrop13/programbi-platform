@@ -6,7 +6,7 @@ hreflang: es
 curso: general
 url_curso: https://www.programbi.com/cursos
 title: "Preguntas frecuentes de ProgramBI: cursos, clases y pagos"
-meta: "Respuestas claras sobre los cursos de ProgramBI: Power BI, Análisis de datos, clases en vivo por Zoom, grabaciones, horarios por país, requisitos, precios y certificación PL-300."
+meta: "Preguntas frecuentes de ProgramBI: cursos de Power BI y Análisis de datos en vivo por Zoom, horarios por país, grabaciones y certificación PL-300."
 h1: "Preguntas frecuentes sobre ProgramBI"
 updated: 2026-11-04
 sources:

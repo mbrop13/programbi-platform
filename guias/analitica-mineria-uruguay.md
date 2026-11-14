@@ -6,7 +6,7 @@ hreflang: es-UY
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/uy/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Minería en Uruguay | ProgramBI"
-meta: "Curso de análisis de datos para minería e industria en Uruguay: Power BI, SQL Server y Python para turnos, flota, mantenimiento y sensores. 60 h por nivel en vivo."
+meta: "Análisis de datos para minería e industria en Uruguay: Power BI, SQL y Python para turnos, flota, mantenimiento y sensores. 60 h en vivo."
 h1: "Curso de Análisis de Datos para la Minería en Uruguay: datos de planta, flota y mantenimiento"
 updated: 2026-11-04
 sources:
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos para la Minería en Uruguay: datos de planta, flota y mantenimiento
 
-**Para ir al grano:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en Uruguay](https://www.programbi.com/uy/cursos/analisis-de-datos) es una formación de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que enseña Power BI, SQL Server y Python aplicados a operaciones mineras e industriales: reportes de turno, flota, mantenimiento, consumos, inventarios y sensores, con IA generativa para acelerar la escritura de consultas y scripts. El nivel básico-intermedio cuesta **{precio_local}** y la ficha marca **cupos abiertos con fecha a confirmar**.
+**Para ir al grano:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en Uruguay](https://www.programbi.com/uy/cursos/analisis-de-datos) es una formación de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que enseña Power BI, SQL Server y Python aplicados a operaciones mineras e industriales: reportes de turno, flota, mantenimiento, consumos, inventarios y sensores, con IA generativa para acelerar la escritura de consultas y scripts. El nivel básico-intermedio cuesta **{precio_local}** y la ficha marca **cupos abiertos · nueva cohorte por abrir**.
 
 Incluye grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, la clase es a las 19:30, hora de Uruguay. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: la ficha del curso, consultada el 4 de noviembre de 2026.
 
@@ -137,7 +137,7 @@ La ficha también presenta un nivel avanzado para **dominar el ciclo completo de
 Sí, si trabajás con turnos, equipos, mantenimiento o sensores: la ficha lo dirige a profesionales mineros e industriales.
 
 **¿Cuándo empieza?**
-Hay cupos abiertos con fecha a confirmar; escribinos por WhatsApp y te avisamos cuando se abra la próxima cohorte.
+Hay cupos abiertos para la edición entrante; escribinos por WhatsApp y te avisamos cuando se abra la próxima cohorte.
 
 **¿Hace falta saber programar?**
 No. El nivel básico-intermedio parte de los fundamentos de Power BI, SQL y Python, y la IA te ayuda a escribir la primera versión de cada consulta o script, que después revisás vos.

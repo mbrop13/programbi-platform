@@ -6,7 +6,7 @@ hreflang: es-PY
 curso: python
 url_curso: https://www.programbi.com/py/cursos/python
 title: "Curso de Python Paraguay en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en Paraguay: Python para datos desde cero en 20 h, lunes y miércoles 19:30. Pandas, ejemplos locales y automatización de reportes."
+meta: "Curso de Python online en vivo en Paraguay: Python para datos desde cero en 20 h (lunes y miércoles 19:30). Pandas y automatización."
 h1: "Curso de Python en Paraguay: Python para datos, online y en vivo"
 updated: 2026-11-04
 sources:

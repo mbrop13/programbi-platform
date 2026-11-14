@@ -5,25 +5,48 @@ import GuiasHub from "@/components/guias/GuiasHub";
 import { GUIAS } from "@/lib/guias/generado";
 import { indiceGuias } from "@/lib/guias";
 import { opcionesCurso, opcionesPais, paisesConConteo } from "@/lib/guias/opciones";
+import { esGuiaPublicada } from "@/lib/guias/relacionadas";
 import { tarjetasDeGuias } from "@/lib/guias/tarjetas";
-import { absoluteUrl, jsonLdString } from "@/lib/seo";
+import { hreflangDe } from "@/lib/paises/rutas";
+import { absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 
-const title = "Guías de datos, Power BI y SQL — ProgramBI";
+const title = "Guías prácticas de datos, IA, Claude y Power BI — ProgramBI";
 const description =
-  "Guías prácticas por curso y país: Power BI, Excel, SQL Server, Python, Access, Copilot, Claude, IA, Machine Learning, análisis de datos y mercado financiero. Precio local, ruta de aprendizaje, sueldos y curso en vivo.";
+  "Guías prácticas de Claude para datos, Power BI, SQL Server, Python y Excel en vivo. Prompts listos, rutas de estudio y precios locales.";
+
+const share = pageOg({
+  title: "Guías prácticas de datos e IA aplicada",
+  description,
+  path: "/guias",
+  kicker: "Biblioteca ProgramBI · Latinoamérica",
+  tags: ["Claude AI", "Power BI", "SQL y Python", "Excel"],
+  alt: title,
+});
 
 export const metadata: Metadata = {
   title: { absolute: title },
   description,
-  alternates: { canonical: absoluteUrl("/guias") },
-  openGraph: { title, description, url: absoluteUrl("/guias"), type: "website" },
+  alternates: {
+    canonical: absoluteUrl("/guias"),
+    languages: hreflangDe("/guias"),
+  },
+  openGraph: {
+    title,
+    description,
+    url: absoluteUrl("/guias"),
+    type: "website",
+    locale: "es_CL",
+    siteName: "ProgramBI",
+    images: share.images,
+  },
+  twitter: share.twitter,
 };
 
 export const revalidate = false;
 
 export default function GuiasIndexPage() {
-  // El hub general lista todas las guías publicadas; los filtros separan país y curso.
-  const guias = GUIAS;
+  // El hub general lista solo las guías de mercados indexables; los filtros separan país y curso.
+  const guias = GUIAS.filter(esGuiaPublicada);
   const paises = opcionesPais(guias);
   const cursos = opcionesCurso(guias);
   const paisesConCarpeta = paisesConConteo(guias).filter((pais) => pais.iso !== "cl");
@@ -47,7 +70,7 @@ export default function GuiasIndexPage() {
         "@type": "ItemList",
         "@id": `${canonical}#list`,
         numberOfItems: tarjetas.length,
-        itemListElement: tarjetas.slice(0, 100).map((guia, index) => ({
+        itemListElement: tarjetas.map((guia, index) => ({
           "@type": "ListItem",
           position: index + 1,
           name: guia.h1,

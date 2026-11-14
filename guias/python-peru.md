@@ -6,7 +6,7 @@ hreflang: es-PE
 curso: python
 url_curso: https://www.programbi.com/pe/cursos/python
 title: "Curso de Python en Perú en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en Perú: Python para datos desde cero en 20 h, lunes y miércoles 17:30 hora de Lima. Pandas, ejemplos y consolidación de reportes."
+meta: "Curso de Python online en vivo en Perú: Python para datos desde cero en 20 h (lunes y miércoles 17:30 Lima). Pandas y automatización."
 h1: "Curso de Python en Perú: Python para datos, online y desde cero"
 updated: 2026-11-04
 sources:

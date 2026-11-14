@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos para la Minería en México: del reporte de turno al dashboard
 
-**Respuesta corta:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en México](https://www.programbi.com/mx/cursos/analisis-de-datos) son **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, donde aprendes a usar Power BI, SQL Server y Python sobre datos de operación minera —turnos, flota, mantenimiento, combustible, sensores— con apoyo de IA generativa para escribir consultas y scripts. El nivel básico-intermedio tiene un precio de **{precio_local}**, y actualmente hay **cupos abiertos con fecha por confirmar**.
+**Respuesta corta:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en México](https://www.programbi.com/mx/cursos/analisis-de-datos) son **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, donde aprendes a usar Power BI, SQL Server y Python sobre datos de operación minera —turnos, flota, mantenimiento, combustible, sensores— con apoyo de IA generativa para escribir consultas y scripts. El nivel básico-intermedio tiene un precio de **{precio_local}**, y actualmente hay **cupos abiertos · fechas vigentes en calendario**.
 
 Incluye grabaciones de por vida, certificado al completar y proyectos con datos reales. Las preguntas frecuentes de la ficha indican clases a las 16:30, hora del centro de México. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Información revisada el 4 de noviembre de 2026.
 
@@ -126,7 +126,7 @@ La ficha también muestra un nivel avanzado para **dominar el ciclo completo del
 {precio_local}, en pesos mexicanos con Mercado Pago México (tarjeta, SPEI, OXXO o Wallet).
 
 **¿Cuándo inicia?**
-Hay cupos abiertos con fecha por confirmar. Escríbenos por WhatsApp para conocer la siguiente cohorte.
+Hay cupos abiertos con nuevas fechas por abrir. Escríbenos por WhatsApp para conocer la siguiente cohorte.
 
 **¿Necesito saber programar?**
 No. El nivel básico-intermedio empieza desde los fundamentos de Power BI, SQL y Python, y la IA te ayuda con la primera versión de cada script.

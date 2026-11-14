@@ -1,6 +1,6 @@
 ---
 title: Cómo usar Claude para análisis de datos en México
-description: Prompts listos para conciliar reportes, limpiar bases de clientes y explicar variaciones con Claude. Ejemplos en pesos mexicanos y cuidados de privacidad.
+description: Prompts listos para conciliar reportes, limpiar bases de clientes y explicar variaciones con Claude. Ejemplos en MXN y privacidad.
 h1: Claude para análisis de datos: guía práctica para equipos en México
 country: mx
 lang: es-MX
@@ -8,6 +8,15 @@ slug: como-usar-claude-para-analisis-de-datos
 path: /mx/guias/como-usar-claude-para-analisis-de-datos
 updated: 2026-11-04
 course: claude
+url_curso: https://www.programbi.com/mx/cursos/claude
+sources:
+  - https://www.anthropic.com/claude
+  - https://support.claude.com/
+  - https://www.programbi.com/mx/cursos/claude
+  - https://www.programbi.com/mx/cursos/power-bi
+  - https://www.programbi.com/mx/cursos/analisis-de-datos
+nota_hermes: |
+  ELEMENTO VISUAL: arquitectura de un prompt de 5 partes para conciliaciones y análisis mensual con Claude.
 ---
 En muchas oficinas de México el cierre de mes significa lo mismo: conciliar reportes de distintas áreas, explicar por qué no cuadra una cifra y preparar la presentación para la dirección. Claude, el asistente de IA de Anthropic, no hace el cierre por ti, pero sí te ahorra horas en las tareas que lo rodean. Esta guía va directo a los usos que más tiempo liberan en equipos de finanzas, administración y comercial.
 
@@ -25,13 +34,27 @@ En muchas oficinas de México el cierre de mes significa lo mismo: conciliar rep
 
 Claude responde mucho mejor cuando sabe quién eres, qué necesitas y en qué formato. Agrega siempre una restricción clave: **«No inventes datos; si falta información, dímelo.»** Y pide que muestre el criterio que usó, para que puedas revisarlo.
 
-<!-- CTA-MID --> — Descarga la plantilla de prompts para cierres de mes.
+> **Contexto:** Trabajo en finanzas en una empresa comercializadora en Monterrey con cierre mensual en MXN.
+> **Tarea:** Compara los centros de costos reales contra el presupuesto adjunto y destaca desviaciones superiores al 10 %.
+> **Formato:** Tabla ordenada por monto de variación en MXN y resumen ejecutivo en 4 puntos.
+> **Restricciones:** Usa solo los comentarios presentes en el archivo. Si una partida no tiene comentario, escribe "pendiente de explicar".
+
+```prompt
+Compara estas dos hojas (ERP_ventas y Facturacion_MXN) usando el folio de factura como llave.
+Lista en una tabla:
+1) Folios presentes solo en ERP,
+2) Folios presentes solo en Facturación,
+3) Folios con diferencia en importe bruto en MXN.
+Cierra con la suma total de diferencias y explica qué fila muestral debo revisar manualmente primero.
+```
+
+<!-- CTA-MID -->
 
 ##### De Claude a Excel y Power BI
 
 - Pide fórmulas de Excel explicadas («dame la fórmula y explícame cada argumento»).
 - Pide que convierta una explicación en una tabla lista para pegar.
-- Si tu empresa usa Power BI, pídele que te explique una medida DAX existente en lenguaje simple antes de modificarla.
+- Si tu empresa usa Power BI, pídele que te explique una medida DAX existente en lenguaje simple antes de modificarla, y da el paso completo con nuestro [curso de Power BI en México](/mx/cursos/power-bi) o el programa de [Análisis de datos completo](/mx/cursos/analisis-de-datos).
 
 ##### Caso completo: el paquete de cierre para la dirección
 
@@ -74,11 +97,11 @@ Antes de usar Claude con datos de la empresa, confirma con tu área de TI o de c
 ##### El curso Claude en vivo de ProgramBI (versión México)
 
 - **En vivo por Zoom**, lunes y miércoles de **16:30 a 18:30, hora de México**. Próximo inicio: **lunes 23 de noviembre de 2026**.
-- Precio para México: **{{precio}}**
+- **Inversión local en MXN:** revisa el arancel vigente y opciones de pago descargando el PDF de temario y precios en esta página o en la [guía del curso Claude para México](/mx/guias/curso-claude-mexico).
 - **20 horas, 5 módulos**: primeros pasos y privacidad; prompting práctico; Projects, Artifacts, Docs y Slides; Claude para Excel y tareas administrativas; automatización ligera y proyecto final con un proceso real de tu trabajo.
-- **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**.
+- **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**. Revisa los detalles en la ficha del [curso Claude en vivo](/mx/cursos/claude).
 
-<!-- CTA-END --> — «Ver el curso Claude» (`/mx/cursos/claude`) · WhatsApp.
+<!-- CTA-END -->
 
 ##### Preguntas frecuentes
 

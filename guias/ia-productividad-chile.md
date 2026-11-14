@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: ia-productividad
 url_curso: https://www.programbi.com/cursos/ia-productividad
 title: "Curso de IA en Productividad Chile: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Chile, en vivo: 20 h para automatizar informes de oficina con ChatGPT, Claude, Gemini y Copilot, por $169.000 CLP. Sin programar."
+meta: "Curso de IA en productividad en Chile en vivo: 20 h para automatizar informes de oficina con ChatGPT, Claude, Gemini y Copilot, sin programar."
 h1: "Curso de IA en Productividad en Chile: informes de oficina en minutos"
 updated: 2026-11-04
 sources:
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de IA en Productividad de ProgramBI](https://www.programbi.com/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas en 6 módulos** para personal administrativo que quiere automatizar informes diarios, resúmenes ejecutivos y reportes recurrentes con **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. Cuesta **$169.000 CLP**, las clases son de **19:30 a 21:30, hora de Chile**, e incluye grabaciones de por vida y certificado.
 
-Es **100 % práctico**: se trabaja con informes administrativos, financieros, de control de gestión y contables. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos con fecha por confirmar**, y el proyecto final consiste en automatizar tu propio informe diario real.
+Es **100 % práctico**: se trabaja con informes administrativos, financieros, de control de gestión y contables. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · próxima edición disponible**, y el proyecto final consiste en automatizar tu propio informe diario real.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Chile) · «Ver el curso».
 
@@ -113,7 +113,7 @@ Muchos informes terminan necesitando un tablero. Si quieres dar ese paso, revisa
 Según la [ficha](https://www.programbi.com/cursos/ia-productividad), consultada el 4 de noviembre de 2026:
 
 - **20 horas en 6 módulos**, 100 % prácticos.
-- **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos y fecha por confirmar.
+- **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos con inicio próximo a consultar.
 - **Grabaciones de por vida** y **certificado digital**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Valor: **$169.000 CLP**.

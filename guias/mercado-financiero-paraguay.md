@@ -6,7 +6,7 @@ hreflang: es-PY
 curso: mercado-financiero
 url_curso: https://www.programbi.com/py/cursos/mercado-financiero
 title: "Curso de Mercado Financiero Paraguay: guía 2026 | ProgramBI"
-meta: "Curso de mercado financiero en Paraguay en vivo: carteras con Python, SQL, Power BI e IA en 30 h, 19:30. Riesgo, retorno, tipo de cambio y tableros de inversión."
+meta: "Curso de mercado financiero en Paraguay en vivo: carteras con Python, SQL, Power BI e IA en 30 h, 19:30 h. Riesgo, retorno y tableros."
 h1: "Curso de Mercado Financiero en Paraguay: inversiones con datos e IA"
 updated: 2026-11-04
 sources:

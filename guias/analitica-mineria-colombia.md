@@ -6,7 +6,7 @@ hreflang: es-CO
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/co/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Minería en Colombia | ProgramBI"
-meta: "Curso de análisis de datos para minería en Colombia: Power BI, SQL Server y Python para producción, flota, mantenimiento y sensores. 60 h por nivel en vivo."
+meta: "Análisis de datos para minería en Colombia: Power BI, SQL Server y Python para producción, flota, mantenimiento y sensores. 60 h por nivel en vivo."
 h1: "Curso de Análisis de Datos para la Minería en Colombia: Power BI, SQL y Python en vivo"
 updated: 2026-11-04
 sources:
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos para la Minería en Colombia: Power BI, SQL y Python en vivo
 
-**En resumen:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Colombia](https://www.programbi.com/co/cursos/analisis-de-datos) es un programa de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que combina Power BI, SQL Server y Python para trabajar con información de operación minera e industrial: reportes de turno, flota, mantenimiento, combustible, inventarios y sensores, con apoyo de inteligencia artificial generativa para redactar consultas y scripts. El nivel básico-intermedio tiene un valor de **{precio_local}**; la ficha reporta **cupos abiertos con fecha por confirmar**.
+**En resumen:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Colombia](https://www.programbi.com/co/cursos/analisis-de-datos) es un programa de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que combina Power BI, SQL Server y Python para trabajar con información de operación minera e industrial: reportes de turno, flota, mantenimiento, combustible, inventarios y sensores, con apoyo de inteligencia artificial generativa para redactar consultas y scripts. El nivel básico-intermedio tiene un valor de **{precio_local}**; la ficha reporta **cupos abiertos · programación continua en vivo**.
 
 Incluye grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. En las preguntas frecuentes de la ficha, la clase se ubica a las 17:30, hora de Colombia. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia. Información consultada el 4 de noviembre de 2026.
 

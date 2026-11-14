@@ -6,7 +6,7 @@ hreflang: es-MX
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/mx/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos en México: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en México en vivo: SQL Server, Power BI y Python en 60 h, lunes y miércoles 16:30 CDMX. Cómo ser analista de datos y cuánto se gana."
+meta: "Curso de análisis de datos en México en vivo: SQL Server, Power BI y Python en 60 h (16:30 CDMX). Sueldos y guía para entrar al área."
 h1: "Curso de Análisis de Datos en México: la ruta para ser analista de datos"
 updated: 2026-11-04
 sources:

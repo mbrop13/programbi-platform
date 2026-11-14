@@ -1,6 +1,6 @@
 ---
 title: Cómo aprender Power BI en Colombia: guía 2026 | ProgramBI
-description: Salario real de analista de datos en Colombia según Computrabajo, dónde buscar empleo, ruta de 8 semanas y DAX con ejemplos en COP de Bogotá, Medellín y Cali.
+description: Salarios de analista de datos en Colombia, dónde buscar empleo, ruta de 8 semanas y DAX en COP para Bogotá, Medellín y Cali.
 h1: Cómo aprender Power BI en Colombia y conseguir trabajo como analista
 country: co
 lang: es-CO
@@ -8,6 +8,14 @@ slug: como-aprender-power-bi-en-colombia
 path: /co/guias/como-aprender-power-bi-en-colombia
 updated: 2026-11-04
 course: power-bi
+url_curso: https://www.programbi.com/co/cursos/power-bi
+sources:
+  - https://co.computrabajo.com/salarios/analista-de-datos
+  - https://co.computrabajo.com/trabajo-de-analista-de-datos
+  - https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/
+  - https://www.programbi.com/co/cursos/power-bi
+nota_hermes: |
+  ELEMENTO VISUAL: ruta de aprendizaje de 8 semanas en Power BI para el mercado colombiano.
 ---
 En Colombia hay un dato que dice mucho: si buscas hoy «analista de datos» en Computrabajo aparecen más de mil ofertas abiertas, y una buena parte menciona Power BI en los requisitos. Bancos en Bogotá, empresas de servicios en Medellín, operadores logísticos en Barranquilla y BPO en Cali necesitan gente que convierta datos en decisiones. Esta guía te explica cómo aprender Power BI con un orden lógico, cuánto se paga como referencia y qué te hace destacar frente a otros candidatos.
 
@@ -113,10 +121,11 @@ Hay mucho material gratis, y si eres constante puedes avanzar solo. Pero la mayo
 
 - **En vivo por Zoom**, lunes y miércoles de **17:30 a 19:30, hora de Colombia**.
 - **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
-- Precio para Colombia: **{{precio}}**
+- Valores en COP y medios de pago locales incluidos al abrir el temario del [curso de Power BI para Colombia](/co/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), más de 5.000 profesionales formados.
+- Si estás migrando desde hojas de cálculo, revisa [Power BI vs Excel](/guias/power-bi-vs-excel) y la ruta de [Análisis de datos en Colombia](/co/cursos/analisis-de-datos).
 
 <!-- CTA-END -->
 

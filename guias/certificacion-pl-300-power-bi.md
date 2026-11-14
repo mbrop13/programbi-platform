@@ -6,7 +6,7 @@ hreflang: es
 curso: power-bi
 url_curso: https://www.programbi.com/cursos/power-bi
 title: "Certificación PL-300 de Power BI: guía 2026 | ProgramBI"
-meta: "Guía de la certificación PL-300 (Power BI Data Analyst Associate): temario oficial al 20 de abril de 2026, 100 minutos, puntaje 700, renovación anual y cómo prepararte."
+meta: "Guía de la certificación PL-300 (Power BI Data Analyst): temario oficial vigente, 100 minutos de examen, puntaje 700, renovación y preparación."
 h1: "Certificación PL-300 de Power BI: qué evalúa, cómo es el examen y cómo prepararte"
 updated: 2026-11-04
 sources:

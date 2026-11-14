@@ -6,7 +6,7 @@ hreflang: es
 curso: power-bi
 url_curso: https://www.programbi.com/cursos/power-bi
 title: "Power BI vs Tableau: diferencias y cuál aprender | ProgramBI"
-meta: "Power BI vs Tableau con datos de las páginas oficiales de Microsoft y Tableau: licencias, versión gratuita, IA, implementación y cuál conviene aprender primero."
+meta: "Power BI vs Tableau según documentación oficial: licencias, versión gratuita, IA, implementación y cuál conviene aprender primero."
 h1: "Power BI vs Tableau: diferencias reales y cuál aprender primero"
 updated: 2026-11-04
 sources:

@@ -1,6 +1,6 @@
 ---
 title: Power BI vs Excel: diferencias y cuándo usar cada uno
-description: Comparación honesta entre Power BI y Excel: volumen de datos, automatización, colaboración y costo. Con una tabla de decisión y cómo dar el paso sin traumas.
+description: Diferencias reales entre Power BI y Excel: volumen de datos, automatización, colaboración y licencias, con tabla de decisión práctica.
 h1: Power BI vs Excel: qué los diferencia y cuándo conviene cada uno
 country: transversal
 lang: es
@@ -8,6 +8,14 @@ slug: power-bi-vs-excel
 path: /guias/power-bi-vs-excel
 updated: 2026-11-04
 course: power-bi
+url_curso: https://www.programbi.com/cursos/power-bi
+sources:
+  - https://learn.microsoft.com/es-es/power-bi/fundamentals/power-bi-overview
+  - https://www.programbi.com/cursos/power-bi
+  - https://www.programbi.com/cursos/excel
+  - https://www.programbi.com/cursos/analisis-de-datos
+nota_hermes: |
+  ELEMENTO VISUAL: comparativa Power BI vs Excel según flujo de trabajo y reporte recurrente.
 ---
 La pregunta «¿Power BI o Excel?» tiene una respuesta corta que casi nadie da: **los dos**. Excel no va a desaparecer de tu trabajo, y Power BI no es «un Excel más bonito». Son herramientas para momentos distintos del mismo proceso. Esta guía te ayuda a decidir cuál usar en cada caso y cómo pasar de uno a otro sin perder lo que ya sabes.
 
@@ -76,6 +84,11 @@ Si cada mes haces **exactamente los mismos pasos** para armar un reporte —desc
 | % del total en tabla dinámica | `DIVIDE([Ventas], CALCULATE([Ventas], ALL(...)))` |
 | SI.ERROR(a/b; 0) | `DIVIDE(a, b, 0)` |
 
+```dax
+Participación sobre total =
+DIVIDE([Ventas], CALCULATE([Ventas], ALL(Calendario)))
+```
+
 ##### Mitos frecuentes
 
 - **«Power BI reemplaza a Excel.»** No. Lo complementa.
@@ -83,9 +96,9 @@ Si cada mes haces **exactamente los mismos pasos** para armar un reporte —desc
 - **«Si sé Excel, ya sé Power BI.»** Te ayuda mucho, pero el modelado y DAX son otra lógica.
 - **«Necesito una licencia cara para empezar.»** Power BI Desktop es gratuito en Windows.
 
-Elige tu guía para aprender Power BI con ejemplos de tu país: [Chile](/guias/como-aprender-power-bi-en-chile) · [México](/mx/guias/como-aprender-power-bi-en-mexico) · [Colombia](/co/guias/como-aprender-power-bi-en-colombia) · [Argentina](/ar/guias/como-aprender-power-bi-en-argentina) · [Perú](/pe/guias/como-aprender-power-bi-en-peru) · [Uruguay](/uy/guias/como-aprender-power-bi-en-uruguay) · [Paraguay](/py/guias/como-aprender-power-bi-en-paraguay).
+Elige tu guía para aprender Power BI con ejemplos de tu país: [Chile](/guias/como-aprender-power-bi-en-chile) · [México](/mx/guias/como-aprender-power-bi-en-mexico) · [Colombia](/co/guias/como-aprender-power-bi-en-colombia) · [Argentina](/ar/guias/como-aprender-power-bi-en-argentina) · [Perú](/pe/guias/como-aprender-power-bi-en-peru) · [Uruguay](/uy/guias/como-aprender-power-bi-en-uruguay). Si prefieres empezar reforzando planillas, mira nuestro [curso de Excel en vivo](/cursos/excel), y cuando quieras dar el salto a modelos y tableros, el [curso de Power BI](/cursos/power-bi) o el programa de [Análisis de datos completo](/cursos/analisis-de-datos).
 
-<!-- CTA-END --> — En el curso Power BI en vivo de ProgramBI partimos de tus reportes de Excel: Power Query, modelo estrella, DAX y un tablero que se actualiza solo. 20 horas en vivo por Zoom, grabaciones de por vida y certificado.
+<!-- CTA-END -->
 
 ##### Preguntas frecuentes
 

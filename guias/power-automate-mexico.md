@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Power Automate de ProgramBI para México](https://www.programbi.com/mx/cursos/power-automate) son **20 horas en vivo por Zoom**, de **16:30 a 18:30, hora del centro de México**, repartidas en 10 módulos para automatizar procesos **sin programar**. Aprendes flujos de nube automatizados, instantáneos y programados, conectores de Outlook, Teams, OneDrive y SharePoint, expresiones, aprobaciones, RPA de escritorio con Power Automate Desktop y Copilot para diseñar flujos con IA. El precio es **{precio_local}**, con grabaciones de por vida y certificado.
 
-Está dirigido a profesionales **sin experiencia en programación**. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos con fecha por confirmar**, y el pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO.
+Está dirigido a profesionales **sin experiencia en programación**. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · fechas vigentes en calendario**, y el pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO.
 
 **[CTA-TOP]** — Cupos abiertos · 16:30 a 18:30 CDMX · «Ver el curso».
 
@@ -117,7 +117,7 @@ La ficha indica clases de 16:30 a 18:30 en Ciudad de México. Como México dejó
 ## Resumen
 
 - 20 horas, 10 módulos, no-code.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · calendario vigente por Zoom.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final con un proceso real publicado.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -142,7 +142,7 @@ Sí. Guardar adjuntos en OneDrive o SharePoint y notificar al equipo es parte de
 La parte de RPA, para automatizar programas de escritorio sin conector. Se ve en el módulo 9.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; puedes preguntar por WhatsApp.
+La ficha muestra cupos abiertos con nuevas fechas por abrir; puedes preguntar por WhatsApp.
 
 **¿Puedo automatizar reportes que mandan las sucursales?**
 Sí. Un flujo puede detectar cada Excel nuevo en una carpeta, moverlo al consolidado y mandar recordatorios por Teams a las sucursales que no hayan enviado el suyo.

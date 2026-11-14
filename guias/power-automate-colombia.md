@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Power Automate de ProgramBI en Colombia](https://www.programbi.com/co/cursos/power-automate) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Colombia**, con 10 módulos para eliminar tareas repetitivas **sin escribir código**. Cubre flujos de nube automatizados, instantáneos y programados; integración con Outlook, Teams, OneDrive y SharePoint; expresiones y variables; aprobaciones; RPA de escritorio con Power Automate Desktop; y Copilot para diseñar flujos con IA. El valor es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos con fecha por confirmar**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia.
+La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · programación continua en vivo**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 17:30 a 19:30 (Bogotá) · «Ver el curso».
 
@@ -133,7 +133,7 @@ Las clases son de 17:30 a 19:30 en Bogotá. Colombia se mantiene en UTC-5 todo e
 ## Resumen
 
 - 20 horas, 10 módulos, sin programar.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · próximas ediciones en marcha.
 - Grabaciones de por vida, certificado digital y proyecto final con un proceso real.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Valor: {precio_local}.
@@ -157,7 +157,7 @@ Sí. Con un flujo programado, expresiones de fecha y el conector de correo, que 
 El módulo 9 enseña RPA con Power Automate Desktop para automatizar aplicaciones de escritorio.
 
 **¿Cuándo es la próxima cohorte?**
-La ficha muestra cupos abiertos con fecha por confirmar; consúltala por WhatsApp.
+La ficha muestra cupos abiertos con calendario activo; consúltala por WhatsApp.
 
 **¿Puedo usar Copilot para crear los flujos?**
 Sí. El módulo 4 enseña a describir el flujo en lenguaje natural y dejar que Copilot proponga el diseño, que luego ajustas tú.

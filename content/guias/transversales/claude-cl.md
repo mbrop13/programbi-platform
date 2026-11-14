@@ -1,6 +1,6 @@
 ---
 title: Cómo usar Claude para análisis de datos: guía práctica
-description: Prompts para limpiar planillas, resumir ventas y detectar anomalías con Claude, más los límites y cuidados de privacidad. Con ejemplos en pesos chilenos.
+description: Prompts probados para limpiar planillas, resumir ventas y detectar anomalías con Claude, más reglas de privacidad. Ejemplos prácticos en CLP.
 h1: Cómo usar Claude para analizar datos en tu trabajo (sin programar)
 country: cl
 lang: es-CL
@@ -8,10 +8,19 @@ slug: como-usar-claude-para-analisis-de-datos
 path: /guias/como-usar-claude-para-analisis-de-datos
 updated: 2026-11-04
 course: claude
+url_curso: https://www.programbi.com/cursos/claude
+sources:
+  - https://www.anthropic.com/claude
+  - https://support.claude.com/
+  - https://www.programbi.com/cursos/claude
+  - https://www.programbi.com/cursos/power-bi
+  - https://www.programbi.com/cursos/analisis-de-datos
+nota_hermes: |
+  ELEMENTO VISUAL: arquitectura de un prompt de 5 partes para análisis de datos (rol, contexto, tarea, formato y restricciones).
 ---
 Claude, el asistente de IA de Anthropic, puede leer una planilla, explicarte qué hay en ella, proponer fórmulas y detectar cosas raras en minutos. No reemplaza a un analista ni a Power BI, pero sí elimina buena parte del trabajo repetitivo que hay antes de llegar al análisis. Esta guía te muestra cómo usarlo bien: qué pedirle, cómo pedirlo y qué no delegarle nunca.
 
-<!-- CTA-TOP --> — Próxima clase del curso Claude en vivo.
+<!-- CTA-TOP -->
 
 ##### Qué puede hacer Claude con tus datos
 
@@ -40,7 +49,14 @@ Un buen prompt tiene cinco partes: **contexto, tarea, formato, tono y restriccio
 4. **Anomalías**: «Marca los días con ventas fuera de lo normal para cada local y explica el criterio que usaste.»
 5. **Puente a Power BI**: «Propón un modelo estrella para estos datos: qué tabla es de hechos, qué dimensiones y qué relaciones.»
 
-<!-- CTA-MID --> — Descarga la plantilla de prompts para análisis de datos.
+```prompt
+Rol: Analista de control de gestión en retail Chile.
+Archivo adjunto: ventas_locales.xlsx (montos en CLP).
+Tarea: Audita fechas mezcladas, montos guardados como texto y duplicados por número de boleta; entrega un resumen por fila afectada antes de calcular variaciones.
+Restricciones: No inventes cifras ni supongas reglas de negocio; si falta una columna clave, indícamelo primero.
+```
+
+<!-- CTA-MID -->
 
 ##### Un caso completo, paso a paso: el informe mensual de ventas
 
@@ -74,15 +90,15 @@ Si haces este informe todos los meses, crea un **Project** con los documentos de
 
 ##### Claude y Power BI: cómo se complementan
 
-Claude es excelente para la exploración inicial, la limpieza guiada y la redacción. Power BI es el lugar donde el reporte vive, se actualiza y se comparte. Un flujo práctico: explora y limpia con ayuda de Claude, modela y publica en Power BI, y vuelve a Claude para redactar el resumen del mes.
+Claude es excelente para la exploración inicial, la limpieza guiada y la redacción. Power BI es el lugar donde el reporte vive, se actualiza y se comparte. Un flujo práctico: explora y limpia con ayuda de Claude, modela y publica en [nuestro curso de Power BI en vivo](/cursos/power-bi) (o integra SQL, Power BI y Python en el programa de [Análisis de datos](/cursos/analisis-de-datos)), y vuelve a Claude para redactar el resumen del mes.
 
 ##### El curso Claude en vivo de ProgramBI
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30**, hora de Chile. Próximo inicio: **lunes 23 de noviembre de 2026**.
 - **20 horas, 5 módulos** de 4 horas: primeros pasos y privacidad; prompting práctico; Projects, Artifacts, Docs y Slides; **Claude para Excel y tareas administrativas** (limpieza, fórmulas, tendencias y anomalías, conectores, Claude Cowork); y automatización ligera con proyecto final sobre un proceso real de tu trabajo.
-- **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
+- **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**, Magíster en Data Science (UAI). Revisa todos los detalles en la [guía del curso de Claude en Chile](/guias/curso-claude-chile) o entra directo a la ficha del [curso de Claude](/cursos/claude).
 
-<!-- CTA-END --> — «Ver el curso Claude» (`/cursos/claude`) · WhatsApp.
+<!-- CTA-END -->
 
 ##### Preguntas frecuentes
 

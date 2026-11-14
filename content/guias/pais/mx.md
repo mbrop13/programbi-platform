@@ -8,6 +8,13 @@ slug: como-aprender-power-bi-en-mexico
 path: /mx/guias/como-aprender-power-bi-en-mexico
 updated: 2026-11-04
 course: power-bi
+url_curso: https://www.programbi.com/mx/cursos/power-bi
+sources:
+  - https://www.occ.com.mx/empleos/de-data-analyst/
+  - https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/
+  - https://www.programbi.com/mx/cursos/power-bi
+nota_hermes: |
+  ELEMENTO VISUAL: ruta de aprendizaje de 8 semanas en Power BI para equipos en México.
 ---
 Si trabajas en una planta en Querétaro, en un corporativo en Santa Fe o en una distribuidora en Guadalajara, seguramente conoces la escena: cada cierre de mes alguien junta cinco archivos, los cruza con BUSCARV y entrega un reporte que ya está viejo cuando llega. En México, Power BI se volvió la herramienta con la que las áreas de finanzas, operaciones y comercial dejan de «armar reportes» y empiezan a analizar. Aquí tienes una ruta concreta para aprenderlo, lo que pagan hoy los avisos y cómo diferenciarte.
 
@@ -105,11 +112,11 @@ Con disciplina, se puede aprender solo con la documentación de Microsoft y prá
 
 - **En vivo por Zoom**, lunes y miércoles de **16:30 a 18:30, hora de México**.
 - **20 horas, 8 módulos**, nivel básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
-- Precio para México: **{{precio}}**
+- Consulta aranceles vigentes en pesos mexicanos al descargar el PDF en la ficha del [curso de Power BI en México](/mx/cursos/power-bi).
 - Temario: Power Query y funciones M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado** al completar.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
-- Nivel **Avanzado** disponible (Power BI Service y seguridad por filas).
+- Lecturas recomendadas: [fórmulas DAX más usadas](/guias/funciones-dax-mas-importantes), [Power BI vs Excel](/guias/power-bi-vs-excel) y el programa integral de [Análisis de datos](/mx/cursos/analisis-de-datos).
 
 <!-- CTA-END -->
 

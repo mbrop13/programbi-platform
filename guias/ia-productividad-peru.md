@@ -6,7 +6,7 @@ hreflang: es-PE
 curso: ia-productividad
 url_curso: https://www.programbi.com/pe/cursos/ia-productividad
 title: "Curso de IA en Productividad en Perú: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Perú en vivo: 20 h para automatizar informes de oficina con ChatGPT, Claude, Gemini y Copilot, de 17:30 a 19:30 hora de Lima."
+meta: "Curso de IA en productividad en Perú en vivo: 20 h para automatizar informes con ChatGPT, Claude, Gemini y Copilot de 17:30 a 19:30 hora Lima."
 h1: "Curso de IA en Productividad en Perú: informes que se arman solos"
 updated: 2026-11-04
 sources:
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de IA en Productividad de ProgramBI en Perú](https://www.programbi.com/pe/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Perú**, con 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes usando **ChatGPT, Claude, Gemini, Copilot y automatizaciones sin código**. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-Es un curso 100 % práctico, sin programación. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos con fecha por confirmar**. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia.
+Es un curso 100 % práctico, sin programación. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · calendario mensual activo**. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 17:30 a 19:30 (Lima) · «Ver el curso».
 
@@ -128,7 +128,7 @@ Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año
 ## Resumen
 
 - 20 horas, 6 módulos, 100 % prácticos.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · consulta de fechas al día.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final con tu propio informe.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -156,4 +156,4 @@ Sí. El módulo 6 trata privacidad, confidencialidad, límites legales y validac
 Sí. Se trabaja con Docs, Slides, Gmail y Drive, además de Microsoft 365.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; consulta por WhatsApp.
+La ficha muestra cupos abiertos con nuevas sesiones pronto; consulta por WhatsApp.

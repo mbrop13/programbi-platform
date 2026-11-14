@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/copilot) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, en 5 módulos de 4 horas. Arrancás usando Microsoft Copilot en **Excel, Outlook, PowerPoint y Word** y terminás diseñando, entrenando y publicando **un agente propio en Copilot Studio** con el conocimiento de tu empresa. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-No se programa. Según la ficha, consultada el 4 de noviembre de 2026, hay **cupos abiertos con fecha por confirmar**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia.
+No se programa. Según la ficha, consultada el 4 de noviembre de 2026, hay **cupos abiertos · nueva cohorte por abrir**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Montevideo) · «Ver el curso».
 
@@ -136,7 +136,7 @@ Las clases son de 19:30 a 21:30 en Montevideo. Uruguay mantiene UTC-3 todo el a�
 ## Resumen
 
 - 20 horas en 5 módulos de 4 horas.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · edición siguiente en espera.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final: un agente funcional.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -164,7 +164,7 @@ Depende de cómo la contrate tu empresa; confirmalo con TI.
 En Teams, SharePoint o sitios web.
 
 **¿Cuándo arranca?**
-La ficha muestra cupos abiertos con fecha por confirmar. Consultá por WhatsApp.
+La ficha muestra cupos abiertos para la edición entrante. Consultá por WhatsApp.
 
 **¿Sirve si mi empresa todavía no tiene Copilot?**
 Sí, para entender qué se puede hacer y armar una propuesta interna. Para practicar en tu cuenta vas a necesitar acceso a las herramientas; consultalo con TI antes de anotarte.

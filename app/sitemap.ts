@@ -20,7 +20,7 @@ import { TESTIMONIOS_PUBLICADOS } from "@/lib/data/testimonials";
 import { SITE_ACTUALIZADO, lastmodDe } from "@/lib/seo/lastmod";
 import { PAISES_CARPETA, esIndexable, esIsoPais } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
-import { guiasDePais } from "@/lib/guias";
+import { guiasDePais, alternatesDeGuia } from "@/lib/guias";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -328,14 +328,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (!esIndexable(guia.country)) return [];
       if (esRutaNoindexPais(guia.country, guia.path)) return [];
     }
-    return [
-      entrada(
-        guia.path,
-        guia.country === "cl" || guia.country === "transversal" ? 0.7 : 0.6,
-        "monthly",
-        guia.updated
-      ),
-    ];
+    const entry = entrada(
+      guia.path,
+      guia.country === "cl" || guia.country === "transversal" ? 0.7 : 0.6,
+      "monthly",
+      guia.updated
+    );
+    if (!entry) return [];
+    if (guia.country !== "transversal") {
+      const languages = alternatesDeGuia(guia);
+      if (languages && Object.keys(languages).length > 0) {
+        entry.alternates = { languages };
+      }
+    }
+    return [entry];
   });
 
   const guideIndexPages: EntradaPosible[] = [

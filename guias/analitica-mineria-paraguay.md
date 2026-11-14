@@ -6,7 +6,7 @@ hreflang: es-PY
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/py/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Minería en Paraguay | ProgramBI"
-meta: "Curso de análisis de datos para minería e industria en Paraguay: Power BI, SQL Server y Python para turnos, flota, mantenimiento y sensores. 60 h por nivel en vivo."
+meta: "Análisis de datos para minería e industria en Paraguay: Power BI, SQL, Python para turnos, flota y sensores. 60 h por nivel en vivo por Zoom."
 h1: "Curso de Análisis de Datos para la Minería en Paraguay: Power BI, SQL y Python para operaciones"
 updated: 2026-11-04
 sources:
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos para la Minería en Paraguay: Power BI, SQL y Python para operaciones
 
-**En pocas palabras:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Paraguay](https://www.programbi.com/py/cursos/analisis-de-datos) tiene **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom y enseña a usar Power BI, SQL Server y Python con datos de operaciones mineras e industriales —turnos, flota, mantenimiento, consumos, inventarios, sensores—, con IA generativa como asistente para escribir consultas y scripts. El nivel básico-intermedio tiene una inversión de **{precio_local}**; la ficha muestra **cupos abiertos con fecha a confirmar**.
+**En pocas palabras:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Paraguay](https://www.programbi.com/py/cursos/analisis-de-datos) tiene **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom y enseña a usar Power BI, SQL Server y Python con datos de operaciones mineras e industriales —turnos, flota, mantenimiento, consumos, inventarios, sensores—, con IA generativa como asistente para escribir consultas y scripts. El nivel básico-intermedio tiene una inversión de **{precio_local}**; la ficha muestra **cupos abiertos · inicio próximo por grupo**.
 
 Incluye grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son de 19:30 a 21:30, hora de Paraguay. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información revisada el 4 de noviembre de 2026.
 
@@ -135,7 +135,7 @@ La ficha presenta además un nivel avanzado para **dominar el ciclo completo del
 Sí. La ficha lo dirige a profesionales mineros e industriales, y los temas de turnos, equipos, mantenimiento y sensores aplican en ambos.
 
 **¿Cuándo empieza?**
-Hay cupos abiertos con fecha a confirmar; escribinos por WhatsApp y te avisamos apenas se defina la próxima cohorte.
+Hay cupos abiertos con nueva fecha cercana; escribinos por WhatsApp y te avisamos apenas se defina la próxima cohorte.
 
 **¿Necesito saber programar?**
 No. El nivel básico-intermedio arranca desde los fundamentos de las tres herramientas.

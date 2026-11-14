@@ -8,6 +8,13 @@ slug: como-aprender-power-bi-en-uruguay
 path: /uy/guias/como-aprender-power-bi-en-uruguay
 updated: 2026-11-04
 course: power-bi
+url_curso: https://www.programbi.com/uy/cursos/power-bi
+sources:
+  - https://www.elpais.com.uy/informacion/servicios/mef-llama-a-concurso-para-analista-de-datos-con-salario-de-64-986-y-plazo-en-agosto-2026
+  - https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/
+  - https://www.programbi.com/uy/cursos/power-bi
+nota_hermes: |
+  ELEMENTO VISUAL: ruta de aprendizaje de 8 semanas en Power BI para analistas en Uruguay.
 ---
 Uruguay es un país chico con una industria de software y servicios que exporta al mundo, y eso se nota en el mercado de trabajo: las empresas valoran a quien sabe ordenar datos y presentarlos con claridad, sea para un cliente en Estados Unidos o para la gerencia de una empresa en Montevideo. Si hoy armás reportes en Excel y querés dar el siguiente paso, Power BI es la herramienta más directa. Esta guía te muestra cómo aprenderla con orden, con ejemplos pensados para la realidad uruguaya.
 
@@ -111,10 +118,11 @@ Si tenés tiempo y disciplina, podés avanzar solo con la documentación de Micr
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30, hora de Uruguay**.
 - **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
-- Precio para Uruguay: **{{precio}}**
+- Consultá el arancel vigente en UYU al abrir el temario PDF en el [curso de Power BI para Uruguay](/uy/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH (justo lo del selector de moneda) e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
+- Podés reforzar medidas en el [manual de funciones DAX](/guias/funciones-dax-mas-importantes) o revisar el programa de [Análisis de datos completo](/uy/cursos/analisis-de-datos).
 
 <!-- CTA-END -->
 

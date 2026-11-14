@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: python
 url_curso: https://www.programbi.com/cursos/python
 title: "Curso de Python en Chile en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en Chile: Python para datos desde cero en 20 h, lunes y miércoles 19:30, por $169.000 CLP. Pandas, ejemplos y cómo automatizar reportes."
+meta: "Curso de Python online en vivo en Chile: Python para datos desde cero en 20 h (lunes y miércoles 19:30). Pandas y automatización."
 h1: "Curso de Python en Chile: Python para datos, online y en vivo"
 updated: 2026-11-04
 sources:

@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos para Minería en Chile | ProgramBI"
-meta: "Curso de análisis de datos para minería en Chile: Power BI, SQL Server y Python aplicados a turnos, flota y mantención. 60 h por nivel en vivo. $338.000 CLP."
+meta: "Análisis de datos para minería en Chile: Power BI, SQL Server y Python aplicados a turnos, flota y mantención. 60 h por nivel en vivo por Zoom."
 h1: "Curso de Análisis de Datos para la Minería en Chile: Power BI, SQL y Python para faena"
 updated: 2026-11-04
 sources:
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos para la Minería en Chile: Power BI, SQL y Python para faena
 
-**Respuesta corta:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería,](https://www.programbi.com/cursos/analisis-de-datos) es una formación de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que enseña Power BI, SQL Server y Python aplicados a la operación minera: reportes de turno automatizados, consultas a las bases de la mina, indicadores de tonelaje, disponibilidad y costo por tonelada, y análisis de datos de sensores, con apoyo de IA generativa. El nivel básico-intermedio cuesta **$338.000 CLP** y la ficha muestra **cupos abiertos con fecha por confirmar**.
+**Respuesta corta:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería,](https://www.programbi.com/cursos/analisis-de-datos) es una formación de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que enseña Power BI, SQL Server y Python aplicados a la operación minera: reportes de turno automatizados, consultas a las bases de la mina, indicadores de tonelaje, disponibilidad y costo por tonelada, y análisis de datos de sensores, con apoyo de IA generativa. El nivel básico-intermedio cuesta **$338.000 CLP** y la ficha muestra **cupos abiertos · próxima edición disponible**.
 
 Incluye grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. En Chile las clases son de 19:30 a 21:30, los lunes y miércoles o los martes y jueves, un horario que permite conectarse después del turno de día. Datos revisados en la ficha el 4 de noviembre de 2026.
 
@@ -117,7 +117,7 @@ La misma ficha presenta un nivel avanzado orientado a **dominar el ciclo complet
 $338.000 CLP, el mismo valor del curso de Análisis de datos, en 3 cuotas sin interés.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; escribe por WhatsApp para conocer la próxima cohorte.
+La ficha muestra cupos abiertos para la próxima edición; escribe por WhatsApp para conocer la próxima cohorte.
 
 **¿Necesito saber programar?**
 El nivel básico-intermedio es ideal para quienes inician; parte desde los fundamentos de Power BI, SQL y Python.

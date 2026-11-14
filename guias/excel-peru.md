@@ -6,7 +6,7 @@ hreflang: es-PE
 curso: excel
 url_curso: https://www.programbi.com/pe/cursos/excel
 title: "Curso de Excel en Perú en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Excel online en vivo en Perú: 20 h, 12 módulos, de fórmulas a tablas dinámicas y Power Query, 17:30 hora de Lima. Temario y ejemplos con datos peruanos."
+meta: "Curso de Excel online en vivo en Perú: 20 h en 12 módulos, de fórmulas a tablas dinámicas y Power Query a las 17:30 h con casos locales."
 h1: "Curso de Excel en Perú: Excel online, en vivo y para tu chamba"
 updated: 2026-11-04
 sources:

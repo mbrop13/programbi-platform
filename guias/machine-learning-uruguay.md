@@ -6,7 +6,7 @@ hreflang: es-UY
 curso: machine-learning
 url_curso: https://www.programbi.com/uy/cursos/machine-learning
 title: "Curso de Machine Learning Uruguay: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en Uruguay en vivo por Zoom: 20 h de modelos predictivos, clustering y anomalías con Python, de 19:30 a 21:30. Requisito: saber Python."
+meta: "Curso de machine learning en Uruguay en vivo por Zoom: 20 h de modelos predictivos, clustering y anomalías con Python de 19:30 a 21:30 h."
 h1: "Curso de Machine Learning en Uruguay: predicción y patrones con Python"
 updated: 2026-11-04
 sources:
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Machine Learning de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/machine-learning) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, para quienes ya manejan Python y quieren construir modelos predictivos aplicados a negocios. Recorre aprendizaje supervisado —regresión, clasificación con logística y SVM, árboles, ensembles y validación cruzada— y no supervisado —K-Means, PCA, t-SNE, detección de anomalías y reglas de asociación—. El precio es **{precio_local}** e incluye grabaciones de por vida y certificado digital.
 
-Según la ficha consultada el 4 de noviembre de 2026, hay **cupos abiertos con fecha por confirmar**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia.
+Según la ficha consultada el 4 de noviembre de 2026, hay **cupos abiertos · nueva cohorte por abrir**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Montevideo) · «Ver el curso».
 
@@ -142,7 +142,7 @@ Las clases son de 19:30 a 21:30 en Montevideo. Uruguay mantiene UTC-3 todo el a�
 ## Ficha resumida
 
 - 20 horas en 2 módulos: supervisado y no supervisado.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · edición siguiente en espera.
 - Grabaciones de por vida y certificado digital.
 - Proyectos con datos reales.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -161,7 +161,7 @@ Las clases son de 19:30 a 21:30 en Montevideo. Uruguay mantiene UTC-3 todo el a�
 Sí. El curso es para quienes ya lo manejan.
 
 **¿Cuándo arranca?**
-La ficha muestra cupos abiertos con fecha por confirmar. Consultá por WhatsApp la próxima fecha.
+La ficha muestra cupos abiertos para la edición entrante. Consultá por WhatsApp la próxima fecha.
 
 **¿Sirve con datasets chicos?**
 Sí, con cuidado: la validación cruzada que se ve en el módulo 1 es especialmente útil cuando hay pocos datos.

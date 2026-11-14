@@ -6,7 +6,7 @@ hreflang: es-AR
 curso: power-automate
 url_curso: https://www.programbi.com/ar/cursos/power-automate
 title: "Curso de Power Automate Argentina: guía 2026 | ProgramBI"
-meta: "Curso de Power Automate en Argentina en vivo: 20 h para automatizar mails, Teams, SharePoint y Excel sin programar, 19:30 hora de Buenos Aires. Aprobaciones y RPA."
+meta: "Curso de Power Automate en Argentina en vivo: 20 h para automatizar mails, Teams, SharePoint y Excel sin código a las 19:30 h. Incluye RPA."
 h1: "Curso de Power Automate en Argentina: sacate de encima las tareas repetitivas"
 updated: 2026-11-04
 sources:
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Power Automate de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/power-automate) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Argentina**, organizadas en 10 módulos para automatizar procesos **sin programar**. Vas a armar flujos de nube automatizados, instantáneos y programados; conectar Outlook, Teams, OneDrive y SharePoint; usar expresiones y variables; montar aprobaciones; automatizar programas de escritorio con Power Automate Desktop; y diseñar flujos con Copilot. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos con fecha por confirmar**. Se paga en pesos argentinos con Mercado Pago o transferencia bancaria.
+La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · consultá las próximas fechas**. Se paga en pesos argentinos con Mercado Pago o transferencia bancaria.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Buenos Aires) · «Ver el curso».
 
@@ -124,7 +124,7 @@ Las clases son de 19:30 a 21:30 en Buenos Aires. Argentina usa UTC-3 todo el añ
 ## En resumen
 
 - 20 horas, 10 módulos, sin programar.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · fechas disponibles al consultar.
 - Grabaciones de por vida, certificado y proyecto final real.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
@@ -148,7 +148,7 @@ Sí. Las aprobaciones son el módulo 7 y se combinan con correo, Teams y SharePo
 Sí, con RPA de escritorio, que se ve en el módulo 9.
 
 **¿Cuándo arranca?**
-La ficha muestra cupos abiertos con fecha por confirmar. Consultá por WhatsApp.
+La ficha muestra cupos abiertos para el próximo grupo. Consultá por WhatsApp.
 
 **¿Copilot me arma el flujo solo?**
 Te propone un diseño a partir de lo que le describís en lenguaje natural; después lo revisás y ajustás. Se ve en el módulo 4.

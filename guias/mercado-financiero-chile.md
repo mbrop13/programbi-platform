@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: mercado-financiero
 url_curso: https://www.programbi.com/cursos/mercado-financiero
 title: "Curso de Mercado Financiero en Chile: guía 2026 | ProgramBI"
-meta: "Curso de mercado financiero en Chile en vivo: carteras con Python, SQL, Power BI e IA en 30 h, por $349.000 CLP. Riesgo, retorno, dólar observado y dashboards."
+meta: "Curso de mercado financiero en Chile en vivo: carteras con Python, SQL, Power BI e IA en 30 h. Riesgo, retorno, dólar observado y dashboards."
 h1: "Curso de Mercado Financiero en Chile: analiza carteras con datos e IA"
 updated: 2026-11-04
 sources:
@@ -118,7 +118,7 @@ Si quieres reforzar una pieza antes de este programa, tienes el [curso de Python
 
 Según la [ficha del curso para Chile](https://www.programbi.com/cursos/mercado-financiero), revisada el 4 de noviembre de 2026:
 
-- **En vivo por Zoom**, de **19:30 a 21:30, hora de Chile**. Cupos abiertos; fecha por confirmar.
+- **En vivo por Zoom**, de **19:30 a 21:30, hora de Chile**. Cupos abiertos · próxima fecha en consulta.
 - **30 horas en 5 módulos**, con Trabajo Aplicado Integrador obligatorio para certificar.
 - Datasets, scripts base, plantillas de Power BI y prompts de IA incluidos.
 - **Grabaciones de por vida** y **certificado**.

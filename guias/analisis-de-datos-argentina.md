@@ -6,7 +6,7 @@ hreflang: es-AR
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/ar/cursos/analisis-de-datos
 title: "Curso de Análisis de Datos Argentina: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Argentina en vivo: SQL Server, Power BI y Python en 60 h, lunes y miércoles 19:30. Cómo ser analista de datos y sueldos Sysarmy."
+meta: "Curso de análisis de datos en Argentina en vivo: SQL Server, Power BI y Python en 60 h (lunes y miércoles 19:30). Sueldos Sysarmy y ruta."
 h1: "Curso de Análisis de Datos en Argentina: cómo ser analista de datos"
 updated: 2026-11-04
 sources:

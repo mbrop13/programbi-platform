@@ -6,7 +6,7 @@ hreflang: es-MX
 curso: sql-server
 url_curso: https://www.programbi.com/mx/cursos/sql-server
 title: "Curso de SQL Server en México en vivo: guía 2026 | ProgramBI"
-meta: "Curso de SQL online en vivo en México: SQL Server desde cero en 20 h, martes y jueves 16:30 CDMX. Temario, ejemplos con datos mexicanos y conexión con Power BI."
+meta: "Curso de SQL Server en vivo en México: consultas SQL desde cero en 20 h (martes y jueves 16:30 CDMX) con ejercicios locales y Power BI."
 h1: "Curso de SQL Server en México: SQL online, en vivo y desde cero"
 updated: 2026-11-04
 sources:

@@ -6,7 +6,7 @@ hreflang: es-CO
 curso: claude
 url_curso: https://www.programbi.com/co/cursos/claude
 title: "Curso de Claude en Colombia: en vivo desde 23/11 | ProgramBI"
-meta: "Curso de Claude en Colombia en vivo por Zoom: 20 h para usar la IA de Anthropic en oficina, Excel y documentos. Desde el 23 de noviembre, 17:30 hora Colombia."
+meta: "Curso de Claude en Colombia en vivo por Zoom: 20 h para aplicar IA en oficina, Excel y reportes. Inicio 23 de noviembre, 17:30 hora Bogotá."
 h1: "Curso de Claude en Colombia: IA de Anthropic para el trabajo de oficina, en vivo"
 updated: 2026-11-04
 sources:

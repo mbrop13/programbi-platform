@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: sql-server
 url_curso: https://www.programbi.com/cursos/sql-server
 title: "Curso de SQL Server en Chile en vivo: guía 2026 | ProgramBI"
-meta: "Curso de SQL online en vivo en Chile: SQL Server desde cero en 20 h, martes y jueves 19:30, por $169.000 CLP. Qué aprender, ejemplos y cómo usarlo con Power BI."
+meta: "Curso de SQL Server online en vivo en Chile: consultas SQL desde cero en 20 h (martes y jueves 19:30) y conexión práctica con Power BI."
 h1: "Curso de SQL Server en Chile: aprende SQL en vivo y online"
 updated: 2026-11-04
 sources:

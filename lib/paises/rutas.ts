@@ -6,6 +6,7 @@ import { esRutaIndexablePais, esRutaNoindexGlobal } from "@/lib/seo/indexabilida
 /** Rutas con versión por país. El resto (blog, empleos, comunidad, pago) no lleva carpeta. */
 const RAICES = [
   "/cursos",
+  "/guias",
   "/precios",
   "/empresas",
   "/faq",

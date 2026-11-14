@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Access en Colombia: bases de datos para el trabajo administrativo
 
-**En resumen:** el [curso de Microsoft Access de ProgramBI para Colombia](https://www.programbi.com/co/cursos/access) es un programa **en vivo por Zoom de 20 horas y 7 módulos** que enseña al personal administrativo a diseñar, construir y administrar bases de datos relacionales: tablas con claves y relaciones, consultas con criterios y SQL básico, formularios con validaciones, informes de gestión exportables a PDF y Excel, y macros para automatizar tareas. Valor: **{precio_local}**. La ficha reporta **cupos abiertos con fecha por confirmar**.
+**En resumen:** el [curso de Microsoft Access de ProgramBI para Colombia](https://www.programbi.com/co/cursos/access) es un programa **en vivo por Zoom de 20 horas y 7 módulos** que enseña al personal administrativo a diseñar, construir y administrar bases de datos relacionales: tablas con claves y relaciones, consultas con criterios y SQL básico, formularios con validaciones, informes de gestión exportables a PDF y Excel, y macros para automatizar tareas. Valor: **{precio_local}**. La ficha reporta **cupos abiertos · programación continua en vivo**.
 
 Las grabaciones quedan disponibles de por vida en el campus, se entrega certificado al completar y el curso cierra con un proyecto integrador sobre un proceso empresarial. En las preguntas frecuentes de la ficha, la clase se ubica a las 17:30, hora de Colombia. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia. Información consultada el 4 de noviembre de 2026.
 

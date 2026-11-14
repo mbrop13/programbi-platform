@@ -6,7 +6,7 @@ hreflang: es-PE
 curso: power-automate
 url_curso: https://www.programbi.com/pe/cursos/power-automate
 title: "Curso de Power Automate en Perú: guía 2026 | ProgramBI"
-meta: "Curso de Power Automate en Perú en vivo por Zoom: 20 h para automatizar correo, Teams, SharePoint y Excel sin programar, 17:30 hora de Lima. Aprobaciones y RPA."
+meta: "Curso de Power Automate en Perú en vivo por Zoom: 20 h para automatizar correo, Teams, SharePoint y Excel sin código a las 17:30 Lima."
 h1: "Curso de Power Automate en Perú: menos copiar y pegar, más chamba que importa"
 updated: 2026-11-04
 sources:
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Power Automate de ProgramBI en Perú](https://www.programbi.com/pe/cursos/power-automate) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Perú**, con 10 módulos para automatizar tareas **sin programar**: flujos de nube automatizados, instantáneos y programados; integración con Outlook, Teams, OneDrive y SharePoint; expresiones; aprobaciones; RPA de escritorio con Power Automate Desktop; y Copilot para diseñar flujos con IA. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-Según la ficha, revisada el 4 de noviembre de 2026, hay **cupos abiertos con fecha por confirmar**. Se paga en soles con Mercado Pago Perú, Yape, Plin o transferencia.
+Según la ficha, revisada el 4 de noviembre de 2026, hay **cupos abiertos · calendario mensual activo**. Se paga en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 17:30 a 19:30 (Lima) · «Ver el curso».
 
@@ -127,7 +127,7 @@ Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año
 ## Resumen
 
 - 20 horas, 10 módulos, sin programar.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · consulta de fechas al día.
 - Grabaciones de por vida, certificado digital y proyecto final real.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
@@ -151,7 +151,7 @@ Sí. Con un flujo que detecta el archivo nuevo, arma un resumen y lo envía por 
 Automatización que imita a una persona usando programas sin conector. Se ve en el módulo 9 con Power Automate Desktop.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; consulta por WhatsApp.
+La ficha muestra cupos abiertos con nuevas sesiones pronto; consulta por WhatsApp.
 
 **¿Hay certificado?**
 Sí, certificado digital de ProgramBI al completar el curso.

@@ -6,7 +6,7 @@ hreflang: es-EC
 curso: power-bi
 url_curso: https://www.programbi.com/ec/cursos/power-bi
 title: "Cómo aprender Power BI en Ecuador | ProgramBI"
-meta: "Guía para aprender Power BI en Ecuador: temario en 8 pasos, casos, claves de diseño y curso en vivo de 20 h desde el 23 de noviembre, 17:30 hora de Ecuador."
+meta: "Aprende Power BI en Ecuador: temario en 8 pasos, casos prácticos, claves de diseño y curso en vivo de 20 h desde el 23/11 a las 17:30 hora local."
 h1: "Cómo aprender Power BI en Ecuador: guía clara para empezar y curso en vivo"
 updated: 2026-11-04
 sources:

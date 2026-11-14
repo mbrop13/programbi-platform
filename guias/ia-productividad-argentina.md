@@ -6,7 +6,7 @@ hreflang: es-AR
 curso: ia-productividad
 url_curso: https://www.programbi.com/ar/cursos/ia-productividad
 title: "Curso IA en Productividad Argentina: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Argentina en vivo: 20 h para automatizar informes de oficina con ChatGPT, Claude, Gemini y Copilot, 19:30 hora de Buenos Aires."
+meta: "Curso de IA en productividad en Argentina: 20 h en vivo para automatizar informes con ChatGPT, Claude, Gemini y Copilot a las 19:30 Buenos Aires."
 h1: "Curso de IA en Productividad en Argentina: tus informes de oficina, en piloto automático"
 updated: 2026-11-04
 sources:
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de IA en Productividad de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/ia-productividad) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Argentina**, repartidas en 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes con **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-No hace falta programar ni haber usado IA antes. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos con fecha por confirmar**. Se paga en pesos argentinos con Mercado Pago o transferencia.
+No hace falta programar ni haber usado IA antes. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · consultá las próximas fechas**. Se paga en pesos argentinos con Mercado Pago o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Buenos Aires) · «Ver el curso».
 
@@ -124,7 +124,7 @@ Las clases son de 19:30 a 21:30 en Buenos Aires. Argentina usa UTC-3 todo el añ
 ## Resumen
 
 - 20 horas, 6 módulos, 100 % prácticos.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · fechas disponibles al consultar.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final: tu propio informe automatizado.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -152,4 +152,4 @@ Sí. El módulo 6 cubre privacidad, confidencialidad, límites legales y validac
 Sí. Se trabaja con Docs, Slides, Gmail y Drive, además de Microsoft 365.
 
 **¿Cuándo arranca?**
-La ficha muestra cupos abiertos con fecha por confirmar. Consultá por WhatsApp.
+La ficha muestra cupos abiertos para el próximo grupo. Consultá por WhatsApp.

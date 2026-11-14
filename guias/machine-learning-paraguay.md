@@ -6,7 +6,7 @@ hreflang: es-PY
 curso: machine-learning
 url_curso: https://www.programbi.com/py/cursos/machine-learning
 title: "Curso de Machine Learning Paraguay: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en Paraguay en vivo por Zoom: 20 h de modelos predictivos, segmentación y anomalías con Python, de 19:30 a 21:30. Requisito: Python."
+meta: "Curso de machine learning en Paraguay en vivo: 20 h de modelos predictivos, segmentación y anomalías con Python de 19:30 a 21:30 h."
 h1: "Curso de Machine Learning en Paraguay: tus primeros modelos en serio"
 updated: 2026-11-04
 sources:
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Machine Learning de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/machine-learning) es un programa **en vivo por Zoom de 20 horas**, de **19:30 a 21:30, hora de Paraguay**, para quienes ya saben Python y quieren crear modelos predictivos que resuelvan problemas de negocio. Tiene dos módulos: supervisado (regresión lineal y polinómica, logística, SVM, árboles, ensembles, validación cruzada y métricas) y no supervisado (K-Means, PCA, t-SNE, detección de anomalías y reglas de asociación). El precio es **{precio_local}**; incluye grabaciones de por vida y certificado digital.
 
-La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos con fecha por confirmar**. Para conocer la fecha y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp.
+La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · inicio próximo por grupo**. Para conocer la fecha y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Asunción) · «Ver el curso».
 
@@ -147,7 +147,7 @@ Según la ficha, las clases son de 19:30 a 21:30, hora de Paraguay (UTC-3), el m
 ## Resumen del curso
 
 - 20 horas en 2 módulos, supervisado y no supervisado.
-- En vivo por Zoom, 19:30 a 21:30 hora de Paraguay; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom, 19:30 a 21:30 hora de Paraguay; cupos abiertos · cronograma abierto por Zoom.
 - Grabaciones de por vida y certificado digital.
 - Proyectos con datos reales.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -166,7 +166,7 @@ Según la ficha, las clases son de 19:30 a 21:30, hora de Paraguay (UTC-3), el m
 Sí. El curso es para quienes ya lo manejan; si estás empezando, conviene tomar antes el curso de Python para datos.
 
 **¿Cuándo empieza la próxima cohorte?**
-La ficha muestra cupos abiertos con fecha por confirmar.
+La ficha muestra cupos abiertos con nueva fecha cercana.
 
 **¿Las clases quedan grabadas?**
 Sí, con acceso de por vida en el campus virtual.

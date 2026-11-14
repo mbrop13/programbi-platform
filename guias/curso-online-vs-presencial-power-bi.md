@@ -6,7 +6,7 @@ hreflang: es
 curso: power-bi
 url_curso: https://www.programbi.com/cursos/power-bi
 title: "Curso online vs presencial de Power BI: cuál elegir"
-meta: "Curso de Power BI o análisis de datos online en vivo vs presencial: ventajas, desventajas, costos ocultos y preguntas para elegir bien, sin cifras inventadas."
+meta: "Curso de Power BI online en vivo vs presencial: ventajas reales, costos ocultos y preguntas clave para elegir mejor según tu ritmo."
 h1: "Curso online en vivo vs presencial: cómo elegir dónde aprender Power BI y análisis de datos"
 updated: 2026-11-04
 sources:

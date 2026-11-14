@@ -1,5 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
+import { Clock } from "lucide-react";
 import Bloque30Segundos from "@/components/guias/Bloque30Segundos";
+import CursoShowcaseGuia from "@/components/guias/CursoShowcaseGuia";
 import ElementoVisual, { elegirVariante } from "@/components/guias/ElementoVisual";
 import FuentesGuia from "@/components/guias/FuentesGuia";
 import GuiaCTA from "@/components/guias/GuiaCTA";
@@ -11,11 +14,15 @@ import TablaComparativa from "@/components/guias/TablaComparativa";
 import { filasComparativa } from "@/components/guias/comparativa";
 import { encabezadosVisibles } from "@/components/guias/indice";
 import { ISO_CHILE } from "@/config/paises";
+import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
 import { fichaCurso } from "@/lib/guias/curso";
-import { fechaActualizado, resolverPrecios, sinMontosDeCurso } from "@/lib/guias/precio";
+import { ilustracionDeGuia, tiempoLecturaMinutos } from "@/lib/guias/ilustraciones";
+import { buildGuiaJsonLd } from "@/lib/guias/jsonld";
+import { nombreCurso } from "@/lib/guias/opciones";
+import { fechaActualizado, resolverPrecios } from "@/lib/guias/precio";
 import type { Guia } from "@/lib/guias/tipos";
 import { courseBrochurePath } from "@/lib/pricing-gate";
-import { absoluteUrl, jsonLdString, SITE_URL } from "@/lib/seo";
+import { jsonLdString } from "@/lib/seo";
 
 type Props = {
   guia: Guia;
@@ -41,65 +48,23 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
   const body = resolverPrecios(guia.body, guia)
     // El cuerpo repite el H1 del frontmatter: se quita para no duplicar el H1.
     .replace(/^#\s+.*\n+/, "");
-  const canonical = absoluteUrl(guia.path);
   const actualizado = fechaActualizado(guia.updated);
   const encabezados = encabezadosVisibles(body);
   const faqs = guia.faqs.map((faq) => ({ q: faq.q, a: resolverPrecios(faq.a, guia) }));
   const ficha = fichaCurso(guia.course);
   const esCursoConocido = ficha.horas != null;
   const variante = elegirVariante(guia);
+  const ilustracion = ilustracionDeGuia(guia);
+  const lecturaMin = tiempoLecturaMinutos(body);
+  const instructor = miembroPorCurso(guia.course === "general" ? "power-bi" : guia.course);
+  const cursoEtiqueta = guia.course === "general" ? "Guía práctica" : nombreCurso(guia.course);
 
   // El Markdown trae marcadores <!-- CTA-TOP|MID|END --> para intercalar los CTA.
   const partes = body.split(/<!--\s*CTA-(TOP|MID|END)\s*-->/g);
 
   // Las guías declaran Article + FAQPage + BreadcrumbList (nunca Course/Offer:
   // eso vive solo en la ficha del curso, para no duplicar el Course en 113 URLs).
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Article",
-        "@id": `${canonical}#article`,
-        headline: guia.h1,
-        description: sinMontosDeCurso(guia.description),
-        inLanguage: guia.lang,
-        datePublished: guia.updated,
-        dateModified: guia.updated,
-        articleSection: nombreMercado,
-        mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
-        author: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
-        publisher: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
-        ...(guia.sources && guia.sources.length > 0 ? { citation: guia.sources } : {}),
-      },
-      ...(faqs.length > 0
-        ? [
-            {
-              "@type": "FAQPage",
-              "@id": `${canonical}#faq`,
-              mainEntity: faqs.map((faq) => ({
-                "@type": "Question",
-                name: faq.q,
-                acceptedAnswer: { "@type": "Answer", text: faq.a },
-              })),
-            },
-          ]
-        : []),
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${canonical}#breadcrumb`,
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Inicio",
-            item: absoluteUrl(guia.country === "cl" || guia.country === "transversal" ? "/" : `/${guia.country}`),
-          },
-          { "@type": "ListItem", position: 2, name: `Guías de ${nombreMercado}`, item: absoluteUrl(rutaIndice) },
-          { "@type": "ListItem", position: 3, name: guia.h1, item: canonical },
-        ],
-      },
-    ],
-  };
+  const jsonLd = buildGuiaJsonLd(guia, rutaIndice, nombreMercado, body);
 
   return (
     <>
@@ -129,10 +94,58 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
 
           <div className="mt-6 lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12">
             <div className="min-w-0 max-w-[760px] lg:col-start-2 lg:row-start-1">
-              <h1 className="text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">{guia.h1}</h1>
-              <p className="mt-3 text-sm text-faint">
-                Actualizado el {actualizado} · Guía de ProgramBI · {nombreMercado}
-              </p>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-paper px-3 py-1 font-bold uppercase tracking-[0.12em] text-ink">
+                  <span
+                    className="inline-block h-2 w-2 rounded-full"
+                    style={{ backgroundColor: ficha.accentColor }}
+                    aria-hidden="true"
+                  />
+                  {cursoEtiqueta}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-wash px-2.5 py-1 font-medium text-mute">
+                  <Clock size={12} aria-hidden /> {lecturaMin} min de lectura
+                </span>
+                <span className="text-faint">Actualizado el {actualizado} · {nombreMercado}</span>
+              </div>
+
+              <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
+                {guia.h1}
+              </h1>
+
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-mute">
+                {instructor.imageUrl ? (
+                  <Image
+                    src={instructor.imageUrl}
+                    alt={instructor.nombre}
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 rounded-full border border-line object-cover object-[center_18%]"
+                  />
+                ) : null}
+                <span>
+                  Revisado por{" "}
+                  <Link href={rutaPerfil(instructor.slug)} className="font-semibold text-ink underline underline-offset-4">
+                    {instructor.nombre}
+                  </Link>{" "}
+                  · {instructor.cargo}
+                </span>
+              </div>
+
+              <figure className="mt-6 overflow-hidden rounded-[24px] border border-line-strong bg-paper shadow-sm">
+                <Image
+                  src={ilustracion.src}
+                  alt={ilustracion.alt}
+                  width={ilustracion.width}
+                  height={ilustracion.height}
+                  preload={true}
+                  sizes="(max-width: 1024px) calc(100vw - 32px), 760px"
+                  className="aspect-video h-auto w-full object-cover"
+                />
+                <figcaption className="border-t border-line bg-wash/60 px-4 py-2 text-xs text-mute">
+                  {ilustracion.caption}
+                </figcaption>
+              </figure>
 
               <Bloque30Segundos guia={guia} />
 
@@ -157,6 +170,8 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
                   return <GuiaMarkdown key={`md-${index}`} content={parte} />;
                 })}
               </div>
+
+              <CursoShowcaseGuia courseSlug={guia.course} iso={iso} guiaSlug={guia.slug} />
 
               {variante !== "ruta" ? <RutaAprendizaje iso={iso} cursoActual={guia.course} /> : null}
 

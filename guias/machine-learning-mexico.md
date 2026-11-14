@@ -6,7 +6,7 @@ hreflang: es-MX
 curso: machine-learning
 url_curso: https://www.programbi.com/mx/cursos/machine-learning
 title: "Curso de Machine Learning en México: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en México en vivo por Zoom: 20 h de regresión, clasificación, clustering y anomalías con Python, 16:30 CDMX. Requisito: saber Python."
+meta: "Curso de machine learning en México en vivo: 20 h de regresión, clasificación, clustering y anomalías con Python a las 16:30 CDMX."
 h1: "Curso de Machine Learning en México: de los datos a la predicción"
 updated: 2026-11-04
 sources:
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Machine Learning de ProgramBI para México](https://www.programbi.com/mx/cursos/machine-learning) dura **20 horas en vivo por Zoom**, en horario de **16:30 a 18:30, hora del centro de México**, y enseña a construir modelos predictivos con Python: regresión, clasificación, árboles y ensembles, validación, clustering, PCA, detección de anomalías y reglas de asociación. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-Está pensado para quien **ya programa en Python** y quiere aplicarlo a problemas de negocio. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos con fecha por confirmar**.
+Está pensado para quien **ya programa en Python** y quiere aplicarlo a problemas de negocio. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · fechas vigentes en calendario**.
 
 **[CTA-TOP]** — Cupos abiertos · 16:30 a 18:30 CDMX · «Ver el curso».
 
@@ -126,7 +126,7 @@ Según la ficha para México, las clases son de 16:30 a 18:30 en Ciudad de Méxi
 ## Resumen del curso
 
 - **20 horas** en dos módulos: supervisado y no supervisado.
-- **En vivo por Zoom**, 16:30 a 18:30 CDMX; cupos abiertos y fecha por confirmar.
+- **En vivo por Zoom**, 16:30 a 18:30 CDMX; cupos abiertos y próximas fechas de apertura.
 - **Grabaciones de por vida** y **certificado digital**.
 - Proyectos con datos reales.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).

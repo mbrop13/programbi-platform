@@ -1,6 +1,6 @@
 ---
 title: Cómo aprender Power BI en Paraguay: guía 2026 | ProgramBI
-description: Ruta de 8 semanas para aprender Power BI desde Paraguay, dónde buscar empleo, DAX con ejemplos en guaraníes y dólares, y clases en vivo en tu mismo horario.
+description: Ruta de 8 semanas para aprender Power BI en Paraguay, dónde buscar empleo, DAX en guaraníes y clases en vivo en tu horario.
 h1: Cómo aprender Power BI en Paraguay, desde cero hasta tu primer tablero
 country: py
 lang: es-PY
@@ -8,6 +8,12 @@ slug: como-aprender-power-bi-en-paraguay
 path: /py/guias/como-aprender-power-bi-en-paraguay
 updated: 2026-11-04
 course: power-bi
+url_curso: https://www.programbi.com/py/cursos/power-bi
+sources:
+  - https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/
+  - https://www.programbi.com/py/cursos/power-bi
+nota_hermes: |
+  ELEMENTO VISUAL: ruta de aprendizaje de 8 semanas en Power BI para Paraguay.
 ---
 En Paraguay pasa algo particular con los números: los montos en guaraníes son tan grandes que un reporte en Excel se vuelve ilegible enseguida, y muchas empresas manejan a la vez guaraníes y dólares. Si trabajás en una empresa de Asunción, en el comercio de Ciudad del Este o en el agro del Alto Paraná, Power BI te permite ordenar todo eso en un tablero claro. Esta guía te da la ruta para aprenderlo, dónde buscar empleo y los errores que conviene evitar.
 
@@ -112,10 +118,11 @@ Podés empezar solo con la documentación de Microsoft. Pero la parte que da tra
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30, hora de Paraguay** (misma hora que Chile en esta temporada; verificar cuando Chile cambie de horario).
 - **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
-- Precio para Paraguay: **{{precio}}**
+- Consultá la inversión en el PDF del [curso de Power BI en Paraguay](/py/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
+- Lectura complementaria: [guía de funciones DAX](/guias/funciones-dax-mas-importantes) y la comparativa [Power BI vs Excel](/guias/power-bi-vs-excel).
 
 <!-- CTA-END -->
 

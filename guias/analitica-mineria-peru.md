@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos para la Minería en Perú: Power BI, SQL y Python para tu chamba en mina
 
-**Respuesta directa:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Perú](https://www.programbi.com/pe/cursos/analisis-de-datos) dura **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, y enseña a aplicar Power BI, SQL Server y Python a la información de una operación minera: reportes de guardia, flota, mantenimiento, combustible, inventarios y lecturas de sensores, con inteligencia artificial generativa como apoyo para escribir consultas y scripts. El nivel básico-intermedio cuesta **{precio_local}** y la ficha indica **cupos abiertos con fecha por confirmar**.
+**Respuesta directa:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Perú](https://www.programbi.com/pe/cursos/analisis-de-datos) dura **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, y enseña a aplicar Power BI, SQL Server y Python a la información de una operación minera: reportes de guardia, flota, mantenimiento, combustible, inventarios y lecturas de sensores, con inteligencia artificial generativa como apoyo para escribir consultas y scripts. El nivel básico-intermedio cuesta **{precio_local}** y la ficha indica **cupos abiertos · calendario mensual activo**.
 
 Incluye grabaciones con acceso de por vida, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son a las 17:30, hora de Perú. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Información revisada el 4 de noviembre de 2026.
 
@@ -132,7 +132,7 @@ La ficha presenta además un nivel avanzado para **dominar el ciclo completo del
 {precio_local}, en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
 **¿Cuándo empieza?**
-La ficha indica cupos abiertos con fecha por confirmar; escribe por WhatsApp para conocer la próxima cohorte.
+La ficha indica cupos abiertos con nuevas sesiones pronto; escribe por WhatsApp para conocer la próxima cohorte.
 
 **¿Necesito saber programar?**
 No. El nivel básico-intermedio parte desde los fundamentos de Power BI, SQL y Python.

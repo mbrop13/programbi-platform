@@ -20,16 +20,24 @@ export type FichaCursoGuia = {
   horasTexto: string;
   /** ¿El curso se vende por niveles? Cambia la etiqueta del precio. */
   porNivel: boolean;
-  /** Fecha de inicio publicada, o `null` si la ficha dice «fecha por confirmar». */
+  /** Fecha de inicio publicada, o `null` si la ficha dice «Cupos abiertos — consulta fecha». */
   inicio: string | null;
   imagen: string;
+  accentColor: string;
 };
 
 const HORAS_PUBLICADAS: Record<string, { horas: number; inicio: string | null }> = {
   "power-bi": { horas: 20, inicio: "lunes 23 de noviembre de 2026" },
   python: { horas: 20, inicio: "lunes 23 de noviembre de 2026" },
-  "sql-server": { horas: 20, inicio: null },
+  "sql-server": { horas: 20, inicio: "martes 24 de noviembre de 2026" },
   excel: { horas: 20, inicio: null },
+  claude: { horas: 20, inicio: "lunes 23 de noviembre de 2026" },
+  copilot: { horas: 20, inicio: null },
+  "ia-productividad": { horas: 20, inicio: null },
+  "power-automate": { horas: 20, inicio: null },
+  access: { horas: 20, inicio: null },
+  "machine-learning": { horas: 20, inicio: null },
+  "analitica-mineria": { horas: 20, inicio: null },
   "analisis-de-datos": { horas: 60, inicio: "lunes 23 de noviembre de 2026" },
   "mercado-financiero": { horas: 30, inicio: null },
 };
@@ -44,10 +52,11 @@ export function fichaCurso(slug: string): FichaCursoGuia {
     nombre: curso?.title ?? slug,
     horas,
     horasTexto:
-      horas == null ? "Duración por confirmar" : porNivel ? `${horas} horas por nivel` : `${horas} horas en vivo`,
+      horas == null ? "20 a 60 horas en vivo" : porNivel ? `${horas} horas por nivel` : `${horas} horas en vivo`,
     porNivel,
     inicio: publicado?.inicio ?? null,
     imagen: curso?.imageUrl ?? "/images/courses/power-bi-card.webp",
+    accentColor: curso?.accentColor ?? "#171716",
   };
 }
 

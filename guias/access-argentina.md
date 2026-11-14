@@ -6,7 +6,7 @@ hreflang: es-AR
 curso: access
 url_curso: https://www.programbi.com/ar/cursos/access
 title: "Curso de Access en Argentina en vivo | ProgramBI"
-meta: "Curso de Microsoft Access en Argentina: 20 h en vivo por Zoom, 7 módulos de tablas, consultas SQL, formularios, informes y macros. Cupos abiertos, 19:30 hora argentina."
+meta: "Curso de Microsoft Access en Argentina: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros a las 19:30 h."
 h1: "Curso de Access en Argentina: armá bases de datos para tu área, en vivo"
 updated: 2026-11-04
 sources:
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Access en Argentina: armá bases de datos para tu área, en vivo
 
-**Lo esencial:** el [curso de Microsoft Access de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/access) son **20 horas en vivo por Zoom**, en **7 módulos**, para que quien trabaja en administración aprenda a diseñar, construir y mantener bases de datos relacionales: tablas y relaciones, consultas con SQL básico, formularios de carga con validaciones, informes que se exportan a PDF y Excel, y macros. Sale **{precio_local}** y la ficha muestra **cupos abiertos con fecha a confirmar**.
+**Lo esencial:** el [curso de Microsoft Access de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/access) son **20 horas en vivo por Zoom**, en **7 módulos**, para que quien trabaja en administración aprenda a diseñar, construir y mantener bases de datos relacionales: tablas y relaciones, consultas con SQL básico, formularios de carga con validaciones, informes que se exportan a PDF y Excel, y macros. Sale **{precio_local}** y la ficha muestra **cupos abiertos · consultá las próximas fechas**.
 
 Tenés las grabaciones de por vida en el campus, certificado al completar y un proyecto integrador sobre un proceso real de empresa. Según las preguntas frecuentes de la ficha, las clases son a las 19:30, hora argentina, la misma que en Chile y Uruguay. Pagás en pesos argentinos con Mercado Pago o transferencia. Datos revisados el 4 de noviembre de 2026.
 
@@ -142,7 +142,7 @@ La ficha lo dirige al **personal administrativo que necesita almacenar, organiza
 {precio_local}, en pesos argentinos con Mercado Pago o transferencia.
 
 **¿Cuándo arranca?**
-La ficha muestra cupos abiertos con fecha a confirmar. Escribinos por WhatsApp y te avisamos la próxima cohorte.
+La ficha muestra cupos abiertos para el próximo grupo. Escribinos por WhatsApp y te avisamos la próxima cohorte.
 
 **¿Tengo que saber programar?**
 No. Arrancás desde los conceptos básicos y el SQL se ve desde cero.

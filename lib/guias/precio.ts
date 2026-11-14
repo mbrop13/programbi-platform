@@ -21,6 +21,23 @@ export function sinMontosDeCurso(texto: string): string {
   return texto.replace(MONTO_CURSO, TEXTO_PRECIO_BROCHURE);
 }
 
+/**
+ * Meta descripción segura para SEO (<= `max` chars) y libre de montos de
+ * curso en el HTML inicial. Evita que el reemplazo de montos infle el meta
+ * más allá de 155 caracteres.
+ */
+export function metaDescripcionGuia(texto: string, max = 155): string {
+  const limpia = texto
+    .replace(MONTO_CURSO, "arancel local vigente (ver PDF)")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (limpia.length <= max) return limpia;
+  const corte = limpia.slice(0, max - 1);
+  const ultimoEspacio = corte.lastIndexOf(" ");
+  const base = ultimoEspacio > max * 0.65 ? corte.slice(0, ultimoEspacio) : corte;
+  return `${base.replace(/[.,;:–-]+$/, "")}.`;
+}
+
 /** Texto de precio para las guías: siempre apunta al brochure PDF. */
 export function precioTextoGuia(_guia: Pick<Guia, "country" | "course">): string {
   return TEXTO_PRECIO_BROCHURE;

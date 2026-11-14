@@ -6,7 +6,7 @@ hreflang: es-CO
 curso: ia-productividad
 url_curso: https://www.programbi.com/co/cursos/ia-productividad
 title: "Curso de IA en Productividad Colombia: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Colombia en vivo: 20 h para automatizar informes administrativos con ChatGPT, Claude, Gemini y Copilot, 17:30 hora de Bogotá."
+meta: "Curso de IA en productividad en Colombia en vivo: 20 h para automatizar reportes con ChatGPT, Claude, Gemini y Copilot a las 17:30 hora Bogotá."
 h1: "Curso de IA en Productividad en Colombia: automatiza tus informes administrativos"
 updated: 2026-11-04
 sources:
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de IA en Productividad de ProgramBI en Colombia](https://www.programbi.com/co/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Colombia**, con 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes usando **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. El valor es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-Es 100 % práctico y no requiere programar. Según la ficha, revisada el 4 de noviembre de 2026, hay **cupos abiertos con fecha por confirmar**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia.
+Es 100 % práctico y no requiere programar. Según la ficha, revisada el 4 de noviembre de 2026, hay **cupos abiertos · programación continua en vivo**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 17:30 a 19:30 (Bogotá) · «Ver el curso».
 
@@ -127,7 +127,7 @@ Las clases son de 17:30 a 19:30 en Bogotá. Colombia se mantiene en UTC-5 todo e
 ## Resumen
 
 - 20 horas, 6 módulos prácticos.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · próximas ediciones en marcha.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final con tu propio informe.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -152,7 +152,7 @@ ChatGPT, Claude, Gemini, Copilot y alternativas, más flujos sin código con Out
 Sí. El módulo 6 cubre privacidad, confidencialidad y límites legales.
 
 **¿Cuándo es la próxima cohorte?**
-La ficha muestra cupos abiertos con fecha por confirmar; consúltala por WhatsApp.
+La ficha muestra cupos abiertos con calendario activo; consúltala por WhatsApp.
 
 **¿Puedo usarlo con Google Workspace?**
 Sí. El curso trabaja con Docs, Slides, Gmail y Drive, además de las herramientas de Microsoft 365.

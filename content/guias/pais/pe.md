@@ -8,6 +8,13 @@ slug: como-aprender-power-bi-en-peru
 path: /pe/guias/como-aprender-power-bi-en-peru
 updated: 2026-11-04
 course: power-bi
+url_curso: https://www.programbi.com/pe/cursos/power-bi
+sources:
+  - https://pe.computrabajo.com/salarios/analista-de-datos
+  - https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/
+  - https://www.programbi.com/pe/cursos/power-bi
+nota_hermes: |
+  ELEMENTO VISUAL: ruta de aprendizaje de 8 semanas en Power BI aplicada a Perú.
 ---
 En Perú, la palabra que más se repite en los avisos de análisis es «reportes»: reportes comerciales, reportes de cobranza, reportes de campaña. Detrás de casi todos hay una persona que pasa horas en Excel. Las empresas que ya dieron el salto a Power BI —bancos, mineras, agroexportadoras, retail— buscan gente que sepa automatizar ese trabajo. Esta guía te da una ruta clara para aprender, lo que se paga hoy como referencia y los errores que conviene evitar desde el primer día.
 
@@ -112,10 +119,11 @@ Solo es posible con constancia. Pero, como muestran los avisos, el diferencial e
 
 - **En vivo por Zoom**, lunes y miércoles de **17:30 a 19:30, hora de Perú**.
 - **20 horas, 8 módulos**, básico-intermedio. Próximo inicio: **lunes 23 de noviembre de 2026**.
-- Precio para Perú: **{{precio}}**
+- Revisa el costo en soles y opciones de pago descargando el PDF desde el [curso de Power BI en Perú](/pe/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
 - **Grabaciones de por vida** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
+- Complementa tu avance con la [guía práctica de DAX](/guias/funciones-dax-mas-importantes) o el programa de [SQL Server en vivo](/pe/cursos/sql-server).
 
 <!-- CTA-END -->
 

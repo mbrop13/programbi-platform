@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import GuiaPage from "@/components/guias/GuiaPage";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
-import { alternatesClaude, alternatesCurso, alternatesGuiaPais, guiaPorPath, guiasRaiz } from "@/lib/guias";
-import { absoluteUrl } from "@/lib/seo";
-import { sinMontosDeCurso } from "@/lib/guias/precio";
+import { guiaPorPath, guiasRaiz } from "@/lib/guias";
+import { metadataDeGuia } from "@/lib/guias/metadata";
 
 export const revalidate = false;
 export const dynamicParams = false;
@@ -24,22 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const guia = guiaDe(slug);
   if (!guia) return {};
-  const alternates = alternatesGuiaPais(guia) ?? alternatesClaude(guia) ?? alternatesCurso(guia);
-  return {
-    title: { absolute: guia.title },
-    description: sinMontosDeCurso(guia.description),
-    alternates: {
-      canonical: absoluteUrl(guia.path),
-      ...(alternates ? { languages: alternates } : {}),
-    },
-    openGraph: {
-      title: guia.title,
-      description: sinMontosDeCurso(guia.description),
-      url: absoluteUrl(guia.path),
-      type: "article",
-      locale: "es_CL",
-    },
-  };
+  return metadataDeGuia(guia, true);
 }
 
 export default async function GuiaRootPage({ params }: { params: Promise<Params> }) {

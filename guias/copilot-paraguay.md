@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/copilot) es un programa **en vivo por Zoom de 20 horas**, de **19:30 a 21:30, hora de Paraguay**, en 5 módulos de 4 horas. Primero aprendés a usar Microsoft Copilot en **Excel, Outlook, PowerPoint y Word**; después diseñás, entrenás y publicás **un agente propio en Copilot Studio** con la información de tu empresa. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-No hace falta programar. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos con fecha por confirmar**. Para la fecha y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp.
+No hace falta programar. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · inicio próximo por grupo**. Para la fecha y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Asunción) · «Ver el curso».
 
@@ -129,7 +129,7 @@ Según la ficha, las clases son de 19:30 a 21:30, hora de Paraguay (UTC-3), el m
 ## Resumen
 
 - 20 horas en 5 módulos de 4 horas.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · cronograma abierto por Zoom.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final: un agente funcional.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -157,4 +157,4 @@ Depende de cómo la contrate tu empresa; confirmalo con TI.
 En Teams, SharePoint o sitios web.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar.
+La ficha muestra cupos abiertos con nueva fecha cercana.

@@ -38,6 +38,9 @@ export type TarjetaGuia = {
   updated: string;
   updatedLabel: string;
   imageUrl?: string;
+  accentColor?: string;
+  readingMinutes?: number;
+  guideImage?: string;
 };
 
 export type GrupoCurso = {

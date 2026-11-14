@@ -1,24 +1,15 @@
+import { esIndexable } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
 import type { Guia } from "@/lib/guias/tipos";
 
 /**
- * Países con ruta de guía generada: la raíz (Chile y transversales) y las
- * carpetas de app/(pais)/[pais]/guias. El resto de las guías del generado
- * todavía no tiene página y no debe enlazarse.
+ * Guías indexables y enlazables en todo el sitio: las transversales y las
+ * de países con `indexable: true` en `config/paises.ts`. Las de países no
+ * indexables (como Paraguay hoy) conservan su ruta propia con `noindex`, pero
+ * no se promueven desde fichas ni hubs indexables.
  */
-const PAISES_CON_RUTA_DE_GUIA = new Set([
-  "cl",
-  "transversal",
-  "ar",
-  "mx",
-  "pe",
-  "co",
-  "uy",
-  "py",
-]);
-
 export function esGuiaPublicada(guia: Guia): boolean {
-  return PAISES_CON_RUTA_DE_GUIA.has(guia.country);
+  return guia.country === "transversal" || esIndexable(guia.country);
 }
 
 /**

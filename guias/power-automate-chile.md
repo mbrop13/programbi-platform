@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: power-automate
 url_curso: https://www.programbi.com/cursos/power-automate
 title: "Curso de Power Automate en Chile: guía 2026 | ProgramBI"
-meta: "Curso de Power Automate en Chile en vivo por Zoom: 20 h para automatizar Outlook, Teams, Excel y SharePoint sin programar, por $169.000 CLP. Incluye RPA y Copilot."
+meta: "Curso de Power Automate en Chile en vivo por Zoom: 20 h para automatizar Outlook, Teams, Excel y SharePoint sin código, con RPA y Copilot."
 h1: "Curso de Power Automate en Chile: automatiza tu pega sin programar"
 updated: 2026-11-04
 sources:
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Power Automate de ProgramBI](https://www.programbi.com/cursos/power-automate) es un programa **en vivo por Zoom de 20 horas en 10 módulos** para automatizar tareas repetitivas **sin escribir código**: flujos de nube automatizados, instantáneos y programados; conectores con Outlook, Teams, OneDrive y SharePoint; aprobaciones; RPA de escritorio con Power Automate Desktop y Copilot para diseñar flujos con IA. Cuesta **$169.000 CLP** y las clases son de **19:30 a 21:30, hora de Chile**.
 
-Está pensado para **profesionales sin experiencia en programación** que pierden horas copiando datos entre Excel, Outlook y Teams. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos con fecha por confirmar**, e incluye grabaciones de por vida y certificado.
+Está pensado para **profesionales sin experiencia en programación** que pierden horas copiando datos entre Excel, Outlook y Teams. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · próxima edición disponible**, e incluye grabaciones de por vida y certificado.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Chile) · «Ver el curso».
 
@@ -120,7 +120,7 @@ Al terminar no sales con una demo suelta: sales con una automatización real, pu
 Según la [ficha](https://www.programbi.com/cursos/power-automate), consultada el 4 de noviembre de 2026:
 
 - **20 horas en 10 módulos**, no-code.
-- **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos y fecha por confirmar.
+- **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos con inicio próximo a consultar.
 - **Grabaciones de por vida** y **certificado digital**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Valor: **$169.000 CLP**.
@@ -144,7 +144,7 @@ Power Automate incluye flujos en la nube y RPA de escritorio; en el curso ves am
 Una cuenta de Microsoft 365. En el módulo 2 se revisa la licencia y cómo activar Power Automate.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; puedes consultarla por WhatsApp.
+La ficha muestra cupos abiertos para la próxima edición; puedes consultarla por WhatsApp.
 
 **¿Sirve si mi empresa usa un ERP antiguo sin conectores?**
 Sí. El módulo 9 enseña RPA con Power Automate Desktop, que imita clics y tecleo, justamente para traspasar datos de Excel a un ERP o a una web.

@@ -3,17 +3,16 @@ import { ArrowRight, BadgeCheck, CalendarDays, Clock, MessageCircle, MonitorPlay
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
+import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import type { Guia } from "@/lib/guias/tipos";
 import { horarioLocal } from "@/lib/paises/horarios";
-import { courseBrochurePath } from "@/lib/pricing-gate";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
- * Bloque «En 30 segundos» que abre cada guía: brochure con precios, duración,
- * horario, modalidad y los dos CTA. Se renderiza en el servidor (importante
- * para GEO: los asistentes de IA leen duración y horario sin ejecutar JS).
- * El arancel no se escribe acá: vive solo en el brochure PDF.
+ * Bloque «En 30 segundos» que abre cada guía: enlace directo al desbloqueo
+ * de temario y precios, duración, horario local, modalidad y CTAs. Renderizado
+ * 100% en servidor (GEO-ready). El arancel nunca se expone en HTML inicial.
  */
 export default function Bloque30Segundos({ guia }: { guia: Guia }) {
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
@@ -23,13 +22,13 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
   const esGeneral = guia.course === "general";
   const nombreCurso = esGeneral ? "Cursos de ProgramBI" : curso.nombre;
   const rutaCurso = esGeneral ? rutaLocal(iso, "/cursos") : rutaFichaCurso(iso, guia.course);
-  const rutaBrochure = esGeneral ? rutaCurso : courseBrochurePath(guia.course, iso);
+  const rutaTemario = esGeneral ? rutaCurso : "#temario-curso";
 
   return (
     <section
       data-testid="en-30-segundos"
       aria-labelledby="en-30-segundos"
-      className="mt-8 overflow-hidden rounded-[26px] border border-line-strong bg-paper"
+      className="mt-8 overflow-hidden rounded-[26px] border border-line-strong bg-paper shadow-sm"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line px-5 py-3">
         <h2 id="en-30-segundos" className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
@@ -43,14 +42,12 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
       <dl className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-paper px-5 py-4">
           <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
-            <BadgeCheck size={13} aria-hidden /> Precio
+            <BadgeCheck size={13} aria-hidden /> Precio y temario
           </dt>
           <dd className="mt-1.5">
             <Link
-              href={rutaBrochure}
-              target={esGeneral ? undefined : "_blank"}
-              rel={esGeneral ? undefined : "noopener noreferrer"}
-              className="text-sm font-bold leading-snug text-ink no-underline hover:text-mute"
+              href={rutaTemario}
+              className="text-sm font-bold leading-snug text-ink no-underline hover:underline"
             >
               Ver temario y precios (PDF) →
             </Link>
@@ -98,7 +95,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
           href={rutaCurso}
           className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.99]"
         >
-          Reservar mi cupo
+          Ver el programa completo
           <ArrowRight size={15} aria-hidden />
         </Link>
         <WhatsAppCta
@@ -118,7 +115,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
         <span className="inline-flex items-center gap-1.5">
           <CalendarDays size={13} aria-hidden /> Lunes y miércoles o martes y jueves
         </span>
-        <span>{curso.inicio ? `Próximo inicio: ${curso.inicio}` : "Cupos abiertos · fecha por confirmar"}</span>
+        <span>{curso.inicio ? `Próximo inicio: ${curso.inicio}` : OPEN_COHORT_LABEL}</span>
       </p>
     </section>
   );

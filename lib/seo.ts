@@ -149,12 +149,14 @@ export function pageOg(opts: {
   kicker: string;
   tags?: string[];
   alt?: string;
+  accent?: string;
 }) {
   const url = ogImageUrl({
     kicker: opts.kicker,
     title: opts.title,
     description: opts.description,
     tags: opts.tags,
+    accent: opts.accent,
     path: opts.path.replace(/^\//, ""),
   });
   return {

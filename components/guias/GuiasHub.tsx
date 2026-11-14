@@ -135,6 +135,61 @@ export default function GuiasHub({
   const grupos = useMemo(() => agruparPorCurso(visibles, cursos), [visibles, cursos]);
   const hayFiltros = texto.trim() !== "" || (mostrarPais && pais !== TODOS) || curso !== TODOS;
 
+  const destacadas = useMemo(() => {
+    const prioridades = [
+      "/guias/como-usar-claude-para-analisis-de-datos",
+      "/mx/guias/como-usar-claude-para-analisis-de-datos",
+      "/guias/como-aprender-power-bi-en-chile",
+      "/guias/curso-claude-chile",
+      "/guias/power-bi-vs-excel",
+      "/guias/funciones-dax-mas-importantes",
+      "/guias/curso-mercado-financiero-chile",
+    ];
+    const elegidas: TarjetaGuia[] = [];
+    const vistos = new Set<string>();
+    const usadasImg = new Set<string>();
+
+    const agregar = (item: TarjetaGuia, exigirImagenUnica: boolean) => {
+      if (vistos.has(item.path)) return;
+      if (exigirImagenUnica && item.guideImage && usadasImg.has(item.guideImage)) return;
+      vistos.add(item.path);
+      if (item.guideImage) usadasImg.add(item.guideImage);
+      elegidas.push(item);
+    };
+
+    for (const p of prioridades) {
+      const hit = guias.find((g) => g.path === p);
+      if (hit) agregar(hit, true);
+      if (elegidas.length >= 3) break;
+    }
+    if (elegidas.length < 3) {
+      for (const candidato of guias) {
+        if (
+          candidato.course === "claude" ||
+          candidato.course === "power-bi" ||
+          candidato.course === "analisis-de-datos" ||
+          candidato.course === "python"
+        ) {
+          agregar(candidato, true);
+        }
+        if (elegidas.length >= 3) break;
+      }
+    }
+    if (elegidas.length < 3) {
+      for (const candidato of guias) {
+        agregar(candidato, true);
+        if (elegidas.length >= 3) break;
+      }
+    }
+    if (elegidas.length < 3) {
+      for (const candidato of guias) {
+        agregar(candidato, false);
+        if (elegidas.length >= 3) break;
+      }
+    }
+    return elegidas;
+  }, [guias]);
+
   function limpiar() {
     setTexto("");
     setPais(TODOS);
@@ -278,6 +333,28 @@ export default function GuiasHub({
           </div>
         ) : (
           <div className="space-y-10">
+            {!hayFiltros && destacadas.length >= 2 ? (
+              <section aria-labelledby="guias-recomendadas">
+                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9A3F20]">
+                      Lo más leído en ProgramBI
+                    </p>
+                    <h2 id="guias-recomendadas" className="text-lg font-bold tracking-tight text-ink">
+                      Guías recomendadas para empezar
+                    </h2>
+                  </div>
+                  <p className="text-xs text-faint">Con prompts copiables, ejemplos y hoja de ruta</p>
+                </div>
+                <ul className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {destacadas.map((guia) => (
+                    <li key={`top-${guia.path}`} className="min-w-0">
+                      <GuiaCard guia={guia} preferEditorialImage />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
             {grupos.map((grupo, indice) => {
               const rutaCurso = grupo.curso === "general" ? null : rutaLocal(iso, `/cursos/${grupo.curso}`);
               return (

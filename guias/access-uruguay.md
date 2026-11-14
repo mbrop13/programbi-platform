@@ -6,7 +6,7 @@ hreflang: es-UY
 curso: access
 url_curso: https://www.programbi.com/uy/cursos/access
 title: "Curso de Access en Uruguay en vivo | ProgramBI"
-meta: "Curso de Microsoft Access en Uruguay: 20 h en vivo por Zoom, 7 módulos de tablas, consultas SQL, formularios, informes y macros. Cupos abiertos, 19:30 hora de Uruguay."
+meta: "Curso de Microsoft Access en Uruguay: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros a las 19:30 h."
 h1: "Curso de Access en Uruguay: del archivo de Excel a una base de datos ordenada"
 updated: 2026-11-04
 sources:
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Access en Uruguay: del archivo de Excel a una base de datos ordenada
 
-**Para ir al grano:** el [curso de Microsoft Access de ProgramBI en Uruguay](https://www.programbi.com/uy/cursos/access) es una formación **en vivo por Zoom de 20 horas, organizada en 7 módulos**, para administrativos que necesitan guardar, ordenar y consultar información de distintas áreas: diseñás tablas relacionadas, escribís consultas con SQL básico, armás formularios con validaciones, generás informes que exportás a PDF y Excel, y automatizás tareas con macros. Cuesta **{precio_local}** y la ficha marca **cupos abiertos con fecha a confirmar**.
+**Para ir al grano:** el [curso de Microsoft Access de ProgramBI en Uruguay](https://www.programbi.com/uy/cursos/access) es una formación **en vivo por Zoom de 20 horas, organizada en 7 módulos**, para administrativos que necesitan guardar, ordenar y consultar información de distintas áreas: diseñás tablas relacionadas, escribís consultas con SQL básico, armás formularios con validaciones, generás informes que exportás a PDF y Excel, y automatizás tareas con macros. Cuesta **{precio_local}** y la ficha marca **cupos abiertos · nueva cohorte por abrir**.
 
 Quedan las grabaciones de por vida en el campus, recibís certificado al completar y cerrás con un proyecto integrador sobre un proceso de empresa. Las preguntas frecuentes de la ficha ubican la clase a las 19:30, hora de Uruguay. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: ficha del curso, consultada el 4 de noviembre de 2026.
 
@@ -132,7 +132,7 @@ La ficha lo orienta al **personal administrativo que necesita almacenar, organiz
 {precio_local}, en pesos uruguayos con Mercado Pago Uruguay o transferencia.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha a confirmar. Escribinos por WhatsApp para saber cuándo arranca la próxima cohorte.
+La ficha muestra cupos abiertos para la edición entrante. Escribinos por WhatsApp para saber cuándo arranca la próxima cohorte.
 
 **¿Hace falta experiencia previa?**
 No. Se parte desde los conceptos básicos de bases de datos y el SQL se aprende desde cero, paso a paso, con ejemplos de oficina.

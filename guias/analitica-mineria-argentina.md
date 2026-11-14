@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos para la Minería en Argentina: datos de operación que se entienden
 
-**Lo esencial:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en Argentina](https://www.programbi.com/ar/cursos/analisis-de-datos) son **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, para que aprendas a trabajar con Power BI, SQL Server y Python sobre datos reales de una operación: partes de turno, flota, mantenimiento, combustible, inventarios y sensores, con IA generativa como apoyo para escribir consultas y scripts. El nivel básico-intermedio sale **{precio_local}** y la ficha muestra **cupos abiertos con fecha a confirmar**.
+**Lo esencial:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en Argentina](https://www.programbi.com/ar/cursos/analisis-de-datos) son **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, para que aprendas a trabajar con Power BI, SQL Server y Python sobre datos reales de una operación: partes de turno, flota, mantenimiento, combustible, inventarios y sensores, con IA generativa como apoyo para escribir consultas y scripts. El nivel básico-intermedio sale **{precio_local}** y la ficha muestra **cupos abiertos · consultá las próximas fechas**.
 
 Tenés grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son a las 19:30, hora argentina. Pagás en pesos argentinos con Mercado Pago o transferencia. Datos revisados el 4 de noviembre de 2026.
 
@@ -126,7 +126,7 @@ La ficha también muestra un nivel avanzado, para **dominar el ciclo completo de
 {precio_local}, en pesos argentinos con Mercado Pago o transferencia.
 
 **¿Cuándo arranca?**
-Hay cupos abiertos con fecha a confirmar; escribinos por WhatsApp y te avisamos.
+Hay cupos abiertos para el próximo grupo; escribinos por WhatsApp y te avisamos.
 
 **¿Tengo que saber programar?**
 No. El nivel básico-intermedio arranca desde los fundamentos de las tres herramientas, y la IA te da una mano con la primera versión de cada consulta o script.

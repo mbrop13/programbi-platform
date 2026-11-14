@@ -6,7 +6,7 @@ hreflang: es-UY
 curso: claude
 url_curso: https://www.programbi.com/uy/cursos/claude
 title: "Curso de Claude en Uruguay: en vivo, 23/11 | ProgramBI"
-meta: "Curso de Claude en Uruguay en vivo por Zoom: 20 h para usar la IA de Anthropic en administración, planillas y presentaciones. Desde el 23/11, 19:30 hora de Uruguay."
+meta: "Curso de Claude en Uruguay en vivo por Zoom: 20 h para tareas de oficina, planillas y documentos. Inicio 23/11, 19:30 hora de Uruguay."
 h1: "Curso de Claude en Uruguay: IA de Anthropic para quien trabaja en administración"
 updated: 2026-11-04
 sources:

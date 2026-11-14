@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI en Perú](https://www.programbi.com/pe/cursos/copilot) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Perú**, dividido en 5 módulos de 4 horas. Empiezas usando Microsoft Copilot en **Excel, Outlook, PowerPoint y Word** y terminas diseñando, entrenando y publicando **un agente propio en Copilot Studio** con el conocimiento de tu organización. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
 
-No necesitas programar. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos con fecha por confirmar**. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia.
+No necesitas programar. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · calendario mensual activo**. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
 **[CTA-TOP]** — Cupos abiertos · 17:30 a 19:30 (Lima) · «Ver el curso».
 
@@ -126,7 +126,7 @@ Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año
 ## Resumen
 
 - 20 horas en 5 módulos de 4 horas.
-- En vivo por Zoom; cupos abiertos, fecha por confirmar.
+- En vivo por Zoom; cupos abiertos · consulta de fechas al día.
 - Grabaciones de por vida y certificado digital.
 - Proyecto final: un agente funcional.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
@@ -154,7 +154,7 @@ Depende de la contratación de tu empresa; confírmalo con TI.
 En Teams, SharePoint o sitios web.
 
 **¿Cuándo empieza?**
-La ficha muestra cupos abiertos con fecha por confirmar; consulta por WhatsApp.
+La ficha muestra cupos abiertos con nuevas sesiones pronto; consulta por WhatsApp.
 
 **¿Sirve si mi empresa aún no tiene Copilot contratado?**
 Sí, para entender qué se puede lograr y preparar una propuesta interna. Para practicar en tu cuenta necesitarás acceso a las herramientas; consúltalo con TI antes de inscribirte.

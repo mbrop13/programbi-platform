@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/cursos/analisis-de-datos
 title: "Curso de Análisis de datos en Chile: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Chile en vivo: SQL Server, Power BI y Python en 60 h por $338.000 CLP. Cómo ser analista de datos, sueldos y ruta paso a paso."
+meta: "Curso de análisis de datos en Chile en vivo: SQL Server, Power BI y Python en 60 h. Cómo ser analista de datos, sueldos y ruta paso a paso."
 h1: "Curso de Análisis de datos en Chile: cómo ser analista de datos en 2026"
 updated: 2026-11-04
 sources:

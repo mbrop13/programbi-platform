@@ -6,7 +6,7 @@ hreflang: es-CL
 curso: claude
 url_curso: https://www.programbi.com/cursos/claude
 title: "Curso de Claude en Chile: en vivo desde el 23/11 | ProgramBI"
-meta: "Curso de Claude en Chile en vivo: 20 h para usar la IA de Anthropic en trabajo administrativo, Excel y documentos. Desde el 23 de noviembre, por $169.000 CLP."
+meta: "Curso de Claude en Chile en vivo: 20 h para usar la IA de Anthropic en trabajo administrativo, Excel y documentos. Inicio lunes 23 de noviembre."
 h1: "Curso de Claude en Chile: IA para tu trabajo administrativo, en vivo"
 updated: 2026-11-04
 sources:
@@ -93,7 +93,7 @@ La ficha lo define para el **trabajo administrativo**, con el mismo programa par
 | Foco | Una herramienta, a fondo | Varias herramientas comparadas |
 | Herramientas | Claude, Projects, Docs, Slides, Cowork | ChatGPT, Claude, Gemini, Copilot y flujos sin código |
 | Ideal si | Tu empresa ya usa o va a usar Claude | Aún no eliges herramienta |
-| Inicio | Lunes 23 de noviembre de 2026 | Cupos abiertos, fecha por confirmar |
+| Inicio | Lunes 23 de noviembre de 2026 | Cupos abiertos · consultar horario |
 
 ## Tu primer mes después del curso
 

@@ -6,7 +6,7 @@ hreflang: es-PE
 curso: sql-server
 url_curso: https://www.programbi.com/pe/cursos/sql-server
 title: "Curso de SQL Server en Perú en vivo: guía 2026 | ProgramBI"
-meta: "Curso de SQL online en vivo en Perú: SQL Server desde cero en 20 h, martes y jueves 17:30 hora de Lima. Temario, consultas de ejemplo y conexión con Power BI."
+meta: "Curso de SQL Server en vivo en Perú: consultas SQL desde cero en 20 h (martes y jueves 17:30 Lima) con ejercicios prácticos y Power BI."
 h1: "Curso de SQL Server en Perú: aprende SQL online, en vivo y desde cero"
 updated: 2026-11-04
 sources:

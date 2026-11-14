@@ -6,7 +6,7 @@ hreflang: es-PY
 curso: sql-server
 url_curso: https://www.programbi.com/py/cursos/sql-server
 title: "Curso de SQL Server Paraguay en vivo: guía 2026 | ProgramBI"
-meta: "Curso de SQL online en vivo en Paraguay: SQL Server desde cero en 20 h, martes y jueves 19:30. Temario, consultas con ejemplos locales y conexión con Power BI."
+meta: "Curso de SQL Server en vivo en Paraguay: consultas SQL desde cero en 20 h (martes y jueves 19:30) con ejemplos locales y Power BI."
 h1: "Curso de SQL Server en Paraguay: aprendé SQL online y en vivo"
 updated: 2026-11-04
 sources:
