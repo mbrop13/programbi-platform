@@ -85,7 +85,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
           </dt>
           <dd className="mt-1.5">
             <span className="text-sm font-bold leading-snug text-ink">En vivo por Zoom</span>
-            <span className="mt-0.5 block text-xs text-mute">Grabaciones de por vida · certificado al terminar</span>
+            <span className="mt-0.5 block text-xs text-mute">Campus virtual con clases y material · certificado al terminar</span>
           </dd>
         </div>
       </dl>

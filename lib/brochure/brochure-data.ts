@@ -21,8 +21,16 @@ import {
   staticSchedules,
   type CourseSchedule,
 } from "@/lib/data/course-schedules";
-import { getCourseSyllabus } from "@/lib/data/syllabuses";
-import { levelsForView, offerHours, offerTeaches } from "@/lib/data/course-views";
+import { getCourseSyllabus, type SyllabusLevelContent } from "@/lib/data/syllabuses";
+import {
+  hasLevelNamed,
+  isTieredCourse,
+  levelsForView,
+  offerHours,
+  offerSyllabusLevel,
+  offerTeaches,
+  OPEN_LEVEL_NAME,
+} from "@/lib/data/course-views";
 import { mentors } from "@/lib/data/mentors";
 import {
   conHoraPais,
@@ -171,7 +179,7 @@ const EMPRESAS = [
 
 /** Insignia fija de modalidad, compartida por la vista y el PDF. */
 const INSIGNIA =
-  "Clases 100% en vivo por Zoom · Grabaciones de por vida · Certificado digital verificable";
+  "Clases 100% en vivo por Zoom · Campus virtual con clases y material · Certificado digital verificable";
 
 /** Los 4 pilares de la metodología en vivo, idénticos en vista y PDF. */
 const METODOLOGIA: BrochureMetodologiaPilar[] = [
@@ -197,7 +205,7 @@ const METODOLOGIA: BrochureMetodologiaPilar[] = [
     step: "04",
     title: "Certificación verificable",
     description:
-      "Terminas con un certificado digital con código de verificación y grabaciones de por vida.",
+      "Terminas con un certificado digital con código de verificación y campus virtual con las clases y material usado para que puedas practicar durante el curso.",
   },
 ];
 
@@ -236,9 +244,12 @@ function temasDeRespaldo(course: Course, limite = 8): string[] {
   return salida;
 }
 
-function armarTemario(course: Course): BrochureNivel[] {
-  return getCourseSyllabus(course).levels.map((nivel) => ({
-    label: nivel.label,
+function mapearNivelTemario(
+  nivel: SyllabusLevelContent,
+  labelOverride?: string
+): BrochureNivel {
+  return {
+    label: labelOverride ?? nivel.label,
     shortLabel: nivel.shortLabel ?? null,
     modules: nivel.modules.map((modulo) => ({
       title: modulo.title,
@@ -247,7 +258,24 @@ function armarTemario(course: Course): BrochureNivel[] {
         .map((tema) => (typeof tema === "string" ? tema : tema.title))
         .filter((tema) => Boolean(tema)),
     })),
-  }));
+  };
+}
+
+function armarTemario(course: Course): BrochureNivel[] {
+  if (isTieredCourse(course)) {
+    const basicoIntermedio = offerSyllabusLevel(course, "publico");
+    const avanzado = offerSyllabusLevel(course, "avanzado");
+    const niveles: BrochureNivel[] = [];
+    if (basicoIntermedio) {
+      niveles.push(mapearNivelTemario(basicoIntermedio, `Nivel 1: ${OPEN_LEVEL_NAME}`));
+    }
+    if (avanzado) {
+      niveles.push(mapearNivelTemario(avanzado, "Nivel 2: Avanzado"));
+    }
+    if (niveles.length > 0) return niveles;
+  }
+
+  return getCourseSyllabus(course).levels.map((nivel) => mapearNivelTemario(nivel));
 }
 
 function contarModulos(temario: BrochureNivel[]): number {
@@ -315,10 +343,19 @@ async function filasActivas(slug: string): Promise<CourseSchedule[]> {
   }
 }
 
+function normalizarNivelCohorte(rawLevel: string, unificarBasico: boolean): string {
+  const limpio = rawLevel.trim();
+  if (unificarBasico && /^(b[aá]sico|intermedio)$/i.test(limpio)) {
+    return OPEN_LEVEL_NAME;
+  }
+  return limpio || rawLevel;
+}
+
 function cohortesDeFilas(
   filas: CourseSchedule[],
   pais: string,
-  paisNombre: string
+  paisNombre: string,
+  unificarBasico: boolean
 ): BrochureCohorte[] {
   const zona = zonaDe(pais);
   return filas.map((fila) => {
@@ -335,7 +372,7 @@ function cohortesDeFilas(
           /\s+/g,
           "-"
         ),
-      nivel: fila.level_name,
+      nivel: normalizarNivelCohorte(fila.level_name, unificarBasico),
       fecha: capitalizar(conv.dateFormatted),
       fechaISO: conv.date,
       dias: conv.days,
@@ -347,21 +384,25 @@ function cohortesDeFilas(
 }
 
 async function armarHorarios(
-  slug: string,
+  course: Course,
   pais: string,
   paisNombre: string
 ): Promise<BrochureCohorte[]> {
-  const propias = await filasActivas(slug);
+  const unificarBasico =
+    isTieredCourse(course) || hasLevelNamed(course, OPEN_LEVEL_NAME);
+  const propias = await filasActivas(course.slug);
   const futuras = getAllActiveSchedules(propias);
-  if (futuras.length > 0) return cohortesDeFilas(futuras, pais, paisNombre);
+  if (futuras.length > 0) {
+    return cohortesDeFilas(futuras, pais, paisNombre, unificarBasico);
+  }
 
   // Fallback estático del repo: solo cohortes vigentes.
-  const slugs = slugsDeCurso(slug);
+  const slugs = slugsDeCurso(course.slug);
   const estaticas: CourseSchedule[] = staticSchedules
     .map((fila, indice) => ({ ...fila, id: `estatica-${indice}` }))
     .filter((fila) => slugs.includes(fila.course_slug));
   const estaticasFuturas = getAllActiveSchedules(estaticas);
-  return cohortesDeFilas(estaticasFuturas, pais, paisNombre);
+  return cohortesDeFilas(estaticasFuturas, pais, paisNombre, unificarBasico);
 }
 
 function armarEquivalencias(
@@ -437,7 +478,7 @@ export async function getCourseBrochureData(
       ? `${textoCuotas(iso)} de ${formatMoneda(iso, cuotaMonto)} cada una`
       : textoCuotas(iso);
 
-  const schedules = await armarHorarios(course.slug, iso, paisNombre);
+  const schedules = await armarHorarios(course, iso, paisNombre);
   const customPdfUrl = await leerPdfPersonalizado(course.slug);
 
   // La ficha usa la tarjeta (`-card.webp`, más liviana). El brochure usa la

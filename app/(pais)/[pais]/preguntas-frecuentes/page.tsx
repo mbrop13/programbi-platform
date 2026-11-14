@@ -20,7 +20,7 @@ export function generateStaticParams(): Params[] {
 const title = "Preguntas frecuentes: cursos, clases y pagos";
 
 function descripcion(nombre: string): string {
-  return `Respuestas sobre los cursos de ProgramBI en ${nombre}: clases en vivo por Zoom, grabaciones de por vida, horario local, precios en moneda local, cuotas, requisitos y certificado.`;
+  return `Respuestas sobre los cursos de ProgramBI en ${nombre}: clases en vivo por Zoom, campus virtual con clases y material, horario local, precios en moneda local, cuotas, requisitos y certificado.`;
 }
 
 export { default } from "../../../(marketing)/preguntas-frecuentes/page";

@@ -236,7 +236,7 @@ export default function MentorsSection() {
                         {/* CTA */}
                         <div className="pt-1 flex justify-start">
                           <Link
-                            href={mentor.isFounder ? "/nosotros" : "/cursos"}
+                            href={mentor.isFounder ? "/profesores/manuel-oliva" : "/cursos"}
                             className="inline-flex items-center gap-1 text-[11px] font-black text-[#171716] hover:text-blue-400 transition-colors group/cta leading-none"
                             onClick={(e) => e.stopPropagation()}
                           >

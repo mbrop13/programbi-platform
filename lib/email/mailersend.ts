@@ -562,7 +562,7 @@ export async function sendPaymentConfirmation(params: {
         </table>
         
         <div style="background-color: #F7F7F4; border-left: 3px solid #171716; border-radius: 8px; padding: 10px 14px; font-size: 11.5px; color: #5F5E59; line-height: 1.5; text-align: left;">
-          <strong style="color: #171716;">💡 Modalidad:</strong> Clases en vivo vía Zoom con acceso permanente a grabaciones en el campus virtual externo. Nuestro equipo activa manualmente tu acceso a ese campus.
+          <strong style="color: #171716;">💡 Modalidad:</strong> Clases en vivo vía Zoom con campus virtual con las clases y material usado para que puedas practicar durante el curso. Nuestro equipo activa manualmente tu acceso a ese campus.
         </div>
       </div>
     `;

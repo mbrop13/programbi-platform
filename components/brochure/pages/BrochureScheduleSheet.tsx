@@ -139,7 +139,7 @@ export function BrochureScheduleSheet({
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1.55fr 1.1fr 1.05fr 0.7fr",
+              gridTemplateColumns: "1.35fr 1.0fr 0.95fr 1.05fr",
               gap: 12,
               padding: "11px 18px",
               background: T.obsidian,
@@ -163,7 +163,7 @@ export function BrochureScheduleSheet({
                 key={row.id || `${row.fecha}-${idx}`}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "1.55fr 1.1fr 1.05fr 0.7fr",
+                  gridTemplateColumns: "1.35fr 1.0fr 0.95fr 1.05fr",
                   gap: 12,
                   alignItems: "center",
                   padding: "14px 18px",
@@ -212,6 +212,7 @@ export function BrochureScheduleSheet({
                       border: `1px solid ${T.lineStrong}`,
                       borderRadius: 4,
                       padding: "2px 8px",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {row.nivel}
@@ -372,8 +373,8 @@ export function BrochureScheduleSheet({
               },
               {
                 num: "02 · CAMPUS",
-                title: "Grabaciones de por vida",
-                body: "Si un día no puedes asistir en vivo, la grabación queda disponible de inmediato para siempre.",
+                title: "Campus virtual y material",
+                body: "Campus virtual con las clases y material usado para que puedas practicar durante el curso.",
               },
               {
                 num: "03 · SOPORTE",

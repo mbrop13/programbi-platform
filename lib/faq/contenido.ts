@@ -258,9 +258,9 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
   const secciones: FaqSeccion[] = [
     {
       id: "clases-en-vivo",
-      titulo: "Clases en vivo, grabaciones y modalidad",
+      titulo: "Clases en vivo, campus virtual y modalidad",
       resumen:
-        "Las clases son en vivo por Zoom, con un docente que responde en el momento, y cada sesión queda grabada y disponible de por vida en el campus.",
+        "Las clases son en vivo por Zoom, con un docente que responde en el momento, y cuentas con el campus virtual con las clases y material usado para que puedas practicar durante el curso.",
       items: [
         {
           id: "que-es-programbi",
@@ -272,20 +272,20 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "online-o-grabado",
           pregunta: "¿Los cursos son en vivo o son solo videos grabados?",
           respuesta:
-            "Los cursos son en vivo por Zoom y además quedan grabados: cada clase tiene un docente en tiempo real y la grabación se guarda para repasar. No son cursos solo de video, como los que se compran y se ven sin fecha ni profesor.",
+            "Los cursos son en vivo por Zoom: cada clase tiene un docente en tiempo real y además cuentas con acceso al campus virtual con las clases y el material usado durante el curso. No son cursos solo de video sin fecha ni profesor.",
           enlace: { href: href("/curso-online-vs-presencial"), texto: "Ver la diferencia entre curso online y presencial" },
         },
         {
           id: "grabaciones-de-por-vida",
-          pregunta: "¿Las grabaciones quedan disponibles para siempre?",
+          pregunta: "¿Qué incluye el campus virtual del curso?",
           respuesta:
-            "Sí: las grabaciones de las clases quedan disponibles de por vida en el campus del curso, sin fecha de expiración. Puedes volver a ver cualquier sesión cuando la necesites, incluso meses después de terminar.",
+            "Tendrás acceso al campus virtual con las clases y el material usado para que puedas practicar durante el curso y repasar entre sesiones.",
         },
         {
           id: "falto-a-clase",
           pregunta: "¿Qué pasa si no puedo asistir a una clase en vivo?",
           respuesta:
-            "Si no puedes asistir a una clase en vivo, la ves grabada: todas las sesiones quedan grabadas y disponibles de por vida en el campus. No pierdes el contenido por faltar un día, porque la clase completa queda a tu disposición.",
+            "Si no puedes asistir a una sesión en vivo, puedes revisarla en el campus virtual junto con el material usado para que puedas practicar durante el curso y ponerte al día.",
         },
         {
           id: "idioma",
@@ -456,7 +456,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
         "Confirma tu correo con el enlace que llega a tu bandeja; si no aparece, revisa spam o pide reenviarlo.",
         "Entra a Inscripción, elige el curso y revisa las fechas disponibles.",
         `Paga en ${CUOTAS} con los medios de pago de tu país.`,
-        "Quedas dentro con acceso a las clases en vivo por Zoom y a las grabaciones.",
+        "Quedas dentro con acceso a las clases en vivo por Zoom y al campus virtual del curso.",
       ],
       items: [
         {
@@ -470,7 +470,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "necesito-cuenta",
           pregunta: "¿Necesito crear una cuenta para pagar?",
           respuesta:
-            "Sí: el checkout pide una cuenta con el correo confirmado, porque ahí queda asociada tu inscripción y el acceso a las grabaciones. Crear la cuenta es gratis y no obliga a comprar.",
+            "Sí: el checkout pide una cuenta con el correo confirmado, porque ahí queda asociada tu inscripción y el acceso al campus virtual del curso. Crear la cuenta es gratis y no obliga a comprar.",
         },
         {
           id: "info-antes-de-pagar",
@@ -635,11 +635,11 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       ? "Preguntas frecuentes sobre los cursos de ProgramBI"
       : `Preguntas frecuentes de ProgramBI en ${nombre}`,
     intro: [
-      "ProgramBI es una escuela online de inteligencia de negocios y análisis de datos: dicta cursos en vivo por Zoom de Power BI y de Análisis de datos (SQL, Power BI y Python), con grabaciones de por vida y certificado al completar.",
+      "ProgramBI es una escuela online de inteligencia de negocios y análisis de datos: dicta cursos en vivo por Zoom de Power BI y de Análisis de datos (SQL, Power BI y Python), con campus virtual con las clases y material del curso y certificado al completar.",
       `${introPrecio} ${introHorario}`,
     ],
     ficha: [
-      { dato: "Formato", detalle: "Clases en vivo por Zoom, con grabaciones de por vida" },
+      { dato: "Formato", detalle: "Clases en vivo por Zoom, con campus virtual con clases y material" },
       { dato: "Power BI", detalle: "Básico-intermedio: 20 h en 8 módulos · Avanzado: 20 h" },
       { dato: "Análisis de datos", detalle: "2 niveles de 60 h: 20 h SQL + 20 h Power BI + 20 h Python" },
       { dato: "Próximo inicio", detalle: PROXIMO_INICIO.charAt(0).toUpperCase() + PROXIMO_INICIO.slice(1) },

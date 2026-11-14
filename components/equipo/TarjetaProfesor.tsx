@@ -46,7 +46,7 @@ export default function TarjetaProfesor({ miembro }: { miembro: MiembroEquipo })
         <p className="mt-1 text-sm text-mute">{miembro.cargo}</p>
 
         {miembro.bio ? (
-          <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-mute">{miembro.bio}</p>
+          <p className="mt-4 text-sm leading-relaxed text-mute">{miembro.bio}</p>
         ) : miembro.credenciales.length > 0 ? (
           <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-mute">
             {miembro.credenciales[0]}

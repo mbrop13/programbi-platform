@@ -116,7 +116,7 @@ export default function CursoShowcaseGuia({
                 </h2>
                 <p className="mt-1.5 text-sm leading-relaxed text-mute">{curso.shortDescription}</p>
                 <p className="mt-2 text-xs font-medium text-ink">
-                  {ficha.inicio ? `Próximo inicio: ${ficha.inicio}` : OPEN_COHORT_LABEL} · Grabaciones de por vida
+                  {ficha.inicio ? `Próximo inicio: ${ficha.inicio}` : OPEN_COHORT_LABEL} · Campus virtual con clases y material
                 </p>
               </div>
             </div>

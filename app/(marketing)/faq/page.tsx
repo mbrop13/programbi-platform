@@ -61,8 +61,8 @@ const FAQ_DATA = [
     category: "cursos"
   },
   {
-    question: "¿Las clases son grabadas? ¿Tengo acceso permanente?",
-    answer: "Sí. Todas las clases online en vivo se graban y se cargan al portal LMS del alumno al día siguiente. Conservas el acceso de por vida a todas las grabaciones, códigos, sets de datos y diapositivas de tu curso para que repases cuando quieras.",
+    question: "¿Cómo funcionan el campus virtual y las clases?",
+    answer: "Todas las clases online en vivo por Zoom se complementan con acceso al campus virtual con las clases y el material usado (datasets, scripts y guías) para que puedas practicar durante el curso.",
     category: "cursos"
   },
   {

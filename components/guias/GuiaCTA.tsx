@@ -99,7 +99,7 @@ export default function GuiaCTA({
     const beneficios = curso?.whatYouLearn.slice(0, 3) ?? [
       "Clases en vivo por Zoom con ejercicios prácticos desde cero",
       "Aplica las herramientas directamente sobre casos de tu trabajo",
-      "Grabaciones de por vida y certificado al completar",
+      "Campus virtual con las clases y material para practicar durante el curso, y certificado al completar",
     ];
 
     return (

@@ -30,8 +30,8 @@ const DEFAULT_INCLUDED_ITEMS = [
   },
   {
     code: "02",
-    title: "Grabaciones ilimitadas de por vida",
-    desc: "Acceso permanente al campus virtual para repasar cada clase cuando lo necesites.",
+    title: "Campus virtual con clases y material",
+    desc: "Campus virtual con las clases y material usado para que puedas practicar durante el curso.",
   },
   {
     code: "03",

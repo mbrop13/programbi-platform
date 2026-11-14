@@ -497,7 +497,7 @@ export default function CourseDetailClient({
   const includes = [
     "Clases en vivo por Zoom",
     hours ? `${hours} horas de formación` : "Formación en vivo",
-    "Grabaciones de por vida en el campus",
+    "Campus virtual con clases y material para practicar durante el curso",
     "Certificado al completar",
     "Proyectos con datos reales",
   ];

@@ -58,7 +58,7 @@ export default function Team() {
                 </div>
                 <ul className="mt-2 space-y-0.5 text-xs leading-relaxed text-mute">
                   {mentor.credentials.map((line) => (
-                    <li key={line} className="line-clamp-1">{line}</li>
+                    <li key={line}>{line}</li>
                   ))}
                 </ul>
                 <p className="mt-1.5 text-[11px] text-faint">

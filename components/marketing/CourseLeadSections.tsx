@@ -66,7 +66,7 @@ function formatItems(course: Course, hours: number): string[] {
     if (hours) items.push(`${hours} horas por nivel`);
     if (levels > 1) items.push(`${levels} niveles`);
   }
-  items.push("Grabaciones de por vida en el campus");
+  items.push("Campus virtual con clases y material para practicar durante el curso");
   items.push("Certificado al completar");
   return items;
 }

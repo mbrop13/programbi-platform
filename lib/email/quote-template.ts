@@ -59,9 +59,14 @@ const INSTRUCTORES_RESPALDO: EmailInstructor[] = [
   {
     name: "Manuel Oliva",
     role: "CEO ProgramBI",
-    title: "Fundador y Director",
+    title: "Fundador y Director · Contador Auditor (UdeC)",
     imageUrl: "",
-    credentials: ["Magíster en Data Science, UAI.", "Experto en Riesgo Financiero."],
+    credentials: [
+      "Contador Auditor (UdeC) y Magíster en Data Science (UAI).",
+      "Gerente de Riesgos Financieros en Renta 4 Corredores de Bolsa.",
+      "Analista de Riesgos en Banco Itaú Chile.",
+      "Profesor universitario de postgrado MBA UGM (Data Analytics para la toma de decisiones).",
+    ],
   },
   {
     name: "Emanuel Berrocal",
@@ -460,7 +465,7 @@ export function buildQuoteEmailHtml(
               </h2>
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 ${metaRow("Clases en vivo por Zoom", "Aprende en tiempo real con el docente, resuelve dudas al instante y participa activamente.")}
-                ${metaRow("Grabaciones de por vida", "Acceso permanente a las grabaciones en tu campus virtual para repasar cuando quieras.")}
+                ${metaRow("Campus virtual con clases y material", "Campus virtual con las clases y material usado para que puedas practicar durante el curso.")}
                 ${metaRow("100% Casos Reales", "Aprende con problemas reales del mercado laboral, sin teoría innecesaria.")}
                 ${metaRow("Flexibilidad de Pago", "Paga en 3 cuotas sin interés con tarjeta de crédito, débito o transferencia.", true)}
               </table>
@@ -628,7 +633,7 @@ function uniqueInstructors(...lists: EmailCourseItem[][]): EmailInstructor[] {
 function profCard(p: EmailInstructor) {
   const iniciales = initialsOf(p.name);
   const credenciales = p.credentials
-    .slice(0, 2)
+    .slice(0, 4)
     .map((credencial) => escapeHtml(credencial))
     .join(" ");
   const foto = p.imageUrl

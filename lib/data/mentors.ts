@@ -22,25 +22,26 @@ export const mentors: Mentor[] = [
     role: "CEO ProgramBI",
     title: "Fundador y Director",
     credentials: [
-      "Magíster en Data Science, UAI.",
-      "Docente de Econometría y TI.",
-      "Experto en Riesgo Financiero.",
+      "Contador Auditor, Universidad de Concepción (UdeC), y Magíster en Data Science (UAI).",
+      "Gerente de Riesgos Financieros en Renta 4 Corredores de Bolsa.",
+      "Analista de Riesgos en Banco Itaú Chile.",
+      "Profesor universitario de postgrado en el MBA de la UGM (asignatura Data Analytics para la toma de decisiones).",
     ],
     icon: "UserCheck",
     linkedinUrl: "https://cl.linkedin.com/in/manuel-oliva-riesgo-inversion",
     imageUrl: "/images/mentors/manuel-oliva.jpg",
     isFounder: true,
     founderBio:
-      "Lidero un equipo dedicado a empoderar empresas con herramientas de datos avanzadas. Con años de experiencia como consultor en análisis y visualización, he desarrollado dashboards personalizados integrando web, servidores y bases de datos. Mi enfoque práctico ha ayudado a compañías líderes en Minería, Finanzas y Retail a optimizar procesos críticos y tomar decisiones informadas.",
+      "Contador Auditor de la Universidad de Concepción (UdeC) y Magíster en Data Science (UAI). Experiencia laboral como Gerente de Riesgos Financieros en Renta 4 Corredores de Bolsa y Analista de Riesgos en Banco Itaú Chile, y profesor universitario de postgrado en el MBA de la UGM en la asignatura Data Analytics para la toma de decisiones. En ProgramBI lidera programas prácticos aplicados a Minería, Finanzas y Retail.",
     founderAcademics: [
+      "Contador Auditor (Universidad de Concepción — UdeC)",
       "Magíster en Data Science (UAI)",
       "Diplomado en Derivados Financieros (UAI)",
-      "Contador Auditor (U. de Concepción)",
     ],
     founderCareer: [
-      "Profesor MBA y Magíster TI (U. Gabriela Mistral)",
-      "Ex-Mesa de Dinero Banco Itaú Chile",
-      "Ex-Gerente de Riesgos Renta 4",
+      "Profesor universitario de postgrado en el MBA de la UGM — asignatura Data Analytics para la toma de decisiones",
+      "Gerente de Riesgos Financieros en Renta 4 Corredores de Bolsa",
+      "Analista de Riesgos en Banco Itaú Chile",
     ],
     sortOrder: 1,
     studentCount: 5000,
@@ -105,12 +106,12 @@ export const faqItems = [
   {
     question: "¿Cuál es la modalidad de las clases?",
     answer:
-      "El bootcamp se imparte en modalidad online con clases en directo. Esto te permite interactuar con los profesores y compañeros en tiempo real. Además, todas las clases quedan grabadas para que puedas repasarlas cuando quieras en nuestro campus virtual.",
+      "El bootcamp se imparte en modalidad online con clases en directo. Esto te permite interactuar con los profesores y compañeros en tiempo real, con acceso al campus virtual con las clases y el material usado para que puedas practicar durante el curso.",
   },
   {
     question: "¿Qué pasa si no puedo asistir a una clase en vivo?",
     answer:
-      "No hay problema. Todas las clases en directo se graban y se suben a nuestra plataforma. Tendrás acceso ilimitado a las grabaciones y a todo el material del curso para que puedas estudiar a tu propio ritmo.",
+      "No hay problema. Todas las clases en directo se suben a nuestra plataforma. Tendrás acceso al campus virtual con las clases y el material usado para que puedas practicar durante el curso y avanzar a tu propio ritmo.",
   },
   {
     question: "¿Obtendré un certificado?",

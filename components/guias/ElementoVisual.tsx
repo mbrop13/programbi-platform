@@ -52,7 +52,7 @@ export function elegirVariante(guia: Pick<Guia, "slug" | "visual" | "course" | "
 const TARJETAS_FLUJO = [
   { paso: "1", titulo: "Elige el curso", detalle: "Con clases en vivo por Zoom" },
   { paso: "2", titulo: "Paga en moneda local", detalle: `O hasta ${CUOTAS_SIN_INTERES} cuotas sin interés` },
-  { paso: "3", titulo: "Entra al campus", detalle: "Zoom, ejercicios y grabaciones de por vida" },
+  { paso: "3", titulo: "Entra al campus", detalle: "Zoom, clases y material para practicar durante el curso" },
   { paso: "4", titulo: "Completa el programa", detalle: "Certificado al terminar" },
 ];
 

@@ -28,18 +28,18 @@ export type BrochureFacultySheetProps = {
 function cleanFacultyBio(prof: BrochureProfesor): string {
   if (prof.founderBio) {
     const raw = prof.founderBio.replace(/\s+/g, " ").trim();
-    if (raw.length <= 255) return raw;
+    if (raw.length <= 460) return raw;
     const sentences = raw.match(/[^.!?]+[.!?]+/g) ?? [raw];
     let out = "";
     for (const s of sentences) {
       const candidate = out ? `${out} ${s.trim()}` : s.trim();
-      if (candidate.length > 265 && out.length > 90) break;
+      if (candidate.length > 460 && out.length > 180) break;
       out = candidate;
     }
-    if (out && out.length <= 275) return out;
-    const sliced = raw.slice(0, 240);
+    if (out && out.length <= 470) return out;
+    const sliced = raw.slice(0, 440);
     const lastSpace = sliced.lastIndexOf(" ");
-    return `${(lastSpace > 120 ? sliced.slice(0, lastSpace) : sliced).replace(/[,:;.\s]+$/, "")}.`;
+    return `${(lastSpace > 200 ? sliced.slice(0, lastSpace) : sliced).replace(/[,:;.\s]+$/, "")}.`;
   }
 
   const extras = [

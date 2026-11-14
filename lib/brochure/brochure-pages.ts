@@ -232,7 +232,7 @@ function decideModuleSpan(modulo: BrochureModulo): 1 | 2 {
   const topics = Array.isArray(modulo.topics) ? modulo.topics : [];
   const totalChars = topics.reduce((sum, t) => sum + t.length, 0);
   const longestTopic = topics.reduce((max, t) => Math.max(max, t.length), 0);
-  if (topics.length >= 8 || totalChars >= 370 || longestTopic >= 68) {
+  if (topics.length >= 8 || totalChars >= 430 || longestTopic >= 96) {
     return 2;
   }
   return 1;

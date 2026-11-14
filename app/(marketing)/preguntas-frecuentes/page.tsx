@@ -14,7 +14,7 @@ export const revalidate = 86400;
 const PATH = "/preguntas-frecuentes";
 const TITLE = tituloSeo("Preguntas frecuentes: cursos, clases y pagos");
 const DESCRIPTION =
-  "Respuestas sobre los cursos de ProgramBI: clases en vivo por Zoom, grabaciones de por vida, horarios por país, precios en moneda local, cuotas, requisitos y certificado.";
+  "Respuestas sobre los cursos de ProgramBI: clases en vivo por Zoom, campus virtual con clases y material, horarios por país, precios en moneda local, cuotas, requisitos y certificado.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },

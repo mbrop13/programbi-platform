@@ -63,11 +63,21 @@ const jsonLd = {
         name: "Manuel Oliva",
         jobTitle: "Fundador y Director",
         url: `${SITE_URL}/profesores/manuel-oliva`,
+        description:
+          "Contador Auditor (UdeC) y Magíster en Data Science (UAI). Experiencia como Gerente de Riesgos Financieros en Renta 4 Corredores de Bolsa y Analista de Riesgos en Banco Itaú Chile, y profesor universitario de postgrado en el MBA de la UGM (Data Analytics para la toma de decisiones).",
         alumniOf: [
           { "@type": "EducationalOrganization", name: "Universidad Adolfo Ibáñez" },
           { "@type": "EducationalOrganization", name: "Universidad de Concepción" },
         ],
-        knowsAbout: ["Data Science", "Riesgo Financiero", "Econometría", "Power BI", "Python"],
+        knowsAbout: [
+          "Data Science",
+          "Data Analytics para la toma de decisiones",
+          "Riesgo Financiero",
+          "Econometría",
+          "Power BI",
+          "Python",
+          "SQL Server",
+        ],
       },
       sameAs: [
         "https://www.instagram.com/programbi_capacitaciones/",

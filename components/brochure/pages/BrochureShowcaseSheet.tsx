@@ -427,7 +427,7 @@ export function BrochureShowcaseSheet({
                   {[
                     "Certificado digital verificable",
                     "Emitido por ProgramBI",
-                    "Grabaciones de por vida",
+                    "Campus virtual con clases y material",
                   ].map((bullet) => (
                     <div
                       key={bullet}

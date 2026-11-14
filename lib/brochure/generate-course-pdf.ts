@@ -1497,7 +1497,7 @@ async function construirPdfVectorial(
   doc.setFontSize(9.2);
   tinta(GRIS);
   const textoCertificado = medirLineas(
-    "Al completar los módulos recibes tu certificado digital con código de verificación, acceso permanente a las grabaciones y el material del curso.",
+    "Al completar los módulos recibes tu certificado digital con código de verificación y campus virtual con las clases y material usado para que puedas practicar durante el curso.",
     ANCHO - 84,
     9.2,
     "normal",
@@ -1817,7 +1817,7 @@ async function construirPdfVectorial(
   doc.setFontSize(9.2);
   tinta(GRIS);
   const textoCierre = medirLineas(
-    "Al completar los módulos recibes tu certificado digital con código de verificación, el acceso permanente a las grabaciones y el material del curso. Las clases son 100% en vivo por Zoom.",
+    "Al completar los módulos recibes tu certificado digital con código de verificación y campus virtual con las clases y material usado para que puedas practicar durante el curso. Las clases son 100% en vivo por Zoom.",
     ANCHO - 24,
     9.2,
     "normal",

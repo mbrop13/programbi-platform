@@ -164,7 +164,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
   // Author details (E-E-A-T booster)
   const isManuel = !article.author_name || article.author_name.toLowerCase().includes("manuel oliva");
   const authorBio = isManuel 
-    ? "CEO y Fundador de ProgramBI SPA. Magíster en Data Science (Universidad Adolfo Ibáñez), Contador Auditor (U. de Concepción), Ex-Mesa de Dinero Banco Itaú Chile. Consultor y docente especializado en analítica empresarial."
+    ? "CEO y Fundador de ProgramBI SPA. Contador Auditor (UdeC) y Magíster en Data Science (UAI). Experiencia como Gerente de Riesgos Financieros en Renta 4 Corredores de Bolsa, Analista de Riesgos en Banco Itaú Chile y profesor universitario de postgrado en el MBA de la UGM (Data Analytics para la toma de decisiones)."
     : "Instructor experto de ProgramBI, profesional activo de la industria especializado en análisis de datos, visualización y desarrollo de reportes.";
 
   // Dynamic theme wrapper classes
@@ -553,7 +553,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
           <p className={`text-sm sm:text-base leading-relaxed mb-8 font-light max-w-xl mx-auto ${
             prefs.theme === "dark" ? "text-slate-350" : "text-slate-650"
           }`}>
-            Capacítate 100% en vivo desde Chile y Latinoamérica con clases grabadas de por vida, soporte continuo y proyectos reales de la industria.
+            Capacítate 100% en vivo desde Chile y Latinoamérica con campus virtual con las clases y material para practicar durante el curso, soporte continuo y proyectos reales de la industria.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
