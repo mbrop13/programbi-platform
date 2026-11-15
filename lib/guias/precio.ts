@@ -1,7 +1,7 @@
-import { ISO_CHILE } from "@/config/paises";
-import { precioPublico } from "@/config/pricing";
+import { ISO_CHILE, normalizarPais } from "@/config/paises";
+import { precioListaPublico, precioPublico } from "@/config/pricing";
 import type { Guia } from "@/lib/guias/tipos";
-import { formatMoneda } from "@/lib/paises/precios";
+import { descuentoPublico, formatMoneda, porcentajeDescuento } from "@/lib/paises/precios";
 
 /**
  * Texto de respaldo para superficies sin contexto de guía (comparativas o
@@ -13,7 +13,7 @@ export const TEXTO_PRECIO_BROCHURE =
 /**
  * Marcadores explícitos de precio dentro del Markdown o FAQs de las guías.
  */
-const MARCADOR_PRECIO = /\{\{\s*precio\s*\}\}|\{precio_local\}/gi;
+const MARCADOR_PRECIO = /\{\{\s*precio(?::[^}]*)?\s*\}\}|\{precio_local\}/gi;
 
 /**
  * Montos de curso que quedaron escritos en el Markdown histórico. Se cubren
@@ -25,17 +25,25 @@ const MONTO_CURSO =
 
 /**
  * Combina marcadores y montos históricos en una sola pasada para no volver a
- * coincidir sobre el monto recién resuelto por `precioTextoGuia`.
+ * coincidir sobre el texto recién resuelto.
  */
 const TOKEN_PRECIO_GUIA = new RegExp(
   `${MARCADOR_PRECIO.source}|${MONTO_CURSO.source}`,
   "gi"
 );
 
+function resolverIsoGuia(country: string | null | undefined): string {
+  return country ? normalizarPais(country) : ISO_CHILE;
+}
+
+function formatearMonedaGuia(iso: string, monto: number): string {
+  return formatMoneda(iso, monto).replace(/\u00a0/g, " ");
+}
+
 /**
- * Reemplaza montos históricos de curso: si recibe `guia`, usa el precio inicial
- * público de ese país/curso (`precioTextoGuia`); sin `guia`, mantiene la
- * referencia al brochure para títulos, tarjetas o comparativas.
+ * Reemplaza montos históricos de curso: si recibe `guia`, usa la etiqueta de
+ * descuento vigente de ese país/curso (`precioTextoGuia`); sin `guia`, mantiene
+ * la referencia al brochure para títulos, tarjetas o comparativas.
  */
 export function sinMontosDeCurso(
   texto: string,
@@ -64,29 +72,62 @@ export function metaDescripcionGuia(texto: string, max = 155): string {
 }
 
 /**
- * Texto visible de precio para guías, calculado desde `config/pricing.ts`.
- * Paraguay (y cualquier curso/país sin monto público) nunca expone cifras.
+ * Texto visible de descuento para el cuerpo de las guías, calculado desde
+ * `config/pricing.ts` y `lib/paises/precios.ts`. No usa «Desde» ni expone
+ * cifras monetarias al frente; Paraguay consulta por WhatsApp sin porcentaje.
  */
 export function precioTextoGuia(guia: Pick<Guia, "country" | "course">): string {
-  const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
-  const precio = precioPublico(iso, guia.course);
-  if (precio == null) {
+  const targetIso = resolverIsoGuia(guia.country);
+  if (targetIso === "py") {
     return "consulta el valor vigente por WhatsApp";
   }
-  const monto = formatMoneda(iso, precio).replace(/\u00a0/g, " ");
-  if (guia.country === "transversal") {
-    return `desde ${monto} (ref. Chile; arancel por país en el PDF)`;
+  const pct = descuentoPublico(targetIso, guia.course);
+  if (pct <= 0) {
+    return "consulta los valores en el PDF de temario y precios";
   }
-  return `desde ${monto} (arancel detallado y descuentos en el PDF)`;
+  return `${pct}% de descuento vigente (valor en tu moneda en el PDF)`;
 }
 
 /**
- * Reemplaza `{{precio}}`, `{precio_local}` y montos históricos del Markdown
- * en una sola pasada usando el precio vigente de `config/pricing.ts`.
+ * Reemplaza `{{precio}}`, `{precio_local}` y montos históricos del cuerpo de la
+ * guía en una sola pasada usando `precioTextoGuia`.
  */
 export function resolverPrecios(body: string, guia: Pick<Guia, "country" | "course">): string {
   const textoPrecio = precioTextoGuia(guia);
   return body.replace(TOKEN_PRECIO_GUIA, () => textoPrecio);
+}
+
+/**
+ * Texto completo de precio para las FAQs finales de la guía y su JSON-LD
+ * `FAQPage`: expone el valor vigente con descuento, el precio normal y el
+ * porcentaje de descuento (sin «Desde»). Paraguay consulta por WhatsApp.
+ */
+export function precioTextoFaqGuia(guia: Pick<Guia, "country" | "course">): string {
+  const targetIso = resolverIsoGuia(guia.country);
+  if (targetIso === "py") {
+    return "consulta el valor vigente por WhatsApp";
+  }
+  const cobro = precioPublico(targetIso, guia.course);
+  if (cobro == null) {
+    return "consulta los valores en el PDF de temario y precios";
+  }
+  const cobroTexto = formatearMonedaGuia(targetIso, cobro);
+  const lista = precioListaPublico(targetIso, guia.course);
+  const pct = lista != null ? porcentajeDescuento(lista, cobro) : 0;
+  if (lista != null && pct > 0) {
+    const listaTexto = formatearMonedaGuia(targetIso, lista);
+    return `${cobroTexto} (precio normal ${listaTexto}, con ${pct}% de descuento vigente)`;
+  }
+  return cobroTexto;
+}
+
+/**
+ * Reemplaza `{{precio}}`, `{{precio:*}}`, `{precio_local}` y montos
+ * históricos en las FAQs de la guía usando `precioTextoFaqGuia`.
+ */
+export function resolverPreciosFaq(texto: string, guia: Pick<Guia, "country" | "course">): string {
+  const textoPrecio = precioTextoFaqGuia(guia);
+  return texto.replace(TOKEN_PRECIO_GUIA, () => textoPrecio);
 }
 
 /** Fecha legible y estable para el «Actualizado» visible. */

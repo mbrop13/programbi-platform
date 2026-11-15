@@ -1,4 +1,9 @@
 import type { DatosBloqueLocal } from "./tipos";
+import { etiquetaDescuentoCatalogo } from "@/lib/paises/precios";
+import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+
+const descuentoCatalogo = etiquetaDescuentoCatalogo("co");
+const resumenCatalogo = resumenPreciosCatalogo("co");
 
 /**
  * Bloque local de Colombia.
@@ -19,8 +24,9 @@ const datos: DatosBloqueLocal = {
   zonaHoraria: "America/Bogota",
   datos: {
     precioTitulo: "Precio en pesos colombianos",
-    precioDetalle:
-      "El catálogo de Colombia se publica en COP. Consulta el valor vigente de cada curso en su PDF de temario y precios: ahí están el monto, los descuentos y las fechas. El checkout confirma el importe antes de pagar.",
+    precioDetalle: descuentoCatalogo
+      ? `El catálogo de Colombia se publica en COP (${descuentoCatalogo}). Descarga el PDF de temario y precios de cada curso para ver el desglose, combos y fechas.`
+      : "El catálogo de Colombia se publica en COP. Consulta el valor vigente de cada curso en su PDF de temario y precios.",
     horarioDetalle:
       "Colombia se mantiene en UTC-5 todo el año, sin horario de verano. La clase de 19:30 en Chile se ve a las 17:30 en Bogotá cuando Chile está en UTC-3 y a las 18:30 cuando Chile vuelve a UTC-4. La ficha de la cohorte muestra la equivalencia.",
     pagoDetalle:
@@ -50,7 +56,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿El precio está en pesos colombianos?",
-          a: "Sí. El catálogo de Colombia se publica en COP y el valor vigente de cada curso se descarga en su PDF de temario y precios. El checkout confirma el monto antes de pagar y, si la cuenta local no está habilitada, muestra el equivalente en CLP.",
+          a: `${resumenCatalogo} Si la cuenta local no está habilitada, el checkout muestra el equivalente en CLP.`,
         },
         {
           q: "¿Cómo puedo pagar desde Colombia?",
@@ -104,7 +110,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga desde Colombia?",
-          a: "Con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos, según los medios habilitados. Todos los cursos admiten {cuotas} y el checkout confirma el monto final.",
+          a: `${resumenCatalogo} El pago se procesa con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos, y el checkout confirma el monto final.`,
         },
       ],
     },
@@ -137,7 +143,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuánto cuesta y cómo se paga?",
-          a: "El valor vigente está en el PDF de temario y precios del curso, en pesos colombianos. Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia, y todos los cursos admiten {cuotas}.",
+          a: `${resumenPrecioCursoTexto("co", "power-bi", "Power BI")} Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos.`,
         },
         {
           q: "¿Qué certificado recibo?",
@@ -178,7 +184,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se consulta el valor?",
-          a: "El valor vigente del nivel que elijas se descarga en el PDF de temario y precios, en pesos colombianos. El checkout confirma el monto y permite pagar en {cuotas}.",
+          a: `${resumenPrecioCursoTexto("co", "analisis-de-datos", "Análisis de Datos")} El checkout confirma el monto antes de pagar.`,
         },
       ],
     },
@@ -215,7 +221,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga el curso?",
-          a: "El valor vigente se consulta en el PDF de temario y precios, en pesos colombianos. Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia, y el curso admite {cuotas}.",
+          a: `${resumenPrecioCursoTexto("co", "python", "Python para Datos")} Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos.`,
         },
       ],
     },
@@ -274,7 +280,7 @@ const datos: DatosBloqueLocal = {
       faqs: [
         {
           q: "¿Cómo consulto el valor de un curso?",
-          a: "El valor vigente se descarga en el PDF de temario y precios de cada curso, en pesos colombianos. Ahí también están los descuentos y las fechas de la cohorte; el checkout confirma el importe antes de pagar.",
+          a: `${resumenCatalogo} El checkout confirma el importe final antes de pagar.`,
         },
         {
           q: "¿Los precios están en COP?",

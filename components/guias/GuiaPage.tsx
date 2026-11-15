@@ -19,7 +19,7 @@ import { fichaCurso } from "@/lib/guias/curso";
 import { ilustracionDeGuia, tiempoLecturaMinutos } from "@/lib/guias/ilustraciones";
 import { buildGuiaJsonLd } from "@/lib/guias/jsonld";
 import { nombreCurso } from "@/lib/guias/opciones";
-import { fechaActualizado, resolverPrecios } from "@/lib/guias/precio";
+import { fechaActualizado, resolverPrecios, resolverPreciosFaq } from "@/lib/guias/precio";
 import type { Guia } from "@/lib/guias/tipos";
 import { courseBrochurePath } from "@/lib/pricing-gate";
 import { jsonLdString } from "@/lib/seo";
@@ -50,7 +50,10 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
     .replace(/^#\s+.*\n+/, "");
   const actualizado = fechaActualizado(guia.updated);
   const encabezados = encabezadosVisibles(body);
-  const faqs = guia.faqs.map((faq) => ({ q: faq.q, a: resolverPrecios(faq.a, guia) }));
+  const faqs = guia.faqs.map((faq) => ({
+    q: resolverPreciosFaq(faq.q, guia),
+    a: resolverPreciosFaq(faq.a, guia),
+  }));
   const ficha = fichaCurso(guia.course);
   const esCursoConocido = ficha.horas != null;
   const variante = elegirVariante(guia);

@@ -63,7 +63,7 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado, precioVenta } from "@/lib/paises/precios";
+import { descuentoPublico, formatMoneda, localizarMercado, precioVenta } from "@/lib/paises/precios";
 import { whatsappHref } from "@/lib/whatsapp";
 import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
@@ -290,12 +290,13 @@ export default function CourseDetailClient({
   const levels = levelsForView(course, view);
   const catalogLevelCount = course.levels?.length ?? 0;
 
-  // Gate de precios: antes de desbloquear se muestra el precio de entrada
-  // ("Desde <arancel>"); el desglose completo (cuotas, valor por hora y
-  // Brochure PDF) recién aparece con `canSeePrice` (sesión o gate desbloqueado).
+  // Gate de precios: antes de desbloquear no se muestran montos numéricos,
+  // solo el porcentaje de descuento vigente; el desglose completo (arancel,
+  // cuotas, valor por hora y Brochure PDF) recién aparece con `canSeePrice`.
   const { unlocked: priceUnlocked, unlock } = usePriceUnlock();
   const canSeePrice = isLoggedIn || priceUnlocked;
   const precioLocalCliente = precioVenta(pais, course.slug);
+  const descuentoLocalCliente = descuentoPublico(pais, course.slug);
   const brochureUrl = courseBrochureUrl(course.slug, pais);
   const numCuotas = cuotasSinInteres(pais);
   // Sin fecha futura en la BD, el CTA ofrece aviso por WhatsApp (intent `fechas`).
@@ -716,11 +717,11 @@ export default function CourseDetailClient({
               </div>
 
               <div className="mb-5 border-t border-line pt-5">
-                {/* Antes del gate mostramos solo el precio de entrada ("Desde")
-                    cuando el país tiene arancel publicado; el desglose completo
-                    y el Brochure PDF quedan detrás de `canSeePrice`. Aquí se
-                    distingue empresa, país sin arancel aprobado (Paraguay) y
-                    venta individual con formulario. */}
+                {/* Antes del gate mostramos solo el porcentaje de descuento
+                    vigente cuando el país tiene arancel publicado; el monto, el
+                    desglose completo y el Brochure PDF quedan detrás de
+                    `canSeePrice`. Aquí se distingue empresa, país sin arancel
+                    aprobado (Paraguay) y venta individual con formulario. */}
                 {isEmpresa ? (
                   <p className="text-sm leading-relaxed text-mute">
                     {tiered
@@ -733,9 +734,9 @@ export default function CourseDetailClient({
                   <>
                     {!canSeePrice || precioLocalCliente == null ? (
                       <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl border border-line bg-canvas px-3.5 py-2.5 text-xs">
-                        {!canSeePrice && precioLocalCliente != null ? (
-                          <span className="w-full text-base font-bold tracking-tight text-ink tabular-nums">
-                            Desde {formatMoneda(pais, precioLocalCliente)}
+                        {!canSeePrice && descuentoLocalCliente > 0 ? (
+                          <span className="w-full text-base font-bold tracking-tight text-ink">
+                            {descuentoLocalCliente}% de descuento
                           </span>
                         ) : null}
                         <span className="font-semibold text-ink">

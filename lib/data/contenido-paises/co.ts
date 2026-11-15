@@ -1,4 +1,5 @@
 import type { ContenidoPais } from "./tipos";
+import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const contenido: ContenidoPais = {
   iso: "co",
@@ -142,7 +143,7 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿El catálogo está en pesos colombianos?",
-      a: "Sí. El catálogo de Colombia se muestra en COP y el checkout informa el monto antes de pagar. Si la cuenta local no está habilitada, aparece el equivalente en CLP para confirmar con el valor a la vista.",
+      a: `${resumenPreciosCatalogo("co")} Si la cuenta local no está habilitada, el checkout muestra el equivalente en CLP para confirmar con el valor a la vista.`,
       categoria: "pagos",
     },
     {

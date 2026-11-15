@@ -1,4 +1,5 @@
 import type { ContenidoPais } from "./tipos";
+import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const contenido: ContenidoPais = {
   iso: "uy",
@@ -142,7 +143,7 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿Hay descuentos o promociones?",
-      a: "Las promociones vigentes se muestran en el checkout y en la ficha de cada curso. El precio tachado indica el valor de lista; el precio final es el que ves al momento de pagar.",
+      a: `${resumenPreciosCatalogo("uy")} El precio de lista refleja el valor normal antes del descuento y el checkout confirma el monto final antes de pagar.`,
       categoria: "pagos",
     },
     {

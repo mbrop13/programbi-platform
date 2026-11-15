@@ -10,7 +10,7 @@ import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
-import { formatMoneda, precioVenta } from "@/lib/paises/precios";
+import { descuentoPublico, formatMoneda, precioVenta } from "@/lib/paises/precios";
 
 const ORDER = [
   "analisis-de-datos",
@@ -92,6 +92,7 @@ export default function Programs({
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {ALL.map((course, idx) => {
             const precio = precioVenta(pais, course.slug);
+            const descuento = descuentoPublico(pais, course.slug);
             return (
               <Link
                 key={course.slug}
@@ -134,11 +135,13 @@ export default function Programs({
                   <Clock size={12} /> {course.durationHours} h · En vivo
                   {course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                 </p>
-                {precio != null ? (
-                  <p className="mt-2 text-sm font-semibold text-ink">
-                    {unlocked
-                      ? formatMoneda(pais, precio)
-                      : `Desde ${formatMoneda(pais, precio)}`}
+                {unlocked && precio != null ? (
+                  <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
+                ) : !unlocked && descuento > 0 ? (
+                  <p className="mt-2">
+                    <span className="inline-flex items-center rounded-full bg-wash px-2.5 py-0.5 text-xs font-semibold text-ink">
+                      {descuento}% de descuento
+                    </span>
                   </p>
                 ) : (
                   <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-ink">

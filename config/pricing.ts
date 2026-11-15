@@ -25,6 +25,9 @@ export const PRECIOS_VALID_FROM = "2026-11-01T00:00:00-03:00";
  * usuario, el que declara el JSON-LD y la base del checkout.
  */
 const ANALISIS_DE_DATOS_CLP = 338000;
+const ESTANDAR_LISTA_CLP = 249000;
+const ANALISIS_LISTA_CLP = ESTANDAR_LISTA_CLP * 3;
+const MERCADO_FINANCIERO_LISTA_CLP = 514000;
 
 export const PRECIOS_CLP: Record<SlugCurso, number> = {
   "analisis-de-datos": ANALISIS_DE_DATOS_CLP,
@@ -41,6 +44,28 @@ export const PRECIOS_CLP: Record<SlugCurso, number> = {
   access: 169000,
   "machine-learning": 169000,
   "mercado-financiero": 349000,
+};
+
+/**
+ * Precio de lista (referencia normal antes de descuento) en Chile.
+ * Estándar: $249.000 (32% dcto vs $169.000); Análisis de Datos / Minería:
+ * $747.000 (3 cursos individuales, 55% dcto vs $338.000, misma proporción que
+ * `listas()` en `config/paises.ts`); Mercado Financiero: $514.000 (32% dcto).
+ */
+export const PRECIOS_LISTA_CLP: Record<SlugCurso, number> = {
+  "analisis-de-datos": ANALISIS_LISTA_CLP,
+  copilot: ESTANDAR_LISTA_CLP,
+  claude: ESTANDAR_LISTA_CLP,
+  "power-automate": ESTANDAR_LISTA_CLP,
+  "analitica-mineria": ANALISIS_LISTA_CLP,
+  "ia-productividad": ESTANDAR_LISTA_CLP,
+  "power-bi": ESTANDAR_LISTA_CLP,
+  python: ESTANDAR_LISTA_CLP,
+  "sql-server": ESTANDAR_LISTA_CLP,
+  excel: ESTANDAR_LISTA_CLP,
+  access: ESTANDAR_LISTA_CLP,
+  "machine-learning": ESTANDAR_LISTA_CLP,
+  "mercado-financiero": MERCADO_FINANCIERO_LISTA_CLP,
 };
 
 /** Cursos con precio publicado. */
@@ -74,12 +99,17 @@ export function precioPublico(iso: string | null | undefined, slug: string): num
 /** Precio de lista (tachado) en la moneda del país, si existe y es mayor. */
 export function precioListaPublico(iso: string | null | undefined, slug: string): number | null {
   const paisIso = normalizarPais(iso);
-  if (paisIso === ISO_CHILE) return null;
+  const cobro = precioPublico(paisIso, slug);
+  if (cobro == null) return null;
+  if (paisIso === ISO_CHILE) {
+    if (!esCursoConPrecio(slug)) return null;
+    const lista = PRECIOS_LISTA_CLP[slug];
+    return Number.isFinite(lista) && lista > cobro ? lista : null;
+  }
   const pais = getPais(paisIso);
   if (pais.listas === "catalogo") return null;
   const lista = pais.listas[slug as SlugCurso];
-  const cobro = precioPublico(paisIso, slug);
-  if (typeof lista !== "number" || lista <= 0 || cobro == null || lista <= cobro) return null;
+  if (typeof lista !== "number" || lista <= cobro) return null;
   return lista;
 }
 

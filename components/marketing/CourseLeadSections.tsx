@@ -8,7 +8,6 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { localizarMercado } from "@/lib/paises/precios";
 import { enlacesDeCurso } from "@/lib/seo/enlaces";
 import { ISO_CHILE, normalizarPais } from "@/config/paises";
-import { textoCuotas } from "@/config/cuotas";
 
 export const COURSE_CRO_SLUGS = [
   "analisis-de-datos",
@@ -20,21 +19,6 @@ export const COURSE_CRO_SLUGS = [
 
 export function isCourseCroSlug(slug: string): boolean {
   return (COURSE_CRO_SLUGS as readonly string[]).includes(slug);
-}
-
-/**
- * Montos explícitos en las respuestas de FAQ que llegan del servidor.
- * Se detecta `$169.000`, `S/ 119`, `US$ 79` o un número con separador de miles.
- * Sin la bandera `g` a propósito: `.test()` con `g` arrastra `lastIndex` entre
- * llamadas y dejaría de detectar montos en la segunda respuesta.
- */
-const SIN_PRECIO = /(\$|S\/|US\$|MX\$)\s?\d[\d.,]{2,}|\b\d{3}\.\d{3}\b/;
-
-/** Reemplaza una respuesta con monto por la invitación al PDF de temario y precios. */
-function sinPrecio(texto: string, pais?: string): string {
-  return SIN_PRECIO.test(texto)
-    ? `El arancel vigente de tu país, los descuentos y las ${textoCuotas(pais)} están en el PDF de temario y precios de la ficha del curso.`
-    : texto;
 }
 
 function syllabusBullets(course: Course, max = 7): string[] {
@@ -283,8 +267,10 @@ export function CourseFaq({
   const seo = COURSE_SEO[slug];
   // Las preguntas con monto en CLP no salen en fichas de otros mercados.
   const esChile = normalizarPais(pais) === ISO_CHILE;
+  const tienePrecioEnExtra = extra.some((item) => /^¿cuánto cuesta\b/i.test(item.q));
   const base = (seo?.faqs ?? [])
     .filter((item) => !item.soloChile || esChile)
+    .filter((item) => !(tienePrecioEnExtra && /^¿cuánto cuesta\b/i.test(item.q)))
     .map((item) => ({
       q: localizarMercado(item.q, pais),
       a: localizarMercado(item.a, pais),
@@ -305,7 +291,7 @@ export function CourseFaq({
                 <span className="hidden text-2xl leading-none text-faint group-open:block">–</span>
               </summary>
               <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-mute sm:text-base">
-                {faqAnswer(sinPrecio(item.a, pais))}
+                {faqAnswer(item.a)}
               </p>
             </details>
           ))}

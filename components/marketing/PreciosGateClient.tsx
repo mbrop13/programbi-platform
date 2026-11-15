@@ -11,6 +11,8 @@ import {
   type SavedLeadInfo,
 } from "@/lib/pricing-gate";
 import { NOTA_PAGO, formatMoneda, porcentajeDescuento, precioListaVenta, precioVenta } from "@/lib/paises/precios";
+import { rutaLocal } from "@/lib/paises/rutas";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
@@ -27,6 +29,7 @@ export type CursoPrecioGate = {
   title: string;
   levelName: string;
   hours: number;
+  discount?: number;
 };
 
 type Props = {
@@ -37,8 +40,8 @@ type Props = {
   moneda: string;
   /** `false` cuando el checkout no cobra en la moneda local. */
   cobroLocal: boolean;
-  /** Arancel mínimo formateado del país para mostrar "Desde ..." antes del gate. */
-  minPriceLabel?: string | null;
+  /** Rango o porcentaje de descuento vigente en el país para mostrar antes del gate. */
+  discountLabel?: string | null;
 };
 
 const FUENTE_NOTA = "Precios publicados y sujetos a cambios. El monto final se confirma en el checkout.";
@@ -47,7 +50,8 @@ const FUENTE_NOTA = "Precios publicados y sujetos a cambios. El monto final se c
  * Tabla de precios de `/precios` detrás del gate.
  *
  * Con los precios bloqueados no se renderiza ningún monto por curso: cada fila muestra
- * «En el PDF de temario y precios» y el nombre del curso abre el temario de su
+ * el porcentaje de descuento vigente y «En el PDF de temario y precios» (o consulta por
+ * WhatsApp cuando no hay arancel aprobado) y el nombre del curso abre el temario de su
  * país. Arriba aparece el formulario que desbloquea la tabla completa (Nombre,
  * Email, Teléfono con prefijo y curso principal) y abre el PDF en una pestaña.
  */
@@ -56,7 +60,7 @@ export default function PreciosGateClient({
   pais,
   moneda,
   cobroLocal,
-  minPriceLabel,
+  discountLabel,
 }: Props) {
   const { unlocked, unlock } = usePriceUnlock();
   const [slug, setSlug] = useState(() => cursos[0]?.slug ?? "power-bi");
@@ -167,8 +171,9 @@ export default function PreciosGateClient({
           ) : (
             <>
               <LockKeyhole size={13} aria-hidden />{" "}
-              {minPriceLabel ? `Desde ${minPriceLabel} · ` : ""}Aranceles en {moneda} ·{" "}
-              {textoCuotas(pais)} · en el PDF de temario y precios
+              {discountLabel
+                ? `${discountLabel} · Aranceles en ${moneda} · ${textoCuotas(pais)} · en el PDF de temario y precios`
+                : `Valores vigentes en el PDF o por WhatsApp · ${moneda} · ${textoCuotas(pais)}`}
             </>
           )}
         </p>
@@ -198,15 +203,17 @@ export default function PreciosGateClient({
           className="mt-5 rounded-[26px] border border-line-strong bg-paper p-5 sm:p-6"
         >
           <p className="text-lg font-bold tracking-tight text-ink">
-            {minPriceLabel
-              ? `Desde ${minPriceLabel} · Desbloquea todos los precios y llévate el temario`
-              : "Desbloquea todos los precios y llévate el temario con precios"}
+            {discountLabel
+              ? `${discountLabel} · Desbloquea todos los precios y llévate el temario`
+              : "Desbloquea el detalle y llévate el temario de cada curso"}
           </p>
           <p className="mt-1 max-w-[52rem] text-sm leading-relaxed text-mute">
-            {minPriceLabel ? `Desde ${minPriceLabel} en ${moneda}. ` : ""}Los aranceles de cada
-            curso se publican en su PDF de temario y precios, con el descuento vigente, las fechas
-            en hora de tu país y las {textoCuotas(pais)}. Completa tus datos y abrimos el PDF de tu
-            curso principal en una pestaña nueva.
+            {discountLabel
+              ? `${discountLabel} sobre el precio normal en ${moneda}. `
+              : "Valores vigentes en el PDF o por WhatsApp. "}
+            Los aranceles de cada curso se publican en su PDF de temario y precios, con el descuento
+            vigente, las fechas en hora de tu país y las {textoCuotas(pais)}. Completa tus datos y
+            abrimos el PDF de tu curso principal en una pestaña nueva.
           </p>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -356,7 +363,8 @@ export default function PreciosGateClient({
               const precio = precioVenta(pais, curso.slug);
               const lista = precioListaVenta(pais, curso.slug);
               const descuento =
-                lista != null && precio != null ? porcentajeDescuento(lista, precio) : 0;
+                curso.discount ??
+                (lista != null && precio != null ? porcentajeDescuento(lista, precio) : 0);
               return (
                 <tr key={curso.slug}>
                   <th scope="row" className="px-4 py-4 font-semibold text-ink">
@@ -400,15 +408,32 @@ export default function PreciosGateClient({
                           {NOTA_PAGO}
                         </span>
                       </div>
+                    ) : descuento > 0 ? (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full bg-wash px-2.5 py-0.5 text-xs font-semibold text-ink">
+                          {descuento}% de descuento
+                        </span>
+                        <Link
+                          href={courseBrochurePath(curso.slug, pais)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline hover:text-mute"
+                        >
+                          <FileText size={14} aria-hidden /> En el PDF de temario y precios
+                        </Link>
+                      </div>
                     ) : (
-                      <Link
-                        href={courseBrochurePath(curso.slug, pais)}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <WhatsAppCta
+                        page={rutaLocal(pais, "/precios")}
+                        intent="curso"
+                        course={curso.title}
+                        courseSlug={curso.slug}
+                        country={pais}
+                        ctaPosition="precios_table_locked"
                         className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline hover:text-mute"
                       >
-                        <FileText size={14} aria-hidden /> En el PDF de temario y precios
-                      </Link>
+                        Consulta por WhatsApp
+                      </WhatsAppCta>
                     )}
                   </td>
                 </tr>

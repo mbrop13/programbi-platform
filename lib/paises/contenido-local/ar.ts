@@ -1,4 +1,9 @@
 import type { DatosBloqueLocal } from "./tipos";
+import { etiquetaDescuentoCatalogo } from "@/lib/paises/precios";
+import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+
+const descuentoCatalogo = etiquetaDescuentoCatalogo("ar");
+const resumenCatalogo = resumenPreciosCatalogo("ar");
 
 /**
  * Bloque local de Argentina.
@@ -18,8 +23,9 @@ const datos: DatosBloqueLocal = {
   zonaHoraria: "America/Argentina/Buenos_Aires",
   datos: {
     precioTitulo: "Precio en pesos argentinos",
-    precioDetalle:
-      "El catálogo de Argentina se publica en ARS. Consulta el valor vigente de cada curso en su PDF de temario y precios: ahí están el monto, los descuentos y las fechas. El checkout confirma el importe antes de pagar.",
+    precioDetalle: descuentoCatalogo
+      ? `El catálogo de Argentina se publica en ARS (${descuentoCatalogo}). Descarga el PDF de temario y precios de cada curso para ver el desglose, combos y fechas.`
+      : "El catálogo de Argentina se publica en ARS. Consulta el valor vigente de cada curso en su PDF de temario y precios.",
     horarioDetalle:
       "Argentina usa UTC-3 todo el año. Cuando Chile está en horario de verano, la clase se ve a la misma hora; cuando Chile vuelve a UTC-4, se ve una hora más tarde. La ficha de la cohorte muestra la conversión exacta.",
     pagoDetalle:
@@ -49,7 +55,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿El precio está en pesos argentinos?",
-          a: "Sí. El catálogo de Argentina se publica en ARS y el valor vigente de cada curso se descarga en su PDF de temario y precios. El checkout confirma el monto antes de pagar y, si la cuenta local no está habilitada, muestra el equivalente en CLP.",
+          a: `${resumenCatalogo} Si la cuenta local no está habilitada, el checkout muestra el equivalente en CLP.`,
         },
         {
           q: "¿Puedo pagar desde Argentina?",
@@ -103,7 +109,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga desde Argentina?",
-          a: "Con Mercado Pago Argentina, Mercado Pago Wallet o transferencia bancaria en pesos. Todos los cursos se pueden pagar en {cuotas} y el checkout confirma el monto final antes de pagar.",
+          a: `${resumenCatalogo} El pago se procesa con Mercado Pago Argentina, Mercado Pago Wallet o transferencia bancaria en pesos, y el checkout confirma el monto final antes de pagar.`,
         },
       ],
     },
@@ -136,7 +142,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuánto cuesta y cómo se paga?",
-          a: "El valor vigente está en el PDF de temario y precios del curso, en pesos argentinos. Se paga con Mercado Pago Argentina, Mercado Pago Wallet o transferencia, y todos los cursos admiten {cuotas}.",
+          a: `${resumenPrecioCursoTexto("ar", "power-bi", "Power BI")} Se paga con Mercado Pago Argentina, Mercado Pago Wallet o transferencia bancaria en pesos.`,
         },
         {
           q: "¿Qué certificado recibo?",
@@ -177,7 +183,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se consulta el valor?",
-          a: "El valor vigente del nivel que elijas se descarga en el PDF de temario y precios del curso, en pesos argentinos. El checkout confirma el monto y permite pagar en {cuotas}.",
+          a: `${resumenPrecioCursoTexto("ar", "analisis-de-datos", "Análisis de Datos")} El checkout confirma el monto antes de pagar.`,
         },
       ],
     },
@@ -214,7 +220,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga el curso?",
-          a: "El valor vigente se consulta en el PDF de temario y precios, en pesos argentinos. Se paga con Mercado Pago Argentina o transferencia, y el curso admite {cuotas}.",
+          a: `${resumenPrecioCursoTexto("ar", "python", "Python para Datos")} Se paga con Mercado Pago Argentina o transferencia bancaria en pesos.`,
         },
       ],
     },
@@ -273,7 +279,7 @@ const datos: DatosBloqueLocal = {
       faqs: [
         {
           q: "¿Cómo consulto el valor de un curso?",
-          a: "El valor vigente se descarga en el PDF de temario y precios de cada curso, en pesos argentinos. Ahí también están los descuentos y las fechas de la cohorte; el checkout confirma el importe antes de pagar.",
+          a: `${resumenCatalogo} El checkout confirma el importe final antes de pagar.`,
         },
         {
           q: "¿Los precios están en ARS?",

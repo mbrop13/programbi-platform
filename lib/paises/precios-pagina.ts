@@ -7,10 +7,16 @@ import {
   levelsForView,
   openCourseLevel,
 } from "@/lib/data/course-views";
-import { precioChile } from "@/config/pricing";
+import { precioChile, precioListaPublico } from "@/config/pricing";
 import { resolverCobro } from "@/lib/paises/cobro";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
-import { NOTA_PAGO, precioCurso, precioLista } from "@/lib/paises/precios";
+import {
+  NOTA_PAGO,
+  formatMoneda,
+  porcentajeDescuento,
+  precioCurso,
+  precioLista,
+} from "@/lib/paises/precios";
 
 export type PrecioCursoPagina = {
   slug: string;
@@ -58,7 +64,9 @@ function nivelPublico(course: Course): NivelPublico {
 }
 
 function filaChile(course: Course): PrecioCursoPagina {
-  const priceValue = precioChile(course.slug);
+  const cobro = precioChile(course.slug);
+  const lista = precioListaPublico(ISO_CHILE, course.slug);
+  const tieneDescuento = lista != null && cobro != null && lista > cobro;
 
   return {
     slug: course.slug,
@@ -66,10 +74,10 @@ function filaChile(course: Course): PrecioCursoPagina {
     description: course.shortDescription,
     hours: catalogHours(course),
     levelName: nivelPublico(course).name,
-    priceLabel: priceValue ? montoConCodigo(ISO_CHILE, priceValue) : "Consultar",
-    priceValue,
-    listLabel: null,
-    discount: 0,
+    priceLabel: cobro ? montoConCodigo(ISO_CHILE, cobro) : "Consultar",
+    priceValue: cobro,
+    listLabel: tieneDescuento ? formatMoneda(ISO_CHILE, lista) : null,
+    discount: tieneDescuento ? porcentajeDescuento(lista, cobro) : 0,
     currency: "CLP",
     chargeLabel: null,
   };
@@ -90,9 +98,7 @@ function filaLocal(course: Course, iso: string): PrecioCursoPagina {
     priceValue: local,
     listLabel: lista != null ? montoConCodigo(iso, lista) : null,
     discount:
-      lista != null && local != null
-        ? Math.round(((lista - local) / lista) * 100)
-        : 0,
+      lista != null && local != null ? porcentajeDescuento(lista, local) : 0,
     currency: pais.moneda,
     // La nota junta al precio es la de pago, sin aviso de CLP: el aviso de
     // moneda de cobro aparece recién en el checkout.

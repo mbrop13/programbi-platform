@@ -1,5 +1,6 @@
 import type { ContenidoPais } from "./tipos";
 import type { DefinicionBloqueLocal } from "./bloque";
+import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const contenido: ContenidoPais = {
   iso: "mx",
@@ -143,7 +144,7 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿Cómo se confirma el precio en pesos mexicanos?",
-      a: "El catálogo de México se muestra en MXN y el checkout presenta el monto final antes de pagar. Si la cuenta local de Mercado Pago no está habilitada, se informa el equivalente en CLP para comparar antes de confirmar.",
+      a: `${resumenPreciosCatalogo("mx")} El checkout confirma el monto final antes de pagar; si la cuenta local de Mercado Pago no está habilitada, se informa el equivalente en CLP para comparar antes de confirmar.`,
       categoria: "pagos",
     },
     {
@@ -191,7 +192,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     },
     {
       q: "¿Cuánto cuesta un curso en México y en qué moneda se paga?",
-      a: "El catálogo se publica en pesos mexicanos (MXN), sin conversión a dólares. El monto vigente de cada curso y los descuentos están en su PDF de temario y precios, y el checkout muestra el total antes de pagar.",
+      a: "{resumenPrecios}",
     },
     {
       q: "¿Cómo pago desde México: tarjeta, SPEI u OXXO?",

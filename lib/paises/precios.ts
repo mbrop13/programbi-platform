@@ -1,4 +1,4 @@
-import { getPais, ISO_CHILE, normalizarPais, type SlugCurso } from "@/config/paises";
+import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO, type SlugCurso } from "@/config/paises";
 import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { voseoTitular } from "@/config/textos";
 import { localizarHoras } from "@/lib/paises/horarios";
@@ -32,19 +32,43 @@ export function precioCurso(iso: string | null | undefined, slug: string): numbe
   return typeof valor === "number" && valor > 0 ? valor : null;
 }
 
-/** Precio tachado. Null en Chile: ahí lo pone el catálogo y la promo. */
+/** Precio normal (tachado) del curso en la moneda del país. */
 export function precioLista(iso: string | null | undefined, slug: string): number | null {
-  const pais = getPais(normalizarPais(iso));
-  if (pais.listas === "catalogo") return null;
-  const lista = pais.listas[slug as SlugCurso];
+  const lista = precioListaPublico(iso, slug);
   const cobro = precioCurso(iso, slug);
-  if (typeof lista !== "number" || lista <= 0 || cobro == null || lista <= cobro) return null;
+  if (lista == null || cobro == null || lista <= cobro) return null;
   return lista;
 }
 
 export function porcentajeDescuento(lista: number, cobro: number): number {
   if (lista <= cobro) return 0;
   return Math.round(((lista - cobro) / lista) * 100);
+}
+
+/** Porcentaje de descuento vigente para un curso en el país (0 si no aplica). */
+export function descuentoPublico(iso: string | null | undefined, slug: string): number {
+  const cobro = precioPublico(iso, slug);
+  const lista = precioListaPublico(iso, slug);
+  if (cobro == null || lista == null || lista <= cobro) return 0;
+  return porcentajeDescuento(lista, cobro);
+}
+
+/** Etiqueta de descuento para mostrar antes del PDF ("32% de descuento"), o null si no aplica. */
+export function etiquetaDescuentoCurso(iso: string | null | undefined, slug: string): string | null {
+  const pct = descuentoPublico(iso, slug);
+  return pct > 0 ? `${pct}% de descuento` : null;
+}
+
+/** Etiqueta de descuento del catálogo ("32% a 55% de descuento"), sin usar "Desde". */
+export function etiquetaDescuentoCatalogo(
+  iso: string | null | undefined,
+  slugs: readonly string[] = SLUGS_CURSO,
+): string | null {
+  const pcts = slugs.map((slug) => descuentoPublico(iso, slug)).filter((pct) => pct > 0);
+  if (pcts.length === 0) return null;
+  const min = Math.min(...pcts);
+  const max = Math.max(...pcts);
+  return min === max ? `${min}% de descuento` : `${min}% a ${max}% de descuento`;
 }
 
 export function formatMoneda(iso: string | null | undefined, monto: number): string {

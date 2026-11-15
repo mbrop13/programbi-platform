@@ -21,7 +21,12 @@ import { courses } from "@/lib/data/courses";
 import { guiasDePais, indiceGuias } from "@/lib/guias";
 import { esGuiaPublicada } from "@/lib/guias/relacionadas";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
-import { NOTA_PAGO } from "@/lib/paises/precios";
+import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import {
+  etiquetaDescuentoCatalogo,
+  etiquetaDescuentoCurso,
+  NOTA_PAGO,
+} from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 import type { SeoPagina } from "./tipos";
 
@@ -117,6 +122,7 @@ type Ctx = {
   medios: string;
   notaPago: string;
   claseGratis: string;
+  resumenPrecios: string;
 };
 
 const MARCADOR = /\{([\w-]+)\}/g;
@@ -153,10 +159,15 @@ export function construirBloque(
   const pais = getPais(iso);
   const horario = horarioLocal(iso);
   const curso = opciones.curso ? courses.find((item) => item.slug === opciones.curso) : undefined;
-  // El sitio oculta los montos en el HTML hasta que el visitante descarga el
-  // brochure (`hooks/usePriceUnlock`). El bloque respeta ese gate: publica la
-  // moneda y remite al brochure, nunca el importe.
+  // La ficha superior muestra únicamente el descuento vigente (nunca un monto ni
+  // «Desde ...»); las FAQs al pie resuelven `{resumenPrecios}` con montos reales.
   const hayPrecio = precioPublico(iso, curso?.slug ?? "power-bi") != null;
+  const etiquetaDescuento = curso
+    ? etiquetaDescuentoCurso(iso, curso.slug)
+    : etiquetaDescuentoCatalogo(iso);
+  const resumenPrecios = curso
+    ? resumenPrecioCursoTexto(iso, curso.slug, curso.title)
+    : resumenPreciosCatalogo(iso);
   const fechaGratis = fechaClaseGratis();
 
   const ctx: Ctx = {
@@ -170,6 +181,7 @@ export function construirBloque(
     medios: pais.mediosPago.join("; "),
     notaPago: NOTA_PAGO,
     claseGratis: fechaGratis ?? "sin fecha confirmada",
+    resumenPrecios,
   };
 
   const nota = (clave: ClaveHechoLocal, generico: string) =>
@@ -179,12 +191,14 @@ export function construirBloque(
     {
       clave: "precio",
       etiqueta: `Precio en ${pais.moneda}`,
-      valor: hayPrecio ? "En el PDF de temario y precios" : "Consulta el valor",
+      valor: hayPrecio
+        ? (etiquetaDescuento ?? "En el PDF de temario y precios")
+        : "Consulta por WhatsApp",
       detalle: nota(
         "precio",
         hayPrecio
-          ? `El monto vigente y los descuentos están en el PDF de temario y precios del curso; el checkout muestra el total antes de pagar.`
-          : `Sin precio público aprobado para ${pais.nombre}: se confirma con admisiones.`
+          ? `Descarga el PDF de temario y precios para ver el desglose completo y combos; el checkout muestra el total antes de pagar.`
+          : `Sin precio público aprobado para ${pais.nombre}: se consulta por WhatsApp.`
       ),
     },
     {

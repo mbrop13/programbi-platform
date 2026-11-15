@@ -1,5 +1,6 @@
 import type { ContenidoPais } from "./tipos";
 import type { DefinicionBloqueLocal } from "./bloque";
+import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const contenido: ContenidoPais = {
   iso: "pe",
@@ -143,7 +144,7 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿Cómo se cobra si elijo pagar en soles?",
-      a: "El catálogo de Perú se muestra en PEN y el checkout informa el monto antes de pagar. Si la cuenta local no está habilitada, aparece el equivalente en CLP para que confirmes con el valor a la vista.",
+      a: `${resumenPreciosCatalogo("pe")} Si la cuenta local no está habilitada, el checkout informa el equivalente en CLP para confirmar con el valor a la vista.`,
       categoria: "pagos",
     },
     {
@@ -191,7 +192,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     },
     {
       q: "¿Cuánto cuesta un curso en Perú y en qué moneda se paga?",
-      a: "El catálogo se publica en soles (PEN), sin conversión a dólares. El monto vigente de cada curso y los descuentos están en su PDF de temario y precios, y el checkout muestra el total antes de pagar.",
+      a: "{resumenPrecios}",
     },
     {
       q: "¿Puedo pagar desde Perú con tarjeta, Yape o Plin?",

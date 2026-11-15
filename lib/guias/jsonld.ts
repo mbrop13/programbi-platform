@@ -1,7 +1,7 @@
 import { miembroPorCurso } from "@/lib/data/equipo";
 import { ilustracionDeGuia, palabrasDeGuia, tiempoLecturaMinutos } from "@/lib/guias/ilustraciones";
 import { nombreCurso } from "@/lib/guias/opciones";
-import { metaDescripcionGuia, resolverPrecios } from "@/lib/guias/precio";
+import { metaDescripcionGuia, resolverPreciosFaq } from "@/lib/guias/precio";
 import type { Guia } from "@/lib/guias/tipos";
 import { CANONICAL_HOST, ORG_ID, WEBSITE_ID, absoluteUrl } from "@/lib/seo";
 import { getPersonaJsonLd, idPersona } from "@/lib/seo/course-jsonld";
@@ -57,7 +57,10 @@ export function buildGuiaJsonLd(
   const instructor = miembroPorCurso(guia.course === "general" ? "power-bi" : guia.course);
   const wordCount = palabrasDeGuia(body);
   const mins = tiempoLecturaMinutos(body);
-  const faqs = guia.faqs.map((faq) => ({ q: faq.q, a: resolverPrecios(faq.a, guia) }));
+  const faqs = guia.faqs.map((faq) => ({
+    q: resolverPreciosFaq(faq.q, guia),
+    a: resolverPreciosFaq(faq.a, guia),
+  }));
   const topicName = guia.course === "general" ? "Analítica de datos e IA" : nombreCurso(guia.course);
   const citations = externalCitations(guia.sources);
 

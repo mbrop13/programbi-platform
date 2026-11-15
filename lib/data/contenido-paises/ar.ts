@@ -1,4 +1,5 @@
 import type { ContenidoPais } from "./tipos";
+import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const contenido: ContenidoPais = {
   iso: "ar",
@@ -142,7 +143,7 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿El precio final está en pesos argentinos?",
-      a: "El catálogo de Argentina se muestra en ARS y el checkout confirma el monto antes de pagar. Si la cuenta local de Mercado Pago no está habilitada, el checkout informa el equivalente en CLP para que la decisión sea con el número a la vista.",
+      a: `${resumenPreciosCatalogo("ar")} Si la cuenta local de Mercado Pago no está habilitada, el checkout informa el equivalente en CLP para que la decisión sea con el número a la vista.`,
       categoria: "pagos",
     },
     {

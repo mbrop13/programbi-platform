@@ -11,7 +11,8 @@ import {
 import { PAISES_INDEXABLES, getPais, normalizarPais, type Pais } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado } from "@/lib/paises/precios";
+import { etiquetaDescuentoCatalogo, localizarMercado } from "@/lib/paises/precios";
+import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagina";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
@@ -65,14 +66,13 @@ export async function generateMetadata({
   );
 }
 
-function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
+function faqsDe(pais: Pais, cursos: PrecioCursoPagina[]) {
   const powerBi = cursos.find((curso) => curso.slug === "power-bi");
-  const horasPowerBi = powerBi ? `${powerBi.hours} horas` : "20 horas";
 
   return [
     {
       q: `¿Cuánto cuestan los cursos en ${pais.nombre}?`,
-      a: `El arancel vigente de cada curso se publica en su PDF de temario y precios, que se descarga gratis desde la tabla de esta página. Los montos están en ${moneda} y el valor final se confirma en el checkout.`,
+      a: resumenPreciosCatalogo(pais.iso),
     },
     {
       q: "¿Qué incluye el precio?",
@@ -88,11 +88,11 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
     },
     {
       q: `¿Cuánto cuesta el curso de Power BI en ${pais.nombre}?`,
-      a: `El arancel vigente de Power BI, por ${horasPowerBi}, se descarga en el PDF de temario y precios del curso, con las fechas en hora de ${pais.nombre} y el detalle de las ${textoCuotas(pais.iso)}. Está publicado en ${moneda}.`,
+      a: resumenPrecioCursoTexto(pais.iso, "power-bi", powerBi?.title ?? "Power BI"),
     },
     {
       q: "¿Cuál es el mejor curso de Power BI en vivo en LatAm?",
-      a: `No hay un ranking único. Para comparar, revisa si las clases son en vivo, la duración, las grabaciones y el certificado. En ProgramBI, Power BI se dicta en vivo por Zoom${powerBi ? `, con ${powerBi.hours} horas` : ""}, grabaciones y certificado; el arancel de ${pais.nombre} está en el PDF de temario y precios de cada curso.`,
+      a: `No hay un ranking único. Para comparar, revisa si las clases son en vivo, la duración, las grabaciones y el certificado. En ProgramBI, Power BI se dicta en vivo por Zoom${powerBi ? `, con ${powerBi.hours} horas por nivel` : ""}, grabaciones y certificado; el arancel de ${pais.nombre} está en el PDF de temario y precios de cada curso.`,
     },
     {
       q: `¿Cómo puedo pagar desde ${pais.nombre}?`,
@@ -122,7 +122,7 @@ export default async function PreciosPage({
   }));
   // Con bloque local, la FAQ de la página es la del mercado (4-6 preguntas):
   // el texto visible y el FAQPage JSON-LD salen de la misma lista.
-  const faqs = faqsBloque ?? bloque?.faqs ?? faqsDe(pais, cursos, moneda);
+  const faqs = faqsBloque ?? bloque?.faqs ?? faqsDe(pais, cursos);
   const otrosPaises = PAISES_INDEXABLES.filter(
     (otro) => otro.iso !== pais.iso && esRutaIndexablePais(otro.iso, PATH)
   );
@@ -131,16 +131,12 @@ export default async function PreciosPage({
   const href = (destino: string) => rutaLocal(iso, destino);
   const courseUrl = (slug: string) => absoluteUrl(href(`/cursos/${slug}`));
 
-  const priceValues = cursos
-    .map((curso) => curso.priceValue)
-    .filter((value): value is number => value != null);
-  const minPrice = priceValues.length > 0 ? Math.min(...priceValues) : null;
-  const minPriceLabel = minPrice != null ? formatMoneda(pais.iso, minPrice) : null;
+  const discountLabel = etiquetaDescuentoCatalogo(pais.iso);
 
   // La tabla de precios es cliente: recibe solo títulos, nivel y horas. El
-  // resumen SSR muestra el arancel mínimo ("Desde ...") cuando hay monto
-  // publicado; la matriz por curso, descuentos y cuotas se calculan con
-  // `precioVenta` recién al desbloquear el formulario del PDF.
+  // resumen superior muestra únicamente el porcentaje de descuento vigente
+  // (sin montos ni "Desde ..."); los valores por curso se muestran en el PDF
+  // tras enviar el formulario y en las preguntas frecuentes del pie.
   const cursosGate: CursoPrecioGate[] = cursos.map((curso) => ({
     slug: curso.slug,
     title: curso.title,
@@ -227,21 +223,15 @@ export default async function PreciosPage({
           </p>
 
           {powerBi ? (
-            <dl
-              className={`mt-6 grid gap-4 rounded-2xl border border-line bg-paper p-5 text-sm sm:grid-cols-2 ${
-                minPriceLabel ? "lg:grid-cols-5" : "lg:grid-cols-4"
-              }`}
-            >
-              {minPriceLabel ? (
-                <div>
-                  <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-                    Arancel
-                  </dt>
-                  <dd className="mt-1 font-semibold text-ink tabular-nums">
-                    Desde {minPriceLabel}
-                  </dd>
-                </div>
-              ) : null}
+            <dl className="mt-6 grid gap-4 rounded-2xl border border-line bg-paper p-5 text-sm sm:grid-cols-2 lg:grid-cols-5">
+              <div>
+                <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                  {discountLabel ? "Descuento vigente" : "Arancel"}
+                </dt>
+                <dd className="mt-1 font-semibold text-ink">
+                  {discountLabel ?? "Consulta por WhatsApp"}
+                </dd>
+              </div>
               <div>
                 <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
                   Curso Power BI
@@ -283,7 +273,7 @@ export default async function PreciosPage({
             pais={pais.iso}
             moneda={moneda}
             cobroLocal={cobroLocal}
-            minPriceLabel={minPriceLabel}
+            discountLabel={discountLabel}
           />
 
           {/* Datos del mercado: horario local, pago internacional, cuotas,

@@ -162,27 +162,36 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
 
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
 
-  // Horario local y preguntas que no incluyen el precio.
+  // Horario local y preguntas de pie de página (incluye precio vigente del mercado).
   const cohorte = schedules.find((s) => s.course_slug === course.slug);
   const { inicio, fin } = horarioDeCohorte(cohorte?.schedule_time);
-  const detalle = detalleCursoLocal({ iso: pais, inicio, fin });
+  const detalle = detalleCursoLocal({
+    iso: pais,
+    slug: course.slug,
+    courseTitle: course.title,
+    inicio,
+    fin,
+  });
 
   const courseJsonLd = getCourseJsonLd(course, "publico", pais);
   const bloque = getBloqueLocal(pais, { curso: slug });
   // El bloque «Preguntas frecuentes» de la ficha sale de dos fuentes y el
   // FAQPage declara exactamente las que se ven: `CourseFaq` pinta las de
-  // `COURSE_SEO[slug]` (filtradas por `soloChile`) más `detalle.faqs`, y
-  // `CourseLocalSeo` pinta solo `detalle.faqs` en los cursos sin plantilla CRO.
+  // `COURSE_SEO[slug]` (filtradas por `soloChile` y sin duplicar el precio si
+  // ya lo aporta `detalle.faqs`) más `detalle.faqs`, y `CourseLocalSeo` pinta
+  // solo `detalle.faqs` en los cursos sin plantilla CRO.
+  const tienePrecioEnDetalle = detalle.faqs.some((faq) => /^¿cuánto cuesta\b/i.test(faq.q));
   const faqsCurso = FICHA_CON_FAQ_CURSO.has(slug)
     ? (seo?.faqs ?? [])
         .filter((faq) => !faq.soloChile || pais === ISO_CHILE)
+        .filter((faq) => !(tienePrecioEnDetalle && /^¿cuánto cuesta\b/i.test(faq.q)))
         .map((faq) => ({
           "@type": "Question",
           name: localizarMercado(faq.q, pais),
           acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
         }))
     : [];
-  // Preguntas del mercado: horario local y certificado. Sin el precio.
+  // Preguntas del mercado: horario local, certificado y precio vigente del curso.
   const faqsMercado = detalle.faqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,

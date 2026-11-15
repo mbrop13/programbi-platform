@@ -8,9 +8,10 @@ import {
   HORA_CLASE_CHILE,
   zonaDe,
 } from "@/lib/paises/horarios";
-import { formatMoneda } from "@/lib/paises/precios";
+import { etiquetaDescuentoCatalogo, formatMoneda } from "@/lib/paises/precios";
+import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 import { whatsappHref } from "@/lib/whatsapp";
-import { CUOTAS_SIN_INTERES } from "@/config/cuotas";
+import { CUOTAS_SIN_INTERES, textoCuotas } from "@/config/cuotas";
 
 /** Texto único de cuotas, derivado de config/cuotas.ts. */
 const CUOTAS = `${CUOTAS_SIN_INTERES} cuotas sin interés`;
@@ -149,7 +150,7 @@ function tablaPrecios(iso: string): FaqContenido["precios"] {
       actual: pais.iso === iso,
     })),
     nota:
-      "El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de la ficha del curso. En Paraguay el PDF se pide por WhatsApp porque todavía no hay un precio público aprobado.",
+      `El arancel vigente de cada curso, los descuentos y las ${textoCuotas(iso)} se descargan en el PDF de temario y precios de la ficha del curso. En Paraguay el PDF se pide por WhatsApp porque todavía no hay un precio público aprobado.`,
   };
 }
 
@@ -242,10 +243,14 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
   const comp = dispositivo(iso);
 
   const sinPrecio = !tienePrecioPublico(iso);
+  const cuotas = textoCuotas(iso);
+  const descuentoCatalogo = etiquetaDescuentoCatalogo(iso);
+  const resumenPrecios = resumenPreciosCatalogo(iso);
 
-  const introPrecio = sinPrecio
-    ? `En ${nombre} el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado, y se puede pagar en ${CUOTAS}.`
-    : `En ${nombre}, el arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de la ficha del curso.`;
+  const introPrecio =
+    sinPrecio || !descuentoCatalogo
+      ? `En ${nombre} el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado, y se puede pagar en ${cuotas}.`
+      : `En ${nombre} hay ${descuentoCatalogo} vigente y ${cuotas}; el desglose por curso y combos se descarga en el PDF de temario y precios.`;
 
   const introHorario = esChile
     ? `Abrimos cohortes cada mes, con clases de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} (hora de Chile) los lunes y miércoles o los martes y jueves; la fecha exacta de inicio se confirma al inscribirte.`
@@ -379,16 +384,13 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
     {
       id: "precios",
       titulo: "Precios por país y qué incluye",
-      resumen:
-        `El arancel se publica en la moneda de cada país y se paga en ${CUOTAS}. El monto vigente, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de cada curso; en Paraguay se consulta por WhatsApp.`,
+      resumen: resumenPrecios,
       tabla: "precios",
       items: [
         {
           id: "cuanto-cuestan",
           pregunta: "¿Cuánto cuestan los cursos?",
-          respuesta: sinPrecio
-            ? "En Paraguay el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado. El PDF de temario y precios de cada curso y la fecha del próximo inicio se piden por el mismo canal."
-            : "El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en su PDF de temario y precios. El PDF se pide con tu nombre, email y WhatsApp, y tanto el precio de venta de tu país como la fecha de inicio vigente se confirman en el checkout.",
+          respuesta: resumenPrecios,
         },
         {
           id: "moneda-local",
@@ -645,7 +647,13 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       { dato: "Próximo inicio", detalle: PROXIMO_INICIO },
       { dato: "Días", detalle: esChile ? "Lunes y miércoles, o martes y jueves" : "Lunes y miércoles" },
       { dato: "Horario", detalle: fichaHorario },
-      { dato: "Precio", detalle: sinPrecio ? "Se consulta por WhatsApp" : "Arancel vigente, descuentos y 3 cuotas sin interés en el PDF de temario y precios de cada curso" },
+      {
+        dato: "Precio",
+        detalle:
+          sinPrecio || !descuentoCatalogo
+            ? "Se consulta por WhatsApp"
+            : `${descuentoCatalogo} (descarga el PDF para ver el desglose)`,
+      },
       { dato: "Certificado", detalle: "ProgramBI al completar; la PL-300 se rinde aparte con Microsoft" },
     ],
     secciones,
