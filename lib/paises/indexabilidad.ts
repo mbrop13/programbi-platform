@@ -58,27 +58,11 @@ export const PAISES_SIN_CONTENIDO_LOCAL: readonly PaisSecundario[] = [
  * indexables: hub, `/cursos`, `/cursos/<curso>` y `/empresas`.
  */
 export const RUTAS_NOINDEX_PAIS: Readonly<Record<string, readonly PaisSecundario[]>> = {
-  "/precios": PAISES_SECUNDARIOS,
-  // Uruguay queda indexable: su FAQ usa contenido propio (agro, frigoríficos,
-  // horario de Montevideo, pago en UYU) y mide 7,1 % de similitud con /faq.
-  "/preguntas-frecuentes": PAISES_SECUNDARIOS,
-  "/faq": PAISES_SIN_CONTENIDO_LOCAL,
-  "/curso-sql-online": PAISES_SECUNDARIOS,
-  "/curso-python": PAISES_SECUNDARIOS,
-  "/curso-power-bi-vs-pack-adopcion": PAISES_SECUNDARIOS,
-  // Venezuela queda indexable: /ve/implementacion-power-bi tiene 1 clic en GSC
-  // (28 d) y la regla manda no tocarla. Uruguay también: 38,9 % de similitud
-  // con la raíz (contenido propio de agro/frigoríficos), bajo el umbral 70 %.
-  "/implementacion-power-bi": ["ec", "cr", "do", "gt", "bo", "sv"],
-  // Uruguay queda indexable: 38,7 % de similitud con la raíz.
-  "/migrar-excel-a-power-bi": PAISES_SIN_CONTENIDO_LOCAL,
-  "/nosotros": PAISES_SIN_CONTENIDO_LOCAL,
-  "/por-que-fallan-proyectos-power-bi": PAISES_SECUNDARIOS,
-  // Hoy estas URLs no existen para los países secundarios (el segmento
-  // /[pais]/versus solo genera mx, co y ar, y el layout fija
-  // dynamicParams = false). Se declaran para que, si se publican, nazcan
-  // noindex y no se cuelen en el sitemap.
-  "/versus/*": PAISES_SECUNDARIOS,
+  // Vacío desde el 17 nov 2026: Manu decidió indexar también las variantes que
+  // antes se consolidaban como noindex (precios, faq, nosotros, curso-python,
+  // curso-sql-online, implementación, migrar Excel, por qué fallan, vs. pack).
+  // La tabla anterior está en el historial de git (commit a168cc8 y previos).
+  // Para volver a consolidar una ruta, agregarla aquí con sus países.
 };
 
 /**

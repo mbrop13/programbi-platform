@@ -145,8 +145,8 @@ export type Pais = {
   voseo: boolean;
   /**
    * ¿La versión por país puede indexarse?
-   * Indexables: Chile (raíz), Argentina, México, Perú, Colombia y Uruguay.
-   * El resto queda en noindex, follow y fuera del sitemap y de los hreflang.
+   * Desde el 17 nov 2026 todos los mercados se indexan (decisión de Manu).
+   * `false` deja un país en noindex, follow y fuera del sitemap y de los hreflang.
    */
   indexable: boolean;
   /** Zona horaria IANA. Sirve para convertir el horario de las clases. */
@@ -324,7 +324,7 @@ export const PAISES: Pais[] = [
   },
   {
     // Estados Unidos: hispanohablantes que viven y trabajan allá (Miami primero).
-    // Nace en noindex hasta que Manu apruebe precio y medio de cobro.
+    // Precio provisional (249/499) y cobro por ahora en CLP: Manu pidió indexarlo igual.
     iso: "us",
     nombre: "Estados Unidos",
     idioma: "es-US",
@@ -343,7 +343,7 @@ export const PAISES: Pais[] = [
     listas: preciosVacios(),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     // Hora del Este (Miami, Nueva York). Central y Pacífico se explican en el texto.
     zonaHoraria: "America/New_York",
     mediosPago: ["Tarjeta de crédito o débito"],
@@ -382,7 +382,7 @@ export const PAISES: Pais[] = [
     listas: listas(117),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Tegucigalpa",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -418,7 +418,7 @@ export const PAISES: Pais[] = [
     listas: listas(102),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Managua",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -437,7 +437,7 @@ export const PAISES: Pais[] = [
     listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Panama",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -457,7 +457,7 @@ export const PAISES: Pais[] = [
     listas: preciosVacios(),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Asuncion",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),

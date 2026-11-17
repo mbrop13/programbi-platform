@@ -20,11 +20,6 @@ export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
   alternates: { canonical: absoluteUrl(PATH) },
-  robots: {
-    index: false,
-    follow: true,
-    googleBot: { index: false, follow: true },
-  },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,

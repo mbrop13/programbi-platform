@@ -220,6 +220,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entrada("/referidos", 0.7, "weekly"),
     entrada("/referidos/terminos", 0.2, "yearly"),
     entrada("/faq", 0.5, "monthly"),
+    entrada("/webinar", 0.5, "weekly"),
     entrada("/glosario", 0.45, "weekly"),
     entrada("/blog", 0.25, "weekly"),
     entrada("/empleos", 0.5, "weekly"),

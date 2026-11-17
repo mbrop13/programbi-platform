@@ -53,20 +53,8 @@ const SLUGS = [
 const FICHAS_RAPIDAS = ["power-bi", "analisis-de-datos", "python", "sql-server"];
 
 /** Espejo de RUTAS_NOINDEX_PAIS en lib/paises/indexabilidad.ts. */
-const RUTAS_NOINDEX = {
-  "/precios": PAISES,
-  "/preguntas-frecuentes": PAISES,
-  // /uy/faq tiene FAQ propia (7,1 % de similitud): se queda indexable.
-  "/faq": ["ec", "cr", "do", "gt", "ve", "bo", "sv"],
-  "/curso-sql-online": PAISES,
-  "/curso-python": PAISES,
-  "/curso-power-bi-vs-pack-adopcion": PAISES,
-  // Excepciones: /ve/implementacion-power-bi (1 clic GSC) y las dos de /uy
-  // (38,9 % y 38,7 % de similitud, contenido propio).
-  "/implementacion-power-bi": ["ec", "cr", "do", "gt", "bo", "sv"],
-  "/migrar-excel-a-power-bi": ["ec", "cr", "do", "gt", "ve", "bo", "sv"],
-  "/por-que-fallan-proyectos-power-bi": PAISES,
-};
+const RUTAS_NOINDEX = {};
+// Vacío desde el 17 nov 2026: espejo de RUTAS_NOINDEX_PAIS (ver lib/paises/indexabilidad.ts).
 
 /** Variantes que la regla deja indexables y hay que verificar como tales. */
 const EXCEPCIONES_INDEXABLES = [
