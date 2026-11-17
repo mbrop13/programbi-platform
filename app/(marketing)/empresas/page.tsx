@@ -10,6 +10,7 @@ import { getPais, normalizarPais } from "@/config/paises";
 import { hreflangDe } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
+import { FAQS_EMPRESAS_US, ISO_EMPRESAS_US } from "@/lib/data/empresas-us";
 
 // ISR: la página no lee searchParams en el servidor. `?curso=` y `?nivel=`
 // se resuelven en cliente dentro del formulario (EmpresasContactForm), así el
@@ -65,6 +66,7 @@ export default async function EmpresasPage({
 }) {
   const pais = normalizarPais((await params).pais);
   const bloque = getBloqueLocal(pais);
+  const esUs = pais === ISO_EMPRESAS_US;
   const serviceJsonLd = {
     "@type": "Service",
     name: "Adopción de Power BI y capacitación in-company",
@@ -84,16 +86,19 @@ export default async function EmpresasPage({
             { "@type": "Country", name: "Perú" },
           ]
         : [{ "@type": "Country", name: localizarMercado("Chile", pais) }],
-    description: localizarMercado(
-      "Adopción de Power BI en empresas de Chile: de Excel a tableros, con SQL, Python y automatización. Programas in-company en vivo, con los datos de la empresa y factura corporativa.",
-      pais
-    ),
+    ...(esUs ? { availableLanguage: "Spanish" } : {}),
+    description: esUs
+      ? "Capacitación in-company en español de Power BI, Excel, SQL, Python e IA para equipos de empresas en Estados Unidos: en vivo, con los datos de la empresa y factura o recibo en USD."
+      : localizarMercado(
+          "Adopción de Power BI en empresas de Chile: de Excel a tableros, con SQL, Python y automatización. Programas in-company en vivo, con los datos de la empresa y factura corporativa.",
+          pais
+        ),
   };
 
   // Mismo texto que el bloque visible de /empresas (components/empresas/empresas-faq.tsx).
   const faqJsonLd = {
     "@type": "FAQPage",
-    mainEntity: EMPRESAS_FAQS.map((faq) => ({
+    mainEntity: (esUs ? FAQS_EMPRESAS_US : EMPRESAS_FAQS).map((faq) => ({
       "@type": "Question",
       name: faq.q,
       acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -111,7 +116,7 @@ export default async function EmpresasPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <EmpresasClient paisNombre={getPais(pais).nombre} />
+      <EmpresasClient paisNombre={getPais(pais).nombre} iso={pais} />
       {bloque ? (
         <BloqueLocalPais iso={pais} bloque={bloque} contexto="empresas" conEnlaces />
       ) : null}

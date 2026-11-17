@@ -8,10 +8,19 @@ import { EmpresasHeroGlyph } from "./empresas-hero-glyph";
 import { whatsappHref } from "@/lib/whatsapp";
 import { EmpresasContactForm } from "./empresas-contact-form";
 import { EmpresasFaq } from "./empresas-faq";
+import { rutaLocal } from "@/lib/paises/rutas";
+import {
+  FAQS_EMPRESAS_US,
+  HERO_EMPRESAS_US,
+  INCLUDES_EMPRESAS_US,
+  ISO_EMPRESAS_US,
+} from "@/lib/data/empresas-us";
 
 type EmpresasLandingProps = {
   /** Nombre del país de la ruta (/empresas es Chile; /pe/empresas, Perú). */
   paisNombre?: string;
+  /** ISO de la ruta. Estados Unidos usa su propio texto, preguntas y enlaces. */
+  iso?: string;
 };
 
 const WA = whatsappHref({
@@ -75,23 +84,24 @@ const TOOLS = [
 
 const EMPRESA_COURSES = [...courses].sort((a, b) => a.sortOrder - b.sortOrder);
 
-export function EmpresasLanding({ paisNombre = "Chile" }: EmpresasLandingProps) {
+export function EmpresasLanding({ paisNombre = "Chile", iso }: EmpresasLandingProps) {
+  const esUs = iso === ISO_EMPRESAS_US;
   return (
     <div className="bg-canvas text-ink">
       <AnalyticsPageEvent event="view_empresas" />
-      <Hero paisNombre={paisNombre} />
+      <Hero paisNombre={paisNombre} esUs={esUs} />
       <LogoSlider className="border-0 bg-transparent" />
-      <Includes />
+      <Includes esUs={esUs} />
       <How />
-      <Topics />
-      <Faq />
+      <Topics iso={iso} />
+      <Faq esUs={esUs} />
       <Tools />
       <Contact />
     </div>
   );
 }
 
-function Hero({ paisNombre }: { paisNombre: string }) {
+function Hero({ paisNombre, esUs }: { paisNombre: string; esUs: boolean }) {
   return (
     <section className="relative overflow-hidden border-b border-line lg:min-h-[calc(100dvh-72px)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(23,23,22,0.04),transparent_55%)]" />
@@ -99,14 +109,15 @@ function Hero({ paisNombre }: { paisNombre: string }) {
       <div className="relative mx-auto grid h-full min-h-0 max-w-[1400px] lg:min-h-[calc(100dvh-72px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
         <div className="flex flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10">
           <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-            Cursos para empresas · {paisNombre}
+            {esUs ? HERO_EMPRESAS_US.kicker : `Cursos para empresas · ${paisNombre}`}
           </p>
           <h1 className="mt-5 max-w-[20ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]">
-            Capacitación Power BI para empresas en {paisNombre}
+            {esUs ? HERO_EMPRESAS_US.titulo : `Capacitación Power BI para empresas en ${paisNombre}`}
           </h1>
           <p className="mt-5 max-w-md text-base leading-relaxed text-mute sm:text-lg">
-            Cursos cerrados para tu empresa: Power BI, Excel, SQL, Python,
-            automatización e IA. En vivo, con tus datos y factura corporativa.
+            {esUs
+              ? HERO_EMPRESAS_US.descripcion
+              : "Cursos cerrados para tu empresa: Power BI, Excel, SQL, Python, automatización e IA. En vivo, con tus datos y factura corporativa."}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -130,6 +141,7 @@ function Hero({ paisNombre }: { paisNombre: string }) {
 
           <p className="mt-8 text-[13px] text-faint">
             No es el curso abierto. Es un programa para el equipo.
+            {esUs ? ` ${HERO_EMPRESAS_US.nota}` : ""}
           </p>
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-mute">
             <Link
@@ -179,7 +191,8 @@ function Hero({ paisNombre }: { paisNombre: string }) {
   );
 }
 
-function Includes() {
+function Includes({ esUs }: { esUs: boolean }) {
+  const items = esUs ? INCLUDES_EMPRESAS_US : INCLUDES;
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
@@ -193,7 +206,7 @@ function Includes() {
         también hay que construir un tablero, lo conversamos aparte.
       </p>
       <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
-        {INCLUDES.map((item) => (
+        {items.map((item) => (
           <div key={item.title} className="bg-paper p-6">
             <h3 className="text-base font-semibold tracking-tight">{item.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-mute">{item.text}</p>
@@ -228,8 +241,14 @@ function How() {
   );
 }
 
-function Topics() {
-  const list = EMPRESA_COURSES;
+function Topics({ iso }: { iso?: string }) {
+  const esUs = iso === ISO_EMPRESAS_US;
+  // «Análisis para minería» no se ofrece en el mercado de Estados Unidos.
+  const list = esUs
+    ? EMPRESA_COURSES.filter((course) => course.slug !== "analitica-mineria")
+    : EMPRESA_COURSES;
+  // Solo Estados Unidos conserva su carpeta; el resto de los mercados enlaza como siempre.
+  const href = (destino: string) => (esUs && iso ? rutaLocal(iso, destino) : destino);
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
@@ -246,7 +265,7 @@ function Topics() {
         {list.map((course) => (
           <Link
             key={course.slug}
-            href={`/cursos/${course.slug}?para=empresas`}
+            href={href(`/cursos/${course.slug}?para=empresas`)}
             className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
           >
             <div className="relative aspect-[16/10] bg-wash">
@@ -276,7 +295,7 @@ function Topics() {
       </div>
       <p className="mt-8 text-sm text-mute">
         Si alguien del equipo quiere un cupo en un curso abierto, está en{" "}
-        <Link href="/cursos" className="font-semibold text-ink underline-offset-4 hover:underline">
+        <Link href={href("/cursos")} className="font-semibold text-ink underline-offset-4 hover:underline">
           /cursos
         </Link>
         .
@@ -285,7 +304,7 @@ function Topics() {
   );
 }
 
-function Faq() {
+function Faq({ esUs }: { esUs: boolean }) {
   return (
     <section className="border-y border-line bg-paper">
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
@@ -295,7 +314,7 @@ function Faq() {
         <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
           Preguntas sobre la capacitación in-company
         </h2>
-        <EmpresasFaq />
+        <EmpresasFaq faqs={esUs ? FAQS_EMPRESAS_US : undefined} />
       </div>
     </section>
   );

@@ -256,7 +256,7 @@ export function EmpresasContactForm({
           onChange={setWhatsapp}
           error={errors.whatsapp}
           autoComplete="tel"
-          helper="Incluye código de país. Chile: +56 9..."
+          helper={pais === "us" ? "Incluye código de país. EE.UU.: +1 305..." : "Incluye código de país. Chile: +56 9..."}
         />
       </div>
 

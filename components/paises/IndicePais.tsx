@@ -123,6 +123,20 @@ export default function IndicePais({ pais }: { pais: string }) {
           </div>
         </div>
 
+        {pais === "us" ? (
+          <p className="mt-10 border-t border-line pt-6 text-sm leading-relaxed text-mute">
+            ¿Vives en el sur de Florida?{" "}
+            <Link href="/us/miami" className="font-semibold text-ink underline underline-offset-4">
+              Cursos de datos en español en Miami
+            </Link>
+            {" · "}
+            <Link href="/us/empresas" className="font-semibold text-ink underline underline-offset-4">
+              Capacitación para empresas
+            </Link>
+            .
+          </p>
+        ) : null}
+
         {pais !== ISO_CHILE ? (
           <p className="mt-10 border-t border-line pt-6 text-sm leading-relaxed text-mute">
             ¿Buscas la versión chilena?{" "}

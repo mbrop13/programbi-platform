@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { EMPRESAS_FAQS } from "@/lib/data/empresas-faqs";
+import { EMPRESAS_FAQS, type EmpresaFaq } from "@/lib/data/empresas-faqs";
 
-export function EmpresasFaq() {
+/** `faqs` permite que un mercado (hoy Estados Unidos) use sus propias preguntas. */
+export function EmpresasFaq({ faqs = EMPRESAS_FAQS }: { faqs?: EmpresaFaq[] }) {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <div className="mt-10 divide-y divide-line border-y border-line">
-      {EMPRESAS_FAQS.map((item, i) => {
+      {faqs.map((item, i) => {
         const isOpen = open === i;
         return (
           <div key={item.q}>

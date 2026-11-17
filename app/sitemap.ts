@@ -313,6 +313,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   );
 
+  // Página de Miami (solo Estados Unidos). Sale null mientras `us` no sea
+  // indexable: `entrada` pasa por `esRutaAnunciable`.
+  const miamiPages: EntradaPosible[] = [entrada("/us/miami", 0.8, "monthly")];
+
   // Listicle de Power BI en Chile: página propia, hermana de la ruta [slug].
   const listiclePages: EntradaPosible[] = [
     entrada(RUTA_LISTICLE, 0.7, "monthly", comparativasLastModified),
@@ -363,6 +367,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...blogPages,
     ...countryPages,
     ...comparativaPaisPages,
+    ...miamiPages,
     ...listiclePages,
     ...guidePages,
     ...guideIndexPages,
