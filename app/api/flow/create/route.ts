@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { randomUUID } from "crypto";
 import { getPricingVariantForUser } from "@/lib/experiments/user-variant";
+import { bloqueoPorMercado } from "@/lib/paises/arbitraje";
 
 /**
  * POST /api/flow/create
@@ -19,6 +20,12 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const { items, couponCode } = body;
+
+    // Flow cobra con el precio de Chile: con IP de EE.UU. se rechaza.
+    const bloqueo = bloqueoPorMercado(req.headers, "cl");
+    if (bloqueo) {
+      return NextResponse.json(bloqueo, { status: 409 });
+    }
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       // Backwards compatibility with old single-course checkout

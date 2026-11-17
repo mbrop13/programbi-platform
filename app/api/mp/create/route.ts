@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { randomUUID } from "crypto";
 import { getPricingVariantForUser } from "@/lib/experiments/user-variant";
 import { getPais } from "@/config/paises";
+import { bloqueoPorMercado } from "@/lib/paises/arbitraje";
 
 /**
  * POST /api/mp/create
@@ -20,6 +21,15 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     let { items, couponCode } = body;
+
+    // Anti-arbitraje: con IP de EE.UU. solo se cobra el precio de EE.UU.
+    const bloqueo = bloqueoPorMercado(
+      req.headers,
+      typeof body.pais === "string" ? body.pais : "cl"
+    );
+    if (bloqueo) {
+      return NextResponse.json(bloqueo, { status: 409 });
+    }
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       // Backwards compatibility with old single-course checkout

@@ -575,6 +575,15 @@ export default function PagoClient({
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else if (data.code === "mercado_ip" && typeof data.paisSugerido === "string") {
+        // Anti-arbitraje: la IP es de EE.UU. y el precio mostrado es el de otro país.
+        if (window.confirm(`${data.error}
+
+¿Ir al precio de Estados Unidos?`)) {
+          const destino = new URL(window.location.href);
+          destino.searchParams.set("pais", data.paisSugerido);
+          window.location.href = destino.toString();
+        }
       } else {
         alert("Error: " + (data.error || "No se pudo procesar el pago."));
       }
