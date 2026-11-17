@@ -12,6 +12,7 @@ import { esRutaNoindexPais } from "@/lib/paises/indexabilidad";
  */
 const NOMBRE_TITULO: Record<string, string> = {
   do: "Rep. Dominicana",
+  us: "EE.UU.",
 };
 
 function nombreParaTitulo(iso: string): string {

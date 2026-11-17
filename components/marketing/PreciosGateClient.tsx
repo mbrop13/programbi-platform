@@ -14,6 +14,7 @@ import { NOTA_PAGO, formatMoneda, porcentajeDescuento, precioListaVenta, precioV
 import { rutaLocal } from "@/lib/paises/rutas";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
+import { muestraPrecioDirecto } from "@/config/paises";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
@@ -166,7 +167,8 @@ export default function PreciosGateClient({
         <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-mute">
           {unlocked ? (
             <>
-              <Unlock size={13} aria-hidden /> Precios desbloqueados
+              <Unlock size={13} aria-hidden />{" "}
+              {muestraPrecioDirecto(pais) ? `Precios finales en ${moneda}` : "Precios desbloqueados"}
             </>
           ) : (
             <>
@@ -182,7 +184,7 @@ export default function PreciosGateClient({
       {unlocked ? (
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-wash px-5 py-4">
           <p className="text-sm font-semibold text-ink">
-            Tabla completa en {moneda}. {textoCuotas(pais)}.
+            Tabla completa en {moneda}.{textoCuotas(pais) ? ` ${textoCuotas(pais)}.` : ""}
           </p>
           {seleccionado ? (
             <Link

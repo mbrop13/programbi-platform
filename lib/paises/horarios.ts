@@ -129,6 +129,23 @@ const ZONAS_LATAM: ReadonlyArray<readonly [string, string]> = [
   ["America/Santo_Domingo", "do"],
   ["America/Caracas", "ve"],
   ["America/Panama", "pa"],
+  // Estados Unidos: las zonas con prefijo cubren Indiana/*, Kentucky/* y
+  // North_Dakota/*. Puerto Rico entra aquí: cobra en dólares.
+  ["America/New_York", "us"],
+  ["America/Detroit", "us"],
+  ["America/Indiana", "us"],
+  ["America/Kentucky", "us"],
+  ["America/Chicago", "us"],
+  ["America/Menominee", "us"],
+  ["America/North_Dakota", "us"],
+  ["America/Denver", "us"],
+  ["America/Boise", "us"],
+  ["America/Phoenix", "us"],
+  ["America/Los_Angeles", "us"],
+  ["America/Anchorage", "us"],
+  ["America/Juneau", "us"],
+  ["Pacific/Honolulu", "us"],
+  ["America/Puerto_Rico", "us"],
 ];
 
 function zonaCoincide(zona: string, base: string): boolean {
@@ -172,6 +189,9 @@ export function etiquetaHoraLocal(
       return `hora de Colombia (COT, ${offset})`;
     case "uy":
       return `hora de Uruguay (UYT, ${offset})`;
+    case "us":
+      // EE.UU. tiene cuatro husos: la referencia publicada es la del Este.
+      return `hora del Este de EE.UU. (ET, Miami y Nueva York, ${offset})`;
     default:
       return `hora de ${pais.nombre} (${offset})`;
   }
@@ -218,6 +238,7 @@ export function conHoraPais(iso: string | null | undefined, horario: string): st
   if (!horario) return horario;
   if (/hora de/i.test(horario)) return horario;
   const pais = getPais(normalizarPais(iso));
+  if (pais.iso === "us") return `${horario} · Hora del Este (ET)`;
   return `${horario} · Hora de ${pais.nombre}`;
 }
 

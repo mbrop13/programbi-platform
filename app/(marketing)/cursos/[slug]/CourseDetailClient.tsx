@@ -68,7 +68,7 @@ import { whatsappHref } from "@/lib/whatsapp";
 import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
-import { ISO_CHILE } from "@/config/paises";
+import { ISO_CHILE, muestraPrecioDirecto } from "@/config/paises";
 import { cuotasSinInteres, textoCuotas } from "@/config/cuotas";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
@@ -505,6 +505,41 @@ export default function CourseDetailClient({
 
   const hasGallery = hasCourseGallery(course.slug);
 
+  // Estados Unidos muestra el precio sin formulario y arriba del PDF de
+  // temario; el resto de los mercados lo muestra debajo, tras el gate.
+  const precioDirecto = muestraPrecioDirecto(pais);
+  const bloquePrecio =
+    !isEmpresa && canSeePrice && precioLocalCliente != null ? (
+      <div className="mb-5 space-y-1 leading-snug">
+        <p className="flex items-baseline gap-2">
+          <span className={`${precioDirecto ? "text-3xl" : "text-lg"} font-bold tracking-tight text-ink`}>
+            {formatMoneda(pais, precioLocalCliente)}
+          </span>
+          <span className="text-[11px] text-faint">
+            {precioDirecto ? `${monedaPublica(pais)} · precio del curso` : "arancel del curso"}
+          </span>
+        </p>
+        {numCuotas > 0 ? (
+          <p className="text-xs text-mute">
+            {formatMoneda(pais, precioLocalCliente / numCuotas)} en {textoCuotas(pais)}
+          </p>
+        ) : null}
+        {precioHora != null ? (
+          <p className="text-xs text-mute">
+            ≈ {formatMoneda(pais, precioHora)} por hora de clase
+          </p>
+        ) : null}
+        <p className="text-xs text-mute">
+          <Link
+            href={facturaHref}
+            className="font-semibold text-ink underline decoration-line underline-offset-2 hover:decoration-ink"
+          >
+            Factura disponible para empresas
+          </Link>
+        </p>
+      </div>
+    ) : null;
+
   return (
     <>
       <section className="bg-canvas px-4 pt-10 sm:px-6 lg:px-8 lg:pt-14">
@@ -716,6 +751,10 @@ export default function CourseDetailClient({
                 </AnimatePresence>
               </div>
 
+              {precioDirecto && bloquePrecio ? (
+                <div className="border-t border-line pt-5">{bloquePrecio}</div>
+              ) : null}
+
               <div className="mb-5 border-t border-line pt-5">
                 {/* Antes del gate mostramos solo el porcentaje de descuento
                     vigente cuando el país tiene arancel publicado; el monto, el
@@ -739,9 +778,11 @@ export default function CourseDetailClient({
                             {descuentoLocalCliente}% de descuento
                           </span>
                         ) : null}
-                        <span className="font-semibold text-ink">
-                          Pago en {textoCuotas(pais)}
-                        </span>
+                        {numCuotas > 0 ? (
+                          <span className="font-semibold text-ink">
+                            Pago en {textoCuotas(pais)}
+                          </span>
+                        ) : null}
                         <Link
                           href={facturaHref}
                           className="font-semibold text-mute underline decoration-line underline-offset-2 hover:text-ink hover:decoration-ink"
@@ -775,12 +816,14 @@ export default function CourseDetailClient({
                           courseTitle={course.title}
                           pais={pais}
                           source="course_detail_gate"
-                          buttonLabel="Ver temario y precios"
+                          buttonLabel={precioDirecto ? "Descargar temario (PDF)" : "Ver temario y precios"}
                           idPrefix="brochure-gate"
                           onUnlocked={() => unlock()}
                         />
                         <div className="mt-4 text-center">
-                          <p className="text-xs font-medium text-mute">¿Ya viste el temario y los precios?</p>
+                          <p className="text-xs font-medium text-mute">
+                            {precioDirecto ? "¿Listo para empezar?" : "¿Ya viste el temario y los precios?"}
+                          </p>
                           <button
                             type="button"
                             onClick={handleCheckoutCTA}
@@ -796,32 +839,7 @@ export default function CourseDetailClient({
                 )}
               </div>
 
-              {!isEmpresa && canSeePrice && precioLocalCliente != null ? (
-                <div className="mb-5 space-y-1 leading-snug">
-                  <p className="flex items-baseline gap-2">
-                    <span className="text-lg font-bold tracking-tight text-ink">
-                      {formatMoneda(pais, precioLocalCliente)}
-                    </span>
-                    <span className="text-[11px] text-faint">arancel del curso</span>
-                  </p>
-                  <p className="text-xs text-mute">
-                    {formatMoneda(pais, precioLocalCliente / numCuotas)} en {textoCuotas(pais)}
-                  </p>
-                  {precioHora != null ? (
-                    <p className="text-xs text-mute">
-                      ≈ {formatMoneda(pais, precioHora)} por hora de clase
-                    </p>
-                  ) : null}
-                  <p className="text-xs text-mute">
-                    <Link
-                      href={facturaHref}
-                      className="font-semibold text-ink underline decoration-line underline-offset-2 hover:decoration-ink"
-                    >
-                      Factura disponible para empresas
-                    </Link>
-                  </p>
-                </div>
-              ) : null}
+              {precioDirecto ? null : bloquePrecio}
 
               {isEmpresa ? (
                 <>

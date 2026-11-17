@@ -9,7 +9,7 @@
  * cambia acá y se propaga a fichas, precios, FAQ, guías y checkout.
  */
 
-import { normalizarPais } from "@/config/paises";
+import { normalizarPais, ofreceCuotas } from "@/config/paises";
 
 /** Cantidad de cuotas sin interés vigente en todos los mercados. */
 export const CUOTAS_SIN_INTERES = 3;
@@ -20,17 +20,22 @@ export const CUOTAS_SIN_INTERES = 3;
  */
 export const MEDIOS_CUOTAS = ["Mercado Pago", "Webpay"] as const;
 
-/** Cuotas sin interés del mercado. Hoy son las mismas en todos los países. */
+/**
+ * Cuotas sin interés del mercado. Son las mismas en todos los países que las
+ * ofrecen. Devuelve 0 donde no hay pasarela que las dé (hoy Estados Unidos):
+ * quien use este número para dividir debe comprobar que sea mayor que cero.
+ */
 export function cuotasSinInteres(iso?: string | null): number {
-  // normalizarPais valida el ISO; el valor no altera el número while la
-  // decisión comercial sea global.
-  normalizarPais(iso);
-  return CUOTAS_SIN_INTERES;
+  return ofreceCuotas(normalizarPais(iso)) ? CUOTAS_SIN_INTERES : 0;
 }
 
-/** Texto corto y consistente: "3 cuotas sin interés". */
+/**
+ * Texto corto y consistente: "3 cuotas sin interés".
+ * Cadena vacía en los mercados sin cuotas: el llamador omite la frase.
+ */
 export function textoCuotas(iso?: string | null): string {
-  return `${cuotasSinInteres(iso)} cuotas sin interés`;
+  const cuotas = cuotasSinInteres(iso);
+  return cuotas > 0 ? `${cuotas} cuotas sin interés` : "";
 }
 
 /** Nota para bloques de precio y checkout. */

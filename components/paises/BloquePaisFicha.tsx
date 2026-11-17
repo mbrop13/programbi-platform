@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, CalendarClock, CreditCard, MapPin } from "lucide-react";
-import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import { getPais, ISO_CHILE, muestraPrecioDirecto, normalizarPais } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
+import { precioPublico } from "@/config/pricing";
+import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import type { Course } from "@/lib/data/courses";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { getFichaPais } from "@/lib/data/contenido-paises/fichas";
@@ -99,6 +101,8 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
     .slice(0, 3);
 
   const vecinos = vecinosDe(iso).slice(0, 3);
+  // Estados Unidos publica el monto en la ficha, sin pasar por el PDF.
+  const precioDirecto = muestraPrecioDirecto(iso) ? precioPublico(iso, curso.slug) : null;
 
   return (
     <section
@@ -200,12 +204,17 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
                 <dt className="text-xs font-semibold text-mute">
                   Precio de {nombreCurso} en {info.moneda}
                 </dt>
+                {precioDirecto != null ? (
+                  <dd className="mt-2 text-xl font-bold tracking-tight text-ink tabular-nums">
+                    {montoConCodigo(iso, precioDirecto)}
+                  </dd>
+                ) : null}
                 <dd className="mt-2">
                   <Link
                     href={courseBrochurePath(curso.slug, iso)}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline underline-offset-4 hover:underline"
                   >
-                    Ver temario y precios (PDF)
+                    {precioDirecto != null ? "Descargar temario (PDF)" : "Ver temario y precios (PDF)"}
                     <ArrowRight size={14} aria-hidden />
                   </Link>
                 </dd>
@@ -227,7 +236,9 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
                     ))}
                   </ul>
                   <p className="mt-3 text-xs leading-relaxed text-faint">
-                    {textoCuotas(iso)} en todos los cursos.
+                    {textoCuotas(iso)
+                      ? `${textoCuotas(iso)} en todos los cursos.`
+                      : "Un solo pago con tarjeta."}
                   </p>
                 </dd>
               </div>

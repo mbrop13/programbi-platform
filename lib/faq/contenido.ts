@@ -150,7 +150,7 @@ function tablaPrecios(iso: string): FaqContenido["precios"] {
       actual: pais.iso === iso,
     })),
     nota:
-      `El arancel vigente de cada curso, los descuentos y las ${textoCuotas(iso)} se descargan en el PDF de temario y precios de la ficha del curso. En Paraguay el PDF se pide por WhatsApp porque todavía no hay un precio público aprobado.`,
+      `El arancel vigente de cada curso${textoCuotas(iso) ? `, los descuentos y las ${textoCuotas(iso)}` : " y los descuentos"} se descargan en el PDF de temario y precios de la ficha del curso. En Paraguay el PDF se pide por WhatsApp porque todavía no hay un precio público aprobado.`,
   };
 }
 
@@ -421,16 +421,24 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
     {
       id: "pagos",
       titulo: "Formas de pago y cuotas",
-      resumen:
-        `Todos los cursos se pueden pagar en ${CUOTAS} y los medios de pago disponibles dependen del país.`,
+      resumen: cuotas
+        ? `Todos los cursos se pueden pagar en ${CUOTAS} y los medios de pago disponibles dependen del país.`
+        : `En ${nombre} los cursos se pagan en un solo cargo con tarjeta; los medios de pago disponibles dependen del país.`,
       tabla: "pagos",
       items: [
-        {
-          id: "cuotas-sin-interes",
-          pregunta: "¿Hay cuotas sin interés?",
-          respuesta:
-            `Sí: los cursos se pueden pagar en ${CUOTAS} en todos los países, sin recargo por financiamiento.`,
-        },
+        cuotas
+          ? {
+              id: "cuotas-sin-interes",
+              pregunta: "¿Hay cuotas sin interés?",
+              respuesta:
+                `Sí: los cursos se pueden pagar en ${CUOTAS} en todos los países, sin recargo por financiamiento.`,
+            }
+          : {
+              id: "cuotas-sin-interes",
+              pregunta: "¿Se puede pagar en cuotas?",
+              respuesta:
+                `En ${nombre} el curso se paga en un solo cargo con tarjeta de crédito o débito. Si necesitas otra alternativa, escríbenos antes de inscribirte.`,
+            },
         {
           id: "formas-de-pago",
           pregunta: "¿Qué medios de pago puedo usar?",
@@ -457,7 +465,9 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
         "Crea tu cuenta en el sitio con tu nombre, correo y contraseña.",
         "Confirma tu correo con el enlace que llega a tu bandeja; si no aparece, revisa spam o pide reenviarlo.",
         "Entra a Inscripción, elige el curso y revisa las fechas disponibles.",
-        `Paga en ${CUOTAS} con los medios de pago de tu país.`,
+        cuotas
+          ? `Paga en ${CUOTAS} con los medios de pago de tu país.`
+          : "Paga con tarjeta de crédito o débito.",
         "Quedas dentro con acceso a las clases en vivo por Zoom y al campus virtual del curso.",
       ],
       items: [
@@ -465,7 +475,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "como-me-inscribo",
           pregunta: "¿Cómo me inscribo en un curso?",
           respuesta:
-            `Te inscribes en línea: creas tu cuenta con tu correo, confirmas el enlace de confirmación, eliges el curso y el nivel en la página de Inscripción, y pagas en ${CUOTAS}. Si prefieres, puedes escribir por WhatsApp y el equipo te guía en el mismo proceso.`,
+            `Te inscribes en línea: creas tu cuenta con tu correo, confirmas el enlace de confirmación, eliges el curso y el nivel en la página de Inscripción, y pagas${cuotas ? ` en ${CUOTAS}` : " con tarjeta"}. Si prefieres, puedes escribir por WhatsApp y el equipo te guía en el mismo proceso.`,
           enlace: { href: href("/pago"), texto: "Ir a Inscripción" },
         },
         {

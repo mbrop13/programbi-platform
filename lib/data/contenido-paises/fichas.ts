@@ -55,6 +55,12 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
       "Las clases se ven en hora de Montevideo: Uruguay mantiene UTC-3 todo el año, igual que Argentina, así que la equivalencia con Chile cambia cuando este pasa a horario de verano. Los casos de práctica incluyen también servicios financieros y turismo: cartera, venta cruzada, ocupación y costo por ruta. Los datos salen de la facturación electrónica de DGI, de las planillas de campo y de los sistemas de faena.",
     ],
   },
+  us: {
+    parrafos: [
+      "En Estados Unidos muchos profesionales hispanohablantes arman el reporte en inglés y lo piensan en español: el dato sale de QuickBooks, NetSuite, Salesforce o ADP y termina en un Excel que alguien rehace cada mes. El curso se dicta en vivo y en español, con el software en inglés tal como se usa en la oficina, y recorre el camino completo: conectar la fuente, ordenar el modelo, escribir las medidas y dejar una actualización que no dependa de una sola persona. Los ejercicios vienen de logística y comercio exterior, hotelería, bienes raíces, salud, construcción y finanzas.",
+      "Las clases se ven en la hora del Este (Miami y Nueva York): caen entre las 17:30 y las 19:30 según la época del año, porque EE.UU. y Chile cambian la hora en fechas distintas; en Central es una hora antes y en Pacífico, tres. El precio se publica en dólares en esta misma ficha, sin formularios. Si tu empresa tiene un programa de asistencia educativa, recibes el recibo en USD y la descripción del curso para solicitar el reembolso; la aprobación depende de tu empleador.",
+    ],
+  },
   bo: {
     parrafos: [
       "En Bolivia el cierre de mes suele empezar en la facturación electrónica en línea del SIN y terminar en una planilla que alguien rearma cada vez. El curso ordena ese recorrido con un modelo que se actualiza solo: la consulta trae los comprobantes, el modelo cruza volumen y costo, y el tablero responde sin depender de una persona. Los ejercicios vienen de minería e hidrocarburos, donde producción por turno y costo por operación pesan tanto como el margen final.",

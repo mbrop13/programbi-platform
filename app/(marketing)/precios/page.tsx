@@ -8,7 +8,13 @@ import {
   pageOg,
   tituloLocal,
 } from "@/lib/seo";
-import { PAISES_INDEXABLES, getPais, normalizarPais, type Pais } from "@/config/paises";
+import {
+  PAISES_INDEXABLES,
+  getPais,
+  muestraPrecioDirecto,
+  normalizarPais,
+  type Pais,
+} from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { etiquetaDescuentoCatalogo, localizarMercado } from "@/lib/paises/precios";
@@ -35,7 +41,8 @@ export async function generateMetadata({
   const iso = normalizarPais((await params).pais);
   const pais = getPais(iso);
   const title = tituloLocal(`Precios de cursos Power BI y datos en ${pais.nombre}`);
-  const description = `Precios en ${pais.moneda} para ${pais.nombre}: cursos en vivo de Power BI, SQL y Python, temario PDF, medios de pago y ${textoCuotas(iso)}.`;
+  const cuotasMeta = textoCuotas(iso);
+  const description = `Precios en ${pais.moneda} para ${pais.nombre}: cursos en vivo de Power BI, SQL y Python, temario PDF${cuotasMeta ? `, medios de pago y ${cuotasMeta}` : " y medios de pago"}.`;
   const share = pageOg({
     title,
     description,
@@ -98,10 +105,15 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[]) {
       q: `¿Cómo puedo pagar desde ${pais.nombre}?`,
       a: `Los medios de pago publicados para ${pais.nombre} son: ${pais.mediosPago.join("; ")}. El checkout confirma los medios disponibles y el monto final.`,
     },
-    {
-      q: "¿Hay cuotas sin interés?",
-      a: `Sí: todos los cursos se pueden pagar en ${textoCuotas(pais.iso)}, sin recargo por financiamiento. El detalle está en el PDF de temario y precios de cada curso.`,
-    },
+    textoCuotas(pais.iso)
+      ? {
+          q: "¿Hay cuotas sin interés?",
+          a: `Sí: todos los cursos se pueden pagar en ${textoCuotas(pais.iso)}, sin recargo por financiamiento. El detalle está en el PDF de temario y precios de cada curso.`,
+        }
+      : {
+          q: "¿Se puede pagar en cuotas?",
+          a: `En ${pais.nombre} el curso se paga en un solo cargo con tarjeta de crédito o débito. Si necesitas otra alternativa, escríbenos antes de inscribirte.`,
+        },
   ];
 }
 
@@ -132,6 +144,8 @@ export default async function PreciosPage({
   const courseUrl = (slug: string) => absoluteUrl(href(`/cursos/${slug}`));
 
   const discountLabel = etiquetaDescuentoCatalogo(pais.iso);
+  // Estados Unidos publica el monto sin formulario.
+  const precioDirecto = muestraPrecioDirecto(pais.iso);
 
   // La tabla de precios es cliente: recibe solo títulos, nivel y horas. El
   // resumen superior muestra únicamente el porcentaje de descuento vigente
@@ -216,20 +230,33 @@ export default async function PreciosPage({
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
             {L("Precios de cursos en vivo en Chile")}
           </h1>
-          <p className="mt-5 text-lg leading-relaxed text-mute">
-            Aranceles publicados en {moneda} para {pais.nombre}, con pago en{" "}
-            {textoCuotas(pais.iso)}. El detalle de cada curso y sus fechas se descarga en
-            su PDF de temario y precios.
-          </p>
+          {precioDirecto ? (
+            <p className="mt-5 text-lg leading-relaxed text-mute">
+              Precios finales en {moneda} para {pais.nombre}, visibles sin formularios. El
+              temario y las fechas de cada curso se descargan en su PDF.
+            </p>
+          ) : (
+            <p className="mt-5 text-lg leading-relaxed text-mute">
+              Aranceles publicados en {moneda} para {pais.nombre}
+              {textoCuotas(pais.iso) ? `, con pago en ${textoCuotas(pais.iso)}` : ""}. El detalle
+              de cada curso y sus fechas se descarga en su PDF de temario y precios.
+            </p>
+          )}
 
           {powerBi ? (
             <dl className="mt-6 grid gap-4 rounded-2xl border border-line bg-paper p-5 text-sm sm:grid-cols-2 lg:grid-cols-5">
               <div>
                 <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-                  {discountLabel ? "Descuento vigente" : "Arancel"}
+                  {precioDirecto && powerBi.priceValue != null
+                    ? "Precio del curso"
+                    : discountLabel
+                      ? "Descuento vigente"
+                      : "Arancel"}
                 </dt>
                 <dd className="mt-1 font-semibold text-ink">
-                  {discountLabel ?? "Consulta por WhatsApp"}
+                  {precioDirecto && powerBi.priceValue != null
+                    ? powerBi.priceLabel
+                    : (discountLabel ?? "Consulta por WhatsApp")}
                 </dd>
               </div>
               <div>
@@ -261,9 +288,11 @@ export default async function PreciosPage({
               </div>
               <div>
                 <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-                  Financiamiento
+                  {textoCuotas(pais.iso) ? "Financiamiento" : "Forma de pago"}
                 </dt>
-                <dd className="mt-1 font-semibold text-ink">{textoCuotas(pais.iso)}</dd>
+                <dd className="mt-1 font-semibold text-ink">
+                  {textoCuotas(pais.iso) || "Un solo pago con tarjeta"}
+                </dd>
               </div>
             </dl>
           ) : null}

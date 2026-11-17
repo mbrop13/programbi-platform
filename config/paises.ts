@@ -110,6 +110,13 @@ export const PRECIOS_ARS: PreciosCurso = {
   "mercado-financiero": 235900,
 };
 
+/**
+ * Dólares de Estados Unidos. PROVISIONAL hasta que Manu apruebe el monto.
+ * Sale de la recomendación de `docs/benchmark-precios-eeuu-2026-11-16.md`:
+ * USD 249 el curso estándar de 20 horas y USD 499 Análisis de datos (60 horas).
+ */
+export const PRECIOS_USD_EEUU: PreciosCurso = precios(249, 499);
+
 export type PagoPais = "catalogo" | "mp" | "usd-chile" | "clp-chile";
 
 export type Pais = {
@@ -146,6 +153,14 @@ export type Pais = {
   zonaHoraria: string;
   /** Medios de pago disponibles en ese país. */
   mediosPago: string[];
+  /**
+   * El precio se muestra en la ficha sin pedir el formulario del brochure.
+   * Solo Estados Unidos: allá el precio oculto resta confianza y conversión.
+   * El resto de los mercados mantiene el gate de precios.
+   */
+  precioDirecto?: boolean;
+  /** El mercado no ofrece cuotas sin interés (no hay pasarela local que las dé). */
+  sinCuotas?: boolean;
   contacto: {
     email: string;
     whatsapp: string | null;
@@ -305,6 +320,35 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/El_Salvador",
     mediosPago: MEDIOS_PAGO_USD,
+    contacto: contactoPendiente(),
+  },
+  {
+    // Estados Unidos: hispanohablantes que viven y trabajan allá (Miami primero).
+    // Nace en noindex hasta que Manu apruebe precio y medio de cobro.
+    iso: "us",
+    nombre: "Estados Unidos",
+    idioma: "es-US",
+    moneda: "USD",
+    simbolo: "$",
+    locale: "es-US",
+    // En EE.UU. el precio se lee «$299», no «$299.00».
+    decimales: 0,
+    // PROVISIONAL: Mercado Pago no opera en EE.UU. Mientras no exista un cobro
+    // directo en dólares, el checkout cae en el equivalente en CLP con la
+    // cuenta de Chile, igual que los demás mercados en USD.
+    pago: "usd-chile",
+    precios: PRECIOS_USD_EEUU,
+    // Sin precio tachado: en EE.UU. el precio «normal» tiene que haberse
+    // ofrecido de verdad (reglas de la FTC). Se publica solo el precio final.
+    listas: preciosVacios(),
+    dispositivo: "computadora",
+    voseo: false,
+    indexable: false,
+    // Hora del Este (Miami, Nueva York). Central y Pacífico se explican en el texto.
+    zonaHoraria: "America/New_York",
+    mediosPago: ["Tarjeta de crédito o débito"],
+    precioDirecto: true,
+    sinCuotas: true,
     contacto: contactoPendiente(),
   },
   {
@@ -516,6 +560,16 @@ export const PAISES_INDEXABLES = PAISES.filter((pais) => pais.indexable);
 /** ¿La versión de ese país se puede indexar? */
 export function esIndexable(iso: string | null | undefined): boolean {
   return esIsoPais(iso) ? POR_ISO.get(iso)!.indexable : false;
+}
+
+/** ¿Ese mercado muestra el precio sin pedir el formulario? Hoy solo EE.UU. */
+export function muestraPrecioDirecto(iso: string | null | undefined): boolean {
+  return esIsoPais(iso) ? POR_ISO.get(iso)!.precioDirecto === true : false;
+}
+
+/** ¿Ese mercado ofrece cuotas sin interés? */
+export function ofreceCuotas(iso: string | null | undefined): boolean {
+  return esIsoPais(iso) ? POR_ISO.get(iso)!.sinCuotas !== true : true;
 }
 
 export function normalizarPais(iso: string | null | undefined): string {

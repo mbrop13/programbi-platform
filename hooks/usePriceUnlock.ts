@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { muestraPrecioDirecto } from "@/config/paises";
+import { usePaisRuta } from "@/lib/paises/cliente";
 import {
   LEAD_INFO_STORAGE_KEY,
   PRICE_UNLOCK_EVENT,
@@ -32,6 +34,11 @@ export type UsePriceUnlock = {
  * también el catálogo, `/precios` y las landings sin recargar.
  */
 export function usePriceUnlock(): UsePriceUnlock {
+  // Mercados con precio directo (hoy Estados Unidos). En `/us/...` el país sale
+  // de la URL: servidor y cliente coinciden y el HTML ya trae el precio. En una
+  // ruta sin prefijo el país se detecta recién al montar, igual que el resto
+  // de la localización, así que el primer render sigue sin precios.
+  const precioDirecto = muestraPrecioDirecto(usePaisRuta());
   const [unlocked, setUnlocked] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [savedLead, setSavedLead] = useState<SavedLeadInfo | null>(null);
@@ -73,7 +80,7 @@ export function usePriceUnlock(): UsePriceUnlock {
     setSavedLead(getSavedLeadInfo());
   }, []);
 
-  return { unlocked, hydrated, unlock, savedLead };
+  return { unlocked: precioDirecto || unlocked, hydrated, unlock, savedLead };
 }
 
 /** Atajo booleano para tarjetas y tablas que solo necesitan saber si mostrar. */

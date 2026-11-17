@@ -101,7 +101,7 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/curso-power-bi",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/curso-power-bi",
         destination: "/:pais/cursos/power-bi",
         statusCode: 301,
       },
@@ -497,12 +497,12 @@ const nextConfig: NextConfig = {
 
       // ── Slugs de curso renombrados por país ─────────────────────────────
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/cursos/copilot-studio",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/cursos/copilot-studio",
         destination: "/:pais/cursos/copilot",
         statusCode: 301,
       },
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/cursos/sql",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/cursos/sql",
         destination: "/:pais/cursos/sql-server",
         statusCode: 301,
       },

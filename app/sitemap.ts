@@ -53,7 +53,9 @@ const PRIMARY_COURSE_SLUGS = new Set([
  * Guatemala, Rep. Dominicana y Venezuela) baja un escalón. Chile va aparte,
  * en la raíz y con prioridad 1.
  */
-const PAISES_DESTACADOS = new Set(["mx", "co", "ar", "pe", "uy", "py"]);
+// Estados Unidos entra igual que Paraguay: hoy `indexable: false`, y hereda la
+// prioridad alta el día que se encienda.
+const PAISES_DESTACADOS = new Set(["mx", "co", "ar", "pe", "uy", "py", "us"]);
 
 /** Tope de espera para Supabase: el sitemap nunca queda colgado por el blog. */
 const BLOG_TIMEOUT_MS = 5000;

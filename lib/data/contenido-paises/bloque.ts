@@ -15,13 +15,17 @@
 
 import { CUOTAS_SIN_INTERES, textoCuotas } from "@/config/cuotas";
 import { CLASE_GRATIS, claseGratisPublicada } from "@/config/flags";
-import { getPais, normalizarPais } from "@/config/paises";
+import { getPais, muestraPrecioDirecto, normalizarPais } from "@/config/paises";
 import { precioPublico } from "@/config/pricing";
 import { courses } from "@/lib/data/courses";
 import { guiasDePais, indiceGuias } from "@/lib/guias";
 import { esGuiaPublicada } from "@/lib/guias/relacionadas";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
-import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import {
+  montoConCodigo,
+  resumenPrecioCursoTexto,
+  resumenPreciosCatalogo,
+} from "@/lib/paises/detalle-curso";
 import {
   etiquetaDescuentoCatalogo,
   etiquetaDescuentoCurso,
@@ -187,13 +191,23 @@ export function construirBloque(
   const nota = (clave: ClaveHechoLocal, generico: string) =>
     resolver(definicion.notas[clave] ?? generico, ctx);
 
+  // Mercados con precio directo (Estados Unidos): el hecho muestra el monto.
+  const montoDirecto =
+    muestraPrecioDirecto(iso) && hayPrecio
+      ? montoConCodigo(iso, precioPublico(iso, curso?.slug ?? "power-bi")!)
+      : null;
+
   const hechos: HechoLocal[] = [
     {
       clave: "precio",
       etiqueta: `Precio en ${pais.moneda}`,
-      valor: hayPrecio
-        ? (etiquetaDescuento ?? "En el PDF de temario y precios")
-        : "Consulta por WhatsApp",
+      valor: montoDirecto
+        ? curso
+          ? montoDirecto
+          : `${montoDirecto} por curso de 20 horas`
+        : hayPrecio
+          ? (etiquetaDescuento ?? "En el PDF de temario y precios")
+          : "Consulta por WhatsApp",
       detalle: nota(
         "precio",
         hayPrecio
@@ -221,8 +235,8 @@ export function construirBloque(
     },
     {
       clave: "cuotas",
-      etiqueta: "Cuotas sin interés",
-      valor: ctx.cuotas,
+      etiqueta: ctx.cuotas ? "Cuotas sin interés" : "Forma de pago",
+      valor: ctx.cuotas || "Un solo pago con tarjeta",
       detalle: nota(
         "cuotas",
         `${CUOTAS_SIN_INTERES} pagos, sin recargo por financiamiento. La pasarela confirma la disponibilidad al pagar.`
