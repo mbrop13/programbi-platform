@@ -6,6 +6,7 @@ import CursoShowcaseGuia from "@/components/guias/CursoShowcaseGuia";
 import ElementoVisual, { elegirVariante } from "@/components/guias/ElementoVisual";
 import FuentesGuia from "@/components/guias/FuentesGuia";
 import GuiaCTA from "@/components/guias/GuiaCTA";
+import GuiaCursoLateral from "@/components/guias/GuiaCursoLateral";
 import GuiaStickyCta from "@/components/guias/GuiaStickyCta";
 import GuiaMarkdown from "@/components/guias/GuiaMarkdown";
 import { IndiceGuiaMobile, IndiceGuiaNav } from "@/components/guias/IndiceGuia";
@@ -16,6 +17,7 @@ import { encabezadosVisibles } from "@/components/guias/indice";
 import { ISO_CHILE } from "@/config/paises";
 import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
 import { fichaCurso } from "@/lib/guias/curso";
+import { proximoInicioDeCurso } from "@/lib/guias/inicio";
 import { ilustracionDeGuia, tiempoLecturaMinutos } from "@/lib/guias/ilustraciones";
 import { buildGuiaJsonLd } from "@/lib/guias/jsonld";
 import { nombreCurso } from "@/lib/guias/opciones";
@@ -42,7 +44,10 @@ type Props = {
  * El precio sale de config/pricing.ts, así que el texto publicado y el JSON-LD
  * no pueden contradecir a la ficha.
  */
-export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas }: Props) {
+export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas }: Props) {
+  // Fecha real de la próxima cohorte. Se consulta al construir el sitio (la
+  // guía es estática), no en cada visita.
+  const inicio = await proximoInicioDeCurso(guia.course);
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
   const brochureHref = guia.course === "general" ? undefined : courseBrochurePath(guia.course, iso);
   const body = resolverPrecios(guia.body, guia)
@@ -61,6 +66,10 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
   const lecturaMin = tiempoLecturaMinutos(body);
   const instructor = miembroPorCurso(guia.course === "general" ? "power-bi" : guia.course);
   const cursoEtiqueta = guia.course === "general" ? "Guía práctica" : nombreCurso(guia.course);
+  // Tarjeta del curso en la columna derecha, solo desde 1360 px (85rem). Va en
+  // rem y no en px: Tailwind emite las variantes en px antes que las en rem, y
+  // `lg:` le ganaría la cascada a un corte escrito en px.
+  const conLateral = guia.course !== "general";
 
   // El Markdown trae marcadores <!-- CTA-TOP|MID|END --> para intercalar los CTA.
   const partes = body.split(/<!--\s*CTA-(TOP|MID|END)\s*-->/g);
@@ -73,7 +82,7 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <article className="bg-canvas px-4 pb-28 pt-10 sm:px-6 lg:px-8 lg:pb-20">
-        <div className="mx-auto max-w-[1120px]">
+        <div className={`mx-auto max-w-[1120px] ${conLateral ? "min-[85rem]:max-w-[1290px]" : ""}`}>
           <nav aria-label="Migas de pan" className="text-xs text-mute">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
@@ -95,7 +104,11 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
             </ol>
           </nav>
 
-          <div className="mt-6 lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12">
+          <div
+            className={`mt-6 lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12 ${
+              conLateral ? "min-[85rem]:grid-cols-[190px_minmax(0,760px)_260px] min-[85rem]:gap-10" : ""
+            }`}
+          >
             <div className="min-w-0 max-w-[760px] lg:col-start-2 lg:row-start-1">
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-paper px-3 py-1 font-bold uppercase tracking-[0.12em] text-ink">
@@ -150,7 +163,7 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
                 </figcaption>
               </figure>
 
-              <Bloque30Segundos guia={guia} />
+              <Bloque30Segundos guia={guia} inicio={inicio} />
 
               <IndiceGuiaMobile items={encabezados} />
 
@@ -166,6 +179,7 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
                         iso={iso}
                         course={guia.course}
                         guiaSlug={guia.slug}
+                        inicio={inicio}
                       />
                     );
                   }
@@ -174,7 +188,7 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
                 })}
               </div>
 
-              <CursoShowcaseGuia courseSlug={guia.course} iso={iso} guiaSlug={guia.slug} />
+              <CursoShowcaseGuia courseSlug={guia.course} iso={iso} guiaSlug={guia.slug} inicio={inicio} />
 
               {variante !== "ruta" ? <RutaAprendizaje iso={iso} cursoActual={guia.course} /> : null}
 
@@ -228,6 +242,12 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
             <div className="hidden lg:col-start-1 lg:row-start-1 lg:block">
               <IndiceGuiaNav items={encabezados} />
             </div>
+
+            {conLateral ? (
+              <div className="hidden min-[85rem]:col-start-3 min-[85rem]:row-start-1 min-[85rem]:block">
+                <GuiaCursoLateral iso={iso} course={guia.course} inicio={inicio} />
+              </div>
+            ) : null}
           </div>
         </div>
       </article>

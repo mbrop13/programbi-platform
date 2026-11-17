@@ -6,6 +6,8 @@ import { getPais, ISO_CHILE } from "@/config/paises";
 import { courses } from "@/lib/data/courses";
 import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
+import InicioVigente from "@/components/guias/InicioVigente";
+import type { InicioGuia } from "@/lib/guias/inicio";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
@@ -31,11 +33,14 @@ export default function GuiaCTA({
   iso,
   course,
   guiaSlug,
+  inicio = null,
 }: {
   variant: "top" | "mid" | "end";
   iso: string;
   course: string;
   guiaSlug: string;
+  /** Próxima cohorte real del curso, fijada al construir el sitio. */
+  inicio?: InicioGuia | null;
 }) {
   const pais = getPais(iso);
   const curso = cursoDe(course);
@@ -47,7 +52,9 @@ export default function GuiaCTA({
   const rutaCurso = esGeneral ? rutaLocal(iso, "/cursos") : rutaFichaCurso(iso, course);
   const rutaTemario = esGeneral ? rutaCurso : "#temario-curso";
   const horaLocal = `de ${horario.inicio} a ${horario.fin}, hora de ${lugar}`;
-  const inicioTexto = ficha.inicio ? `Próxima clase en vivo: ${ficha.inicio}` : OPEN_COHORT_LABEL;
+  const inicioTexto = (
+    <InicioVigente inicio={inicio} prefijo="Próximo inicio: " alterno={OPEN_COHORT_LABEL} />
+  );
 
   if (variant === "top") {
     return (

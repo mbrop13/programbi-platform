@@ -10,6 +10,8 @@ import { offerSyllabusSections } from "@/lib/data/course-views";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
+import InicioVigente from "@/components/guias/InicioVigente";
+import type { InicioGuia } from "@/lib/guias/inicio";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
@@ -24,10 +26,13 @@ export default function CursoShowcaseGuia({
   courseSlug,
   iso,
   guiaSlug,
+  inicio = null,
 }: {
   courseSlug: string;
   iso: string;
   guiaSlug: string;
+  /** Próxima cohorte real del curso, fijada al construir el sitio. */
+  inicio?: InicioGuia | null;
 }) {
   const pais = getPais(iso);
   const lugar = iso === ISO_CHILE ? "Chile" : pais.nombre;
@@ -116,7 +121,8 @@ export default function CursoShowcaseGuia({
                 </h2>
                 <p className="mt-1.5 text-sm leading-relaxed text-mute">{curso.shortDescription}</p>
                 <p className="mt-2 text-xs font-medium text-ink">
-                  {ficha.inicio ? `Próximo inicio: ${ficha.inicio}` : OPEN_COHORT_LABEL} · Campus virtual con clases y material
+                  <InicioVigente inicio={inicio} prefijo="Próximo inicio: " alterno={OPEN_COHORT_LABEL} /> · Campus
+                  virtual con clases y material
                 </p>
               </div>
             </div>

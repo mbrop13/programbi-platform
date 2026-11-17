@@ -125,14 +125,15 @@ export function nextCohortForCourse(
   timeZone: string
 ): { date: string; days: string; time: string } | null {
   const slugs = slug === "analisis-de-datos" ? analisisDeDatosSlugs : [slug];
-  const matched = schedules.filter(
-    (s) =>
-      slugs.includes(s.course_slug) &&
-      (slug !== "analisis-de-datos" || s.level_name === "Básico")
-  );
-  const nearest = getNearestSchedule(
-    matched.map((s) => ({ ...s, is_active: s.is_active !== false }))
-  );
+  const matched = schedules
+    .filter((s) => slugs.includes(s.course_slug))
+    .map((s) => ({ ...s, is_active: s.is_active !== false }));
+  // Primero el nivel de entrada: es la fecha que abre la ficha del curso. Una
+  // tarjeta que anuncia la cohorte de Avanzado sin decirlo confunde a quien
+  // parte de cero. Si no hay básico, vale la más cercana (salvo en el pack).
+  const nearest =
+    getNearestSchedule(matched.filter((s) => s.level_name === "Básico")) ??
+    (slug === "analisis-de-datos" ? null : getNearestSchedule(matched));
   if (!nearest) return null;
   const conv = convertSchedule(nearest.start_date, nearest.schedule_time, nearest.schedule_days, timeZone);
   return {

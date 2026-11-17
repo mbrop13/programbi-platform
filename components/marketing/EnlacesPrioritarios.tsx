@@ -208,7 +208,7 @@ export function RecursosDatos({ contexto = "home" }: { contexto?: Contexto }) {
   return (
     <section
       aria-labelledby="recursos-datos"
-      className="cv-auto border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
+      className="cv-auto border-t border-line bg-canvas px-4 py-14 sm:px-6 lg:px-8 lg:py-16"
     >
       <div className="mx-auto max-w-[1400px]">
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
@@ -228,11 +228,11 @@ export function RecursosDatos({ contexto = "home" }: { contexto?: Contexto }) {
           horarios del sitio.
         </p>
 
-        <ul className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+        <ul className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
           {RECURSOS.map((item) => (
             <li key={item.href}>
               <Link href={item.href} className="group block no-underline">
-                <span className="inline-flex items-start gap-1.5 text-base font-semibold leading-snug text-ink underline-offset-4 group-hover:underline">
+                <span className="inline-flex items-start gap-1.5 text-[15px] font-semibold leading-snug text-ink underline-offset-4 group-hover:underline">
                   {item.title}
                   <ArrowRight
                     size={14}
@@ -240,7 +240,7 @@ export function RecursosDatos({ contexto = "home" }: { contexto?: Contexto }) {
                     aria-hidden
                   />
                 </span>
-                <span className="mt-1 block max-w-[52ch] text-sm leading-relaxed text-mute">
+                <span className="mt-1 block max-w-[52ch] text-[13px] leading-snug text-mute">
                   {item.text}
                 </span>
               </Link>

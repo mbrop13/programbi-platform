@@ -5,6 +5,8 @@ import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
+import InicioVigente from "@/components/guias/InicioVigente";
+import type { InicioGuia } from "@/lib/guias/inicio";
 import type { Guia } from "@/lib/guias/tipos";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { etiquetaDescuentoCurso } from "@/lib/paises/precios";
@@ -16,7 +18,14 @@ import { rutaLocal } from "@/lib/paises/rutas";
  * temario y precios, duración, horario local, modalidad y CTAs. Renderizado
  * 100% en servidor (GEO-ready).
  */
-export default function Bloque30Segundos({ guia }: { guia: Guia }) {
+export default function Bloque30Segundos({
+  guia,
+  inicio = null,
+}: {
+  guia: Guia;
+  /** Próxima cohorte real del curso, fijada al construir el sitio. */
+  inicio?: InicioGuia | null;
+}) {
   const iso = !guia.country || guia.country === "transversal" ? ISO_CHILE : normalizarPais(guia.country);
   const curso = fichaCurso(guia.course);
   const horario = horarioLocal(iso);
@@ -129,7 +138,9 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
         <span className="inline-flex items-center gap-1.5">
           <CalendarDays size={13} aria-hidden /> Lunes y miércoles o martes y jueves
         </span>
-        <span>{curso.inicio ? `Próximo inicio: ${curso.inicio}` : OPEN_COHORT_LABEL}</span>
+        <span>
+          <InicioVigente inicio={inicio} prefijo="Próximo inicio: " alterno={OPEN_COHORT_LABEL} />
+        </span>
       </p>
     </section>
   );

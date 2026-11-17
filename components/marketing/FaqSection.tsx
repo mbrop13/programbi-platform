@@ -18,8 +18,12 @@ export default function FaqSection({
             <details key={item.q} className="faq group py-5">
               <summary className="flex cursor-pointer items-center justify-between gap-6 text-left">
                 <span className="text-lg font-semibold tracking-tight text-ink sm:text-xl">{item.q}</span>
-                <span className="text-2xl leading-none text-faint group-open:hidden">+</span>
-                <span className="hidden text-2xl leading-none text-faint group-open:block">–</span>
+                <span
+                  aria-hidden
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full border border-line text-xl leading-none text-ink transition-transform duration-200 group-open:rotate-45 motion-reduce:transition-none"
+                >
+                  +
+                </span>
               </summary>
               <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-mute sm:text-base">{item.a}</p>
             </details>

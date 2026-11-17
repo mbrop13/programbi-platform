@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Search, X } from "lucide-react";
 import GuiaCard from "@/components/guias/GuiaCard";
@@ -49,7 +49,7 @@ function Chip({
       type="button"
       aria-pressed={activo}
       onClick={onClick}
-      className={`inline-flex min-h-10 max-w-full items-center whitespace-normal rounded-full border px-4 py-2 text-left text-[13px] font-medium leading-snug transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper sm:min-h-9 sm:px-3.5 ${
+      className={`inline-flex min-h-10 max-w-full shrink-0 items-center whitespace-nowrap rounded-full border px-4 py-2 text-left text-[13px] font-medium leading-snug transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper sm:min-h-8 sm:shrink sm:whitespace-normal sm:px-3 sm:py-1 ${
         activo
           ? "border-ink bg-ink text-canvas"
           : "border-line-strong bg-paper text-ink hover:border-ink/30"
@@ -57,6 +57,37 @@ function Chip({
     >
       {children}
     </button>
+  );
+}
+
+/**
+ * Fila de chips de un filtro. En mobile es una sola línea con scroll horizontal
+ * que sangra hasta el borde de la tarjeta; desde `sm` vuelve a envolver.
+ * El padding vertical (compensado con margen negativo) deja ver el anillo de foco.
+ */
+function FilaChips({ activo, children }: { activo: string; children: React.ReactNode }) {
+  const fila = useRef<HTMLDivElement>(null);
+
+  // Si el filtro activo quedó fuera de la fila (por ejemplo al llegar con
+  // ?curso= en la URL), se desplaza solo en horizontal para mostrarlo.
+  useEffect(() => {
+    const contenedor = fila.current;
+    const chip = contenedor?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!contenedor || !chip || contenedor.scrollWidth <= contenedor.clientWidth) return;
+    const caja = contenedor.getBoundingClientRect();
+    const rect = chip.getBoundingClientRect();
+    const margen = 16;
+    if (rect.left < caja.left + margen) contenedor.scrollLeft -= caja.left + margen - rect.left;
+    else if (rect.right > caja.right - margen) contenedor.scrollLeft += rect.right - (caja.right - margen);
+  }, [activo]);
+
+  return (
+    <div
+      ref={fila}
+      className="scrollbar-hide -mx-4 -mb-1 mt-1 flex flex-nowrap gap-2 overflow-x-auto px-4 py-1 sm:mx-0 sm:mb-0 sm:mt-2 sm:flex-wrap sm:gap-1.5 sm:overflow-visible sm:p-0"
+    >
+      {children}
+    </div>
   );
 }
 
@@ -241,11 +272,11 @@ export default function GuiasHub({
         </div>
 
         {mostrarPais ? (
-          <fieldset className="mt-4 min-w-0 border-0 p-0">
+          <fieldset className="mt-3 min-w-0 border-0 p-0">
             <legend className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
               Filtrar por país
             </legend>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <FilaChips activo={pais}>
               <Chip activo={pais === TODOS} onClick={() => setPais(TODOS)}>
                 Todos
               </Chip>
@@ -258,15 +289,15 @@ export default function GuiasHub({
                   {opcion.etiqueta}
                 </Chip>
               ))}
-            </div>
+            </FilaChips>
           </fieldset>
         ) : null}
 
-        <fieldset className="mt-4 min-w-0 border-0 p-0">
+        <fieldset className="mt-3 min-w-0 border-0 p-0">
           <legend className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
             Filtrar por curso
           </legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <FilaChips activo={curso}>
             <Chip activo={curso === TODOS} onClick={() => setCurso(TODOS)}>
               Todos
             </Chip>
@@ -279,7 +310,7 @@ export default function GuiasHub({
                 {opcion.etiqueta}
               </Chip>
             ))}
-          </div>
+          </FilaChips>
         </fieldset>
       </form>
 

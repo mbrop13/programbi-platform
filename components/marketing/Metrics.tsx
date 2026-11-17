@@ -1,4 +1,4 @@
-const stats = [
+export const stats = [
   { value: "+5.000", label: "Estudiantes egresados" },
   { value: "+10", label: "Programas activos" },
   { value: "98%", label: "Tasa de satisfacción" },

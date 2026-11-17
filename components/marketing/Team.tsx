@@ -19,15 +19,15 @@ export default function Team() {
           {mentors.map((mentor) => (
             <article
               key={mentor.name}
-              className="flex gap-4 rounded-[20px] border border-line bg-paper p-4"
+              className="flex gap-4 rounded-[22px] border border-line bg-paper p-5"
             >
-              <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-wash">
+              <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl bg-wash">
                 {mentor.imageUrl ? (
                   <CourseImage
                     src={mentor.imageUrl}
                     alt={mentor.name}
                     fill
-                    sizes="80px"
+                    sizes="96px"
                     className="object-cover object-[center_18%]"
                   />
                 ) : null}
@@ -35,7 +35,7 @@ export default function Team() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="truncate text-base font-bold tracking-tight text-ink">
+                    <h3 className="truncate text-[17px] font-bold tracking-tight text-ink">
                       {mentor.name}
                       {mentor.isFounder ? (
                         <span className="ml-2 rounded-full bg-wash px-2 py-0.5 align-middle text-[10px] font-semibold text-mute">
@@ -43,7 +43,7 @@ export default function Team() {
                         </span>
                       ) : null}
                     </h3>
-                    <p className="mt-0.5 truncate text-xs text-mute">{mentor.role}</p>
+                    <p className="mt-0.5 truncate text-[13px] text-mute">{mentor.role}</p>
                   </div>
                   {mentor.linkedinUrl ? (
                     <a
@@ -57,12 +57,14 @@ export default function Team() {
                     </a>
                   ) : null}
                 </div>
-                <ul className="mt-2 space-y-0.5 text-xs leading-relaxed text-mute">
-                  {mentor.credentials.map((line) => (
-                    <li key={line}>{line}</li>
+                <ul className="mt-2.5 space-y-1 text-[13px] leading-snug text-mute">
+                  {mentor.credentials.slice(0, 3).map((line) => (
+                    <li key={line} className="line-clamp-2">
+                      {line}
+                    </li>
                   ))}
                 </ul>
-                <p className="mt-1.5 text-[11px] text-faint">
+                <p className="mt-2.5 text-xs font-medium text-ink">
                   {mentor.studentCount.toLocaleString("es-CL")}+ alumnos · {mentor.yearsExperience}+ años
                 </p>
               </div>

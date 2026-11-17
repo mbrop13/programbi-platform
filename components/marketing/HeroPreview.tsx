@@ -1,226 +1,176 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { getPais } from "@/config/paises";
-import { usePaisRuta } from "@/lib/paises/cliente";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import Link from "next/link";
+import { ArrowRight, BarChart3, Code2, Database } from "lucide-react";
+import PowerBiCanvas from "@/components/marketing/HeroPowerBi";
 import {
-  BarChart3,
-  Bug,
-  Code2,
-  Database,
-  Files,
-  Filter,
-  GitBranch,
-  Hash,
-  LayoutGrid,
-  LineChart,
-  Map,
-  PieChart,
-  Play,
-  Plus,
-  Puzzle,
-  Search,
-  Share2,
-  Table2,
-  Terminal,
-  Type,
-} from "lucide-react";
+  getDemoPais,
+  HERO_TABS,
+  type HeroCurso,
+  type HeroCursos,
+  type HeroTabId,
+} from "@/components/marketing/hero-demo";
+import { trackCourseCardClick } from "@/lib/analytics/marketing";
+import { usePaisRuta } from "@/lib/paises/cliente";
 
-const TABS = [
-  { id: "python", title: "Python", icon: Code2 },
-  { id: "bi", title: "Power BI", icon: BarChart3 },
-  { id: "sql", title: "SQL Server", icon: Database },
-] as const;
+type Editores = typeof import("@/components/marketing/HeroEditors");
+type Tab = (typeof HERO_TABS)[number];
 
-type TabId = (typeof TABS)[number]["id"];
+const ICONOS = { bi: BarChart3, sql: Database, python: Code2 } as const;
+const ROTACION_MS = 9000;
 
-const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago"];
-const CHANNELS = [
-  { name: "Retail", color: "#118DFF" },
-  { name: "B2B", color: "#E66C37" },
-  { name: "Online", color: "#D9B300" },
-] as const;
-
-type DemoPais = {
-  pbix: string;
-  locale: string;
-  cortas: readonly [string, string, string];
-  regiones: readonly [string, string, string];
-  sqlRegiones: readonly [string, string, string, string];
-};
-
-const DEMO_POR_PAIS: Record<string, Omit<DemoPais, "pbix" | "locale">> = {
-  cl: {
-    cortas: ["RM", "Valparaíso", "Biobío"],
-    regiones: ["Metropolitana", "Valparaíso", "Biobío"],
-    sqlRegiones: ["Metropolitana", "Valparaíso", "Biobío", "Antofagasta"],
-  },
-  ar: {
-    cortas: ["CABA", "Córdoba", "Santa Fe"],
-    regiones: ["Buenos Aires", "Córdoba", "Santa Fe"],
-    sqlRegiones: ["Buenos Aires", "Córdoba", "Santa Fe", "Mendoza"],
-  },
-  mx: {
-    cortas: ["CDMX", "Nuevo León", "Jalisco"],
-    regiones: ["Ciudad de México", "Nuevo León", "Jalisco"],
-    sqlRegiones: ["Ciudad de México", "Nuevo León", "Jalisco", "Querétaro"],
-  },
-  co: {
-    cortas: ["Bogotá", "Antioquia", "Valle"],
-    regiones: ["Bogotá D.C.", "Antioquia", "Valle del Cauca"],
-    sqlRegiones: ["Bogotá D.C.", "Antioquia", "Valle del Cauca", "Atlántico"],
-  },
-  pe: {
-    cortas: ["Lima", "Arequipa", "La Libertad"],
-    regiones: ["Lima", "Arequipa", "La Libertad"],
-    sqlRegiones: ["Lima", "Arequipa", "La Libertad", "Piura"],
-  },
-  uy: {
-    cortas: ["Montevideo", "Canelones", "Maldonado"],
-    regiones: ["Montevideo", "Canelones", "Maldonado"],
-    sqlRegiones: ["Montevideo", "Canelones", "Maldonado", "Colonia"],
-  },
-  bo: {
-    cortas: ["La Paz", "Santa Cruz", "Cochabamba"],
-    regiones: ["La Paz", "Santa Cruz", "Cochabamba"],
-    sqlRegiones: ["La Paz", "Santa Cruz", "Cochabamba", "Tarija"],
-  },
-  ec: {
-    cortas: ["Pichincha", "Guayas", "Azuay"],
-    regiones: ["Pichincha", "Guayas", "Azuay"],
-    sqlRegiones: ["Pichincha", "Guayas", "Azuay", "Manabí"],
-  },
-  cr: {
-    cortas: ["San José", "Alajuela", "Cartago"],
-    regiones: ["San José", "Alajuela", "Cartago"],
-    sqlRegiones: ["San José", "Alajuela", "Cartago", "Heredia"],
-  },
-  do: {
-    cortas: ["Dist. Nac.", "Santiago", "La Romana"],
-    regiones: ["Santo Domingo", "Santiago", "La Romana"],
-    sqlRegiones: ["Santo Domingo", "Santiago", "La Romana", "Punta Cana"],
-  },
-  gt: {
-    cortas: ["Guatemala", "Quetzalten.", "Escuintla"],
-    regiones: ["Guatemala", "Quetzaltenango", "Escuintla"],
-    sqlRegiones: ["Guatemala", "Quetzaltenango", "Escuintla", "Sacatepéquez"],
-  },
-  sv: {
-    cortas: ["San Salvador", "La Libertad", "Santa Ana"],
-    regiones: ["San Salvador", "La Libertad", "Santa Ana"],
-    sqlRegiones: ["San Salvador", "La Libertad", "Santa Ana", "San Miguel"],
-  },
-  ve: {
-    cortas: ["Caracas", "Miranda", "Zulia"],
-    regiones: ["Caracas", "Miranda", "Zulia"],
-    sqlRegiones: ["Caracas", "Miranda", "Zulia", "Carabobo"],
-  },
-  hn: {
-    cortas: ["F. Morazán", "Cortés", "Atlántida"],
-    regiones: ["Tegucigalpa", "San Pedro Sula", "La Ceiba"],
-    sqlRegiones: ["Tegucigalpa", "San Pedro Sula", "La Ceiba", "Comayagua"],
-  },
-  ni: {
-    cortas: ["Managua", "León", "Granada"],
-    regiones: ["Managua", "León", "Granada"],
-    sqlRegiones: ["Managua", "León", "Granada", "Masaya"],
-  },
-  pa: {
-    cortas: ["Panamá", "Colón", "Chiriquí"],
-    regiones: ["Panamá", "Colón", "Chiriquí"],
-    sqlRegiones: ["Panamá", "Colón", "Chiriquí", "Veraguas"],
-  },
-  py: {
-    cortas: ["Asunción", "Central", "Alto Paraná"],
-    regiones: ["Asunción", "Central", "Alto Paraná"],
-    sqlRegiones: ["Asunción", "Central", "Alto Paraná", "Itapúa"],
-  },
-};
-
-function getDemoPais(iso: string): DemoPais {
-  const pais = getPais(iso);
-  const datos = DEMO_POR_PAIS[pais.iso] ?? DEMO_POR_PAIS.cl;
-  return {
-    pbix: `Ventas ${pais.nombre}.pbix`,
-    locale: pais.locale,
-    ...datos,
-  };
-}
-
-export default function HeroPreview() {
+/**
+ * Panel del hero: una vitrina de tres cursos. La pestaña activa muestra la
+ * herramienta en uso y, pegada debajo, la franja con su próxima cohorte.
+ *
+ * Power BI va en el primer render (HTML del servidor, sin esperar JS). Los
+ * editores de SQL y Python se cargan en reposo, fuera del camino crítico.
+ * `children` es la miniatura del profesor, que flota sobre la esquina.
+ */
+export default function HeroPreview({
+  cursos,
+  children,
+}: {
+  cursos: HeroCursos;
+  children?: ReactNode;
+}) {
   const pais = usePaisRuta();
   const demo = useMemo(() => getDemoPais(pais), [pais]);
-  const [active, setActive] = useState<TabId>("python");
+  const [active, setActive] = useState<HeroTabId>("bi");
+  const [cambios, setCambios] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [hover, setHover] = useState(false);
+  const [conMovimiento, setConMovimiento] = useState(false);
+  const [editores, setEditores] = useState<Editores | null>(null);
 
   useEffect(() => {
-    if (paused) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t = window.setInterval(() => {
-      setActive((cur) => TABS[(TABS.findIndex((x) => x.id === cur) + 1) % TABS.length].id);
-    }, 9000);
-    return () => window.clearInterval(t);
-  }, [active, paused]);
+    let alive = true;
+    const load = () => {
+      import("@/components/marketing/HeroEditors").then((mod) => {
+        if (alive) setEditores(mod);
+      });
+    };
+    setConMovimiento(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const ric = window.requestIdleCallback?.bind(window);
+    if (ric) {
+      const id = ric(load, { timeout: 1800 });
+      return () => {
+        alive = false;
+        window.cancelIdleCallback?.(id);
+      };
+    }
+    const t = window.setTimeout(load, 1);
+    return () => {
+      alive = false;
+      window.clearTimeout(t);
+    };
+  }, []);
 
-  const current = TABS.find((t) => t.id === active)!;
-  const file =
-    active === "python" ? "ventas.py" : active === "sql" ? "consulta.sql" : demo.pbix;
+  // Solo rota cuando el siguiente panel ya está descargado y nadie lo mira de cerca.
+  const rotando = conMovimiento && !paused && !hover && editores !== null;
 
-  const pause = () => setPaused(true);
+  useEffect(() => {
+    if (!rotando) return;
+    const t = window.setTimeout(() => {
+      setActive((cur) => HERO_TABS[(HERO_TABS.findIndex((x) => x.id === cur) + 1) % HERO_TABS.length].id);
+      setCambios((n) => n + 1);
+    }, ROTACION_MS);
+    return () => window.clearTimeout(t);
+  }, [rotando, active]);
+
+  const select = (id: HeroTabId) => {
+    setActive(id);
+    setCambios((n) => n + 1);
+    setPaused(true);
+  };
+
+  const current = HERO_TABS.find((t) => t.id === active)!;
+  const file = active === "python" ? "ventas.py" : active === "sql" ? "consulta.sql" : demo.pbix;
+  // El primer render no se anima: es el contenido que define el LCP del hero.
+  const entrada = cambios > 0 ? "animate-fade-in" : "";
 
   return (
-    <div className="relative w-full">
-      <div className="pointer-events-none absolute -inset-8 rounded-[50px] bg-gradient-to-tr from-ink/8 via-ink/0 to-ink/6 blur-3xl" />
+    <div
+      className="relative w-full"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <div className="pointer-events-none absolute -inset-8 rounded-[50px] bg-gradient-to-tr from-ink/10 via-ink/0 to-ink/8 blur-3xl" />
 
-      <div
-        className="relative flex h-[min(420px,50vh)] w-full flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_25px_80px_rgba(23,23,22,0.10)] ring-1 ring-ink/5 sm:h-[min(500px,56vh)] sm:rounded-[26px]"
-        onPointerDown={pause}
-      >
-        <div className="flex h-11 shrink-0 items-center justify-between border-b border-line bg-canvas px-4">
-          <div className="flex items-center gap-2.5">
-            <div className="flex gap-1.5">
-              <i className="size-3 rounded-full bg-[#ff5f57]" />
-              <i className="size-3 rounded-full bg-[#febc2e]" />
-              <i className="size-3 rounded-full bg-[#28c840]" />
+      <div className="relative">
+        <div
+          className="relative flex w-full flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_30px_90px_-20px_rgba(23,23,22,0.28)] ring-1 ring-ink/5 sm:rounded-[26px]"
+          onPointerDown={() => setPaused(true)}
+        >
+          <div className="flex h-11 shrink-0 items-center justify-between border-b border-line bg-canvas px-4">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="flex shrink-0 gap-1.5">
+                <i className="size-3 rounded-full bg-[#ff5f57]" />
+                <i className="size-3 rounded-full bg-[#febc2e]" />
+                <i className="size-3 rounded-full bg-[#28c840]" />
+              </div>
+              <div className="ml-3 hidden min-w-0 items-center gap-2 text-xs font-medium text-mute sm:flex">
+                <span className="truncate font-semibold text-ink">{file}</span>
+                <span className="text-faint">—</span>
+                <span className="text-[11px] text-faint">{current.title}</span>
+              </div>
             </div>
-            <div className="ml-3 hidden items-center gap-2 text-xs font-medium text-mute sm:flex">
-              <span className="font-semibold text-ink">{file}</span>
-              <span className="text-faint">—</span>
-              <span className="font-mono text-[11px] text-faint">{current.title}</span>
+            <span className="shrink-0 text-[11px] text-faint">Clase en vivo</span>
+          </div>
+
+          <div className="relative h-[min(350px,46vh)] bg-canvas sm:h-[min(430px,48vh)]">
+            <div key={active} className={`absolute inset-0 ${entrada}`}>
+              {active === "bi" ? (
+                <PowerBiCanvas demo={demo} />
+              ) : !editores ? (
+                <Cargando />
+              ) : active === "python" ? (
+                <editores.PythonEditor demo={demo} onOpenSql={() => select("sql")} />
+              ) : (
+                <editores.SqlEditor demo={demo} />
+              )}
             </div>
           </div>
-          <span className="font-mono text-[11px] text-faint">Clase en vivo</span>
+
+          <BarraCurso tab={current} curso={cursos[active]} entrada={entrada} />
         </div>
 
-        <div className="relative min-h-0 flex-1 bg-canvas">
-          {active === "python" && <PythonEditor demo={demo} onOpenSql={() => setActive("sql")} />}
-          {active === "sql" && <SqlEditor demo={demo} />}
-          {active === "bi" && <PowerBiCanvas demo={demo} />}
-        </div>
+        {children ? (
+          <div className="pointer-events-none absolute -right-1.5 bottom-[80px] sm:-right-3 sm:bottom-[90px]">
+            {children}
+          </div>
+        ) : null}
       </div>
 
-      <div className="relative mt-3 flex rounded-md bg-canvas" suppressHydrationWarning>
-        {TABS.map((tab, i) => {
-          const Icon = tab.icon;
+      <div
+        role="tablist"
+        aria-label="Cursos del panel"
+        className="relative mt-3 grid grid-cols-3 gap-1 rounded-2xl border border-line bg-paper/80 p-1"
+      >
+        {HERO_TABS.map((tab) => {
+          const Icon = ICONOS[tab.id];
           const isActive = tab.id === active;
-          const round =
-            i === 0 ? "rounded-l-md" : i === TABS.length - 1 ? "rounded-r-md" : "";
           return (
             <button
               key={tab.id}
               type="button"
-              onClick={() => {
-                setActive(tab.id);
-                pause();
-              }}
-              className={`flex min-h-12 flex-1 items-center justify-center gap-2 border-2 py-2.5 text-sm font-semibold transition-colors ${round} ${
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => select(tab.id)}
+              className={`relative flex min-h-12 items-center justify-center gap-1.5 overflow-hidden rounded-xl px-1.5 text-[13px] font-semibold transition-colors sm:gap-2 sm:px-2 sm:text-sm ${
                 isActive
-                  ? "border-[rgb(23_23_22_/_0.28)] bg-paper text-ink"
-                  : "border-transparent text-mute hover:text-ink"
+                  ? "bg-ink text-paper shadow-[0_8px_20px_-10px_rgba(23,23,22,0.7)]"
+                  : "text-mute hover:bg-wash hover:text-ink"
               }`}
             >
-              <Icon size={18} strokeWidth={isActive ? 2.2 : 1.8} />
-              <span>{tab.title}</span>
+              <Icon size={17} strokeWidth={isActive ? 2.2 : 1.8} className="shrink-0" />
+              <span className="truncate">{tab.title}</span>
+              {isActive && rotando ? (
+                <span className="absolute inset-x-0 bottom-0 h-[3px] bg-white/15">
+                  <span key={`${tab.id}-${cambios}`} className="hero-tab-progress block h-full bg-white/75" />
+                </span>
+              ) : null}
             </button>
           );
         })}
@@ -229,685 +179,61 @@ export default function HeroPreview() {
   );
 }
 
-function ActivityBar({
-  current,
-  onChange,
-}: {
-  current: string;
-  onChange: (id: string) => void;
-}) {
-  const items = [
-    { id: "files", Icon: Files },
-    { id: "search", Icon: Search },
-    { id: "git", Icon: GitBranch },
-    { id: "debug", Icon: Bug },
-    { id: "ext", Icon: Puzzle },
-  ] as const;
+/** Franja de venta: el curso de la pestaña activa, su próxima cohorte y el botón. */
+function BarraCurso({ tab, curso, entrada }: { tab: Tab; curso: HeroCurso; entrada: string }) {
+  const Icon = ICONOS[tab.id];
+  const detalle = curso.inicio
+    ? [`Inicia ${curso.inicio}`, curso.dias, curso.hora].filter(Boolean).join(" · ")
+    : `${curso.horas} h en vivo · Cupos abiertos, consulta fecha`;
+  // En el teléfono no cabe la línea completa: fecha y hora de inicio.
+  const corto = curso.inicio
+    ? [`Inicia ${curso.inicio}`, curso.hora?.split(" ")[0]].filter(Boolean).join(" · ")
+    : `${curso.horas} h · Consulta fecha`;
+
   return (
-    <div className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-line bg-wash py-2 text-mute">
-      {items.map(({ id, Icon }) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => onChange(id)}
-          className={`flex size-12 items-center justify-center ${
-            current === id ? "border-l-2 border-ink text-ink" : "border-l-2 border-transparent hover:text-ink"
-          }`}
-          aria-label={id}
-        >
-          <Icon size={18} strokeWidth={current === id ? 2.2 : 1.8} />
-        </button>
+    <Link
+      href={curso.href}
+      onClick={() => trackCourseCardClick(tab.slug, "home_hero_panel")}
+      className="group/bar flex h-[68px] shrink-0 items-center gap-3 bg-ink px-3.5 text-paper no-underline sm:h-[78px] sm:gap-4 sm:px-5"
+    >
+      <span key={tab.id} className={`flex min-w-0 flex-1 items-center gap-3 sm:gap-4 ${entrada}`}>
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/10 sm:size-11">
+          <Icon size={19} strokeWidth={2} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center gap-2.5">
+            <span className="truncate text-[15px] font-semibold tracking-tight sm:text-[17px]">
+              Curso {tab.title}
+            </span>
+            {curso.descuento > 0 ? (
+              <span className="hidden shrink-0 rounded-full bg-white/12 px-2 py-0.5 text-[11px] font-semibold ring-1 ring-white/15 sm:inline">
+                {curso.descuento}% de descuento
+              </span>
+            ) : null}
+          </span>
+          <span className="mt-0.5 block truncate text-xs text-paper/65 sm:hidden">{corto}</span>
+          <span className="mt-0.5 hidden truncate text-[13px] text-paper/65 sm:block">{detalle}</span>
+        </span>
+      </span>
+      <span className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-paper px-4 text-sm font-semibold text-ink transition-colors group-hover/bar:bg-white">
+        Ver curso
+        <ArrowRight
+          size={15}
+          className="shrink-0 transition-transform group-hover/bar:translate-x-0.5"
+          aria-hidden
+        />
+      </span>
+    </Link>
+  );
+}
+
+/** Solo se ve si alguien cambia de pestaña antes de que carguen los editores. */
+function Cargando() {
+  return (
+    <div className="flex h-full flex-col gap-2.5 bg-paper p-5" aria-hidden>
+      {[62, 78, 40, 70, 54, 84, 46].map((w, i) => (
+        <span key={i} className="h-3 animate-pulse rounded-full bg-wash" style={{ width: `${w}%` }} />
       ))}
     </div>
   );
-}
-
-function Sidebar({
-  panel,
-  activeFile,
-  onFile,
-}: {
-  panel: string;
-  activeFile: string;
-  onFile: (name: string) => void;
-}) {
-  const files = ["ventas.py", "consulta.sql", "data/ventas.csv"];
-  return (
-    <div className="hidden w-[138px] shrink-0 flex-col border-r border-line bg-canvas px-2 py-2 sm:flex">
-      {panel === "search" ? (
-        <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Search</p>
-          <input
-            type="search"
-            placeholder="Buscar"
-            className="mb-2 w-full border border-line bg-paper px-1.5 py-1 font-mono text-[11px] text-ink outline-none"
-          />
-          <p className="px-1 text-[10px] text-mute">groupby · ventas.py:6</p>
-        </>
-      ) : panel === "git" ? (
-        <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Source Control</p>
-          <p className="px-1 text-[11px] text-mute">0 cambios</p>
-        </>
-      ) : panel === "debug" ? (
-        <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Run</p>
-          <p className="px-1 text-[11px] text-mute">Python: ventas.py</p>
-        </>
-      ) : panel === "ext" ? (
-        <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Extensions</p>
-          <p className="px-1 text-[11px] text-mute">Python · Jupyter · Pylance</p>
-        </>
-      ) : (
-        <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Explorer</p>
-          {files.map((name) => (
-            <button
-              key={name}
-              type="button"
-              onClick={() => onFile(name)}
-              className={`min-h-12 w-full truncate px-1.5 py-2 text-left font-mono text-[11px] ${
-                name === activeFile ? "bg-wash text-ink" : "text-mute hover:text-ink"
-              }`}
-            >
-              {name}
-            </button>
-          ))}
-        </>
-      )}
-    </div>
-  );
-}
-
-function PythonEditor({ demo, onOpenSql }: { demo: DemoPais; onOpenSql: () => void }) {
-  const [panel, setPanel] = useState("files");
-  const [file, setFile] = useState("ventas.py");
-  const [ran, setRan] = useState(false);
-  const line = 10;
-
-  return (
-    <div className="flex h-full">
-      <ActivityBar current={panel} onChange={setPanel} />
-      <Sidebar
-        panel={panel}
-        activeFile={file}
-        onFile={(name) => {
-          if (name === "consulta.sql") onOpenSql();
-          else setFile(name);
-        }}
-      />
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper">
-        <div className="flex min-h-12 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
-          <div className="flex items-center">
-            {(["ventas.py", file === "data/ventas.csv" ? "ventas.csv" : null] as const)
-              .filter(Boolean)
-              .map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setFile(tab === "ventas.csv" ? "data/ventas.csv" : "ventas.py")}
-                  className={`min-h-12 min-w-12 px-2 py-1 font-mono text-[11px] ${
-                    (file === "ventas.py" && tab === "ventas.py") ||
-                    (file === "data/ventas.csv" && tab === "ventas.csv")
-                      ? "border-b-2 border-ink text-ink"
-                      : "text-mute"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-          </div>
-          <button
-            type="button"
-            onClick={() => setRan(true)}
-            className="mr-1 inline-flex min-h-12 items-center gap-1 px-3 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
-          >
-            <Play size={12} fill="currentColor" />
-            Ejecutar
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-hidden">
-          {file === "data/ventas.csv" ? (
-            <table className="w-full font-mono text-[11px]">
-              <thead className="text-left text-mute">
-                <tr className="border-b border-line">
-                  <th className="px-3 py-1.5 font-medium">mes</th>
-                  <th className="px-3 py-1.5 font-medium">region</th>
-                  <th className="px-3 py-1.5 font-medium">monto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ["Ene", demo.cortas[0], "18.200.000"],
-                  ["Feb", demo.cortas[1], "9.400.000"],
-                  ["Mar", demo.cortas[2], "7.150.000"],
-                  ["Abr", demo.cortas[0], "21.800.000"],
-                ].map((row, rowIdx) => (
-                  <tr key={`${row[0]}-${rowIdx}`} className="border-b border-line/60">
-                    {row.map((c, colIdx) => (
-                      <td key={`${row[0]}-${colIdx}`} className="px-3 py-1">
-                        {c}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <pre className="h-full overflow-hidden px-3 py-2.5 font-mono text-[11px] leading-[1.7] sm:text-[12px]">
-              <CodeLine n={1}>
-                <Kw>import</Kw> pandas <Kw>as</Kw> pd
-              </CodeLine>
-              <CodeLine n={2}>
-                <Kw>import</Kw> plotly.express <Kw>as</Kw> px
-              </CodeLine>
-              <CodeLine n={3} />
-              <CodeLine n={4}>
-                ventas = pd.<Fn>read_csv</Fn>(<Str>&quot;ventas.csv&quot;</Str>)
-              </CodeLine>
-              <CodeLine n={5}>
-                mensual = (
-              </CodeLine>
-              <CodeLine n={6}>
-                {"    "}ventas.<Fn>groupby</Fn>(<Str>&quot;mes&quot;</Str>, as_index=<Kw>False</Kw>)
-              </CodeLine>
-              <CodeLine n={7}>
-                {"    "}.<Fn>agg</Fn>(total=(<Str>&quot;monto&quot;</Str>, <Str>&quot;sum&quot;</Str>))
-              </CodeLine>
-              <CodeLine n={8}>
-                )
-              </CodeLine>
-              <CodeLine n={9} />
-              <CodeLine n={10} active>
-                fig = px.<Fn>bar</Fn>(mensual, x=<Str>&quot;mes&quot;</Str>, y=<Str>&quot;total&quot;</Str>)
-              </CodeLine>
-              <CodeLine n={11}>
-                fig.<Fn>show</Fn>()
-              </CodeLine>
-            </pre>
-          )}
-        </div>
-
-        {ran && file === "ventas.py" && (
-          <div className="flex h-[38%] shrink-0 flex-col border-t border-line bg-canvas">
-            <div className="flex items-center gap-2 border-b border-line px-3 py-1 text-[10px] font-medium text-mute">
-              <Terminal size={12} />
-              Output
-              <span className="ml-auto text-faint">Figure(1)</span>
-            </div>
-            <div className="flex min-h-0 flex-1 items-end gap-1 px-4 py-2">
-              {[42, 55, 48, 70, 62, 84, 76, 92].map((h, i) => (
-                <div key={MONTHS[i]} className="flex flex-1 flex-col items-center justify-end gap-0.5">
-                  <div className="w-full bg-[#118DFF]" style={{ height: `${h}%` }} />
-                  <span className="text-[8px] text-faint">{MONTHS[i]}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="flex h-6 shrink-0 items-center justify-between border-t border-line bg-wash px-3 font-mono text-[10px] text-mute">
-          <span>Python 3.12.8</span>
-          <span>UTF-8 · Ln {line}, Col 1</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SqlEditor({ demo }: { demo: DemoPais }) {
-  const [panel, setPanel] = useState("files");
-  const [running, setRunning] = useState(false);
-  const [show, setShow] = useState(true);
-  const [sel, setSel] = useState<number | null>(0);
-  const [sortDesc, setSortDesc] = useState(true);
-
-  const rows = useMemo(() => {
-    const data = [
-      [demo.sqlRegiones[0], "128.450.000"],
-      [demo.sqlRegiones[1], "64.210.000"],
-      [demo.sqlRegiones[2], "41.880.000"],
-      [demo.sqlRegiones[3], "29.140.000"],
-    ];
-    return sortDesc ? data : [...data].reverse();
-  }, [sortDesc, demo.sqlRegiones]);
-
-  const run = () => {
-    setRunning(true);
-    setShow(false);
-    window.setTimeout(() => {
-      setRunning(false);
-      setShow(true);
-    }, 420);
-  };
-
-  return (
-    <div className="flex h-full">
-      <ActivityBar current={panel} onChange={setPanel} />
-      <Sidebar panel={panel} activeFile="consulta.sql" onFile={() => undefined} />
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper">
-        <div className="flex min-h-12 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
-          <span className="border-b-2 border-ink px-2 py-1 font-mono text-[11px] text-ink">consulta.sql</span>
-          <button
-            type="button"
-            onClick={run}
-            className="mr-1 inline-flex min-h-12 items-center gap-1 px-3 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
-          >
-            <Play size={12} fill="currentColor" />
-            {running ? "Ejecutando…" : "Ejecutar"}
-          </button>
-        </div>
-        <pre className="min-h-0 flex-[0.9] overflow-hidden px-3 py-2 font-mono text-[11px] leading-[1.7] sm:text-[12px]">
-          <CodeLine n={1}>
-            <Kw>SELECT</Kw> c.region, <Fn>SUM</Fn>(v.monto) <Kw>AS</Kw> total
-          </CodeLine>
-          <CodeLine n={2}>
-            <Kw>FROM</Kw> ventas v
-          </CodeLine>
-          <CodeLine n={3}>
-            <Kw>JOIN</Kw> clientes c <Kw>ON</Kw> c.id = v.cliente_id
-          </CodeLine>
-          <CodeLine n={4}>
-            <Kw>WHERE</Kw> v.fecha &gt;= <Str>&apos;2025-01-01&apos;</Str>
-          </CodeLine>
-          <CodeLine n={5}>
-            <Kw>GROUP BY</Kw> c.region
-          </CodeLine>
-          <CodeLine n={6}>
-            <Kw>ORDER BY</Kw> total <Kw>DESC</Kw>;
-          </CodeLine>
-        </pre>
-        <div className="flex min-h-0 flex-1 flex-col border-t border-line bg-canvas">
-          <div className="flex items-center justify-between border-b border-line px-3 py-1 font-mono text-[10px] text-mute">
-            <span>{running ? "Running…" : show ? `Results · ${rows.length} rows` : "Messages"}</span>
-            <button type="button" onClick={() => setSortDesc((s) => !s)} className="hover:text-ink">
-              Orden: {sortDesc ? "DESC" : "ASC"}
-            </button>
-          </div>
-          {show && !running && (
-            <table className="w-full font-mono text-[10px] sm:text-[11px]">
-              <thead className="text-left text-mute">
-                <tr className="border-b border-line">
-                  <th className="px-3 py-1 font-medium">region</th>
-                  <th className="px-3 py-1 font-medium">total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, i) => (
-                  <tr
-                    key={row[0]}
-                    onClick={() => setSel(i)}
-                    className={`cursor-pointer border-b border-line/60 ${sel === i ? "bg-wash" : "hover:bg-paper"}`}
-                  >
-                    <td className="px-3 py-1 text-ink">{row[0]}</td>
-                    <td className="px-3 py-1 text-ink">{row[1]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-type RegionKey = "all" | 0 | 1 | 2;
-
-function PowerBiCanvas({ demo }: { demo: DemoPais }) {
-  const [region, setRegion] = useState<RegionKey>("all");
-  const [year, setYear] = useState<"2025" | "2026">("2026");
-  const [page, setPage] = useState<"informe" | "detalle">("informe");
-  const [channel, setChannel] = useState<string | null>(null);
-  const [hoverBar, setHoverBar] = useState<number | null>(null);
-  const [visual, setVisual] = useState("bar");
-
-  const regionLabel = region === "all" ? "Todas" : demo.regiones[region];
-  const data = useMemo(() => compute(region, year, channel, demo), [region, year, channel, demo]);
-  const visuals = [
-    { id: "bar", Icon: BarChart3 },
-    { id: "line", Icon: LineChart },
-    { id: "pie", Icon: PieChart },
-    { id: "card", Icon: Hash },
-    { id: "table", Icon: Table2 },
-    { id: "map", Icon: Map },
-    { id: "slicer", Icon: Filter },
-    { id: "text", Icon: Type },
-    { id: "grid", Icon: LayoutGrid },
-  ] as const;
-
-  return (
-    <div className="flex h-full flex-col bg-[#efeee9]">
-      <div className="flex h-8 shrink-0 items-center gap-3 border-b border-line bg-paper px-3">
-        <span className="size-3.5 shrink-0 bg-[#F2C811]" />
-        <nav className="flex gap-3 text-[11px] text-mute">
-          <span className="font-semibold text-ink">Inicio</span>
-          <span className="hidden sm:inline">Insertar</span>
-          <span className="hidden sm:inline">Modelado</span>
-          <span className="hidden sm:inline">Ver</span>
-        </nav>
-        <span className="ml-auto hidden items-center gap-1 text-[10px] font-semibold text-mute sm:inline-flex">
-          <Share2 size={12} />
-          Compartir
-        </span>
-      </div>
-
-      <div className="flex min-h-0 flex-1">
-        <div className="hidden w-8 shrink-0 flex-col items-center gap-3 border-r border-line bg-paper py-2 text-mute sm:flex">
-          <LayoutGrid size={15} className="text-ink" />
-          <Table2 size={15} />
-          <Database size={15} />
-        </div>
-
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden p-2">
-          <div className="mb-2 flex flex-wrap items-center gap-1.5">
-            {(["all", 0, 1, 2] as const).map((r) => {
-              const label = r === "all" ? "Todas" : demo.regiones[r];
-              return (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setRegion(r)}
-                  className={`min-h-12 border px-3 text-[10px] font-medium ${
-                    region === r ? "border-ink bg-paper text-ink" : "border-line bg-paper/70 text-mute hover:text-ink"
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-            <span className="mx-1 h-3 w-px bg-line-strong" />
-            {(["2025", "2026"] as const).map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => setYear(y)}
-                className={`min-h-12 border px-3 text-[10px] font-medium ${
-                  year === y ? "border-ink bg-paper text-ink" : "border-line bg-paper/70 text-mute hover:text-ink"
-                }`}
-              >
-                {y}
-              </button>
-            ))}
-          </div>
-
-          {page === "informe" ? (
-            <div className="grid min-h-0 flex-1 grid-cols-12 gap-1.5">
-              <Kpi label="Ingresos" value={data.ingresos} hint={`${data.delta > 0 ? "+" : ""}${data.delta}% YoY`} />
-              <Kpi label="Órdenes" value={data.ordenes} hint={year} />
-              <Kpi label="Ticket" value={data.ticket} hint="promedio" />
-              <Kpi label="Regiones" value={region === "all" ? "3" : "1"} hint={regionLabel} />
-
-              <div className="relative col-span-7 flex flex-col border border-line bg-paper p-2 shadow-sm">
-                <p className="mb-1 text-[10px] text-mute">Ventas por mes</p>
-                <div className="flex min-h-0 flex-1 items-end gap-1">
-                  {data.bars.map((h, i) => (
-                    <button
-                      key={MONTHS[i]}
-                      type="button"
-                      aria-label={`Ventas ${MONTHS[i]}`}
-                      onMouseEnter={() => setHoverBar(i)}
-                      onMouseLeave={() => setHoverBar(null)}
-                      className="flex h-full min-h-12 flex-1 flex-col items-center justify-end"
-                    >
-                      <div
-                        className="w-full transition-opacity"
-                        style={{
-                          height: `${h}%`,
-                          background: hoverBar === i || hoverBar === null ? "#118DFF" : "#118DFF99",
-                        }}
-                      />
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-0.5 flex gap-1">
-                  {MONTHS.map((m) => (
-                    <span key={m} className="flex-1 text-center text-[8px] text-faint">
-                      {m}
-                    </span>
-                  ))}
-                </div>
-                {hoverBar !== null && (
-                  <div className="pointer-events-none absolute top-7 right-2 border border-line bg-paper px-2 py-1 text-[10px] text-ink shadow-sm">
-                    {MONTHS[hoverBar]} · {Math.round(data.bars[hoverBar] * 0.42)}M
-                  </div>
-                )}
-              </div>
-
-              <div className="col-span-5 flex flex-col border border-line bg-paper p-2 shadow-sm">
-                <p className="mb-1 text-[10px] text-mute">Canal</p>
-                <div className="flex flex-1 items-center gap-2">
-                  <div
-                    className="relative size-16 shrink-0 rounded-full"
-                    style={{ background: conic(data.channels) }}
-                  >
-                    <i className="absolute inset-[26%] rounded-full bg-paper" />
-                  </div>
-                  <ul className="min-w-0 space-y-1">
-                    {data.channels.map((c) => (
-                      <li key={c.name}>
-                        <button
-                          type="button"
-                          aria-label={`${c.name} ${c.pct}% — filtrar canal`}
-                          onClick={() => setChannel(channel === c.name ? null : c.name)}
-                          className={`flex min-h-12 w-full items-center gap-1.5 text-[10px] ${
-                            channel === c.name ? "font-semibold text-ink" : "text-mute hover:text-ink"
-                          }`}
-                        >
-                          <i className="size-2 shrink-0" style={{ background: c.color }} />
-                          {c.name} {c.pct}%
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="col-span-12 flex flex-col border border-line bg-paper p-2 shadow-sm sm:col-span-7">
-                <p className="mb-1 text-[10px] text-mute">Tendencia</p>
-                <svg viewBox="0 0 160 42" className="h-full w-full" preserveAspectRatio="none">
-                  <polyline fill="rgba(17,141,255,0.12)" stroke="none" points={`0,42 ${trendPts(data.trend)} 160,42`} />
-                  <polyline fill="none" stroke="#118DFF" strokeWidth="1.8" points={trendPts(data.trend)} />
-                </svg>
-              </div>
-              <div className="hidden flex-col border border-line bg-paper p-2 shadow-sm sm:col-span-5 sm:flex">
-                <p className="mb-1 text-[10px] text-mute">Por región</p>
-                {data.byRegion.map((r) => (
-                  <button
-                    key={r.key}
-                    type="button"
-                    aria-label={`${r.name} ${r.pct}% — filtrar región`}
-                    onClick={() => setRegion(r.key)}
-                    className="mb-1 flex min-h-12 items-center gap-2 text-[10px]"
-                  >
-                    <span className="w-16 truncate text-left text-mute">{r.name}</span>
-                    <span className="h-1.5 flex-1 bg-wash">
-                      <span className="block h-full bg-[#118DFF]" style={{ width: `${r.pct}%` }} />
-                    </span>
-                    <span className="w-8 text-right text-ink">{r.pct}%</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="flex min-h-0 flex-1 flex-col border border-line bg-paper shadow-sm">
-              <div className="border-b border-line px-2 py-1 text-[10px] text-mute">
-                Detalle · {regionLabel} · {year}
-                {channel ? ` · ${channel}` : ""}
-              </div>
-              <table className="w-full text-[10px] sm:text-[11px]">
-                <thead className="text-left text-mute">
-                  <tr className="border-b border-line">
-                    <th className="px-2 py-1 font-medium">Mes</th>
-                    <th className="px-2 py-1 font-medium">Canal</th>
-                    <th className="px-2 py-1 text-right font-medium">Ventas</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.detail.map((row) => (
-                    <tr key={row.mes + row.canal} className="border-b border-line/60">
-                      <td className="px-2 py-1">{row.mes}</td>
-                      <td className="px-2 py-1">{row.canal}</td>
-                      <td className="px-2 py-1 text-right font-medium">{row.ventas}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        <div className="hidden w-[118px] shrink-0 flex-col border-l border-line bg-paper sm:flex">
-          <p className="border-b border-line px-2 py-1.5 text-[10px] font-semibold text-ink">Visualizaciones</p>
-          <div className="grid grid-cols-3 gap-0.5 p-1.5">
-            {visuals.map(({ id, Icon }) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setVisual(id)}
-                className={`flex size-8 items-center justify-center ${
-                  visual === id ? "bg-wash text-ink ring-1 ring-line-strong" : "text-mute hover:text-ink"
-                }`}
-                aria-label={id}
-              >
-                <Icon size={14} />
-              </button>
-            ))}
-          </div>
-          <p className="border-y border-line px-2 py-1.5 text-[10px] font-semibold text-ink">Datos</p>
-          <ul className="space-y-0.5 px-2 py-1.5 font-mono text-[10px] text-mute">
-            <li>▸ Ventas</li>
-            <li className="pl-2">monto</li>
-            <li className="pl-2">mes</li>
-            <li>▸ Clientes</li>
-            <li className="pl-2">region</li>
-            <li className="pl-2">canal</li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="flex h-7 shrink-0 items-center gap-1 border-t border-line bg-paper px-2">
-        <button
-          type="button"
-          onClick={() => setPage("informe")}
-          className={`min-h-12 px-3 text-[10px] font-medium ${
-            page === "informe" ? "border-b-2 border-ink text-ink" : "text-mute"
-          }`}
-        >
-          Informe 1
-        </button>
-        <button
-          type="button"
-          onClick={() => setPage("detalle")}
-          className={`min-h-12 px-3 text-[10px] font-medium ${
-            page === "detalle" ? "border-b-2 border-ink text-ink" : "text-mute"
-          }`}
-        >
-          Detalle
-        </button>
-        <span className="ml-1 flex size-4 items-center justify-center bg-[#107c10] text-white">
-          <Plus size={10} strokeWidth={3} />
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function Kpi({ label, value, hint }: { label: string; value: string; hint: string }) {
-  return (
-    <div className="col-span-3 flex flex-col justify-between border border-line bg-paper p-2 shadow-sm">
-      <p className="text-[10px] text-mute">{label}</p>
-      <p className="text-sm font-bold tracking-tight text-ink sm:text-base">{value}</p>
-      <p className="truncate text-[9px] text-faint">{hint}</p>
-    </div>
-  );
-}
-
-function compute(region: RegionKey, year: "2025" | "2026", channel: string | null, demo: DemoPais) {
-  const yf = year === "2025" ? 0.86 : 1;
-  const rf = region === "all" ? 1 : region === 0 ? 0.55 : region === 1 ? 0.27 : 0.18;
-  const cf = channel === "Retail" ? 0.46 : channel === "B2B" ? 0.28 : channel === "Online" ? 0.26 : 1;
-  const f = yf * rf * (channel ? cf / 0.33 : 1);
-  const ingresos = 234.5 * f;
-  const ordenes = Math.round(8412 * f);
-  const bars = [36, 48, 42, 61, 55, 74, 66, 88].map((x) => Math.max(14, Math.round(x * Math.sqrt(f))));
-  const channels = CHANNELS.map((c, i) => {
-    const raw = [46, 28, 26][i];
-    if (channel && c.name !== channel) return { ...c, pct: Math.max(6, Math.round(raw * 0.35)) };
-    return { ...c, pct: channel ? Math.round(raw * 1.4) : raw };
-  });
-  const byRegion: { key: 0 | 1 | 2; name: string; pct: number }[] = [
-    { key: 0, name: demo.regiones[0], pct: region === 1 || region === 2 ? 18 : 55 },
-    { key: 1, name: demo.regiones[1], pct: region === 1 ? 62 : 27 },
-    { key: 2, name: demo.regiones[2], pct: region === 2 ? 58 : 18 },
-  ];
-  const detail = MONTHS.slice(0, 5).flatMap((mes, i) =>
-    (channel ? CHANNELS.filter((c) => c.name === channel) : CHANNELS.slice(0, 2)).map((c) => ({
-      mes,
-      canal: c.name,
-      ventas: `${Math.round((18 - i) * 1.4 * f * (c.name === "Retail" ? 1.2 : 0.8))}M`,
-    })),
-  );
-  return {
-    ingresos: `$${ingresos.toFixed(1)}M`,
-    ordenes: ordenes.toLocaleString(demo.locale),
-    ticket: `$${(27.8 * yf).toFixed(1)}k`,
-    delta: year === "2026" ? 12 : -4,
-    bars,
-    channels,
-    byRegion,
-    trend: bars.map((b) => 42 - b * 0.32),
-    detail: detail.slice(0, 6),
-  };
-}
-
-function conic(channels: { pct: number; color: string }[]) {
-  let acc = 0;
-  const parts = channels.map((c) => {
-    const from = acc;
-    acc += c.pct;
-    return `${c.color} ${from}% ${acc}%`;
-  });
-  return `conic-gradient(${parts.join(", ")})`;
-}
-
-function trendPts(ys: number[]) {
-  return ys.map((y, i) => `${(i / (ys.length - 1)) * 160},${y}`).join(" ");
-}
-
-function CodeLine({
-  n,
-  children,
-  active,
-  onClick,
-}: {
-  n: number;
-  children?: React.ReactNode;
-  active?: boolean;
-  onClick?: () => void;
-}) {
-  return (
-    <div
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onClick={onClick}
-      onKeyDown={onClick ? (e) => e.key === "Enter" && onClick() : undefined}
-      className={`flex w-full gap-3 text-left ${active ? "bg-wash" : ""} ${onClick ? "cursor-pointer" : ""}`}
-    >
-      <span className="w-4 shrink-0 text-right text-faint select-none">{n}</span>
-      <span>{children}</span>
-    </div>
-  );
-}
-
-function Kw({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#0451a5]">{children}</span>;
-}
-function Str({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#a31515]">{children}</span>;
-}
-function Fn({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#795e26]">{children}</span>;
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import HeroSection from "@/components/marketing/HeroSection";
 import LogoSlider from "@/components/marketing/LogoSlider";
-import Metrics from "@/components/marketing/Metrics";
 import Programs from "@/components/marketing/Programs";
 import Team from "@/components/marketing/Team";
 import Quote from "@/components/marketing/Quote";
@@ -17,7 +16,11 @@ import { getBloqueLocal, getContenidoPais } from "@/lib/data/contenido-paises";
 import { courses } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
-import type { CourseSchedule } from "@/lib/data/course-schedules";
+import {
+  formatShortDate,
+  getNearestSchedule,
+  type CourseSchedule,
+} from "@/lib/data/course-schedules";
 import {
   DEFAULT_OG_IMAGE,
   ORG_ID,
@@ -111,12 +114,26 @@ export default async function HomePage({
     ],
   };
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
+  // Cohorte más cercana con fecha futura, para la pastilla del hero.
+  // Se prefiere el nivel básico: es la fecha que muestra la ficha al abrirla.
+  const activas = schedules.map((s) => ({ ...s, is_active: s.is_active !== false }));
+  const cohorte =
+    getNearestSchedule(activas.filter((s) => s.level_name === "Básico")) ??
+    getNearestSchedule(activas);
+  const cursoCohorte = cohorte ? courses.find((c) => c.slug === cohorte.course_slug) : undefined;
+  const proximo =
+    cohorte && cursoCohorte
+      ? {
+          fecha: formatShortDate(cohorte.start_date),
+          curso: localizarMercado(cursoCohorte.title, pais),
+          href: rutaLocal(pais, `/cursos/${cursoCohorte.slug}`),
+        }
+      : null;
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(homeJsonLd) }} />
-      <HeroSection pais={pais} contenido={contenido} />
+      <HeroSection pais={pais} contenido={contenido} proximo={proximo} schedules={schedules} />
       <LogoSlider />
-      <Metrics />
       <Programs
         schedules={schedules}
         catalog={courses.map((c) => ({
@@ -138,6 +155,9 @@ export default async function HomePage({
       <BloqueLocalContenido iso={pais} ruta="hub" conFaqJsonLd={false} />
       <Team />
       <Quote />
+      {/* Cotización justo después de la prueba social, antes de la FAQ y de
+          los bloques de enlaces: no puede quedar al fondo de la página. */}
+      <HomeDeferred />
       <FaqSection
         faqs={faqs}
         titulo={contenido ? `Preguntas frecuentes en ${getPais(pais).nombre}` : undefined}
@@ -147,7 +167,6 @@ export default async function HomePage({
           tarjetas visibles de «Cursos». */}
       {pais === ISO_CHILE ? <RecursosDatos /> : null}
       <IndicePais pais={pais} />
-      <HomeDeferred />
     </>
   );
 }

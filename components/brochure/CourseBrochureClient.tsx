@@ -24,6 +24,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import BrochureMobileSummary from "@/components/brochure/BrochureMobileSummary";
 import type { CSSProperties, ReactNode } from "react";
 import {
   Download,
@@ -955,6 +956,9 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
               background: T.canvas,
             }}
           >
+            {/* Resumen legible para teléfonos; las hojas A4 siguen debajo. */}
+            <BrochureMobileSummary data={data} />
+
             <div
               ref={sheetsRef}
               className="brochure-sheets"

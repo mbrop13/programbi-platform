@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import CourseImage from "@/components/shared/CourseImage";
@@ -243,6 +243,7 @@ export default function CourseDetailClient({
   initialView = "publico",
   initialLevelName,
   detalleLocal,
+  testimonios,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
@@ -255,6 +256,8 @@ export default function CourseDetailClient({
   /** Igual que `initialView`, para `?nivel=`. */
   initialLevelName?: string;
   detalleLocal?: DetalleCursoLocal;
+  /** Citas de alumnos, renderizadas en el servidor. Van tras el profesor. */
+  testimonios?: ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -602,7 +605,7 @@ export default function CourseDetailClient({
               )}
             </div>
 
-            <div className="order-2 min-w-0 max-lg:-mt-10 lg:order-none">
+            <div className="order-2 min-w-0 max-lg:-mt-10 lg:hidden">
               <CourseCohortStrip
                 pending={false}
                 startLabel={nextStart?.date ?? OPEN_COHORT_LABEL}
@@ -625,7 +628,7 @@ export default function CourseDetailClient({
             </div>
           </div>
 
-          <aside className="order-3 min-w-0 lg:order-none lg:col-span-5 lg:row-span-2">
+          <aside id="inscripcion" className="order-3 min-w-0 scroll-mt-24 lg:order-none lg:col-span-5 lg:row-span-2">
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:max-h-[calc(100vh_-_var(--sticky-below-nav,6rem)_-_1.5rem)] lg:overflow-y-auto lg:overscroll-contain [scrollbar-width:thin] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
               <div className="mb-4 flex justify-start">
                 {isEmpresa ? (
@@ -921,6 +924,8 @@ export default function CourseDetailClient({
 
       <TuProfesor cursoSlug={course.slug} />
 
+      {testimonios}
+
       {isCroTemplate ? (
         <CourseFaq slug={course.slug} extra={detalleLocal?.faqs} pais={pais} />
       ) : detalleLocal && detalleLocal.faqs.length > 0 ? (
@@ -966,6 +971,21 @@ export default function CourseDetailClient({
           </div>
         </section>
       )}
+
+      {!isEmpresa ? (
+        <BarraFijaFicha
+          curso={course.title}
+          cursoSlug={course.slug}
+          pais={pais}
+          resumen={[
+            descuentoLocalCliente > 0 ? `${descuentoLocalCliente}% de descuento` : null,
+            nextStart ? `Inicia ${nextStart.date.toLowerCase()}` : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+          brochureUrl={canSeePrice ? brochureUrl : null}
+        />
+      ) : null}
 
       <AuthModal
         isOpen={showAuthModal}
@@ -1321,5 +1341,123 @@ function CourseContactForm({ course }: { course: Course }) {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Barra fija inferior de la ficha, solo en móvil y tablet (en escritorio la
+ * columna derecha ya es fija). Aparece cuando el formulario de temario sale
+ * de la pantalla y se esconde al llegar el footer.
+ *
+ * Sin precio desbloqueado lleva al formulario; con precio, abre el brochure.
+ * Mientras está visible oculta la burbuja flotante de WhatsApp (clase en
+ * `body`), porque la barra ya trae ese botón.
+ */
+function BarraFijaFicha({
+  curso,
+  cursoSlug,
+  pais,
+  resumen,
+  brochureUrl,
+}: {
+  curso: string;
+  cursoSlug: string;
+  pais: string;
+  resumen: string;
+  /** URL del brochure si el visitante ya puede ver precios; si no, null. */
+  brochureUrl: string | null;
+}) {
+  const [formularioVisible, setFormularioVisible] = useState(true);
+  const [footerVisible, setFooterVisible] = useState(false);
+  const [avanzo, setAvanzo] = useState(false);
+  const frame = useRef<number | null>(null);
+
+  useEffect(() => {
+    const actualizar = () => {
+      frame.current = null;
+      setAvanzo(window.scrollY > 320);
+    };
+    const onScroll = () => {
+      if (frame.current == null) frame.current = window.requestAnimationFrame(actualizar);
+    };
+    actualizar();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame.current != null) window.cancelAnimationFrame(frame.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const formulario = document.getElementById("inscripcion");
+    const footer = document.querySelector("footer");
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === formulario) setFormularioVisible(entry.isIntersecting);
+        else setFooterVisible(entry.isIntersecting);
+      }
+    });
+    if (formulario) observer.observe(formulario);
+    if (footer) observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
+  const visible = avanzo && !formularioVisible && !footerVisible;
+
+  useEffect(() => {
+    document.body.classList.toggle("cta-fija-visible", visible);
+    return () => document.body.classList.remove("cta-fija-visible");
+  }, [visible]);
+
+  const principal =
+    "inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-canvas no-underline";
+
+  return (
+    <div
+      role="region"
+      aria-label="Temario y precios del curso"
+      data-testid="ficha-barra-fija"
+      aria-hidden={!visible}
+      inert={!visible}
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-10px_30px_rgba(23,23,22,0.10)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden ${
+        visible ? "translate-y-0" : "translate-y-full"
+      }`}
+    >
+      {resumen ? (
+        <p className="mb-1.5 truncate px-1 text-center text-xs font-medium text-mute">{resumen}</p>
+      ) : null}
+      <div className="flex items-stretch gap-2">
+        {brochureUrl ? (
+          <a
+            href={brochureUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() =>
+              trackTemario({ action: "view", course: cursoSlug, country: pais, location: "ficha_barra_fija" })
+            }
+            className={principal}
+          >
+            <FileText size={16} aria-hidden /> Ver temario y precios
+          </a>
+        ) : (
+          <a href="#inscripcion" className={principal}>
+            <FileText size={16} aria-hidden /> Ver temario y precios
+          </a>
+        )}
+        <WhatsAppCta
+          page={`/cursos/${cursoSlug}`}
+          intent="curso"
+          course={curso}
+          courseSlug={cursoSlug}
+          country={pais}
+          ctaPosition="ficha_barra_fija"
+          className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-4 text-sm font-semibold text-ink no-underline"
+        >
+          <MessageCircle size={16} aria-hidden />
+          WhatsApp
+        </WhatsAppCta>
+      </div>
+    </div>
   );
 }

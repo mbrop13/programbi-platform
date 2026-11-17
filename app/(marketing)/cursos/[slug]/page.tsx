@@ -235,6 +235,10 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         course={cursoSinPrecios(course)}
         initialSchedules={schedules}
         detalleLocal={detalle}
+        // Citas reales de alumnos de este curso (LinkedIn), justo después del
+        // profesor: es prueba social y no puede quedar bajo los bloques SEO. Se
+        // oculta sola si no hay testimonios o con NEXT_PUBLIC_TESTIMONIOS=0.
+        testimonios={<TestimoniosDeCurso cursoSlug={course.slug} />}
       />
       {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.
           Reemplaza a CountryContext, que repetía los mismos datos. */}
@@ -260,9 +264,6 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
       {/* Enlaces internos que antes iban en el hero: landings, guías, caso y
           catálogo, en tarjetas y renderizados en el servidor (valor SEO). */}
       <RecursosRelacionadosCurso slug={course.slug} pais={pais} />
-      {/* Citas reales de alumnos de este curso (LinkedIn). Se oculta sola si no
-          hay testimonios o si el kill-switch NEXT_PUBLIC_TESTIMONIOS=0. */}
-      <TestimoniosDeCurso cursoSlug={course.slug} />
     </>
   );
 }

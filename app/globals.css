@@ -304,6 +304,17 @@ details.faq > summary::-webkit-details-marker {
   }
 }
 
+/* Panel del hero: avance de la pestaña activa mientras rota sola (9 s). */
+@keyframes hero-tab-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.hero-tab-progress {
+  transform-origin: left;
+  animation: hero-tab-progress 9s linear forwards;
+}
+
 /* ============================================ */
 /* Base Styles                                   */
 /* ============================================ */
@@ -1090,6 +1101,15 @@ body.footer-revealed nav.fixed {
 body.footer-revealed [class*="z-[9998]"] {
   opacity: 0;
   pointer-events: none;
+}
+
+/* Ficha de curso en móvil: la barra fija ya trae WhatsApp, así que la burbuja
+   flotante se esconde mientras la barra está visible. */
+@media (max-width: 1023px) {
+  body.cta-fija-visible [class*="z-[9998]"] {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 

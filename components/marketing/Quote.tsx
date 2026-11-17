@@ -19,20 +19,20 @@ export default function Quote() {
   const loop = [...testimonials, ...testimonials];
 
   return (
-    <section className="cv-auto border-t border-line py-20 lg:py-28">
+    <section className="cv-auto bg-ink py-20 text-paper lg:py-28">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+        <h2 className="text-3xl font-bold tracking-tight text-paper sm:text-4xl lg:text-5xl">
           Lo que dicen nuestros alumnos
         </h2>
-        <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
+        <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-paper/65">
           Historias reales de profesionales que transformaron su carrera con ProgramBI.
         </p>
 
         <blockquote className="mt-12 max-w-[1100px]">
-          <p className="text-3xl font-bold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-5xl">
+          <p className="text-3xl font-bold leading-[1.15] tracking-tight text-paper sm:text-4xl lg:text-5xl">
             “{featured.message}”
           </p>
-          <footer className="mt-6 text-sm text-mute">{featured.name}</footer>
+          <footer className="mt-6 text-sm text-paper/60">{featured.name}</footer>
         </blockquote>
       </div>
 
@@ -41,18 +41,18 @@ export default function Quote() {
           {loop.map((t, i) => (
             <article
               key={`${t.name}-${i}`}
-              className="w-[300px] shrink-0 rounded-[22px] border border-line bg-paper p-5 sm:w-[340px]"
+              className="w-[300px] shrink-0 rounded-[22px] border border-white/10 bg-white/[0.06] p-5 sm:w-[340px]"
             >
               <div className="flex items-center gap-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-wash text-[11px] font-semibold text-ink">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-paper">
                   {initials(t.name)}
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-ink">{t.name}</p>
-                  <p className="truncate text-[11px] text-faint">{t.role}</p>
+                  <p className="truncate text-sm font-semibold text-paper">{t.name}</p>
+                  <p className="truncate text-[11px] text-paper/50">{t.role}</p>
                 </div>
               </div>
-              <p className="mt-3 line-clamp-5 text-sm leading-relaxed text-mute">“{t.message}”</p>
+              <p className="mt-3 line-clamp-5 text-sm leading-relaxed text-paper/70">“{t.message}”</p>
             </article>
           ))}
         </div>
