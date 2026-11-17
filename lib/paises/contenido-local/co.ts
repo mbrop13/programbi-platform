@@ -10,7 +10,7 @@ const resumenCatalogo = resumenPreciosCatalogo("co");
  *
  * Datos duros y su fuente:
  * - Moneda, zona horaria y medios de pago: `config/paises.ts` (entrada `co`).
- * - Precio: tabla `precios(299900, 599900)` y `listas(440000)` en
+ * - Precio: tabla `precios(399900, 799900)` y `listas(590000)` en
  *   `config/paises.ts`; el monto visible se descarga en el brochure por la
  *   regla de `lib/pricing-gate.ts`.
  * - Cuotas: `config/cuotas.ts` (3, sin interés, todos los mercados).
