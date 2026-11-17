@@ -77,7 +77,7 @@ export function BrochurePricingScheduleSheet({
     data.precioListaFormateado !== data.precioFormateado;
 
   const cuotasText =
-    data.cuotaTexto || `${data.cuotas} cuotas sin interés disponibles`;
+    data.cuotaTexto || `${data.etiquetaCuotas} disponibles`;
 
   const paymentMethods = (
     data.mediosPago?.length
@@ -238,7 +238,7 @@ export function BrochurePricingScheduleSheet({
                   color: "#C8C6BE",
                 }}
               >
-                PAGA EN CUOTAS
+                {data.cuotas > 0 ? "PAGA EN CUOTAS" : "FORMA DE PAGO"}
               </span>
               <span
                 style={{
@@ -248,7 +248,7 @@ export function BrochurePricingScheduleSheet({
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {data.cuotas} cuotas sin interés
+                {data.etiquetaCuotas}
               </span>
             </div>
           </div>
@@ -276,7 +276,7 @@ export function BrochurePricingScheduleSheet({
                   marginBottom: 6,
                 }}
               >
-                Financiamiento directo
+                {data.cuotas > 0 ? "Financiamiento directo" : "Pago"}
               </div>
               <div
                 style={{

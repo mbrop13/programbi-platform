@@ -66,7 +66,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
             <span className="mt-0.5 block text-xs text-mute">
               {iso === "py" && !esGeneral ? "Valor por WhatsApp · " : ""}
               {curso.porNivel ? "por nivel · " : ""}
-              {textoCuotas(iso)}
+              {textoCuotas(iso) || "pago único con tarjeta"}
             </span>
           </dd>
         </div>

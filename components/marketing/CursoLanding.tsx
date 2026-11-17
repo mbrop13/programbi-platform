@@ -39,7 +39,7 @@ export default function CursoLanding({
     /cu[aá]nto cuesta/i.test(faq.q)
       ? {
           ...faq,
-          a: `El arancel vigente se descarga en el PDF de temario y precios del curso, junto con el detalle de las cuotas sin interés. Los medios de pago publicados para ${contenido.paisNombre} son: ${mediosPago.join("; ")}. El checkout confirma las opciones disponibles para la cohorte.`,
+          a: `El arancel vigente se descarga en el PDF de temario y precios del curso, ${textoCuotas(iso) ? "junto con el detalle de las cuotas sin interés" : "junto con el detalle del pago"}. Los medios de pago publicados para ${contenido.paisNombre} son: ${mediosPago.join("; ")}. El checkout confirma las opciones disponibles para la cohorte.`,
         }
       : faq
   );
@@ -95,7 +95,7 @@ export default function CursoLanding({
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <div className="rounded-2xl border border-line bg-paper p-5">
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-              Arancel y cuotas
+              {textoCuotas(iso) ? "Arancel y cuotas" : "Arancel"}
             </p>
             <Link
               href={courseBrochurePath(course.slug, iso)}
@@ -107,7 +107,7 @@ export default function CursoLanding({
             </Link>
             <p className="mt-2 text-sm leading-relaxed text-mute">
               El PDF de temario y precios incluye el arancel vigente en {contenido.paisNombre}, el
-              descuento publicado y {textoCuotas(iso)}.
+              descuento publicado{textoCuotas(iso) ? ` y ${textoCuotas(iso)}` : ""}.
             </p>
             <p className="mt-2 text-sm leading-relaxed text-mute">{contenido.cohorteTexto}</p>
           </div>

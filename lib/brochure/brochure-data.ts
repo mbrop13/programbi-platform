@@ -11,7 +11,7 @@ import {
   normalizarPais,
   type SlugCurso,
 } from "@/config/paises";
-import { CUOTAS_SIN_INTERES, NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
+import { CUOTAS_SIN_INTERES, NOTA_CUOTAS, cuotasSinInteres, textoCuotas } from "@/config/cuotas";
 import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { getCourseBySlug, type Course } from "@/lib/data/courses";
 import {
@@ -139,6 +139,8 @@ export type CourseBrochureData = {
   precioListaFormateado: string | null;
   descuentoPct: number;
   cuotas: number;
+  /** Rótulo corto: «3 cuotas sin interés» o «Pago único». */
+  etiquetaCuotas: string;
   cuotaMonto: number | null;
   cuotaTexto: string;
   notaCuotas: string;
@@ -471,10 +473,13 @@ export async function getCourseBrochureData(
       ? porcentajeDescuento(precioLista, precio)
       : 0;
 
+  // Mercados sin cuotas (hoy Estados Unidos): el PDF habla de pago único.
+  const conCuotas = cuotasSinInteres(iso) > 0;
   const cuotaMonto =
-    precio != null ? Math.round(precio / CUOTAS_SIN_INTERES) : null;
-  const cuotaTexto =
-    cuotaMonto != null
+    conCuotas && precio != null ? Math.round(precio / CUOTAS_SIN_INTERES) : null;
+  const cuotaTexto = !conCuotas
+    ? "Pago único con tarjeta"
+    : cuotaMonto != null
       ? `${textoCuotas(iso)} de ${formatMoneda(iso, cuotaMonto)} cada una`
       : textoCuotas(iso);
 
@@ -510,10 +515,11 @@ export async function getCourseBrochureData(
     precioListaFormateado:
       precioLista != null ? formatMoneda(iso, precioLista) : null,
     descuentoPct,
-    cuotas: CUOTAS_SIN_INTERES,
+    cuotas: conCuotas ? CUOTAS_SIN_INTERES : 0,
+    etiquetaCuotas: conCuotas ? `${CUOTAS_SIN_INTERES} cuotas sin interés` : "Pago único",
     cuotaMonto,
     cuotaTexto,
-    notaCuotas: NOTA_CUOTAS,
+    notaCuotas: conCuotas ? NOTA_CUOTAS : "",
     notaPago: NOTA_PAGO,
     mediosPago: infoPais.mediosPago,
     moneda: infoPais.moneda,

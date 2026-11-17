@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Database } from "lucide-react";
 import { getPais } from "@/config/paises";
+import { textoCuotas } from "@/config/cuotas";
 import type { ContenidoPais } from "@/lib/data/contenido-paises/tipos";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -132,8 +133,9 @@ export default function CountryContent({ contenido }: { contenido: ContenidoPais
                 Curso Power BI
               </p>
               <p className="mt-2 text-sm leading-relaxed text-mute">
-                El arancel vigente de tu país, los descuentos y las 3 cuotas sin interés están en
-                el PDF de temario y precios del curso.
+                {textoCuotas(pais.iso)
+                  ? `El arancel vigente de tu país, los descuentos y las ${textoCuotas(pais.iso)} están en el PDF de temario y precios del curso.`
+                  : "El arancel vigente de tu país y los descuentos están en el PDF de temario y precios del curso."}
               </p>
               <Link
                 href={courseBrochurePath("power-bi", pais.iso)}

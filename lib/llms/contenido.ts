@@ -162,6 +162,11 @@ function precioTransparenteTexto(iso: string, slug: string): string {
   return cobroTexto;
 }
 
+/** Celda de la columna de cuotas: pago único en los mercados sin cuotas. */
+function cuotasCelda(iso: string): string {
+  return textoCuotas(iso) || "Pago único con tarjeta";
+}
+
 /** Resumen exacto de los aranceles vigentes en un país (sin "Desde"). */
 function resumenPreciosPais(iso: string): string {
   if (!tienePrecioPublico(iso)) return "Consulta por WhatsApp";
@@ -273,7 +278,7 @@ function bloqueLandings(): string[] {
 function bloquePrecios(): string[] {
   const lineas = [
     "## Precios por país",
-    `Aranceles vigentes publicados en la moneda de cada país (precio con descuento, precio normal y porcentaje de descuento), todos con ${textoCuotas()}. El temario detallado y las fechas de cada cohorte se descargan en el PDF de cada curso.`,
+    `Aranceles vigentes publicados en la moneda de cada país (precio con descuento, precio normal y porcentaje de descuento), con ${textoCuotas()} salvo en Estados Unidos, donde el pago es único con tarjeta. El temario detallado y las fechas de cada cohorte se descargan en el PDF de cada curso.`,
     "",
     "| País | Moneda | Estándar (20 h*) | Análisis de Datos / Minería | Mercado Financiero (30 h) | Cuotas | Página |",
     "|---|---|---|---|---|---|---|",
@@ -288,7 +293,7 @@ function bloquePrecios(): string[] {
   for (const pais of [...mercadosPrincipales, ...otrosPublicados]) {
     const href = url(rutaLocal(pais.iso, "/precios"));
     lineas.push(
-      `| ${pais.nombre} | ${pais.moneda} | ${precioTransparenteTexto(pais.iso, "power-bi")} | ${precioTransparenteTexto(pais.iso, "analisis-de-datos")} | ${precioTransparenteTexto(pais.iso, "mercado-financiero")} | ${textoCuotas(pais.iso)} | ${md(`/precios`, href)} |`
+      `| ${pais.nombre} | ${pais.moneda} | ${precioTransparenteTexto(pais.iso, "power-bi")} | ${precioTransparenteTexto(pais.iso, "analisis-de-datos")} | ${precioTransparenteTexto(pais.iso, "mercado-financiero")} | ${cuotasCelda(pais.iso)} | ${md(`/precios`, href)} |`
     );
   }
   for (const pais of sinPrecio) {
@@ -316,7 +321,7 @@ function bloquePreciosDetalle(): string[] {
 
   const lineas = [
     "## Aranceles por país y por curso",
-    `Cada celda informa el arancel vigente por nivel/programa junto a su precio normal y porcentaje de descuento en la moneda de cada mercado (fuente: \`config/pricing.ts\`), pagadero en ${textoCuotas()}. El temario detallado y las fechas exactas de inicio se descargan en el PDF de cada curso.`,
+    `Cada celda informa el arancel vigente por nivel/programa junto a su precio normal y porcentaje de descuento en la moneda de cada mercado (fuente: \`config/pricing.ts\`), pagadero en ${textoCuotas()} (en Estados Unidos, pago único con tarjeta). El temario detallado y las fechas exactas de inicio se descargan en el PDF de cada curso.`,
     "",
     "### Mercados principales en moneda local (Chile, Argentina, México, Perú, Colombia y Uruguay)",
     "",
@@ -339,7 +344,7 @@ function bloquePreciosDetalle(): string[] {
     );
     for (const pais of otrosUsd) {
       lineas.push(
-        `| ${pais.nombre} | ${pais.moneda} | ${precioTransparenteTexto(pais.iso, "power-bi")} | ${precioTransparenteTexto(pais.iso, "analisis-de-datos")} | ${precioTransparenteTexto(pais.iso, "mercado-financiero")} | ${textoCuotas(pais.iso)} | ${md(`Precios ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios")))} |`
+        `| ${pais.nombre} | ${pais.moneda} | ${precioTransparenteTexto(pais.iso, "power-bi")} | ${precioTransparenteTexto(pais.iso, "analisis-de-datos")} | ${precioTransparenteTexto(pais.iso, "mercado-financiero")} | ${cuotasCelda(pais.iso)} | ${md(`Precios ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios")))} |`
       );
     }
   }
@@ -365,7 +370,7 @@ function bloquePreciosDetalle(): string[] {
 function bloquePoliticas(): string[] {
   return [
     "## Políticas y condiciones",
-    `- Cuotas: ${NOTA_CUOTAS} Aplica en todos los países, con ${MEDIOS_CUOTAS.join(" o ")}; la disponibilidad final la confirma la pasarela en el checkout.`,
+    `- Cuotas: ${NOTA_CUOTAS} Aplica en todos los países salvo Estados Unidos (allí el pago es único con tarjeta), con ${MEDIOS_CUOTAS.join(" o ")}; la disponibilidad final la confirma la pasarela en el checkout.`,
     `- Horario: clases en vivo por Zoom de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile, dos veces por semana; cada país ve el equivalente en su hora local.`,
     "- Campus virtual: acceso al campus virtual con las clases y el material usado para que puedas practicar durante el curso.",
     `- Certificado: al completar el curso se entrega un certificado de ProgramBI, incluido en el valor, con un código público con formato PBI-XXX-XXXXXX que se verifica en ${md("verificar-certificado", url("/verificar-certificado"))}. La ficha pública de cada certificado se abre desde su código en \`/certificado/<codigo>\`.`,

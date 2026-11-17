@@ -1173,7 +1173,7 @@ async function construirPdfVectorial(
   doc.setFont("helvetica", "bold");
   doc.setFontSize(TIPO.tarjeta);
   tinta(acento);
-  doc.text(`${data.cuotas} cuotas sin interés`, MARGEN + 7, y + 10);
+  doc.text(data.etiquetaCuotas, MARGEN + 7, y + 10);
 
   doc.setFontSize(16);
   tinta(TINTA);
@@ -1855,7 +1855,7 @@ async function construirPdfVectorial(
 
   const resumen: Array<{ etiqueta: string; valor: string }> = [
     { etiqueta: "Inversión", valor: data.precioFormateado },
-    { etiqueta: `${data.cuotas} cuotas sin interés`, valor: data.cuotaTexto },
+    { etiqueta: data.etiquetaCuotas, valor: data.cuotaTexto },
     {
       etiqueta: "Próximo inicio",
       valor: data.schedules[0]?.fecha ?? "Por confirmar",

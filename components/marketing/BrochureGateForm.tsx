@@ -12,6 +12,7 @@ import {
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
 import { trackLeadSubmit, trackTemario } from "@/lib/analytics/marketing";
+import { textoCuotas } from "@/config/cuotas";
 
 export type BrochureGateFormProps = {
   /** Slug del curso cuyo temario se abre al enviar. */
@@ -81,11 +82,15 @@ function splitDialCode(raw: string, fallbackCode: string): { code: string; rest:
   return { code: fallbackCode, rest: raw.trim() };
 }
 
-const INCLUDES = [
-  "Arancel vigente en tu moneda, becas y 3 cuotas sin interés",
-  "Próximas fechas y horarios convertidos a tu país",
-  "Malla curricular completa módulo a módulo y profesores",
-];
+function includesDe(pais: string): string[] {
+  return [
+    textoCuotas(pais)
+      ? `Arancel vigente en tu moneda, becas y ${textoCuotas(pais)}`
+      : "Arancel vigente en tu moneda y becas",
+    "Próximas fechas y horarios convertidos a tu país",
+    "Malla curricular completa módulo a módulo y profesores",
+  ];
+}
 
 const labelClass = "mb-1 block text-xs font-semibold tracking-wide text-ink/80 uppercase";
 const inputClass =
@@ -270,7 +275,7 @@ export function BrochureGateForm({
       <p className="mt-1.5 text-sm leading-snug text-mute">{subheading}</p>
 
       <ul className="mt-3 space-y-1.5">
-        {INCLUDES.map((item) => (
+        {includesDe(pais).map((item) => (
           <li key={item} className="flex items-start gap-2 text-[13px] font-medium text-ink">
             <Check size={15} strokeWidth={2.4} className="mt-0.5 shrink-0 text-ink" aria-hidden />
             <span>{item}</span>

@@ -211,7 +211,7 @@ export function BrochureSyllabusSheets({
     pages.reduce((acc, p) => acc + p.moduleCount, 0);
 
   const cuotasCopy =
-    data.cuotaTexto || `${data.cuotas} cuotas sin interés`;
+    data.cuotaTexto || data.etiquetaCuotas;
 
   return (
     <>

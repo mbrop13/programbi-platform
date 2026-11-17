@@ -174,8 +174,8 @@ export default function PreciosGateClient({
             <>
               <LockKeyhole size={13} aria-hidden />{" "}
               {discountLabel
-                ? `${discountLabel} · Aranceles en ${moneda} · ${textoCuotas(pais)} · en el PDF de temario y precios`
-                : `Valores vigentes en el PDF o por WhatsApp · ${moneda} · ${textoCuotas(pais)}`}
+                ? `${discountLabel} · Aranceles en ${moneda}${textoCuotas(pais) ? ` · ${textoCuotas(pais)}` : ""} · en el PDF de temario y precios`
+                : `Valores vigentes en el PDF o por WhatsApp · ${moneda}${textoCuotas(pais) ? ` · ${textoCuotas(pais)}` : ""}`}
             </>
           )}
         </p>
@@ -214,7 +214,7 @@ export default function PreciosGateClient({
               ? `${discountLabel} sobre el precio normal en ${moneda}. `
               : "Valores vigentes en el PDF o por WhatsApp. "}
             Los aranceles de cada curso se publican en su PDF de temario y precios, con el descuento
-            vigente, las fechas en hora de tu país y las {textoCuotas(pais)}. Completa tus datos y
+            vigente, las fechas en hora de tu país{textoCuotas(pais) ? ` y las ${textoCuotas(pais)}` : ""}. Completa tus datos y
             abrimos el PDF de tu curso principal en una pestaña nueva.
           </p>
 

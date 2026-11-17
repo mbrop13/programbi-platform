@@ -29,6 +29,7 @@ import {
 } from "@/lib/data/landing-cursos";
 import { horarioDeCohorte, horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
 import { precioPublico } from "@/config/pricing";
+import { textoCuotas } from "@/config/cuotas";
 import { metadataLocal } from "@/lib/paises/metadata";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { absoluteUrl } from "@/lib/seo";
@@ -95,7 +96,7 @@ export function contenidoLandingCurso(opts: {
       ? `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de Chile (${horario.offset}).`
       : `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de ${pais.nombre} (${horario.offset}). En Chile son de ${horario.inicioChile} a ${horario.finChile}.`;
 
-  const precioRespuesta = `El arancel vigente de ${lugar}, los descuentos y las 3 cuotas sin interés están en el PDF de temario y precios del curso. En la ficha ves fechas y cupos de la próxima cohorte.`;
+  const precioRespuesta = `El arancel vigente de ${lugar}, ${textoCuotas(iso) ? `los descuentos y las ${textoCuotas(iso)}` : "los descuentos"} están en el PDF de temario y precios del curso. En la ficha ves fechas y cupos de la próxima cohorte.`;
   const pagoRespuesta = `Los medios de pago publicados para ${lugar} son: ${pais.mediosPago.join("; ")}. El checkout muestra las opciones disponibles para la cohorte.`;
 
   const faqs = [
