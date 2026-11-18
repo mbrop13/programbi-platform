@@ -463,7 +463,7 @@ function presentedPrice(
 ) {
   const iso = normalizarPais(pais);
   const clp = calculateQuotePrice(slug, levelName, priceOverrides, promotions);
-  const local = precioCurso(iso, slug);
+  const local = precioCurso(iso, slug, promotions);
   if (local == null) {
     const savings = Math.max(0, clp.originalPrice - clp.finalPrice);
     return {
@@ -478,11 +478,13 @@ function presentedPrice(
     };
   }
 
-  const lista = precioLista(iso, slug);
+  const lista = precioLista(iso, slug, promotions);
   const original = lista ?? local;
   const hasDiscount = original > local;
   const priceNote =
     resolverCobro(iso).modo === "local" || clp.finalPrice <= 0 ? "" : notaCobroClp(clp.finalPrice);
+  const decimales = getPais(iso).decimales;
+  const ahorro = Math.round((original - local) * 10 ** decimales) / 10 ** decimales;
   return {
     originalPrice: montoConCodigo(iso, original),
     finalPrice: montoConCodigo(iso, local),
@@ -490,7 +492,7 @@ function presentedPrice(
     finalPriceValue: local,
     hasDiscount,
     discountPercent: hasDiscount ? porcentajeDescuento(original, local) : 0,
-    savings: hasDiscount ? montoConCodigo(iso, original - local) : "",
+    savings: hasDiscount ? montoConCodigo(iso, ahorro) : "",
     priceNote,
   };
 }

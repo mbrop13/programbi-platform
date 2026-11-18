@@ -3,7 +3,7 @@
 import { createClient, createAdminClient } from "./server";
 import { cache } from "react";
 import { revalidatePath } from "next/cache";
-import { revalidatePublicCourse, revalidatePublicSchedule } from "@/lib/cache/revalidate-public-course";
+import { revalidatePublicCourse, revalidatePublicPricing, revalidatePublicSchedule } from "@/lib/cache/revalidate-public-course";
 import { isCurrentUserAdmin } from "./comunidad";
 import type { RegistrationSourceCategory } from "@/lib/registration-source";
 
@@ -1746,7 +1746,7 @@ export async function adminCreatePromotion(promo: {
   target_type: string;
   target_id?: string;
   discount_percentage: number;
-  promo_price?: number;
+  promo_price?: number | null;
   is_active: boolean;
   valid_until?: string | null;
 }) {
@@ -1755,7 +1755,12 @@ export async function adminCreatePromotion(promo: {
   if (!admin) throw new Error("Solo administradores");
 
   // target_id must be null if empty string
-  const cleanPromo = { ...promo, target_id: promo.target_id || null };
+  const cleanPromo = {
+    ...promo,
+    target_id: promo.target_id || null,
+    promo_price: promo.promo_price ?? null,
+    valid_until: promo.valid_until || null,
+  };
 
   const { data, error } = await adminDb
     .from("promotions")
@@ -1764,6 +1769,9 @@ export async function adminCreatePromotion(promo: {
     .single();
 
   if (error) throw new Error(error.message);
+  revalidatePublicPricing(
+    cleanPromo.target_type === "specific_course" ? cleanPromo.target_id : null
+  );
   return data;
 }
 
@@ -1772,12 +1780,25 @@ export async function adminUpdatePromotion(promoId: string, updates: Record<stri
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { error } = await adminDb
+  const cleanUpdates = { ...updates, updated_at: new Date().toISOString() };
+  if ("target_id" in cleanUpdates) {
+    cleanUpdates.target_id = cleanUpdates.target_id || null;
+  }
+  if ("valid_until" in cleanUpdates) {
+    cleanUpdates.valid_until = cleanUpdates.valid_until || null;
+  }
+
+  const { data, error } = await adminDb
     .from("promotions")
-    .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq("id", promoId);
+    .update(cleanUpdates)
+    .eq("id", promoId)
+    .select("target_type, target_id")
+    .maybeSingle();
 
   if (error) throw new Error(error.message);
+  revalidatePublicPricing(
+    data?.target_type === "specific_course" ? data.target_id : null
+  );
 }
 
 export async function adminTogglePromotion(promoId: string) {
@@ -1785,7 +1806,11 @@ export async function adminTogglePromotion(promoId: string) {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data: current } = await adminDb.from("promotions").select("is_active").eq("id", promoId).single();
+  const { data: current } = await adminDb
+    .from("promotions")
+    .select("is_active, target_type, target_id")
+    .eq("id", promoId)
+    .single();
   if (!current) throw new Error("Promoción no encontrada");
 
   const { error } = await adminDb.from("promotions").update({
@@ -1793,6 +1818,9 @@ export async function adminTogglePromotion(promoId: string) {
     updated_at: new Date().toISOString()
   }).eq("id", promoId);
   if (error) throw new Error(error.message);
+  revalidatePublicPricing(
+    current.target_type === "specific_course" ? current.target_id : null
+  );
 }
 
 export async function adminDeletePromotion(promoId: string) {
@@ -1800,26 +1828,36 @@ export async function adminDeletePromotion(promoId: string) {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
+  const { data: current } = await adminDb
+    .from("promotions")
+    .select("target_type, target_id")
+    .eq("id", promoId)
+    .maybeSingle();
+
   const { error } = await adminDb.from("promotions").delete().eq("id", promoId);
   if (error) throw new Error(error.message);
+  revalidatePublicPricing(
+    current?.target_type === "specific_course" ? current.target_id : null
+  );
 }
 
 export async function getActivePromotions() {
   const supabase = createAdminClient();
-  const now = new Date().toISOString();
+  const nowMs = Date.now();
 
   // Fetches promotions that are active
   const { data, error } = await supabase
     .from("promotions")
     .select("*")
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .order("created_at", { ascending: false });
     
   if (error) {
     console.error("Error fetching promotions:", error);
     return [];
   }
   
-  return (data || []).filter((p: any) => !p.valid_until || p.valid_until > now);
+  return (data || []).filter((p: any) => !p.valid_until || new Date(p.valid_until).getTime() > nowMs);
 }
 
 // ─── COUPONS ───
@@ -2056,7 +2094,7 @@ export async function adminUpsertPriceOverride(override: {
     if (error) throw new Error(error.message);
   }
 
-  revalidatePublicCourse(override.item_id);
+  revalidatePublicPricing(override.item_type === "course" ? override.item_id : null);
 }
 
 export async function getPriceOverrides() {

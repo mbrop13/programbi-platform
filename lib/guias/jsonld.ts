@@ -46,11 +46,14 @@ function externalCitations(sources: string[] | undefined) {
  * - BreadcrumbList
  * Nunca declara Course/Offer en guías (se reserva exclusivamente a /cursos/[slug]).
  */
+import type { PromocionAplicable } from "@/lib/paises/precios";
+
 export function buildGuiaJsonLd(
   guia: Guia,
   rutaIndice: string,
   nombreMercado: string,
-  body: string
+  body: string,
+  promotions?: readonly PromocionAplicable[]
 ) {
   const canonical = absoluteUrl(guia.path);
   const ilustracion = ilustracionDeGuia(guia);
@@ -58,8 +61,8 @@ export function buildGuiaJsonLd(
   const wordCount = palabrasDeGuia(body);
   const mins = tiempoLecturaMinutos(body);
   const faqs = guia.faqs.map((faq) => ({
-    q: resolverPreciosFaq(faq.q, guia),
-    a: resolverPreciosFaq(faq.a, guia),
+    q: resolverPreciosFaq(faq.q, guia, promotions),
+    a: resolverPreciosFaq(faq.a, guia, promotions),
   }));
   const topicName = guia.course === "general" ? "Analítica de datos e IA" : nombreCurso(guia.course);
   const citations = externalCitations(guia.sources);

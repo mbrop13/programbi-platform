@@ -17,7 +17,7 @@ import {
 } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
-import { etiquetaDescuentoCatalogo, localizarMercado } from "@/lib/paises/precios";
+import { etiquetaDescuentoCatalogo, localizarMercado, type PromocionAplicable } from "@/lib/paises/precios";
 import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagina";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
@@ -73,13 +73,17 @@ export async function generateMetadata({
   );
 }
 
-function faqsDe(pais: Pais, cursos: PrecioCursoPagina[]) {
+function faqsDe(
+  pais: Pais,
+  cursos: PrecioCursoPagina[],
+  promotions: readonly PromocionAplicable[]
+) {
   const powerBi = cursos.find((curso) => curso.slug === "power-bi");
 
   return [
     {
       q: `¿Cuánto cuestan los cursos en ${pais.nombre}?`,
-      a: resumenPreciosCatalogo(pais.iso),
+      a: resumenPreciosCatalogo(pais.iso, promotions),
     },
     {
       q: "¿Qué incluye el precio?",
@@ -95,7 +99,7 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[]) {
     },
     {
       q: `¿Cuánto cuesta el curso de Power BI en ${pais.nombre}?`,
-      a: resumenPrecioCursoTexto(pais.iso, "power-bi", powerBi?.title ?? "Power BI"),
+      a: resumenPrecioCursoTexto(pais.iso, "power-bi", powerBi?.title ?? "Power BI", promotions),
     },
     {
       q: "¿Cuál es el mejor curso de Power BI en vivo en LatAm?",
@@ -123,7 +127,7 @@ export default async function PreciosPage({
   params: Promise<{ pais?: string }>;
 }) {
   const iso = normalizarPais((await params).pais);
-  const { pais, cursos, moneda, cobroLocal } = await preciosDePais(iso);
+  const { pais, cursos, moneda, cobroLocal, promotions } = await preciosDePais(iso);
   const bloque = getBloqueLocal(iso);
   const paginaBloque = getPaginaBloqueLocal(iso, "precios");
   const cuotas = textoCuotas(iso);
@@ -134,7 +138,7 @@ export default async function PreciosPage({
   }));
   // Con bloque local, la FAQ de la página es la del mercado (4-6 preguntas):
   // el texto visible y el FAQPage JSON-LD salen de la misma lista.
-  const faqs = faqsBloque ?? bloque?.faqs ?? faqsDe(pais, cursos);
+  const faqs = faqsBloque ?? bloque?.faqs ?? faqsDe(pais, cursos, promotions);
   const otrosPaises = PAISES_INDEXABLES.filter(
     (otro) => otro.iso !== pais.iso && esRutaIndexablePais(otro.iso, PATH)
   );
@@ -143,7 +147,7 @@ export default async function PreciosPage({
   const href = (destino: string) => rutaLocal(iso, destino);
   const courseUrl = (slug: string) => absoluteUrl(href(`/cursos/${slug}`));
 
-  const discountLabel = etiquetaDescuentoCatalogo(pais.iso);
+  const discountLabel = etiquetaDescuentoCatalogo(pais.iso, undefined, promotions);
   // Estados Unidos publica el monto sin formulario.
   const precioDirecto = muestraPrecioDirecto(pais.iso);
 
@@ -303,6 +307,7 @@ export default async function PreciosPage({
             moneda={moneda}
             cobroLocal={cobroLocal}
             discountLabel={discountLabel}
+            promotions={promotions}
           />
 
           {/* Datos del mercado: horario local, pago internacional, cuotas,

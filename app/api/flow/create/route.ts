@@ -51,13 +51,16 @@ export async function POST(req: NextRequest) {
     }
 
     const { getActivePromotions, getPriceOverrides } = await import("@/lib/supabase/comunidad-ai");
+    const { aplicarPorcentajeDescuento, seleccionarPromocionCurso } = await import("@/lib/paises/precios");
     const activePromos = await getActivePromotions();
     const priceOverrides = await getPriceOverrides();
 
 
     const getOverriddenPrice = (slug: string, levelName: string, codePrice: number) => {
        const override = priceOverrides.find((o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
-       return override ? override.price : codePrice;
+       return override && typeof override.price === 'number' && override.price > 0 && override.price < codePrice
+         ? override.price
+         : codePrice;
     };
 
     let grandTotalClp = 0;
@@ -105,18 +108,20 @@ export async function POST(req: NextRequest) {
        const isSpec = (masterCourse.durationHours > 50 || masterCourse.slug.includes("analisis") || masterCourse.slug.includes("analitica"));
        const subDiscount = isSpec ? specDiscountPercent : baseDiscountPercent;
        
-       const promo = activePromos.find((pr: any) => pr.target_type === 'all' || pr.target_type === 'courses' || (pr.target_type === 'specific_course' && pr.target_id === masterCourse.slug));
+       const promo = seleccionarPromocionCurso(activePromos, masterCourse.slug, "cl", basePrice);
        
        let finalPriceClp = basePrice;
        
-       if (promo && promo.promo_price) {
-         // If a fixed promo price is set, that overrides percentages
-         finalPriceClp = promo.promo_price;
+       if (promo && promo.promo_price && promo.promo_price > 0) {
+         // If a fixed promo price is set, that overrides percentages (never raising above base)
+         finalPriceClp = Math.min(basePrice, Math.round(promo.promo_price));
        } else {
-         const promoDiscount = promo ? promo.discount_percentage : 0;
+         const promoDiscount = promo?.discount_percentage ?? 0;
          const maxDiscountPercent = Math.max(subDiscount, promoDiscount);
-         const discountMultiplier = 1 - (maxDiscountPercent / 100);
-         finalPriceClp = Math.floor(basePrice * discountMultiplier);
+         finalPriceClp =
+           maxDiscountPercent > 0
+             ? aplicarPorcentajeDescuento(basePrice, maxDiscountPercent, 0)
+             : basePrice;
        }
        
        const itemTotal = finalPriceClp * (item.quantity || 1);

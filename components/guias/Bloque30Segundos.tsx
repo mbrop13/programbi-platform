@@ -9,7 +9,7 @@ import InicioVigente from "@/components/guias/InicioVigente";
 import type { InicioGuia } from "@/lib/guias/inicio";
 import type { Guia } from "@/lib/guias/tipos";
 import { horarioLocal } from "@/lib/paises/horarios";
-import { etiquetaDescuentoCurso } from "@/lib/paises/precios";
+import { etiquetaDescuentoCurso, type PromocionAplicable } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
@@ -21,10 +21,12 @@ import { rutaLocal } from "@/lib/paises/rutas";
 export default function Bloque30Segundos({
   guia,
   inicio = null,
+  promotions,
 }: {
   guia: Guia;
   /** Próxima cohorte real del curso, fijada al construir el sitio. */
   inicio?: InicioGuia | null;
+  promotions?: readonly PromocionAplicable[];
 }) {
   const iso = !guia.country || guia.country === "transversal" ? ISO_CHILE : normalizarPais(guia.country);
   const curso = fichaCurso(guia.course);
@@ -34,7 +36,7 @@ export default function Bloque30Segundos({
   const nombreCurso = esGeneral ? "Cursos de ProgramBI" : curso.nombre;
   const rutaCurso = esGeneral ? rutaLocal(iso, "/cursos") : rutaFichaCurso(iso, guia.course);
   const rutaTemario = esGeneral ? rutaCurso : "#temario-curso";
-  const etiquetaDescuento = esGeneral || iso === "py" ? null : etiquetaDescuentoCurso(iso, guia.course);
+  const etiquetaDescuento = esGeneral || iso === "py" ? null : etiquetaDescuentoCurso(iso, guia.course, promotions);
 
   return (
     <section

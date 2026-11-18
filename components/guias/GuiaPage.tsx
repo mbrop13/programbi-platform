@@ -25,6 +25,7 @@ import { fechaActualizado, resolverPrecios, resolverPreciosFaq } from "@/lib/gui
 import type { Guia } from "@/lib/guias/tipos";
 import { courseBrochurePath } from "@/lib/pricing-gate";
 import { jsonLdString } from "@/lib/seo";
+import { getActivePromotions } from "@/lib/supabase/comunidad-ai";
 
 type Props = {
   guia: Guia;
@@ -47,17 +48,20 @@ type Props = {
 export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas }: Props) {
   // Fecha real de la próxima cohorte. Se consulta al construir el sitio (la
   // guía es estática), no en cada visita.
-  const inicio = await proximoInicioDeCurso(guia.course);
+  const [inicio, promotions] = await Promise.all([
+    proximoInicioDeCurso(guia.course),
+    getActivePromotions(),
+  ]);
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
   const brochureHref = guia.course === "general" ? undefined : courseBrochurePath(guia.course, iso);
-  const body = resolverPrecios(guia.body, guia)
+  const body = resolverPrecios(guia.body, guia, promotions)
     // El cuerpo repite el H1 del frontmatter: se quita para no duplicar el H1.
     .replace(/^#\s+.*\n+/, "");
   const actualizado = fechaActualizado(guia.updated);
   const encabezados = encabezadosVisibles(body);
   const faqs = guia.faqs.map((faq) => ({
-    q: resolverPreciosFaq(faq.q, guia),
-    a: resolverPreciosFaq(faq.a, guia),
+    q: resolverPreciosFaq(faq.q, guia, promotions),
+    a: resolverPreciosFaq(faq.a, guia, promotions),
   }));
   const ficha = fichaCurso(guia.course);
   const esCursoConocido = ficha.horas != null;
@@ -76,7 +80,7 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
 
   // Las guías declaran Article + FAQPage + BreadcrumbList (nunca Course/Offer:
   // eso vive solo en la ficha del curso, para no duplicar el Course en 113 URLs).
-  const jsonLd = buildGuiaJsonLd(guia, rutaIndice, nombreMercado, body);
+  const jsonLd = buildGuiaJsonLd(guia, rutaIndice, nombreMercado, body, promotions);
 
   return (
     <>
@@ -163,7 +167,7 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
                 </figcaption>
               </figure>
 
-              <Bloque30Segundos guia={guia} inicio={inicio} />
+              <Bloque30Segundos guia={guia} inicio={inicio} promotions={promotions} />
 
               <IndiceGuiaMobile items={encabezados} />
 
@@ -245,7 +249,7 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
 
             {conLateral ? (
               <div className="hidden min-[85rem]:col-start-3 min-[85rem]:row-start-1 min-[85rem]:block">
-                <GuiaCursoLateral iso={iso} course={guia.course} inicio={inicio} />
+                <GuiaCursoLateral iso={iso} course={guia.course} inicio={inicio} promotions={promotions} />
               </div>
             ) : null}
           </div>

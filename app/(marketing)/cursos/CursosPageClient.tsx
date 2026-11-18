@@ -11,10 +11,10 @@ import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { type CourseSchedule } from "@/lib/data/course-schedules";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
-import { getPais } from "@/config/paises";
+import { getPais, muestraPrecioDirecto } from "@/config/paises";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { courseBrochurePath } from "@/lib/pricing-gate";
-import { formatMoneda, precioVenta } from "@/lib/paises/precios";
+import { formatMoneda, precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
 
 const CATALOG_ORDER = [
   "analisis-de-datos",
@@ -115,9 +115,11 @@ export type CourseCatalogItem = {
 export default function CursosPageClient({
   catalog,
   schedules,
+  promotions = [],
 }: {
   catalog: CourseCatalogItem[];
   schedules: CourseSchedule[];
+  promotions?: readonly PromocionAplicable[];
   /**
    * Ya no se usa: los montos se calculan en el cliente con `precioVenta` y
    * `formatMoneda` recién cuando el visitante desbloqueó los precios. Se
@@ -136,6 +138,7 @@ export default function CursosPageClient({
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
   const { unlocked } = usePriceUnlock();
+  const showPrices = unlocked || muestraPrecioDirecto(pais);
 
   const query = searchQuery.trim();
 
@@ -211,7 +214,7 @@ export default function CursosPageClient({
   const orderedCourses = rankCatalog(catalog, query);
   const featured = query ? undefined : orderedCourses.find((c) => c.slug === "analisis-de-datos");
   const rest = featured ? orderedCourses.filter((c) => c.slug !== featured.slug) : orderedCourses;
-  const precioFeatured = featured ? precioVenta(pais, featured.slug) : null;
+  const precioFeatured = featured ? precioVenta(pais, featured.slug, promotions) : null;
 
   return (
     <>
@@ -308,13 +311,13 @@ export default function CursosPageClient({
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-mute">{featured.shortDescription}</p>
                 <p className="mt-4 text-sm font-semibold text-ink">SQL · Power BI · Python</p>
-                {unlocked && precioFeatured != null ? (
+                {showPrices && precioFeatured != null ? (
                   <p className="mt-3 text-sm font-semibold text-ink">
                     {formatMoneda(pais, precioFeatured)}
                   </p>
                 ) : null}
                 <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-                  {unlocked ? (
+                  {showPrices ? (
                     <Link
                       href={hrefLocal(`/cursos/${featured.slug}`)}
                       onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
@@ -358,7 +361,7 @@ export default function CursosPageClient({
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map((course) => {
-              const precio = unlocked ? precioVenta(pais, course.slug) : null;
+              const precio = showPrices ? precioVenta(pais, course.slug, promotions) : null;
               return (
                 <article
                   key={course.slug}
@@ -417,7 +420,7 @@ export default function CursosPageClient({
                     {precio != null ? (
                       <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
                     ) : null}
-                    {unlocked ? null : (
+                    {showPrices ? null : (
                       <Link
                         href={courseBrochurePath(course.slug, pais)}
                         target="_blank"

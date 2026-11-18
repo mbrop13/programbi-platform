@@ -16,9 +16,9 @@ import {
 } from "@/lib/data/course-schedules";
 import { zonaDe } from "@/lib/paises/horarios";
 import { PAGE_SEO } from "@/lib/seo/money";
-import { getPais, ISO_CHILE } from "@/config/paises";
+import { getPais, ISO_CHILE, muestraPrecioDirecto } from "@/config/paises";
 import type { ContenidoPais } from "@/lib/data/contenido-paises/tipos";
-import { descuentoPublico, localizarMercado } from "@/lib/paises/precios";
+import { descuentoPublico, localizarMercado, type PromocionAplicable } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 /** Próxima cohorte con fecha real; la arma la página desde los horarios activos. */
@@ -74,7 +74,11 @@ function PuntoVivo() {
 }
 
 /** Próxima cohorte, horas y descuento de los tres cursos que muestra el panel. */
-function cursosDelPanel(pais: string, schedules: CourseSchedule[]): HeroCursos {
+function cursosDelPanel(
+  pais: string,
+  schedules: CourseSchedule[],
+  promotions: readonly PromocionAplicable[] = []
+): HeroCursos {
   const zona = zonaDe(pais);
   return Object.fromEntries(
     HERO_TABS.map((tab) => {
@@ -96,7 +100,7 @@ function cursosDelPanel(pais: string, schedules: CourseSchedule[]): HeroCursos {
           dias: cohorte?.days ?? null,
           hora: cohorte?.time ?? null,
           horas: curso ? catalogHours(curso) : 0,
-          descuento: descuentoPublico(pais, tab.slug),
+          descuento: descuentoPublico(pais, tab.slug, promotions),
         },
       ];
     }),
@@ -111,11 +115,13 @@ export default function HeroSection({
   contenido = null,
   proximo = null,
   schedules = [],
+  promotions = [],
 }: {
   pais?: string;
   contenido?: ContenidoPais | null;
   proximo?: ProximoInicio | null;
   schedules?: CourseSchedule[];
+  promotions?: readonly PromocionAplicable[];
 }) {
   const nombre = getPais(pais).nombre;
   const h1 = contenido?.hero.h1 ?? localizarMercado(PAGE_SEO.home.h1, pais);
@@ -181,15 +187,24 @@ export default function HeroSection({
                 aria-hidden
               />
             </Link>
-            <WhatsAppCta
-              page="/"
-              intent="general"
-              country={pais}
-              className="inline-flex h-13 items-center justify-center gap-2.5 rounded-full border border-line-strong bg-paper px-6 text-base font-semibold text-ink no-underline transition-colors hover:border-ink/30 hover:bg-wash"
-            >
-              <WhatsAppGlyph />
-              Hablar por WhatsApp
-            </WhatsAppCta>
+            {muestraPrecioDirecto(pais) ? (
+              <a
+                href="#cotizar"
+                className="inline-flex h-13 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-6 text-base font-semibold text-ink no-underline transition-colors hover:border-ink/30 hover:bg-wash"
+              >
+                Cotizar o recibir temario
+              </a>
+            ) : (
+              <WhatsAppCta
+                page="/"
+                intent="general"
+                country={pais}
+                className="inline-flex h-13 items-center justify-center gap-2.5 rounded-full border border-line-strong bg-paper px-6 text-base font-semibold text-ink no-underline transition-colors hover:border-ink/30 hover:bg-wash"
+              >
+                <WhatsAppGlyph />
+                Hablar por WhatsApp
+              </WhatsAppCta>
+            )}
           </div>
           <p className="mt-3 text-sm text-faint">Te respondemos con fechas y valores.</p>
 
@@ -220,7 +235,7 @@ export default function HeroSection({
         </div>
 
         <div className="min-w-0">
-          <HeroPreview cursos={cursosDelPanel(pais, schedules)}>
+          <HeroPreview cursos={cursosDelPanel(pais, schedules, promotions)}>
             {profesor?.imageUrl ? (
               <figure className="w-[104px] overflow-hidden rounded-2xl border-[3px] border-paper bg-wash shadow-[0_18px_40px_-12px_rgba(23,23,22,0.5)] sm:w-[140px]">
                 <div className="relative aspect-[4/3]">

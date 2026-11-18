@@ -29,3 +29,22 @@ export function publicSchedulePaths(slug: string): string[] {
   }
   return [...paths];
 }
+
+/** Public pages affected when a promotion or price override changes. */
+export function publicPricingPaths(slug?: string | null): string[] {
+  const paths = new Set<string>();
+  const targetSlugs =
+    slug && courses.some((course) => course.slug === slug)
+      ? [slug]
+      : courses.map((course) => course.slug);
+
+  for (const itemSlug of targetSlugs) {
+    publicSchedulePaths(itemSlug).forEach((path) => paths.add(path));
+  }
+  for (const prefix of prefixes) {
+    paths.add(`${prefix}/precios`);
+    paths.add(`${prefix}/guias`);
+  }
+  paths.add("/us/miami");
+  return [...paths];
+}

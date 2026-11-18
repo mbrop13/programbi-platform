@@ -10,6 +10,7 @@ import { HOME_COURSE_SLUGS } from "@/lib/seo";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
+import { muestraPrecioDirecto } from "@/config/paises";
 import { courseBrochurePath } from "@/lib/pricing-gate";
 import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 
@@ -22,6 +23,7 @@ export default function ProgramsCatalog() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("todos");
   const pais = usePaisRuta();
   const { unlocked } = usePriceUnlock();
+  const showPrices = unlocked || muestraPrecioDirecto(pais);
 
   const visible = useMemo(() => {
     if (filter === "todos") return getCoursesBySlugs(HOME_COURSE_SLUGS);
@@ -68,7 +70,7 @@ export default function ProgramsCatalog() {
 
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visible.slice(0, 6).map((course) => {
-            const precio = unlocked ? precioVenta(pais, course.slug) : null;
+            const precio = showPrices ? precioVenta(pais, course.slug) : null;
             return (
               <article
                 key={course.slug}
@@ -107,7 +109,7 @@ export default function ProgramsCatalog() {
                   {precio != null ? (
                     <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
                   ) : null}
-                  {unlocked ? (
+                  {showPrices ? (
                     <Link
                       href={`/cursos/${course.slug}`}
                       onClick={() => trackCourseCardClick(course.slug, "home_programs")}

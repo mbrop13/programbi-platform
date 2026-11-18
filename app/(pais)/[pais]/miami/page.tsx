@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CalendarClock, Languages, Receipt, Video } from "lucide-react";
 import { getPais } from "@/config/paises";
-import { precioPublico } from "@/config/pricing";
+import { precioVenta } from "@/lib/paises/precios";
+import { getActivePromotions } from "@/lib/supabase/comunidad-ai";
 import { courses, getCourseBySlug } from "@/lib/data/courses";
 import { catalogHours } from "@/lib/data/course-views";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
@@ -78,10 +79,11 @@ export default async function MiamiPage({
   const contenido = getContenidoPais(PAIS);
   const horario = horarioLocal(PAIS);
   const horaLocal = etiquetaHoraLocal(PAIS);
+  const promotions = await getActivePromotions();
 
   const destacados = CURSOS_DESTACADOS.flatMap((slug) => {
     const curso = getCourseBySlug(slug);
-    const precio = precioPublico(PAIS, slug);
+    const precio = precioVenta(PAIS, slug, promotions);
     if (!curso || precio == null) return [];
     return [{ slug, titulo: curso.title, horas: catalogHours(curso), precio }];
   });
@@ -97,7 +99,7 @@ export default async function MiamiPage({
     },
     {
       q: "¿Cuánto cuesta un curso de Power BI o Excel en español en Miami?",
-      a: `${resumenPreciosCatalogo(PAIS)} El precio es el que ves en cada ficha, sin formularios previos.`,
+      a: `${resumenPreciosCatalogo(PAIS, promotions)} El precio es el que ves en cada ficha, sin formularios previos.`,
     },
     {
       q: "¿Mi empresa en Miami me puede reembolsar el curso?",

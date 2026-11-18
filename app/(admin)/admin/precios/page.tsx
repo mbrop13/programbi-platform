@@ -1,4 +1,4 @@
-import { AdminPrices } from "@/components/admin/legacy-tabs";
+import { AdminPrices } from "@/components/admin/AdminPrices";
 import { AdminLegacyFrame } from "@/components/admin/ui";
 
 export default function Page() {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { courses, getCourseBySlug, type Course } from "@/lib/data/courses";
-import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comunidad-ai";
+import { getActivePromotions, getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
@@ -153,14 +153,18 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
   if (!course) notFound();
 
   const seo = COURSE_SEO[slug];
-  const dbDescription = await getMarketingDescription(slug);
+  const [dbDescription, schedulesData, promotions] = await Promise.all([
+    getMarketingDescription(slug),
+    getActiveSchedules(),
+    getActivePromotions(),
+  ]);
   if (dbDescription && !seo) {
     course.description = dbDescription;
   } else if (seo) {
     course.description = seo.description;
   }
 
-  const schedules = (await getActiveSchedules()) as CourseSchedule[];
+  const schedules = schedulesData as CourseSchedule[];
 
   // Horario local y preguntas de pie de página (incluye precio vigente del mercado).
   const cohorte = schedules.find((s) => s.course_slug === course.slug);
@@ -171,9 +175,10 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
     courseTitle: course.title,
     inicio,
     fin,
+    promotions,
   });
 
-  const courseJsonLd = getCourseJsonLd(course, "publico", pais);
+  const courseJsonLd = getCourseJsonLd(course, "publico", pais, { promotions });
   const bloque = getBloqueLocal(pais, { curso: slug });
   // El bloque «Preguntas frecuentes» de la ficha sale de dos fuentes y el
   // FAQPage declara exactamente las que se ven: `CourseFaq` pinta las de
@@ -235,6 +240,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         course={cursoSinPrecios(course)}
         initialSchedules={schedules}
         detalleLocal={detalle}
+        promotions={promotions}
         // Citas reales de alumnos de este curso (LinkedIn), justo después del
         // profesor: es prueba social y no puede quedar bajo los bloques SEO. Se
         // oculta sola si no hay testimonios o con NEXT_PUBLIC_TESTIMONIOS=0.
@@ -242,7 +248,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
       />
       {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.
           Reemplaza a CountryContext, que repetía los mismos datos. */}
-      <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
+      <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} promotions={promotions} />
       {/* Datos del mercado para la ficha: precio en moneda local (gate del
           brochure), horario convertido, pago, cuotas, clase gratis y
           certificado, más el resto de fichas y guías del país. */}

@@ -1,7 +1,13 @@
 import { ISO_CHILE, normalizarPais } from "@/config/paises";
-import { precioListaPublico, precioPublico } from "@/config/pricing";
 import type { Guia } from "@/lib/guias/tipos";
-import { descuentoPublico, formatMoneda, porcentajeDescuento } from "@/lib/paises/precios";
+import {
+  descuentoPublico,
+  formatMoneda,
+  porcentajeDescuento,
+  precioListaVenta,
+  precioVenta,
+  type PromocionAplicable,
+} from "@/lib/paises/precios";
 
 /**
  * Texto de respaldo para superficies sin contexto de guía (comparativas o
@@ -76,12 +82,15 @@ export function metaDescripcionGuia(texto: string, max = 155): string {
  * `config/pricing.ts` y `lib/paises/precios.ts`. No usa «Desde» ni expone
  * cifras monetarias al frente; Paraguay consulta por WhatsApp sin porcentaje.
  */
-export function precioTextoGuia(guia: Pick<Guia, "country" | "course">): string {
+export function precioTextoGuia(
+  guia: Pick<Guia, "country" | "course">,
+  promotions?: readonly PromocionAplicable[]
+): string {
   const targetIso = resolverIsoGuia(guia.country);
   if (targetIso === "py") {
     return "consulta el valor vigente por WhatsApp";
   }
-  const pct = descuentoPublico(targetIso, guia.course);
+  const pct = descuentoPublico(targetIso, guia.course, promotions);
   if (pct <= 0) {
     return "consulta los valores en el PDF de temario y precios";
   }
@@ -92,8 +101,12 @@ export function precioTextoGuia(guia: Pick<Guia, "country" | "course">): string 
  * Reemplaza `{{precio}}`, `{precio_local}` y montos históricos del cuerpo de la
  * guía en una sola pasada usando `precioTextoGuia`.
  */
-export function resolverPrecios(body: string, guia: Pick<Guia, "country" | "course">): string {
-  const textoPrecio = precioTextoGuia(guia);
+export function resolverPrecios(
+  body: string,
+  guia: Pick<Guia, "country" | "course">,
+  promotions?: readonly PromocionAplicable[]
+): string {
+  const textoPrecio = precioTextoGuia(guia, promotions);
   return body.replace(TOKEN_PRECIO_GUIA, () => textoPrecio);
 }
 
@@ -102,17 +115,20 @@ export function resolverPrecios(body: string, guia: Pick<Guia, "country" | "cour
  * `FAQPage`: expone el valor vigente con descuento, el precio normal y el
  * porcentaje de descuento (sin «Desde»). Paraguay consulta por WhatsApp.
  */
-export function precioTextoFaqGuia(guia: Pick<Guia, "country" | "course">): string {
+export function precioTextoFaqGuia(
+  guia: Pick<Guia, "country" | "course">,
+  promotions?: readonly PromocionAplicable[]
+): string {
   const targetIso = resolverIsoGuia(guia.country);
   if (targetIso === "py") {
     return "consulta el valor vigente por WhatsApp";
   }
-  const cobro = precioPublico(targetIso, guia.course);
+  const cobro = precioVenta(targetIso, guia.course, promotions);
   if (cobro == null) {
     return "consulta los valores en el PDF de temario y precios";
   }
   const cobroTexto = formatearMonedaGuia(targetIso, cobro);
-  const lista = precioListaPublico(targetIso, guia.course);
+  const lista = precioListaVenta(targetIso, guia.course, promotions);
   const pct = lista != null ? porcentajeDescuento(lista, cobro) : 0;
   if (lista != null && pct > 0) {
     const listaTexto = formatearMonedaGuia(targetIso, lista);
@@ -125,8 +141,12 @@ export function precioTextoFaqGuia(guia: Pick<Guia, "country" | "course">): stri
  * Reemplaza `{{precio}}`, `{{precio:*}}`, `{precio_local}` y montos
  * históricos en las FAQs de la guía usando `precioTextoFaqGuia`.
  */
-export function resolverPreciosFaq(texto: string, guia: Pick<Guia, "country" | "course">): string {
-  const textoPrecio = precioTextoFaqGuia(guia);
+export function resolverPreciosFaq(
+  texto: string,
+  guia: Pick<Guia, "country" | "course">,
+  promotions?: readonly PromocionAplicable[]
+): string {
+  const textoPrecio = precioTextoFaqGuia(guia, promotions);
   return texto.replace(TOKEN_PRECIO_GUIA, () => textoPrecio);
 }
 

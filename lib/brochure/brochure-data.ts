@@ -8,11 +8,10 @@
 
 import {
   getPais,
+  ISO_CHILE,
   normalizarPais,
-  type SlugCurso,
 } from "@/config/paises";
 import { CUOTAS_SIN_INTERES, NOTA_CUOTAS, cuotasSinInteres, textoCuotas } from "@/config/cuotas";
-import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { getCourseBySlug, type Course } from "@/lib/data/courses";
 import {
   analisisDeDatosSlugs,
@@ -41,9 +40,13 @@ import {
 import {
   formatMoneda,
   NOTA_PAGO,
-  porcentajeDescuento,
+  resolverPrecioCursoPais,
 } from "@/lib/paises/precios";
-import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
+import {
+  getActivePromotions,
+  getActiveSchedules,
+  getPriceOverrides,
+} from "@/lib/supabase/comunidad-ai";
 import { createAdminClient } from "@/lib/supabase/server";
 import {
   BROCHURE_BRAND_LOGOS,
@@ -466,12 +469,19 @@ export async function getCourseBrochureData(
 
   const temario = armarTemario(course);
 
-  const precio = precioPublico(iso, course.slug as SlugCurso);
-  const precioLista = precioListaPublico(iso, course.slug as SlugCurso);
-  const descuentoPct =
-    precio != null && precioLista != null
-      ? porcentajeDescuento(precioLista, precio)
-      : 0;
+  const [schedules, customPdfUrl, promotions, priceOverrides] = await Promise.all([
+    armarHorarios(course, iso, paisNombre),
+    leerPdfPersonalizado(course.slug),
+    getActivePromotions(),
+    iso === ISO_CHILE ? getPriceOverrides() : Promise.resolve([]),
+  ]);
+
+  const precioResuelto = resolverPrecioCursoPais(iso, course.slug, promotions, {
+    priceOverrides,
+  });
+  const precio = precioResuelto?.finalPrice ?? null;
+  const precioLista = precioResuelto?.listPrice ?? null;
+  const descuentoPct = precioResuelto?.discountPercentage ?? 0;
 
   // Mercados sin cuotas (hoy Estados Unidos): el PDF habla de pago único.
   const conCuotas = cuotasSinInteres(iso) > 0;
@@ -482,9 +492,6 @@ export async function getCourseBrochureData(
     : cuotaMonto != null
       ? `${textoCuotas(iso)} de ${formatMoneda(iso, cuotaMonto)} cada una`
       : textoCuotas(iso);
-
-  const schedules = await armarHorarios(course, iso, paisNombre);
-  const customPdfUrl = await leerPdfPersonalizado(course.slug);
 
   // La ficha usa la tarjeta (`-card.webp`, más liviana). El brochure usa la
   // foto oficial en alta resolución (`<slug>.jpg`) como imagen hero.

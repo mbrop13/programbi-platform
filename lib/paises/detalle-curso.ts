@@ -4,7 +4,6 @@
  */
 
 import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO, type Pais } from "@/config/paises";
-import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { textoCuotas } from "@/config/cuotas";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
@@ -14,6 +13,9 @@ import {
   muestraPrecioLocal,
   porcentajeDescuento,
   precioCurso,
+  precioListaVenta,
+  precioVenta,
+  type PromocionAplicable,
 } from "@/lib/paises/precios";
 
 export type DetalleCursoLocal = {
@@ -47,9 +49,10 @@ export function resumenPrecioCursoTexto(
   iso: string | null | undefined,
   slug: string,
   courseTitle?: string,
+  promotions?: readonly PromocionAplicable[],
 ): string {
   const pais = getPais(normalizarPais(iso));
-  const precio = precioPublico(pais.iso, slug);
+  const precio = precioVenta(pais.iso, slug, promotions);
   const course = getCourseBySlug(slug);
   const titulo = courseTitle ?? course?.title ?? "Este curso";
   const lugar = pais.iso === ISO_CHILE ? "Chile" : pais.nombre;
@@ -58,7 +61,7 @@ export function resumenPrecioCursoTexto(
     return `En ${lugar} todavía no hay un valor público publicado para ${titulo}; el arancel vigente, los medios de pago locales y la fecha de inicio se consultan directamente por WhatsApp. También puedes descargar arriba el PDF completo con el temario del curso.`;
   }
 
-  const lista = precioListaPublico(pais.iso, slug);
+  const lista = precioListaVenta(pais.iso, slug, promotions);
   const descuento = lista != null ? porcentajeDescuento(lista, precio) : 0;
   const niveles = course ? publicLevelCount(course) : 2;
   const horas = course ? catalogHours(course) : 20;
@@ -81,9 +84,12 @@ export function resumenPrecioCursoTexto(
 /**
  * Resumen de precios vigentes del catálogo completo en un país para FAQs de /precios, /faq y landings locales.
  */
-export function resumenPreciosCatalogo(iso: string | null | undefined): string {
+export function resumenPreciosCatalogo(
+  iso: string | null | undefined,
+  promotions?: readonly PromocionAplicable[],
+): string {
   const pais = getPais(normalizarPais(iso));
-  const pEstandar = precioPublico(pais.iso, "power-bi");
+  const pEstandar = precioVenta(pais.iso, "power-bi", promotions);
 
   if (pEstandar == null) {
     return `En ${pais.nombre} no hay un valor público publicado todavía; los aranceles vigentes, los medios de pago locales y el PDF de temario y precios de cada curso se consultan por WhatsApp.`;
@@ -92,17 +98,17 @@ export function resumenPreciosCatalogo(iso: string | null | undefined): string {
   const estandarTexto = formatoConLista(
     pais,
     pEstandar,
-    precioListaPublico(pais.iso, "power-bi"),
+    precioListaVenta(pais.iso, "power-bi", promotions),
   );
-  const pAnalisis = precioPublico(pais.iso, "analisis-de-datos");
+  const pAnalisis = precioVenta(pais.iso, "analisis-de-datos", promotions);
   const analisisTexto =
     pAnalisis != null
-      ? formatoConLista(pais, pAnalisis, precioListaPublico(pais.iso, "analisis-de-datos"))
+      ? formatoConLista(pais, pAnalisis, precioListaVenta(pais.iso, "analisis-de-datos", promotions))
       : null;
-  const pFinanciero = precioPublico(pais.iso, "mercado-financiero");
+  const pFinanciero = precioVenta(pais.iso, "mercado-financiero", promotions);
   const financieroTexto =
     pFinanciero != null
-      ? formatoConLista(pais, pFinanciero, precioListaPublico(pais.iso, "mercado-financiero"))
+      ? formatoConLista(pais, pFinanciero, precioListaVenta(pais.iso, "mercado-financiero", promotions))
       : null;
   const cuotas = textoCuotas(pais.iso);
 
@@ -158,6 +164,7 @@ export function detalleCursoLocal(opts: {
   fin?: string;
   /** Fecha de referencia para el desfase horario. */
   referencia?: Date;
+  promotions?: readonly PromocionAplicable[];
 }): DetalleCursoLocal {
   const pais = getPais(normalizarPais(opts.iso));
   const horario = horarioLocal(pais.iso, {
@@ -188,7 +195,7 @@ export function detalleCursoLocal(opts: {
       opts.courseTitle ?? getCourseBySlug(opts.slug)?.title ?? opts.slug;
     faqs.push({
       q: `¿Cuánto cuesta ${tituloCurso} en ${lugar}?`,
-      a: resumenPrecioCursoTexto(pais.iso, opts.slug, tituloCurso),
+      a: resumenPrecioCursoTexto(pais.iso, opts.slug, tituloCurso, opts.promotions),
     });
   }
 

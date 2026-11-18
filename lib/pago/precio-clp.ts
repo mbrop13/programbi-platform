@@ -1,4 +1,6 @@
+import { ISO_CHILE } from "@/config/paises";
 import type { CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
+import { aplicarPorcentajeDescuento, seleccionarPromocionCurso } from "@/lib/paises/precios";
 
 export type OrigenPrecioClp =
   | "missing"
@@ -51,27 +53,21 @@ export function resolverPrecioClp(
     typeof override?.price === "number" && override.price > 0 && override.price < basePrice
       ? override.price
       : basePrice;
-  const baseSource: OrigenPrecioClp = override ? "override" : "catalog";
-  const applicablePromo = promotions.find(
-    (p) =>
-      p.target_type === "all" ||
-      p.target_type === "courses" ||
-      (p.target_type === "specific_course" && p.target_id === slug)
-  );
+  const baseSource: OrigenPrecioClp = effectiveBase < basePrice ? "override" : "catalog";
+  const applicablePromo = seleccionarPromocionCurso(promotions, slug, ISO_CHILE, effectiveBase);
 
   let finalPrice = effectiveBase;
   let source: OrigenPrecioClp = baseSource;
   let hasDiscount = false;
 
-  if (applicablePromo?.promo_price) {
-    finalPrice = applicablePromo.promo_price;
+  if (applicablePromo?.promo_price && applicablePromo.promo_price > 0) {
+    finalPrice = Math.min(effectiveBase, Math.round(applicablePromo.promo_price));
     source = "promotion_fixed";
-    hasDiscount = true;
-  } else if (applicablePromo) {
-    const ratio = (100 - (applicablePromo.discount_percentage ?? 0)) / 100;
-    finalPrice = Math.round(effectiveBase * ratio);
+    hasDiscount = finalPrice < effectiveBase;
+  } else if (applicablePromo && (applicablePromo.discount_percentage ?? 0) > 0) {
+    finalPrice = aplicarPorcentajeDescuento(effectiveBase, applicablePromo.discount_percentage ?? 0, 0);
     source = "promotion_percentage";
-    hasDiscount = true;
+    hasDiscount = finalPrice < effectiveBase;
   }
 
   const listCandidates = [effectiveBase, catalogListPrice || 0].filter(

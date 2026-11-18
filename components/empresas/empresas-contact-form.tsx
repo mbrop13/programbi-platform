@@ -9,6 +9,7 @@ import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 import { whatsappHref } from "@/lib/whatsapp";
 import { usePaisRuta } from "@/lib/paises/cliente";
+import { muestraPrecioDirecto } from "@/config/paises";
 import { captureAndReadAttribution } from "@/lib/utm";
 
 type Status = "idle" | "error" | "success";
@@ -56,6 +57,7 @@ export function EmpresasContactForm({
   const [sending, setSending] = useState(false);
   const formLoadedAt = useRef(Date.now());
   const pais = usePaisRuta();
+  const telefonoOpcional = muestraPrecioDirecto(pais);
 
   // Mismo comportamiento visible que antes, pero resuelto en el cliente: al
   // montar, `?curso=` marca el tema y `?nivel=` deja la nota en el mensaje.
@@ -96,7 +98,7 @@ export function EmpresasContactForm({
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       next.email = "Escribe un email válido.";
     }
-    if (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8) {
+    if (!telefonoOpcional && (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8)) {
       next.whatsapp = "Escribe tu WhatsApp.";
     }
     if (!privacy) next.privacy = "Debes aceptar la política de privacidad.";
@@ -128,7 +130,7 @@ export function EmpresasContactForm({
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          whatsapp: whatsapp.trim(),
+          whatsapp: whatsapp.trim() || null,
           company: company.trim(),
           message: message.trim() || null,
           selectedCourses: selected,
@@ -175,17 +177,19 @@ export function EmpresasContactForm({
         <p className="mt-3 text-sm leading-relaxed text-mute">
           Te enviamos una copia de tu cotización a{" "}
           <span className="font-semibold text-ink">{email}</span>. Un asesor
-          te contactará por WhatsApp con la propuesta: temas, formato y valor
+          te contactará {telefonoOpcional ? "por correo" : "por WhatsApp"} con la propuesta: temas, formato y valor
           para {company || "tu empresa"}.
         </p>
-        <a
-          href={WA}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-6 inline-flex h-12 items-center rounded-full bg-ink px-7 text-[14.5px] font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
-        >
-          Hablar ahora por WhatsApp
-        </a>
+        {!telefonoOpcional ? (
+          <a
+            href={WA}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex h-12 items-center rounded-full bg-ink px-7 text-[14.5px] font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+          >
+            Hablar ahora por WhatsApp
+          </a>
+        ) : null}
         <p className="mt-4 text-xs leading-relaxed text-faint">
           ¿No ves el correo? Revisa spam o promociones.
         </p>
@@ -251,12 +255,16 @@ export function EmpresasContactForm({
         />
         <Field
           id="emp-whatsapp"
-          label="WhatsApp"
+          label={telefonoOpcional ? "Teléfono / WhatsApp (opcional)" : "WhatsApp"}
           value={whatsapp}
           onChange={setWhatsapp}
           error={errors.whatsapp}
           autoComplete="tel"
-          helper={pais === "us" ? "Incluye código de país. EE.UU.: +1 305..." : "Incluye código de país. Chile: +56 9..."}
+          helper={
+            telefonoOpcional
+              ? "En EE.UU. te respondemos por email; agrégalo solo si prefieres WhatsApp."
+              : "Incluye código de país. Chile: +56 9..."
+          }
         />
       </div>
 

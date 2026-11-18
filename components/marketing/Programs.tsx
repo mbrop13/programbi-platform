@@ -14,7 +14,8 @@ import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
-import { descuentoPublico, formatMoneda, precioVenta } from "@/lib/paises/precios";
+import { muestraPrecioDirecto } from "@/config/paises";
+import { descuentoPublico, formatMoneda, precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
 
 const ORDER = [
   "analisis-de-datos",
@@ -73,15 +74,18 @@ function fechaCorta(fecha: string) {
 export default function Programs({
   catalog,
   schedules,
+  promotions = [],
 }: {
   catalog: ProgramCard[];
   schedules: CourseSchedule[];
+  promotions?: readonly PromocionAplicable[];
 }) {
   const { unlocked } = usePriceUnlock();
   const ALL = orderCatalog(catalog);
   const [expanded, setExpanded] = useState(false);
   const [filtro, setFiltro] = useState<Filtro>("todos");
   const pais = usePaisRuta();
+  const showPrice = unlocked || muestraPrecioDirecto(pais);
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
   if (!ALL.length) return null;
@@ -156,8 +160,8 @@ export default function Programs({
 
         <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {ALL.map((course, idx) => {
-            const precio = precioVenta(pais, course.slug);
-            const descuento = descuentoPublico(pais, course.slug);
+            const precio = precioVenta(pais, course.slug, promotions);
+            const descuento = descuentoPublico(pais, course.slug, promotions);
             const cohorte = schedules.length ? nextCohortForCourse(course.slug, schedules, timeZone) : null;
             return (
               <Link
@@ -219,7 +223,7 @@ export default function Programs({
                       {course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                     </span>
                     <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-ink">
-                      {unlocked && precio != null ? formatMoneda(pais, precio) : "Ver temario"}
+                      {showPrice && precio != null ? formatMoneda(pais, precio) : "Ver temario"}
                       <ArrowRight
                         size={14}
                         className="transition-transform group-hover:translate-x-0.5"

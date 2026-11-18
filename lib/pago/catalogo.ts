@@ -40,7 +40,6 @@ const emptyCatalog = (): CheckoutCatalog => ({
 export async function getCheckoutCatalog(): Promise<CheckoutCatalog> {
   try {
     const db = createAdminClient();
-    const now = new Date().toISOString();
     const [schedulesRes, promotionsRes, pricesRes, descriptionsRes] = await Promise.all([
       db
         .from("course_schedules")
@@ -48,7 +47,7 @@ export async function getCheckoutCatalog(): Promise<CheckoutCatalog> {
         .eq("is_active", true)
         .neq("course_slug", "comunidad")
         .order("start_date", { ascending: true }),
-      db.from("promotions").select("*").eq("is_active", true),
+      db.from("promotions").select("*").eq("is_active", true).order("created_at", { ascending: false }),
       db.from("price_overrides").select("*"),
       db.from("courses").select("slug, description, short_description"),
     ]);
@@ -58,8 +57,9 @@ export async function getCheckoutCatalog(): Promise<CheckoutCatalog> {
     if (pricesRes.error) console.error("checkout prices:", pricesRes.error.message);
     if (descriptionsRes.error) console.error("checkout descriptions:", descriptionsRes.error.message);
 
+    const nowMs = Date.now();
     const promotions = ((promotionsRes.data || []) as CheckoutPromotion[]).filter(
-      (promo) => !promo.valid_until || promo.valid_until > now
+      (promo) => !promo.valid_until || new Date(promo.valid_until).getTime() > nowMs
     );
 
     return {

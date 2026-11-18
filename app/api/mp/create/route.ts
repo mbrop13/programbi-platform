@@ -55,8 +55,14 @@ export async function POST(req: NextRequest) {
     }
 
     const { getActivePromotions, getPriceOverrides } = await import("@/lib/supabase/comunidad-ai");
+    const {
+      aplicarPorcentajeDescuento,
+      seleccionarPromocionCurso,
+      totalLocalConCupon,
+    } = await import("@/lib/paises/precios");
     const activePromos = await getActivePromotions();
     const priceOverrides = await getPriceOverrides();
+    const pais = typeof body.pais === "string" ? body.pais : "cl";
 
 
     // El precio publicado es el techo: el panel puede aplicar un descuento por
@@ -113,25 +119,28 @@ export async function POST(req: NextRequest) {
        const isSpec = (masterCourse.durationHours > 50 || masterCourse.slug.includes("analisis") || masterCourse.slug.includes("analitica"));
        const subDiscount = isSpec ? specDiscountPercent : baseDiscountPercent;
        
-       const promo = activePromos.find((pr: any) => pr.target_type === 'all' || pr.target_type === 'courses' || (pr.target_type === 'specific_course' && pr.target_id === masterCourse.slug));
+       const promo = seleccionarPromocionCurso(activePromos, masterCourse.slug, "cl", basePrice);
+       const promoPais = seleccionarPromocionCurso(activePromos, masterCourse.slug, pais, basePrice);
        
        let finalPriceClp = basePrice;
        
-       if (promo && promo.promo_price) {
-         // If a fixed promo price is set, that overrides percentages
-         finalPriceClp = promo.promo_price;
+       if (promo && promo.promo_price && promo.promo_price > 0) {
+         // If a fixed promo price is set, that overrides percentages (never raising above base)
+         finalPriceClp = Math.min(basePrice, Math.round(promo.promo_price));
        } else {
-         const promoDiscount = promo ? promo.discount_percentage : 0;
+         const promoDiscount = promo?.discount_percentage ?? 0;
          const maxDiscountPercent = Math.max(subDiscount, promoDiscount);
-         const discountMultiplier = 1 - (maxDiscountPercent / 100);
-         finalPriceClp = Math.floor(basePrice * discountMultiplier);
+         finalPriceClp =
+           maxDiscountPercent > 0
+             ? aplicarPorcentajeDescuento(basePrice, maxDiscountPercent, 0)
+             : basePrice;
        }
        
        const itemTotal = finalPriceClp * (item.quantity || 1);
        grandTotalClp += itemTotal;
 
         const isBundle = ["analisis-de-datos", "analitica-mineria"].includes(masterCourse.slug);
-        const hasPromoDiscount = isBundle || !!promo;
+        const hasPromoDiscount = isBundle || (pais === "cl" ? !!promo : !!promoPais);
 
         validatedItems.push({
            slug: masterCourse.slug,
@@ -198,20 +207,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Sin token del país, se cobra el total en CLP con la cuenta de Chile.
-    // Con MERCADOPAGO_ACCESS_TOKEN_<PAIS>, se cobra el importe fijo configurado
-    // para ese país, sin derivarlo desde una promoción o descuento chileno.
-    // El cupón sí se traslada: se aplica la misma regla sobre la tabla local.
-    const pais = typeof body.pais === "string" ? body.pais : "cl";
+    // Con MERCADOPAGO_ACCESS_TOKEN_<PAIS>, se cobra el importe en la moneda
+    // del país aplicando las promociones activas y el cupón (si corresponde).
     const { resolverCobro } = await import("@/lib/paises/cobro");
-    const { totalLocalConCupon } = await import("@/lib/paises/precios");
     const cobro = resolverCobro(pais);
     let chargeAmount = grandTotalClp;
     let chargeCurrency = "CLP";
     let chargeToken: string | undefined;
     let chargeCuenta = "cl";
-    // Precio local con cupón: la tabla fija del mercado, no la promoción ni el
-    // plan chilenos. Se usa igual para cobro local y para el equivalente en CLP
-    // de los países que solo pueden pagar con la cuenta de Chile.
+    // Precio local con promociones activas y cupón: se usa igual para cobro
+    // local y para el equivalente en CLP de los países en USD.
     const localConCupon = totalLocalConCupon(
       pais,
       validatedItems.map((item) => ({
@@ -219,7 +224,8 @@ export async function POST(req: NextRequest) {
         quantity: item.quantity,
         conPromo: item.hasPromoDiscount,
       })),
-      cuponPct > 0 ? { pct: cuponPct, stacking: cuponStacking } : null
+      cuponPct > 0 ? { pct: cuponPct, stacking: cuponStacking } : null,
+      activePromos
     );
     if (localConCupon != null) {
       if (cobro.modo === "local" && cobro.token) {

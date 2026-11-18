@@ -13,6 +13,7 @@ import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
 import { trackLeadSubmit, trackTemario } from "@/lib/analytics/marketing";
 import { textoCuotas } from "@/config/cuotas";
+import { muestraPrecioDirecto } from "@/config/paises";
 
 export type BrochureGateFormProps = {
   /** Slug del curso cuyo temario se abre al enviar. */
@@ -83,6 +84,13 @@ function splitDialCode(raw: string, fallbackCode: string): { code: string; rest:
 }
 
 function includesDe(pais: string): string[] {
+  if (muestraPrecioDirecto(pais)) {
+    return [
+      "Temario y detalle del curso para presentar a tu empleador",
+      "Próximas fechas y horarios convertidos a EE.UU.",
+      "Malla curricular completa módulo a módulo y profesores",
+    ];
+  }
   return [
     textoCuotas(pais)
       ? `Arancel vigente en tu moneda, becas y ${textoCuotas(pais)}`
@@ -114,12 +122,20 @@ export function BrochureGateForm({
   pais,
   source,
   buttonLabel = "Descargar temario y precios",
-  heading = BROCHURE_GATE_HEADING,
-  subheading = BROCHURE_GATE_SUBHEADING,
+  heading,
+  subheading,
   idPrefix = "brochure-gate",
   onUnlocked,
   className = "",
 }: BrochureGateFormProps) {
+  const soloEmail = muestraPrecioDirecto(pais);
+  const resolvedHeading =
+    heading ?? (soloEmail ? "Descarga el temario (PDF)" : BROCHURE_GATE_HEADING);
+  const resolvedSubheading =
+    subheading ??
+    (soloEmail
+      ? "Ingresa tu nombre y correo para abrir al instante el PDF con la malla completa, fechas en tu horario y detalle del curso."
+      : BROCHURE_GATE_SUBHEADING);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -171,7 +187,7 @@ export function BrochureGateForm({
       setError("Revisa tu email: parece incompleto.");
       return;
     }
-    if (digits.length < 7) {
+    if (!soloEmail && digits.length < 7) {
       setError("Escribe tu teléfono o WhatsApp con al menos 7 dígitos.");
       return;
     }
@@ -179,7 +195,7 @@ export function BrochureGateForm({
     setError(null);
     setIsSubmitting(true);
 
-    const whatsapp = withDialCode(telefono, prefix);
+    const whatsapp = !soloEmail && telefono ? withDialCode(telefono, prefix) : "";
     const url = courseBrochureUrl(slug, pais);
     setBrochureUrl(url);
 
@@ -206,13 +222,13 @@ export function BrochureGateForm({
     const payload: Record<string, unknown> = {
       name: nombre,
       email: correo,
-      whatsapp,
+      whatsapp: whatsapp || null,
       message: "Descargó Brochure PDF con precios",
       sourceCourse: courseTitle,
       selectedCourses: [courseTitle],
       leadType: "personal",
       pais,
-      pricingVariant: "gate",
+      pricingVariant: soloEmail ? "direct" : "gate",
       ...captureAndReadAttribution(),
       ...getAntiBotFields(formLoadedAt.current, honeypot),
     };
@@ -271,8 +287,8 @@ export function BrochureGateForm({
         </div>
       ) : null}
 
-      <h3 className="text-xl font-bold leading-snug tracking-tight text-ink">{heading}</h3>
-      <p className="mt-1.5 text-sm leading-snug text-mute">{subheading}</p>
+      <h3 className="text-xl font-bold leading-snug tracking-tight text-ink">{resolvedHeading}</h3>
+      <p className="mt-1.5 text-sm leading-snug text-mute">{resolvedSubheading}</p>
 
       <ul className="mt-3 space-y-1.5">
         {includesDe(pais).map((item) => (
@@ -319,40 +335,42 @@ export function BrochureGateForm({
           />
         </div>
 
-        <div>
-          <label htmlFor={`${idPrefix}-whatsapp`} className={labelClass}>
-            WhatsApp / Teléfono
-          </label>
-          <div className="flex gap-2">
-            <select
-              id={`${idPrefix}-prefix`}
-              name="phonePrefix"
-              value={prefix}
-              onChange={(event) => setPrefix(event.target.value)}
-              aria-label="Código de país"
-              className="h-11 w-[7.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-3 text-sm font-medium text-ink"
-            >
-              {COUNTRIES.map((country) => (
-                <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
-                  {country.iso.toUpperCase()} {country.phoneCode}
-                </option>
-              ))}
-            </select>
+        {!soloEmail ? (
+          <div>
+            <label htmlFor={`${idPrefix}-whatsapp`} className={labelClass}>
+              WhatsApp / Teléfono
+            </label>
+            <div className="flex gap-2">
+              <select
+                id={`${idPrefix}-prefix`}
+                name="phonePrefix"
+                value={prefix}
+                onChange={(event) => setPrefix(event.target.value)}
+                aria-label="Código de país"
+                className="h-11 w-[7.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-3 text-sm font-medium text-ink"
+              >
+                {COUNTRIES.map((country) => (
+                  <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
+                    {country.iso.toUpperCase()} {country.phoneCode}
+                  </option>
+                ))}
+              </select>
 
-            <input
-              id={`${idPrefix}-whatsapp`}
-              name="whatsapp"
-              type="tel"
-              required
-              autoComplete="tel"
-              inputMode="tel"
-              placeholder="9 8765 4321"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              className="h-11 min-w-0 flex-1 rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint"
-            />
+              <input
+                id={`${idPrefix}-whatsapp`}
+                name="whatsapp"
+                type="tel"
+                required
+                autoComplete="tel"
+                inputMode="tel"
+                placeholder="9 8765 4321"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+                className="h-11 min-w-0 flex-1 rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint"
+              />
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <div aria-hidden="true" style={honeypotStyle}>
           <input

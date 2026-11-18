@@ -10,7 +10,14 @@ import {
   courseBrochureUrl,
   type SavedLeadInfo,
 } from "@/lib/pricing-gate";
-import { NOTA_PAGO, formatMoneda, porcentajeDescuento, precioListaVenta, precioVenta } from "@/lib/paises/precios";
+import {
+  NOTA_PAGO,
+  formatMoneda,
+  porcentajeDescuento,
+  precioListaVenta,
+  precioVenta,
+  type PromocionAplicable,
+} from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
@@ -43,6 +50,7 @@ type Props = {
   cobroLocal: boolean;
   /** Rango o porcentaje de descuento vigente en el país para mostrar antes del gate. */
   discountLabel?: string | null;
+  promotions?: readonly PromocionAplicable[];
 };
 
 const FUENTE_NOTA = "Precios publicados y sujetos a cambios. El monto final se confirma en el checkout.";
@@ -62,8 +70,11 @@ export default function PreciosGateClient({
   moneda,
   cobroLocal,
   discountLabel,
+  promotions = [],
 }: Props) {
   const { unlocked, unlock } = usePriceUnlock();
+  const precioDirecto = muestraPrecioDirecto(pais);
+  const showPrices = unlocked || precioDirecto;
   const [slug, setSlug] = useState(() => cursos[0]?.slug ?? "power-bi");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -97,7 +108,7 @@ export default function PreciosGateClient({
       setError("Revisa tu email: parece incompleto.");
       return;
     }
-    if (telefono.replace(/\D/g, "").length < 7) {
+    if (!precioDirecto && telefono.replace(/\D/g, "").length < 7) {
       setError("Escribe tu teléfono o WhatsApp con al menos 7 dígitos.");
       return;
     }
@@ -105,7 +116,7 @@ export default function PreciosGateClient({
     setError(null);
     setIsSubmitting(true);
 
-    const whatsapp = withDialCode(telefono, prefix);
+    const whatsapp = !precioDirecto && telefono ? withDialCode(telefono, prefix) : "";
     const curso = seleccionado;
     if (!curso) {
       setError("Elige un curso para abrir su temario con precios.");
@@ -131,13 +142,13 @@ export default function PreciosGateClient({
     const payload: Record<string, unknown> = {
       name: nombre,
       email: correo,
-      whatsapp,
+      whatsapp: whatsapp || null,
       message: "Descargó Brochure PDF con precios",
       sourceCourse: curso.title,
       selectedCourses: [curso.title],
       leadType: "personal",
       pais,
-      pricingVariant: "gate",
+      pricingVariant: precioDirecto ? "direct" : "gate",
       ...captureAndReadAttribution(),
       ...getAntiBotFields(formLoadedAt.current || Date.now(), honeypot),
     };
@@ -165,10 +176,10 @@ export default function PreciosGateClient({
           Precios por curso
         </h2>
         <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-mute">
-          {unlocked ? (
+          {showPrices ? (
             <>
               <Unlock size={13} aria-hidden />{" "}
-              {muestraPrecioDirecto(pais) ? `Precios finales en ${moneda}` : "Precios desbloqueados"}
+              {precioDirecto ? `Precios finales en ${moneda}` : "Precios desbloqueados"}
             </>
           ) : (
             <>
@@ -205,17 +216,25 @@ export default function PreciosGateClient({
           className="mt-5 rounded-[26px] border border-line-strong bg-paper p-5 sm:p-6"
         >
           <p className="text-lg font-bold tracking-tight text-ink">
-            {discountLabel
-              ? `${discountLabel} · Desbloquea todos los precios y llévate el temario`
-              : "Desbloquea el detalle y llévate el temario de cada curso"}
+            {precioDirecto
+              ? "Descarga el temario PDF de cualquier curso"
+              : discountLabel
+                ? `${discountLabel} · Desbloquea todos los precios y llévate el temario`
+                : "Desbloquea el detalle y llévate el temario de cada curso"}
           </p>
           <p className="mt-1 max-w-[52rem] text-sm leading-relaxed text-mute">
-            {discountLabel
-              ? `${discountLabel} sobre el precio normal en ${moneda}. `
-              : "Valores vigentes en el PDF o por WhatsApp. "}
-            Los aranceles de cada curso se publican en su PDF de temario y precios, con el descuento
-            vigente, las fechas en hora de tu país{textoCuotas(pais) ? ` y las ${textoCuotas(pais)}` : ""}. Completa tus datos y
-            abrimos el PDF de tu curso principal en una pestaña nueva.
+            {precioDirecto
+              ? `Los valores en ${moneda} están publicados en la tabla de abajo. Completa tu nombre y correo para abrir el temario PDF completo con fechas en tu horario y detalle para reembolso de tu empresa.`
+              : (
+                <>
+                  {discountLabel
+                    ? `${discountLabel} sobre el precio normal en ${moneda}. `
+                    : "Valores vigentes en el PDF o por WhatsApp. "}
+                  Los aranceles de cada curso se publican en su PDF de temario y precios, con el descuento
+                  vigente, las fechas en hora de tu país{textoCuotas(pais) ? ` y las ${textoCuotas(pais)}` : ""}. Completa tus datos y
+                  abrimos el PDF de tu curso principal en una pestaña nueva.
+                </>
+              )}
           </p>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -254,43 +273,45 @@ export default function PreciosGateClient({
             </div>
           </div>
 
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">
-            <div className="flex gap-2">
-              <label htmlFor="precios-gate-prefix" className="sr-only">
-                Código de país
-              </label>
-              <select
-                id="precios-gate-prefix"
-                name="phonePrefix"
-                value={prefix}
-                onChange={(event) => setPrefix(event.target.value)}
-                aria-label="Código de país"
-                className="h-12 w-[6.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-2 text-sm text-ink"
-              >
-                {COUNTRIES.map((country) => (
-                  <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
-                    {country.iso.toUpperCase()} {country.phoneCode}
-                  </option>
-                ))}
-              </select>
-              <div className="min-w-0 flex-1">
-                <label htmlFor="precios-gate-whatsapp" className="sr-only">
-                  Teléfono o WhatsApp
+          <div className={precioDirecto ? "mt-2" : "mt-2 grid gap-2 sm:grid-cols-2"}>
+            {!precioDirecto ? (
+              <div className="flex gap-2">
+                <label htmlFor="precios-gate-prefix" className="sr-only">
+                  Código de país
                 </label>
-                <input
-                  id="precios-gate-whatsapp"
-                  name="whatsapp"
-                  type="tel"
-                  required
-                  autoComplete="tel"
-                  inputMode="tel"
-                  placeholder="Teléfono / WhatsApp"
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  className={fieldClass}
-                />
+                <select
+                  id="precios-gate-prefix"
+                  name="phonePrefix"
+                  value={prefix}
+                  onChange={(event) => setPrefix(event.target.value)}
+                  aria-label="Código de país"
+                  className="h-12 w-[6.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-2 text-sm text-ink"
+                >
+                  {COUNTRIES.map((country) => (
+                    <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
+                      {country.iso.toUpperCase()} {country.phoneCode}
+                    </option>
+                  ))}
+                </select>
+                <div className="min-w-0 flex-1">
+                  <label htmlFor="precios-gate-whatsapp" className="sr-only">
+                    Teléfono o WhatsApp
+                  </label>
+                  <input
+                    id="precios-gate-whatsapp"
+                    name="whatsapp"
+                    type="tel"
+                    required
+                    autoComplete="tel"
+                    inputMode="tel"
+                    placeholder="Teléfono / WhatsApp"
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
+                    className={fieldClass}
+                  />
+                </div>
               </div>
-            </div>
+            ) : null}
             <div>
               <label htmlFor="precios-gate-curso" className="sr-only">
                 Curso principal
@@ -333,7 +354,10 @@ export default function PreciosGateClient({
             disabled={isSubmitting}
             className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas transition-transform active:scale-[0.99] disabled:opacity-70 sm:w-auto"
           >
-            <FileText size={16} aria-hidden /> Desbloquear todos los precios y abrir el PDF de temario y precios →
+            <FileText size={16} aria-hidden />{" "}
+            {precioDirecto
+              ? "Abrir temario y precios (PDF) →"
+              : "Desbloquear todos los precios y abrir el PDF de temario y precios →"}
           </button>
 
           <p className="mt-2 text-[11px] leading-snug text-faint">
@@ -362,17 +386,17 @@ export default function PreciosGateClient({
           </thead>
           <tbody className="divide-y divide-line bg-paper">
             {cursos.map((curso) => {
-              const precio = precioVenta(pais, curso.slug);
-              const lista = precioListaVenta(pais, curso.slug);
+              const precio = precioVenta(pais, curso.slug, promotions);
+              const lista = precioListaVenta(pais, curso.slug, promotions);
               const descuento =
                 curso.discount ??
                 (lista != null && precio != null ? porcentajeDescuento(lista, precio) : 0);
               return (
                 <tr key={curso.slug}>
                   <th scope="row" className="px-4 py-4 font-semibold text-ink">
-                    {unlocked ? (
+                    {showPrices ? (
                       <Link
-                        href={`/cursos/${curso.slug}`}
+                        href={rutaLocal(pais, `/cursos/${curso.slug}`)}
                         className="no-underline hover:text-mute"
                       >
                         {curso.title}
@@ -391,7 +415,7 @@ export default function PreciosGateClient({
                   </th>
                   <td className="whitespace-nowrap px-4 py-4 text-mute">{curso.hours} h</td>
                   <td className="px-4 py-4">
-                    {unlocked ? (
+                    {showPrices ? (
                       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                         {lista != null ? (
                           <span className="text-xs text-faint line-through">

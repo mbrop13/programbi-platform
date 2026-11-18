@@ -262,28 +262,53 @@ export default function PagoClient({
     mercadoLocal ? montoConCodigo(paisPago, monto) : formatMoneda(paisPago, monto);
   const convertAndFormat = (clpAmount: number, slug?: string, qty = 1) => {
     if ((mercadoLocal || puedeMonedaLocal) && paisPago !== "cl" && slug && slug !== "asesoria") {
-      const local = precioCurso(paisPago, slug);
+      const local = precioCurso(paisPago, slug, promotions);
       if (local != null) return textoLocal(local * qty);
     }
     return convertPrice(clpAmount);
   };
-  const textoTotal = (clpAmount: number, items: { slug: string; quantity: number; hasDiscount?: boolean }[]) => {
+  const textoTotal = (
+    clpAmount: number,
+    items: { slug: string; quantity: number; hasDiscount?: boolean }[],
+    withCoupon = true
+  ) => {
     if (paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal)) return convertPrice(clpAmount);
-    const local = appliedCoupon
-      ? totalLocalConCupon(
-          paisPago,
-          items.map((item) => ({ slug: item.slug, quantity: item.quantity, conPromo: item.hasDiscount === true })),
-          { pct: appliedCoupon.discount_percentage, stacking: appliedCoupon.allow_stacking }
-        )
-      : totalLocal(paisPago, items);
+    const local =
+      withCoupon && appliedCoupon
+        ? totalLocalConCupon(
+            paisPago,
+            items.map((item) => ({ slug: item.slug, quantity: item.quantity, conPromo: item.hasDiscount === true })),
+            { pct: appliedCoupon.discount_percentage, stacking: appliedCoupon.allow_stacking },
+            promotions
+          )
+        : totalLocal(paisPago, items, promotions);
     if (local != null) return textoLocal(local);
     return convertPrice(clpAmount);
   };
+  const textoDescuentoCupon = (
+    clpDiscount: number,
+    items: { slug: string; quantity: number; hasDiscount?: boolean }[]
+  ) => {
+    if (paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal) || !appliedCoupon) {
+      return convertPrice(clpDiscount);
+    }
+    const antes = totalLocal(paisPago, items, promotions);
+    const despues = totalLocalConCupon(
+      paisPago,
+      items.map((item) => ({ slug: item.slug, quantity: item.quantity, conPromo: item.hasDiscount === true })),
+      { pct: appliedCoupon.discount_percentage, stacking: appliedCoupon.allow_stacking },
+      promotions
+    );
+    if (antes != null && despues != null) {
+      return textoLocal(Math.max(0, Math.round((antes - despues) * 100) / 100));
+    }
+    return convertPrice(clpDiscount);
+  };
   const tachadoLocal = (slug: string | undefined, qty = 1) => {
     if (!slug || slug === "asesoria" || paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal)) return null;
-    const lista = precioLista(paisPago, slug);
-    const cobro = precioCurso(paisPago, slug);
-    if (lista == null || cobro == null) return null;
+    const lista = precioLista(paisPago, slug, promotions);
+    const cobro = precioCurso(paisPago, slug, promotions);
+    if (lista == null || cobro == null || lista <= cobro) return null;
     return { texto: textoLocal(lista * qty), pct: porcentajeDescuento(lista, cobro) };
   };
   const notaClp = (montoClp: number) =>
@@ -1291,14 +1316,14 @@ export default function PagoClient({
                               {appliedCoupon && (
                                 <div className="mb-3 flex items-center justify-between text-xs font-semibold">
                                   <span className="text-faint">Subtotal</span>
-                                  <span className="tabular-nums text-ink">{textoTotal(totalPrice, cartItems)}</span>
+                                  <span className="tabular-nums text-ink">{textoTotal(totalPrice, cartItems, false)}</span>
                                 </div>
                               )}
                               
                               {appliedCoupon && (
                                 <div className="mb-4 flex items-center justify-between rounded-md border border-line bg-wash p-2.5 text-xs font-semibold text-ink">
                                   <span className="flex items-center gap-1"><Tag className="h-3.5 w-3.5"/> Descuento ({appliedCoupon.code})</span>
-                                  <span className="tabular-nums">−{convertAndFormat(couponDiscountAmount)}</span>
+                                  <span className="tabular-nums">−{textoDescuentoCupon(couponDiscountAmount, cartItems)}</span>
                                 </div>
                               )}
 

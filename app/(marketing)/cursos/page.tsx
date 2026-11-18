@@ -9,7 +9,7 @@ import CountryContext from "@/components/marketing/CountryContext";
 import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import { ObjetivosCursos, RecursosDatos } from "@/components/marketing/EnlacesPrioritarios";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
-import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
+import { getActivePromotions, getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
@@ -81,7 +81,11 @@ export default async function CursosPage({
 }) {
   const pais = normalizarPais((await params).pais);
   const bloque = getBloqueLocal(pais);
-  const schedules = (await getActiveSchedules()) as CourseSchedule[];
+  const [schedulesData, promotions] = await Promise.all([
+    getActiveSchedules(),
+    getActivePromotions(),
+  ]);
+  const schedules = schedulesData as CourseSchedule[];
   const featuredImage =
     courses.find((c) => c.slug === "analisis-de-datos")?.imageUrl ??
     "/images/courses/analisis-de-datos-card.webp";
@@ -92,7 +96,7 @@ export default async function CursosPage({
     numberOfItems: courses.length,
     itemListElement: courses.map((course, index) => {
       const url = absoluteUrl(rutaLocal(pais, `/cursos/${course.slug}`));
-      const local = muestraPrecioLocal(pais) ? precioCurso(pais, course.slug) : null;
+      const local = muestraPrecioLocal(pais) ? precioCurso(pais, course.slug, promotions) : null;
       return {
         "@type": "ListItem",
         position: index + 1,
@@ -137,6 +141,7 @@ export default async function CursosPage({
       />
       <CursosPageClient
         schedules={schedules}
+        promotions={promotions}
         catalog={courses.map((c) => ({
           slug: c.slug,
           title: c.title,

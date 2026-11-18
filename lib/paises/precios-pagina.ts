@@ -7,16 +7,16 @@ import {
   levelsForView,
   openCourseLevel,
 } from "@/lib/data/course-views";
-import { precioChile, precioListaPublico } from "@/config/pricing";
 import { resolverCobro } from "@/lib/paises/cobro";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import {
   NOTA_PAGO,
   formatMoneda,
-  porcentajeDescuento,
-  precioCurso,
-  precioLista,
+  resolverPrecioCursoPais,
+  type OverridePrecio,
+  type PromocionAplicable,
 } from "@/lib/paises/precios";
+import { getActivePromotions, getPriceOverrides } from "@/lib/supabase/comunidad-ai";
 
 export type PrecioCursoPagina = {
   slug: string;
@@ -63,9 +63,18 @@ function nivelPublico(course: Course): NivelPublico {
   };
 }
 
-function filaChile(course: Course): PrecioCursoPagina {
-  const cobro = precioChile(course.slug);
-  const lista = precioListaPublico(ISO_CHILE, course.slug);
+function filaChile(
+  course: Course,
+  promotions: readonly PromocionAplicable[],
+  priceOverrides: readonly OverridePrecio[]
+): PrecioCursoPagina {
+  const nivel = nivelPublico(course);
+  const resuelto = resolverPrecioCursoPais(ISO_CHILE, course.slug, promotions, {
+    priceOverrides,
+    levelName: nivel.storedName,
+  });
+  const cobro = resuelto?.finalPrice ?? null;
+  const lista = resuelto?.listPrice ?? null;
   const tieneDescuento = lista != null && cobro != null && lista > cobro;
 
   return {
@@ -73,19 +82,24 @@ function filaChile(course: Course): PrecioCursoPagina {
     title: course.title,
     description: course.shortDescription,
     hours: catalogHours(course),
-    levelName: nivelPublico(course).name,
+    levelName: nivel.name,
     priceLabel: cobro ? montoConCodigo(ISO_CHILE, cobro) : "Consultar",
     priceValue: cobro,
     listLabel: tieneDescuento ? formatMoneda(ISO_CHILE, lista) : null,
-    discount: tieneDescuento ? porcentajeDescuento(lista, cobro) : 0,
+    discount: resuelto?.discountPercentage ?? 0,
     currency: "CLP",
     chargeLabel: null,
   };
 }
 
-function filaLocal(course: Course, iso: string): PrecioCursoPagina {
-  const local = precioCurso(iso, course.slug);
-  const lista = precioLista(iso, course.slug);
+function filaLocal(
+  course: Course,
+  iso: string,
+  promotions: readonly PromocionAplicable[]
+): PrecioCursoPagina {
+  const resuelto = resolverPrecioCursoPais(iso, course.slug, promotions);
+  const local = resuelto?.finalPrice ?? null;
+  const lista = resuelto?.listPrice ?? null;
   const pais = getPais(iso);
 
   return {
@@ -97,8 +111,7 @@ function filaLocal(course: Course, iso: string): PrecioCursoPagina {
     priceLabel: local != null ? montoConCodigo(iso, local) : "Consultar",
     priceValue: local,
     listLabel: lista != null ? montoConCodigo(iso, lista) : null,
-    discount:
-      lista != null && local != null ? porcentajeDescuento(lista, local) : 0,
+    discount: resuelto?.discountPercentage ?? 0,
     currency: pais.moneda,
     // La nota junta al precio es la de pago, sin aviso de CLP: el aviso de
     // moneda de cobro aparece recién en el checkout.
@@ -107,8 +120,8 @@ function filaLocal(course: Course, iso: string): PrecioCursoPagina {
 }
 
 /**
- * Precios publicados por país. Chile usa el catálogo, los overrides y las
- * promociones del checkout. Los países con cobro local usan su tabla.
+ * Precios publicados por país. Aplica promociones activas del panel admin en
+ * todos los mercados (y overrides CLP en Chile).
  */
 export async function preciosDePais(
   iso: string | null | undefined
@@ -117,16 +130,22 @@ export async function preciosDePais(
   cursos: PrecioCursoPagina[];
   moneda: string;
   cobroLocal: boolean;
+  promotions: PromocionAplicable[];
 }> {
   const pais = getPais(normalizarPais(iso));
+  const [promotions, priceOverrides] = await Promise.all([
+    getActivePromotions(),
+    pais.precios === "catalogo" ? getPriceOverrides() : Promise.resolve([]),
+  ]);
 
   // Solo Chile usa el catálogo. El resto publica su propia tabla (MP o referencia USD).
   if (pais.precios === "catalogo") {
     return {
       pais,
-      cursos: courses.map((course) => filaChile(course)),
+      cursos: courses.map((course) => filaChile(course, promotions, priceOverrides)),
       moneda: "CLP",
       cobroLocal: true,
+      promotions,
     };
   }
 
@@ -134,8 +153,9 @@ export async function preciosDePais(
 
   return {
     pais,
-    cursos: courses.map((course) => filaLocal(course, pais.iso)),
+    cursos: courses.map((course) => filaLocal(course, pais.iso, promotions)),
     moneda: pais.moneda,
     cobroLocal,
+    promotions,
   };
 }

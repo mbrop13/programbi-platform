@@ -9,6 +9,8 @@ import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import CourseImage from "@/components/shared/CourseImage";
 import { usePaisRuta } from "@/lib/paises/cliente";
+import { muestraPrecioDirecto } from "@/config/paises";
+import { textoCuotas } from "@/config/cuotas";
 import { courseBrochureUrl, unlockPricesClient } from "@/lib/pricing-gate";
 import { captureAndReadAttribution } from "@/lib/utm";
 
@@ -49,6 +51,8 @@ export default function LeadForm() {
   const [sending, setSending] = useState(false);
   const formLoadedAt = useRef(Date.now());
   const pais = usePaisRuta();
+  const telefonoOpcional = muestraPrecioDirecto(pais);
+  const cuotasPais = textoCuotas(pais);
   const destSlug = slugDelPrograma(selected[0]);
 
   const toggleCourse = (c: string) => {
@@ -59,7 +63,9 @@ export default function LeadForm() {
     const next: Record<string, string> = {};
     if (!name.trim()) next.name = "Escribe tu nombre.";
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "Escribe un email válido.";
-    if (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8) next.whatsapp = "Escribe tu WhatsApp.";
+    if (!telefonoOpcional && (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8)) {
+      next.whatsapp = "Escribe tu WhatsApp.";
+    }
     if (selected.length === 0) next.course = "Elige al menos un programa.";
     if (!privacy) next.privacy = "Debes aceptar la política de privacidad.";
     return next;
@@ -98,11 +104,11 @@ export default function LeadForm() {
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          whatsapp: whatsapp.trim(),
+          whatsapp: whatsapp.trim() || null,
           message: message.trim() || null,
           selectedCourses: selected,
           leadType: "contact",
-          pricingVariant: "gate",
+          pricingVariant: telefonoOpcional ? "direct" : "gate",
           pais,
           ...captureAndReadAttribution(),
           ...getAntiBotFields(formLoadedAt.current, ""),
@@ -133,15 +139,17 @@ export default function LeadForm() {
         <div className="px-4 py-16 sm:px-6 lg:px-16 lg:py-24">
           <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cotiza Ahora</h2>
           <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
-            Completa tus datos y abrimos el PDF de temario y precios con las fechas, los cupos y el detalle del curso.
+            {telefonoOpcional
+              ? "Completa tu nombre y correo y abrimos el PDF del temario con fechas en tu horario y detalle del curso."
+              : "Completa tus datos y abrimos el PDF de temario y precios con las fechas, los cupos y el detalle del curso."}
           </p>
 
           {status === "success" ? (
             <div className="mt-10 max-w-[36rem] rounded-2xl border border-line bg-paper px-5 py-6">
               <p className="text-base font-semibold text-ink">¡Listo! Abrimos el PDF de temario y precios en una pestaña nueva.</p>
               <p className="mt-2 text-sm leading-relaxed text-mute">
-                Ahí ves el temario completo, las fechas y el arancel vigente con los descuentos y las 3 cuotas sin
-                interés. Los precios de la web ya quedaron desbloqueados en este navegador.
+                Ahí ves el temario completo, las fechas y el arancel vigente con los descuentos
+                {cuotasPais ? ` y las ${cuotasPais}` : ""}. Los precios de la web ya quedaron desbloqueados en este navegador.
               </p>
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <a
@@ -153,7 +161,7 @@ export default function LeadForm() {
                   Abrir temario y precios (PDF)
                 </a>
                 <Link
-                  href={`/pago?curso=${destSlug}`}
+                  href={pais === "cl" ? `/pago?curso=${destSlug}` : `/pago?curso=${destSlug}&pais=${pais}`}
                   className="inline-flex h-12 items-center justify-center rounded-full border border-line-strong bg-paper px-6 text-sm font-semibold text-ink transition-colors hover:border-ink/40"
                 >
                   Ir a Inscripción / Pago →
@@ -202,12 +210,16 @@ export default function LeadForm() {
               </div>
               <Field
                 id="whatsapp"
-                label="WhatsApp"
+                label={telefonoOpcional ? "Teléfono / WhatsApp (opcional)" : "WhatsApp"}
                 value={whatsapp}
                 onChange={setWhatsapp}
                 error={errors.whatsapp}
                 autoComplete="tel"
-                helper="Incluye código de país. Chile: +56 9..."
+                helper={
+                  telefonoOpcional
+                    ? "En EE.UU. te respondemos por email; agrégalo solo si prefieres WhatsApp."
+                    : "Incluye código de país. Chile: +56 9..."
+                }
               />
 
               <fieldset className="flex flex-col gap-2">

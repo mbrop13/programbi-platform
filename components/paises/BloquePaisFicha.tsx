@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarClock, CreditCard, MapPin } from "lucide-react";
 import { getPais, ISO_CHILE, muestraPrecioDirecto, normalizarPais } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
-import { precioPublico } from "@/config/pricing";
+import { precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import type { Course } from "@/lib/data/courses";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
@@ -23,6 +23,7 @@ type Props = {
   /** Inicio y fin de la cohorte en hora de Chile. */
   inicio?: string;
   fin?: string;
+  promotions?: readonly PromocionAplicable[];
 };
 
 /**
@@ -77,7 +78,7 @@ function preguntasDeFicha(iso: string): { q: string; a: string }[] {
  * Solo se renderiza cuando el país tiene contenido propio (`fichas.ts` o
  * `contenido-paises`); el resto de los mercados sigue con la ficha común.
  */
-export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
+export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }: Props) {
   const iso = normalizarPais(pais);
   const info = getPais(iso);
   const ficha = getFichaPais(iso);
@@ -102,7 +103,7 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
 
   const vecinos = vecinosDe(iso).slice(0, 3);
   // Estados Unidos publica el monto en la ficha, sin pasar por el PDF.
-  const precioDirecto = muestraPrecioDirecto(iso) ? precioPublico(iso, curso.slug) : null;
+  const precioDirecto = muestraPrecioDirecto(iso) ? precioVenta(iso, curso.slug, promotions) : null;
 
   return (
     <section

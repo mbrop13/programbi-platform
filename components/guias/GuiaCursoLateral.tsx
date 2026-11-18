@@ -8,7 +8,7 @@ import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import type { InicioGuia } from "@/lib/guias/inicio";
 import { horarioLocal } from "@/lib/paises/horarios";
-import { etiquetaDescuentoCurso } from "@/lib/paises/precios";
+import { etiquetaDescuentoCurso, type PromocionAplicable } from "@/lib/paises/precios";
 
 /**
  * Tarjeta fija del curso para la columna derecha de la guía (solo escritorio
@@ -21,11 +21,13 @@ export default function GuiaCursoLateral({
   iso,
   course,
   inicio,
+  promotions,
 }: {
   iso: string;
   course: string;
   /** Próxima cohorte real del curso, fijada al construir el sitio. */
   inicio: InicioGuia | null;
+  promotions?: readonly PromocionAplicable[];
 }) {
   if (course === "general") return null;
 
@@ -34,7 +36,7 @@ export default function GuiaCursoLateral({
   const lugar = iso === ISO_CHILE ? "Chile" : getPais(iso).nombre;
   const horaLocal = `de ${horario.inicio} a ${horario.fin}, hora de ${lugar}`;
   const rutaCurso = rutaFichaCurso(iso, course);
-  const etiquetaDescuento = iso === "py" ? null : etiquetaDescuentoCurso(iso, course);
+  const etiquetaDescuento = iso === "py" ? null : etiquetaDescuentoCurso(iso, course, promotions);
 
   return (
     <aside

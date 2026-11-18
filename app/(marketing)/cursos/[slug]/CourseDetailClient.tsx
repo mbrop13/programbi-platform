@@ -63,7 +63,14 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { descuentoPublico, formatMoneda, localizarMercado, precioVenta } from "@/lib/paises/precios";
+import {
+  descuentoPublico,
+  formatMoneda,
+  localizarMercado,
+  precioListaVenta,
+  precioVenta,
+  type PromocionAplicable,
+} from "@/lib/paises/precios";
 import { whatsappHref } from "@/lib/whatsapp";
 import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
@@ -243,6 +250,7 @@ export default function CourseDetailClient({
   initialView = "publico",
   initialLevelName,
   detalleLocal,
+  promotions = [],
   testimonios,
 }: {
   course: Course;
@@ -256,6 +264,7 @@ export default function CourseDetailClient({
   /** Igual que `initialView`, para `?nivel=`. */
   initialLevelName?: string;
   detalleLocal?: DetalleCursoLocal;
+  promotions?: readonly PromocionAplicable[];
   /** Citas de alumnos, renderizadas en el servidor. Van tras el profesor. */
   testimonios?: ReactNode;
 }) {
@@ -297,9 +306,11 @@ export default function CourseDetailClient({
   // solo el porcentaje de descuento vigente; el desglose completo (arancel,
   // cuotas, valor por hora y Brochure PDF) recién aparece con `canSeePrice`.
   const { unlocked: priceUnlocked, unlock } = usePriceUnlock();
-  const canSeePrice = isLoggedIn || priceUnlocked;
-  const precioLocalCliente = precioVenta(pais, course.slug);
-  const descuentoLocalCliente = descuentoPublico(pais, course.slug);
+  const precioDirecto = muestraPrecioDirecto(pais);
+  const canSeePrice = isLoggedIn || priceUnlocked || precioDirecto;
+  const precioLocalCliente = precioVenta(pais, course.slug, promotions);
+  const precioListaCliente = precioListaVenta(pais, course.slug, promotions);
+  const descuentoLocalCliente = descuentoPublico(pais, course.slug, promotions);
   const brochureUrl = courseBrochureUrl(course.slug, pais);
   const numCuotas = cuotasSinInteres(pais);
   // Sin fecha futura en la BD, el CTA ofrece aviso por WhatsApp (intent `fechas`).
@@ -336,7 +347,7 @@ export default function CourseDetailClient({
   };
 
   useEffect(() => {
-    const valor = precioVenta(pais, course.slug);
+    const valor = precioVenta(pais, course.slug, promotions);
     trackCourseView(
       course.slug,
       course.title,
@@ -344,7 +355,7 @@ export default function CourseDetailClient({
       pais,
       monedaPublica(pais)
     );
-  }, [course.slug, course.title, pais]);
+  }, [course.slug, course.title, pais, promotions]);
 
   // `?para=` y `?nivel=` se aplican una sola vez, ya hidratada la ficha: el
   // HTML cacheado es el de la vista pública y el cliente ajusta audiencia y
@@ -510,10 +521,19 @@ export default function CourseDetailClient({
 
   // Estados Unidos muestra el precio sin formulario y arriba del PDF de
   // temario; el resto de los mercados lo muestra debajo, tras el gate.
-  const precioDirecto = muestraPrecioDirecto(pais);
   const bloquePrecio =
     !isEmpresa && canSeePrice && precioLocalCliente != null ? (
       <div className="mb-5 space-y-1 leading-snug">
+        {precioListaCliente != null && precioListaCliente > precioLocalCliente ? (
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-faint line-through">{formatMoneda(pais, precioListaCliente)}</span>
+            {descuentoLocalCliente > 0 ? (
+              <span className="rounded-full bg-wash px-2 py-0.5 text-[11px] font-semibold text-ink">
+                {descuentoLocalCliente}% off
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <p className="flex items-baseline gap-2">
           <span className={`${precioDirecto ? "text-3xl" : "text-lg"} font-bold tracking-tight text-ink`}>
             {formatMoneda(pais, precioLocalCliente)}
@@ -1217,7 +1237,10 @@ function CourseContactForm({ course }: { course: Course }) {
 
               <div className="flex flex-col gap-2">
                 <label htmlFor="course-whatsapp" className="text-sm font-medium text-ink">
-                  Teléfono o WhatsApp
+                  Teléfono o WhatsApp{" "}
+                  {muestraPrecioDirecto(pais) ? (
+                    <span className="font-normal text-mute">(opcional)</span>
+                  ) : null}
                 </label>
                 <div className="flex">
                   <div className="relative">
@@ -1259,6 +1282,11 @@ function CourseContactForm({ course }: { course: Course }) {
                     className="h-12 min-w-0 flex-1 rounded-r-xl border border-line-strong bg-paper px-3 text-base text-ink"
                   />
                 </div>
+                {muestraPrecioDirecto(pais) ? (
+                  <p className="text-xs text-mute">
+                    En EE.UU. te respondemos por email; déjalo solo si prefieres WhatsApp.
+                  </p>
+                ) : null}
               </div>
 
               {!isPersonal && (
@@ -1445,18 +1473,27 @@ function BarraFijaFicha({
             <FileText size={16} aria-hidden /> Ver temario y precios
           </a>
         )}
-        <WhatsAppCta
-          page={`/cursos/${cursoSlug}`}
-          intent="curso"
-          course={curso}
-          courseSlug={cursoSlug}
-          country={pais}
-          ctaPosition="ficha_barra_fija"
-          className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-4 text-sm font-semibold text-ink no-underline"
-        >
-          <MessageCircle size={16} aria-hidden />
-          WhatsApp
-        </WhatsAppCta>
+        {muestraPrecioDirecto(pais) ? (
+          <a
+            href="#cotizar"
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-4 text-sm font-semibold text-ink no-underline"
+          >
+            Consultar
+          </a>
+        ) : (
+          <WhatsAppCta
+            page={`/cursos/${cursoSlug}`}
+            intent="curso"
+            course={curso}
+            courseSlug={cursoSlug}
+            country={pais}
+            ctaPosition="ficha_barra_fija"
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-4 text-sm font-semibold text-ink no-underline"
+          >
+            <MessageCircle size={16} aria-hidden />
+            WhatsApp
+          </WhatsAppCta>
+        )}
       </div>
     </div>
   );

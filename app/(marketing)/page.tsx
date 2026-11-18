@@ -15,7 +15,7 @@ import { homeFaqs } from "@/lib/data/site";
 import { getBloqueLocal, getContenidoPais } from "@/lib/data/contenido-paises";
 import { courses } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
-import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
+import { getActivePromotions, getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import {
   formatShortDate,
   getNearestSchedule,
@@ -113,7 +113,11 @@ export default async function HomePage({
       },
     ],
   };
-  const schedules = (await getActiveSchedules()) as CourseSchedule[];
+  const [schedulesData, promotions] = await Promise.all([
+    getActiveSchedules(),
+    getActivePromotions(),
+  ]);
+  const schedules = schedulesData as CourseSchedule[];
   // Cohorte más cercana con fecha futura, para la pastilla del hero.
   // Se prefiere el nivel básico: es la fecha que muestra la ficha al abrirla.
   const activas = schedules.map((s) => ({ ...s, is_active: s.is_active !== false }));
@@ -132,10 +136,11 @@ export default async function HomePage({
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(homeJsonLd) }} />
-      <HeroSection pais={pais} contenido={contenido} proximo={proximo} schedules={schedules} />
+      <HeroSection pais={pais} contenido={contenido} proximo={proximo} schedules={schedules} promotions={promotions} />
       <LogoSlider />
       <Programs
         schedules={schedules}
+        promotions={promotions}
         catalog={courses.map((c) => ({
           slug: c.slug,
           title: c.title,
