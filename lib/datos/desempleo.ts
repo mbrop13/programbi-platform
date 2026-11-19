@@ -3,6 +3,7 @@ import { join } from "node:path";
 import meta from "@/data/desempleo/meta.json";
 import rankingJson from "@/data/desempleo/ranking.json";
 import { NACIONAL, REGIONES, buscarRegion, rutaTerritorio } from "./regiones";
+import { claveRevisionDesempleo } from "./revision-desempleo";
 
 export type Nota = "a" | "b";
 export type Observacion = {
@@ -32,6 +33,7 @@ export type Indicadores = {
 };
 
 export const METADATOS = meta;
+export const REVISION_DESEMPLEO = claveRevisionDesempleo(process.cwd(), meta.ine_fecha_actualizacion);
 export const FUENTE_ENE = "https://www.ine.gob.cl/estadisticas-por-tema/mercado-laboral/ocupacion-y-desocupacion";
 export const LICENCIA = "https://creativecommons.org/licenses/by-sa/4.0/";
 export const TERMINOS_INE = "https://www.ine.gob.cl/terminos-de-uso-y-licencia-de-datos-abiertos";

@@ -11,6 +11,7 @@ async function main() {
   await jiti.import("./tramos.test.ts");
   await jiti.import("./textos.test.ts");
   await jiti.import("./seo.test.ts");
+  await jiti.import("./revision.test.ts");
 }
 
 main().catch((err) => {

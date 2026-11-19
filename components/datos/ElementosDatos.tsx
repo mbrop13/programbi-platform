@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- Enlaces estáticos para que el observatorio pueda navegar antes de cargar React. */
 import { ChevronRight, ImageDown } from "lucide-react";
 import { SITE_URL } from "@/lib/seo";
-import { CARTOGRAFIA, FECHA_EDICION, FUENTE_ENE, LICENCIA, METADATOS, TERMINOS_INE, hayPbix, type Observacion } from "@/lib/datos/desempleo";
+import { CARTOGRAFIA, FECHA_EDICION, FUENTE_ENE, LICENCIA, METADATOS, REVISION_DESEMPLEO, TERMINOS_INE, hayPbix, type Observacion } from "@/lib/datos/desempleo";
 import { fechaCorta, periodo, tasa } from "@/lib/datos/desempleo-formato";
 import type { Migaja, Pregunta } from "@/lib/datos/seo";
 import { CopiarDatos, EnlaceDatos } from "./AccionesDatos";
@@ -120,7 +120,7 @@ in
           <EnlaceDatos texto="Descargar Excel" href="/datos/desempleo/desempleo-chile.xlsx" formato="xlsx" territorio={slug} />
           <EmbedDialog territorio={slug} nombre={nombre} />
           {slug !== "nacional" && (
-            <a className={estilos.botonClaro} href={`/datos/desempleo/og/comparar-${slug}?v=${METADATOS.version}`} download={`${slug}-vs-chile.png`}>
+            <a className={estilos.botonClaro} href={`/datos/desempleo/og/comparar-${slug}?v=${REVISION_DESEMPLEO}`} download={`${slug}-vs-chile.png`}>
               <ImageDown size={16} aria-hidden="true" /> Guardar tarjeta comparativa
             </a>
           )}

@@ -99,6 +99,12 @@ const resultados = await Promise.all(paginas.map(async ({ slug, path }) => {
   const og = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
   assert.ok(og, path);
   const ogLocal = new URL(og.replace(/&amp;/g, "&"));
+  const revision = ogLocal.searchParams.get("v");
+  assert.match(revision ?? "", /^[a-f0-9]{20}$/, `${path} · clave de revisión de la imagen social`);
+  if (path !== "/datos") assert.ok(html.includes(`data-revision="${revision}"`), `${path} · revisión del explorador`);
+  if (slug !== "nacional") {
+    assert.ok(html.includes(`href="${ruta}/og/comparar-${slug}?v=${revision}"`), `${path} · revisión de la tarjeta comparativa`);
+  }
   const imagen = await get(ogLocal.pathname + ogLocal.search);
   assert.equal(imagen.status, 200, `${path} · imagen social`);
   assert.match(imagen.headers.get("content-type") ?? "", /^image\/png/);
@@ -111,7 +117,7 @@ const resultados = await Promise.all(paginas.map(async ({ slug, path }) => {
     assert.equal(chunk.status, 200, src);
     return gzipSync(Buffer.from(await chunk.arrayBuffer())).length;
   }));
-  return { path, title, description: description.length, h1: h1[0], canonical, robots,
+  return { path, title, description: description.length, h1: h1[0], canonical, robots, revision,
     schemas: schemas.map((schema) => schema["@type"]).flat().filter((tipo) =>
       ["Dataset", "BreadcrumbList", "FAQPage", "ItemList"].includes(tipo)),
     htmlBytes: Buffer.byteLength(html), jsExtra: pesos.reduce((suma, peso) => suma + peso, 0),
@@ -121,6 +127,11 @@ const resultados = await Promise.all(paginas.map(async ({ slug, path }) => {
 }));
 
 assert.equal(new Set(resultados.map(({ h1 }) => h1)).size, resultados.length, "H1 únicos");
+assert.equal(new Set(resultados.map(({ revision }) => revision)).size, 1, "las páginas usan la misma revisión");
+const revision = resultados[0].revision;
+const explorador = await get(`${ruta}/explorador.json?v=${revision}`);
+assert.equal(explorador.status, 200, "explorador versionado");
+assert.equal((await explorador.json()).periodos.at(-1).codigo, meta.ultimo_periodo.codigo, "cierre del explorador");
 const enlazadores = [{ path: "/", enlaces: enlaces(htmlInicio) }, ...resultados];
 let similitud = 0;
 let par = [];
@@ -168,11 +179,15 @@ const complementarias = await Promise.all([`${ruta}/jovenes`, "/datos/capacitaci
 const datosJuveniles = await cargar("../../data/desempleo/edad.json");
 const juvenil = datosJuveniles.series["15-24"].at(-1);
 const jovenes = await get(`${ruta}/jovenes`);
-assert.ok((await jovenes.text()).includes(formato.format(juvenil.valores.tasa)));
-const socialJovenes = await get(`${ruta}/og/jovenes?v=${meta.version}`);
+const htmlJovenes = await jovenes.text();
+assert.ok(htmlJovenes.includes(formato.format(juvenil.valores.tasa)));
+assert.ok(htmlJovenes.includes(`content="${host}${ruta}/og/jovenes?v=${revision}"`));
+const socialJovenes = await get(`${ruta}/og/jovenes?v=${revision}`);
 assert.match(socialJovenes.headers.get("content-type") ?? "", /^image\/png/);
 const juvenilPng = Buffer.from(await socialJovenes.arrayBuffer());
 assert.deepEqual([juvenilPng.readUInt32BE(16), juvenilPng.readUInt32BE(20)], [1200, 630]);
+const socialAnterior = await get(`${ruta}/og/jovenes?v=${meta.version}`);
+assert.equal(socialAnterior.status, 200, "una URL social anterior sigue funcionando");
 
 const slugsEmbed = ["nacional", ...catalogo.map(({ slug }) => slug)];
 await Promise.all(slugsEmbed.map(async (slug) => {

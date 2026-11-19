@@ -46,6 +46,7 @@ export function ExploradorDesempleo({
       className={styles.explorador}
       ref={ref}
       aria-label="Exploración histórica de desempleo"
+      data-revision={version}
     >
       <span id="comparar-regiones" />
       <div className={styles.interactive}>

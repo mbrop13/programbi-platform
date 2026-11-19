@@ -49,10 +49,14 @@ async function leerEdicion() {
 
 async function notificar(db, mailer, suscripcion, edicion) {
   const reserva = await db.from(envios).insert({ periodo: edicion.periodo, suscripcion_id: suscripcion.id });
+  if (reserva.error?.code === "23503") {
+    const existente = exigir(await db.from(tabla).select("id").eq("id", suscripcion.id).maybeSingle(), "comprobar la suscripción eliminada");
+    if (!existente) return "baja";
+  }
   if (reserva.error?.code === "23505") {
-    const anterior = exigir(await db.from(envios).select("enviado_en")
+    const anterior = exigir(await db.from(envios).select("enviado_en,descartado_en")
       .eq("periodo", edicion.periodo).eq("suscripcion_id", suscripcion.id).maybeSingle(), "leer el envío");
-    return anterior?.enviado_en ? "preexistente" : "pendiente";
+    return anterior?.enviado_en || anterior?.descartado_en ? "preexistente" : "pendiente";
   }
   exigir(reserva, "reservar el envío");
 
@@ -81,8 +85,14 @@ async function notificar(db, mailer, suscripcion, edicion) {
       list: { unsubscribe: baja },
     });
   } catch (error) {
-    // Un rechazo SMTP explícito puede reintentarse. Ante un timeout se conserva
-    // la reserva porque el servidor de correo pudo haber aceptado la entrega.
+    // Solo un 5xx de RCPT TO identifica un rechazo definitivo del destinatario.
+    if (error?.responseCode >= 500 && error.responseCode < 600 && /^RCPT TO(?:\s|$)/i.test(error?.command ?? "")) {
+      exigir(await db.from(envios).update({ descartado_en: new Date().toISOString() })
+        .eq("periodo", edicion.periodo).eq("suscripcion_id", suscripcion.id), "marcar el rechazo definitivo");
+      return "descartado";
+    }
+    // Los rechazos explícitos pueden reintentarse; los fallos ambiguos conservan
+    // la reserva porque el servidor pudo haber aceptado la entrega.
     if (error?.responseCode >= 400 && error.responseCode < 600) {
       exigir(await db.from(envios).delete().eq("periodo", edicion.periodo).eq("suscripcion_id", suscripcion.id), "liberar el envío rechazado");
     }
@@ -112,12 +122,18 @@ async function main() {
     console.log(`Edición inicial registrada: ${edicion.periodo}.`);
     return;
   }
+  if (ultima.periodo !== edicion.periodo) {
+    exigir(await db.from(ediciones).upsert({ periodo: edicion.periodo }, { ignoreDuplicates: true }), "registrar la edición");
+  }
+  // Una edición más reciente sustituye cualquier edición anterior sin cerrar.
+  // Se ejecuta también en reintentos si el registro de la nueva ya existía.
+  const sustituidas = exigir(await db.from(ediciones).update({
+    finalizado_en: new Date().toISOString(), sustituida_por: edicion.periodo,
+  }).lt("periodo", edicion.periodo).is("finalizado_en", null).select("periodo"), "cerrar ediciones sustituidas");
+  if (sustituidas.length) console.log(`Ediciones anteriores sustituidas: ${sustituidas.length}.`);
   if (ultima.periodo === edicion.periodo && ultima.finalizado_en) {
     console.log(`Sin edición nueva: ${edicion.periodo}.`);
     return;
-  }
-  if (ultima.periodo !== edicion.periodo) {
-    exigir(await db.from(ediciones).upsert({ periodo: edicion.periodo }, { ignoreDuplicates: true }), "registrar la edición");
   }
   const corte = exigir(await db.from(ediciones).select("detectado_en")
     .eq("periodo", edicion.periodo).single(), "obtener la fecha de edición").detectado_en;
@@ -138,6 +154,7 @@ async function main() {
   let despues;
   let enviados = 0;
   let pendientes = 0;
+  let descartados = 0;
   try {
     for (;;) {
       let consulta = db.from(tabla).select("id,email")
@@ -150,6 +167,7 @@ async function main() {
         const estado = await notificar(db, mailer, suscripcion, edicion);
         if (estado === "enviado") enviados += 1;
         if (estado === "pendiente") pendientes += 1;
+        if (estado === "descartado") descartados += 1;
       }
       despues = registros.at(-1).id;
     }
@@ -157,7 +175,7 @@ async function main() {
     mailer.close();
   }
 
-  console.log(`Edición ${edicion.periodo}: ${enviados} avisos enviados, ${pendientes} pendientes.`);
+  console.log(`Edición ${edicion.periodo}: ${enviados} avisos enviados, ${descartados} descartados y ${pendientes} pendientes.`);
   if (pendientes) throw new Error("Revisar los envíos pendientes antes de cerrar la edición.");
   exigir(await db.from(ediciones).update({ finalizado_en: new Date().toISOString() })
     .eq("periodo", edicion.periodo), "cerrar la edición");

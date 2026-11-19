@@ -66,7 +66,15 @@ Fuentes oficiales [Ficha estadística del seguro](https://www.spensiones.cl/port
 
 El formulario pide consentimiento, envía confirmación con enlace de 48 horas y permite darse de baja. La confirmación y la baja son acciones explícitas que hacen cambios solo al enviar su formulario. La base guarda los suscriptores y el estado de los envíos con acceso exclusivo al backend. El workflow de entrega comprueba primero la edición que está disponible públicamente en ProgramBI. La primera ejecución registra la edición de partida y los envíos se reservan por edición y suscripción para controlar duplicados.
 
-Para activar el envío se requiere aplicar `supabase/migrations/20261119000100_datos_alertas_desempleo.sql`, habilitar las variables de Supabase y Amazon SES que declara el workflow y ejecutar la inicialización después del despliegue de la sección. Esta entrega conserva la migración, las acciones y el workflow en Git. La verificación local evita usar destinatarios reales.
+Un rechazo definitivo del destinatario queda registrado como descartado para esa edición. Los rechazos SMTP que admiten reintentos liberan la reserva. Si la respuesta es ambigua, la reserva se conserva para evitar duplicados. Cuando aparece una edición posterior, el job deja constancia de que reemplaza las ediciones anteriores que quedaron abiertas.
+
+Se aplicaron las migraciones en PostgreSQL en memoria. Se probaron los permisos de `anon` y `authenticated`, las acciones con Supabase JS y un endpoint HTTP local, la confirmación, el vencimiento, la baja, la eliminación en cascada y el límite de solicitudes. Los casos de despacho se comprobaron con dobles de almacenamiento y correo. [PGlite](https://pglite.dev/docs/).
+
+Para activar el envío se deben aplicar en orden las migraciones `20261119000100_datos_alertas_desempleo.sql` y `20261119000200_datos_alertas_resultados.sql`, habilitar las variables de Supabase y Amazon SES que declara el workflow y ejecutar la inicialización después del despliegue. La prueba con destinatarios reales queda para ese entorno.
+
+### Revisiones del INE
+
+Las imágenes sociales, las tarjetas comparativas y los recursos del explorador incorporan una clave basada en los datos publicados y la fecha del INE. La clave cambia si se corrige el mismo trimestre. `meta.version` continúa identificando el período, y las URLs sociales anteriores siguen respondiendo. El caché de recursos estáticos en Vercel se distingue por despliegue. Queda comprobar en Preview los encabezados que sirve la CDN. [Caché de Vercel](https://vercel.com/i/faceted-navigation-seo).
 
 ### Integración con carreras
 
@@ -174,7 +182,7 @@ La prueba diagnóstica de la página nacional sirvió el mismo HTML bajo tres va
 ### Cierre de publicación
 
 - Probar el caché de Vercel en Preview con una segunda solicitud y medir Core Web Vitals de campo después del despliegue.
-- Aplicar la migración de Supabase y habilitar las credenciales del flujo de Amazon SES para comprobar una alta, confirmación y baja reales.
+- Aplicar las dos migraciones de Supabase y configurar el flujo de Amazon SES para comprobar una alta, confirmación y baja en el entorno de despliegue.
 - Revisar el primer PR automático de cada fuente. El contraste BCCh y el archivo PBIX quedan como opcionales.
 
 VEREDICTO: AMARILLO. Las tres fases y el SEO están integrados y comprobados en local. El LCP de desempleo sigue sobre el objetivo de 1,8 s. Quedan la medición en Vercel y la activación de las alertas reales.

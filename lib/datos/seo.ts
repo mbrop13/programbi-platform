@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ORG_ID, SITE_URL } from "@/lib/seo";
-import { datosTerritorio, FECHA_EDICION, FUENTE_ENE, LICENCIA, METADATOS, PERIODO_ACTUAL, type Observacion } from "./desempleo";
+import { datosTerritorio, FECHA_EDICION, FUENTE_ENE, LICENCIA, PERIODO_ACTUAL, REVISION_DESEMPLEO, type Observacion } from "./desempleo";
 import { periodo, tasa } from "./desempleo-formato";
 import { NACIONAL, rutaTerritorio } from "./regiones";
 
@@ -45,7 +45,7 @@ export function metaObservatorio(slug: string, nombre: string, esHub = false): M
   const description = opciones.map((opcion) => inicio + opcion).find((texto) => texto.length >= 140 && texto.length <= 155)
     ?? inicio + "Explora el histórico y descarga los datos oficiales.";
   const url = `${SITE_URL}${path}`;
-  const imagen = `${SITE_URL}/datos/desempleo/og/${esHub ? "hub" : slug}?v=${METADATOS.version}`;
+  const imagen = `${SITE_URL}/datos/desempleo/og/${esHub ? "hub" : slug}?v=${REVISION_DESEMPLEO}`;
   return {
     title: { absolute: title.length <= 60 ? title : `Desempleo en ${nombre}: tasa e histórico` },
     description,

@@ -2,7 +2,7 @@
 import { Activity, CalendarDays, ChartNoAxesCombined, ChevronRight, CircleHelp, Database, Download, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { SITE_URL } from "@/lib/seo";
-import { datosTerritorio, METADATOS, RANKING } from "@/lib/datos/desempleo";
+import { datosTerritorio, RANKING, REVISION_DESEMPLEO } from "@/lib/datos/desempleo";
 import { cifra, periodo, personas, puntos, tasa } from "@/lib/datos/desempleo-formato";
 import { buscarRegion, NACIONAL, REGIONES, RUTA_DESEMPLEO, rutaTerritorio } from "@/lib/datos/regiones";
 import { breadcrumbs, dataset, faqSchema, metaObservatorio, MIGAS_DATOS } from "@/lib/datos/seo";
@@ -158,7 +158,7 @@ export function Observatorio({ slug }: { slug: string }) {
 
       <section id="historico" className={estilos.bloque} aria-labelledby="titulo-historico">
         <div className={estilos.tituloSeccion}><h2 id="titulo-historico">Histórico y comparadores</h2><p>Tasas de desocupación por trimestre móvil. Usa la serie desde 2010 para explorar cambios por año, región o período.</p></div>
-        <ExploradorDesempleo territorio={slug} nombre={nombre} version={METADATOS.version}>
+        <ExploradorDesempleo territorio={slug} nombre={nombre} version={REVISION_DESEMPLEO}>
           <TablaHistorica serie={serie} nombre={nombre} nacional={region ? chile.serie : undefined} />
         </ExploradorDesempleo>
         <Fuente />
