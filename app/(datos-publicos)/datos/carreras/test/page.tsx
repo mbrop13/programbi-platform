@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { Compass } from "lucide-react";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";
 import { MigasDatos } from "@/components/datos/MigasDatos";

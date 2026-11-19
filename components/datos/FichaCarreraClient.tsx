@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { KpiCard } from "@/components/datos/KpiCard";
@@ -34,7 +34,7 @@ const CurvaIngresos = dynamic(
   {
     ssr: false,
     loading: () => <Skeleton className="h-[380px] w-full rounded-xl" />,
-  }
+  },
 );
 
 const EvolucionYoY = dynamic(
@@ -42,18 +42,18 @@ const EvolucionYoY = dynamic(
   {
     ssr: false,
     loading: () => <Skeleton className="h-[360px] w-full rounded-xl" />,
-  }
+  },
 );
 
 const HistogramaAranceles = dynamic(
   () =>
     import("@/components/datos/HistogramaAranceles").then(
-      (m) => m.HistogramaAranceles
+      (m) => m.HistogramaAranceles,
     ),
   {
     ssr: false,
     loading: () => <Skeleton className="h-[380px] w-full rounded-xl" />,
-  }
+  },
 );
 
 const MeAlcanza = dynamic(
@@ -61,8 +61,47 @@ const MeAlcanza = dynamic(
   {
     ssr: false,
     loading: () => <Skeleton className="h-[380px] w-full rounded-xl" />,
-  }
+  },
 );
+
+function GraficoEnVista({
+  children,
+  altura,
+}: {
+  children: ReactNode;
+  altura: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    if (typeof window.IntersectionObserver === "undefined") {
+      const timer = window.setTimeout(() => setVisible(true), 0);
+      return () => window.clearTimeout(timer);
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "150px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div ref={ref}>
+      {visible ? (
+        children
+      ) : (
+        <Skeleton className={`w-full rounded-xl ${altura}`} />
+      )}
+    </div>
+  );
+}
 
 interface FichaCarreraClientProps {
   carrera: CarreraRecord;
@@ -81,7 +120,7 @@ export function FichaCarreraClient({
 }: FichaCarreraClientProps) {
   const tiposDisponibles = useMemo(
     () => TIPO_ORDEN.filter((k) => Boolean(carrera.tipos[k])),
-    [carrera]
+    [carrera],
   );
 
   const [tipoActivo, setTipoActivo] = useState<TipoIesKey>(tipoInicial);
@@ -100,11 +139,10 @@ export function FichaCarreraClient({
   const ultimoIpc = getUltimoIpc();
   const ajusteIpc = useMemo(
     () => ajustarPorIpc(1_000_000, "2025-09", ultimoIpc.m, ipcSerie),
-    [ipcSerie, ultimoIpc.m]
+    [ipcSerie, ultimoIpc.m],
   );
 
-  const factorIpc =
-    modoPesos === "hoy" && ajusteIpc ? ajusteIpc.factor : 1;
+  const factorIpc = modoPesos === "hoy" && ajusteIpc ? ajusteIpc.factor : 1;
   const etiquetaPesos =
     modoPesos === "hoy" && ajusteIpc
       ? `pesos de ${mesCorto(ajusteIpc.mesHasta)} (IPC)`
@@ -115,7 +153,7 @@ export function FichaCarreraClient({
 
   const institucionesTipo = useMemo(
     () => instituciones.filter((i) => i.tipo === tipoActivo),
-    [instituciones, tipoActivo]
+    [instituciones, tipoActivo],
   );
 
   const programasTipo = useMemo(() => {
@@ -142,7 +180,11 @@ export function FichaCarreraClient({
           >
             <TabsList className="bg-[#f3f3f0]">
               {tiposDisponibles.map((t) => (
-                <TabsTrigger key={t} value={t} className="px-3 text-xs sm:text-sm">
+                <TabsTrigger
+                  key={t}
+                  value={t}
+                  className="px-3 text-xs sm:text-sm"
+                >
                   {TIPO_ETIQUETAS[t].plural}
                 </TabsTrigger>
               ))}
@@ -231,11 +273,13 @@ export function FichaCarreraClient({
 
       {/* Curva de ingresos + Percentiles */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <CurvaIngresos
-          ing={data.ing}
-          factorIpc={factorIpc}
-          etiquetaPesos={etiquetaPesos}
-        />
+        <GraficoEnVista altura="h-[380px]">
+          <CurvaIngresos
+            ing={data.ing}
+            factorIpc={factorIpc}
+            etiquetaPesos={etiquetaPesos}
+          />
+        </GraficoEnVista>
         <Percentiles
           pct={data.pct}
           factorIpc={factorIpc}
@@ -244,14 +288,16 @@ export function FichaCarreraClient({
       </div>
 
       {/* Evolución histórica 2020-2024 */}
-      <EvolucionYoY
-        evolIng4={data.evol_ing4}
-        evolEmp1={data.evol_emp1}
-        evolEmp2={data.evol_emp2}
-        variacion={data.variacion}
-        factorIpc={factorIpc}
-        etiquetaPesos={etiquetaPesos}
-      />
+      <GraficoEnVista altura="h-[360px]">
+        <EvolucionYoY
+          evolIng4={data.evol_ing4}
+          evolEmp1={data.evol_emp1}
+          evolEmp2={data.evol_emp2}
+          variacion={data.variacion}
+          factorIpc={factorIpc}
+          etiquetaPesos={etiquetaPesos}
+        />
+      </GraficoEnVista>
 
       {/* Mini calculadora de retorno */}
       <MiniCalculadoraRetorno
@@ -270,8 +316,12 @@ export function FichaCarreraClient({
       {/* Oferta 2026: Histograma de aranceles y Me Alcanza PAES */}
       {programasTipo.length > 0 ? (
         <div className="grid gap-6 lg:grid-cols-2">
-          <HistogramaAranceles programas={programasTipo} oferta={oferta} />
-          <MeAlcanza programas={programasTipo} />
+          <GraficoEnVista altura="h-[380px]">
+            <HistogramaAranceles programas={programasTipo} oferta={oferta} />
+          </GraficoEnVista>
+          <GraficoEnVista altura="h-[380px]">
+            <MeAlcanza programas={programasTipo} />
+          </GraficoEnVista>
         </div>
       ) : null}
 

@@ -1,0 +1,74 @@
+@import "tailwindcss" source(none);
+@source "./datos";
+@source "../../components/datos";
+@source "../../components/ui";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --background: #f7f7f4;
+  --foreground: #171716;
+  --card: #fff;
+  --card-foreground: #171716;
+  --popover: #fff;
+  --popover-foreground: #171716;
+  --primary: #1264a7;
+  --primary-foreground: #fff;
+  --secondary: #edf2f6;
+  --secondary-foreground: #192c3f;
+  --muted: #edf2f6;
+  --muted-foreground: #465969;
+  --accent: #e9f4ff;
+  --accent-foreground: #0d426e;
+  --destructive: #b42318;
+  --destructive-foreground: #fff;
+  --border: #d4e0e8;
+  --input: #a1b5c4;
+  --ring: #1269af;
+  --chart-1: #1890ff;
+  --chart-2: #f99c00;
+  --chart-3: #8997a3;
+  --chart-4: #2c5e86;
+  --chart-5: #b6c4d1;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+}
+
+@theme {
+  --color-canvas: #f3f3f0;
+  --color-paper: #f7f7f4;
+  --color-wash: #ebebe6;
+  --color-ink: #171716;
+  --color-mute: #5f5e59;
+  --color-faint: #6a6964;
+  --color-line: rgb(23 23 22 / 9%);
+  --color-line-strong: rgb(23 23 22 / 16%);
+}
+
+:focus-visible { outline-color: var(--ring); }

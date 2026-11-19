@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { DatosEstructurados, Migas } from "@/components/datos/ElementosDatos";
 import { FuenteDesgloses, NotaDesglose } from "@/components/datos/DesglosesDesempleo";
 import { VistaDatos } from "@/components/datos/AccionesDatos";

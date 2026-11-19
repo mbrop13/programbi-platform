@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { Activity, CalendarDays, ChartNoAxesCombined, ChevronRight, CircleHelp, Database, Download, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { SITE_URL } from "@/lib/seo";

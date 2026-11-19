@@ -14,6 +14,7 @@
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { generarComparador } from "./construir-comparador-carreras.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import ExcelJS from "exceljs";
@@ -1076,6 +1077,11 @@ async function main() {
   await writeFile(join(ROOT, "data", "ipc", "ipc.json"), JSON.stringify(ipcSeries, null, 2) + "\n", "utf8");
   await writeFile(metaPath, JSON.stringify(meta, null, 2) + "\n", "utf8");
   await writeFile(join(ROOT, "data", "carreras", "carreras.json"), JSON.stringify(carrerasArr), "utf8");
+  await writeFile(
+    join(ROOT, "public", "datos", "carreras", "comparador.json"),
+    JSON.stringify(generarComparador(carrerasArr)),
+    "utf8"
+  );
   await writeFile(join(ROOT, "data", "carreras", "ranking.json"), JSON.stringify(ranking), "utf8");
   await writeFile(
     join(ROOT, "data", "carreras", "historico", `${prevEdicion}.json`),

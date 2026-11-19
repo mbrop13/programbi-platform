@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowLeft, ArrowRight, GitCompare, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TIPO_ETIQUETAS, type RankingItem, type TipoIesKey } from "@/lib/datos/carreras-tipos";

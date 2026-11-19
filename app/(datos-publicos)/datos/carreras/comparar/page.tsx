@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { GitCompare } from "lucide-react";
-import { Comparador, type ComparadorCarreraItem } from "@/components/datos/Comparador";
+import { ComparadorActivador } from "@/components/datos/ComparadorActivador";
 import { EnResumen } from "@/components/datos/EnResumen";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { TablaDatos } from "@/components/datos/TablaDatos";
 import {
   getCarrera,
-  getCarreras,
   getMetaCarreras,
   TIPO_ETIQUETAS,
-  TIPO_ORDEN,
   tipoPrincipalDeCarrera,
 } from "@/lib/datos/carreras";
 import { pesos, porcentaje, semestres } from "@/lib/datos/formato";
@@ -54,31 +52,6 @@ export function generateMetadata(): Metadata {
 
 export default function CompararCarrerasPage() {
   const meta = getMetaCarreras();
-  const carrerasRaw = getCarreras();
-
-  const carrerasSlim: ComparadorCarreraItem[] = carrerasRaw.map((c) => {
-    const tipos: ComparadorCarreraItem["tipos"] = {};
-    for (const k of TIPO_ORDEN) {
-      const t = c.tipos[k];
-      if (!t) continue;
-      tipos[k] = {
-        ing: t.ing,
-        emp1: t.emp1,
-        emp2: t.emp2,
-        dur_formal: t.dur_formal,
-        dur_real: t.dur_real,
-        arancel_med: t.oferta?.arancel?.med ?? null,
-        costo_tit_med: t.oferta?.costo_titulacion_med ?? null,
-      };
-    }
-    return {
-      slug: c.slug,
-      nombre: c.nombre,
-      area: c.area,
-      tipos,
-    };
-  });
-
   const ejA = getCarrera("ingenieria-comercial");
   const ejB = getCarrera("ingenieria-civil-industrial");
   const ejATipo = ejA ? tipoPrincipalDeCarrera(ejA) : null;
@@ -140,7 +113,6 @@ export default function CompararCarrerasPage() {
         </p>
       </header>
 
-      <Comparador carreras={carrerasSlim} edicion={meta.edicion} pesosDe={meta.pesos_de} />
 
       {frasesResumen.length > 0 ? (
         <div className="mt-10 space-y-6">
@@ -190,6 +162,8 @@ export default function CompararCarrerasPage() {
           ) : null}
         </div>
       ) : null}
+
+      <div className="mt-8"><ComparadorActivador edicion={meta.edicion} pesosDe={meta.pesos_de} /></div>
 
       <section className="mt-10 rounded-xl border border-[#e2e2dc] bg-white p-6">
         <h2 className="text-lg font-bold text-[#171716]">Preguntas frecuentes</h2>

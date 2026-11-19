@@ -2,21 +2,18 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Search, ArrowRight, Sparkles } from "lucide-react";
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Badge } from "@/components/ui/badge";
+import dynamic from "next/dynamic";
+import { Search } from "lucide-react";
 import { buscarCarreras, type BuscadorEntry } from "@/lib/datos/carreras-sinonimos";
-import { TIPO_ETIQUETAS } from "@/lib/datos/carreras-tipos";
-import { millonesCorto } from "@/lib/datos/formato";
 import { trackEvent } from "@/lib/analytics/marketing";
+
+const DialogoBuscador = dynamic(
+  () => import("./BuscadorCarrerasDialog").then(({ BuscadorCarrerasDialog }) => BuscadorCarrerasDialog),
+  {
+    ssr: false,
+    loading: () => <span role="status" className="sr-only">Abriendo el buscador de carreras…</span>,
+  },
+);
 
 interface BuscadorCarrerasProps {
   initialItems?: BuscadorEntry[];
@@ -33,6 +30,7 @@ export function BuscadorCarreras({
 }: BuscadorCarrerasProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [usado, setUsado] = React.useState(false);
   const [query, setQuery] = React.useState("");
   const [items, setItems] = React.useState<BuscadorEntry[]>(initialItems ?? []);
   const [loading, setLoading] = React.useState(false);
@@ -56,6 +54,14 @@ export function BuscadorCarreras({
     }
   }, [loading]);
 
+  const cambiarApertura = React.useCallback((abierto: boolean) => {
+    setOpen(abierto);
+    if (abierto) {
+      setUsado(true);
+      void ensureLoaded();
+    }
+  }, [ensureLoaded]);
+
   React.useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -67,19 +73,17 @@ export function BuscadorCarreras({
 
       if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((prev) => !prev);
-        void ensureLoaded();
+        cambiarApertura(!open);
         return;
       }
       if (e.key === "/" && !isTyping && !open) {
         e.preventDefault();
-        setOpen(true);
-        void ensureLoaded();
+        cambiarApertura(true);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [ensureLoaded, open]);
+  }, [cambiarApertura, open]);
 
   const { exactos, sugeridos } = React.useMemo(() => {
     return buscarCarreras(query, items, 12);
@@ -107,61 +111,13 @@ export function BuscadorCarreras({
     router.push(`/datos/carreras/${entry.slug}`);
   };
 
-  const renderEntry = (entry: BuscadorEntry) => {
-    const mejorIngreso = entry.tipos.reduce<number | null>((max, t) => {
-      if (t.ing4 === null) return max;
-      return max === null || t.ing4 > max ? t.ing4 : max;
-    }, null);
-
-    return (
-      <CommandItem
-        key={entry.slug}
-        value={`${entry.nombre} ${entry.slug}`}
-        onSelect={() => handleSelect(entry)}
-        className="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2.5 aria-selected:bg-[#f3f3f0]"
-      >
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="truncate font-medium text-[#171716]">{entry.nombre}</span>
-            <span className="text-xs text-[#5c5c58]">{entry.area}</span>
-          </div>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            {entry.tipos.map((t) => (
-              <Badge
-                key={t.tipo}
-                variant="outline"
-                className="border-[#e2e2dc] bg-[#f7f7f4] px-1.5 py-0 text-[11px] font-semibold text-[#171716]"
-              >
-                {TIPO_ETIQUETAS[t.tipo].corto}
-              </Badge>
-            ))}
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-2 text-right">
-          {mejorIngreso !== null ? (
-            <div>
-              <div className="text-xs font-semibold text-[#171716] tabular-nums">
-                {millonesCorto(mejorIngreso)}
-              </div>
-              <div className="text-[11px] text-[#5c5c58]">4.º año</div>
-            </div>
-          ) : (
-            <span className="text-xs text-[#5c5c58]">s/i</span>
-          )}
-          <ArrowRight className="size-4 text-[#5c5c58]" />
-        </div>
-      </CommandItem>
-    );
-  };
-
   return (
     <div className={className}>
       <button
         type="button"
-        onClick={() => {
-          setOpen(true);
-          void ensureLoaded();
-        }}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => cambiarApertura(true)}
         onFocus={() => void ensureLoaded()}
         className="flex w-full items-center justify-between gap-3 rounded-xl border border-[#d4d4ce] bg-white px-4 py-3 text-left text-sm text-[#5c5c58] shadow-xs transition-colors hover:border-[#1063b8] focus-visible:outline-2 focus-visible:outline-[#1063b8]"
       >
@@ -183,57 +139,19 @@ export function BuscadorCarreras({
         </span>
       </button>
 
-      <CommandDialog
-        open={open}
-        onOpenChange={(next) => {
-          setOpen(next);
-          if (next) void ensureLoaded();
-        }}
-        title="Buscar carrera en Chile"
-        description="Busca por nombre oficial, abreviatura o sinónimo (ej. tens, ing comercial, kine)."
-        className="max-w-2xl border border-[#e2e2dc] bg-white"
-      >
-        <Command shouldFilter={false} className="bg-white">
-          <CommandInput
-            value={query}
-            onValueChange={setQuery}
-            placeholder="Escribe una carrera o sinónimo (ej. informática, tens, derecho)..."
-            className="text-sm text-[#171716]"
-          />
-          <CommandList className="max-h-[380px] p-1">
-            {loading && items.length === 0 ? (
-              <div className="py-8 text-center text-sm text-[#5c5c58]">Cargando carreras...</div>
-            ) : (
-              <>
-                {exactos.length > 0 ? (
-                  <CommandGroup heading={query.trim() ? "Coincidencias" : "Carreras populares"}>
-                    {exactos.map(renderEntry)}
-                  </CommandGroup>
-                ) : null}
-
-                {exactos.length === 0 && sugeridos.length > 0 ? (
-                  <CommandGroup
-                    heading={
-                      <span className="inline-flex items-center gap-1.5 text-[#f99c00]">
-                        <Sparkles className="size-3.5" />
-                        Sin coincidencia exacta · 3 sugerencias cercanas
-                      </span>
-                    }
-                  >
-                    {sugeridos.slice(0, 3).map(renderEntry)}
-                  </CommandGroup>
-                ) : null}
-
-                {exactos.length === 0 && sugeridos.length === 0 && !loading ? (
-                  <CommandEmpty className="py-8 text-center text-sm text-[#5c5c58]">
-                    No encontramos carreras con «{query}». Prueba con otro término o revisa el área.
-                  </CommandEmpty>
-                ) : null}
-              </>
-            )}
-          </CommandList>
-        </Command>
-      </CommandDialog>
+      {usado ? (
+        <DialogoBuscador
+          open={open}
+          onOpenChange={cambiarApertura}
+          query={query}
+          onQueryChange={setQuery}
+          exactos={exactos}
+          sugeridos={sugeridos}
+          loading={loading}
+          hasItems={items.length > 0}
+          onSelect={handleSelect}
+        />
+      ) : null}
     </div>
   );
 }

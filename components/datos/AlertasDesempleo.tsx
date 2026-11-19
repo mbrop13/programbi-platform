@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { useActionState, useEffect } from "react";
 import { Mail } from "lucide-react";
 import { honeypotStyle } from "@/lib/antibot";

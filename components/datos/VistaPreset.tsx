@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, SlidersHorizontal } from "lucide-react";
 import { getMetaCarreras, TIPO_ETIQUETAS } from "@/lib/datos/carreras";
 import { fechaCorta, pesos, porcentaje, semestres } from "@/lib/datos/formato";

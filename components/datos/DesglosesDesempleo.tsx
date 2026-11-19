@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, BriefcaseBusiness, Users } from "lucide-react";
 import { EDAD, INFORMALIDAD, SEXO, seriesSectores, type FuenteDesglose } from "@/lib/datos/desempleo-desgloses";
 import { personas, periodo, tasa } from "@/lib/datos/desempleo-formato";

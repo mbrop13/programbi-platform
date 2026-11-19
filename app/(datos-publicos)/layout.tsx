@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { DatosRootShell } from "@/components/datos/DatosRootShell";
 import { DatosAnalytics } from "@/components/datos/DatosAnalytics";
 import { METADATA_BASE } from "@/lib/seo/metadata-base";
-import "@/app/globals.css";
+import "./datos-base.css";
 
 export const metadata: Metadata = METADATA_BASE;
 

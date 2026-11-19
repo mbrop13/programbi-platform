@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ChevronRight } from "lucide-react";
 import type { MigajaDatos } from "@/lib/datos/seo-carreras";
 import { cn } from "@/lib/utils";

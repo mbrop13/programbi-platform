@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ChevronRight, ImageDown } from "lucide-react";
 import { SITE_URL } from "@/lib/seo";
 import { CARTOGRAFIA, FECHA_EDICION, FUENTE_ENE, LICENCIA, METADATOS, TERMINOS_INE, hayPbix, type Observacion } from "@/lib/datos/desempleo";
@@ -74,19 +74,23 @@ export function TablaHistorica({ serie, nombre, nacional }: {
   serie: readonly Observacion[]; nombre: string; nacional?: readonly Observacion[];
 }) {
   const tasasChile = new Map(nacional?.map((dato) => [dato.p, dato.tasa]));
+  // The table is static server content. Escape every dynamic value before
+  // serializing its rows as one RSC value, preserving the native HTML table.
+  const escape = (valor: string) => valor.replace(/[&<>"']/g, (caracter) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[caracter]!);
+  const filas = [...serie].reverse().map((fila) => {
+    const chile = tasasChile.get(fila.p);
+    const nota = fila.notas.tasa ?? fila.notas.des;
+    return `<tr><th scope="row">${escape(periodo(fila.p))}</th><td>${escape(tasa(fila.tasa))}${nota ? `<sup aria-label="${escape(`Nota ${nota} en desocupación`)}">${escape(nota)}</sup>` : ""}</td>${nacional ? `<td>${escape(chile === undefined ? "—" : tasa(chile))}</td>` : ""}</tr>`;
+  }).join("");
   return (
     <div data-tabla-servidor>
       <div className={estilos.tablaScroll} tabIndex={0} role="region" aria-label={`Tabla histórica de ${nombre}`}>
         <table className={estilos.tabla}>
           <caption>Desocupación por trimestre móvil en {nombre}, desde {periodo(serie[0].p)}</caption>
           <thead><tr><th scope="col">Trimestre móvil</th><th scope="col">{nombre}</th>{nacional && <th scope="col">Chile</th>}</tr></thead>
-          <tbody>
-            {[...serie].reverse().map((fila) => {
-              const chile = tasasChile.get(fila.p);
-              const nota = fila.notas.tasa ?? fila.notas.des;
-              return <tr key={fila.p}><th scope="row">{periodo(fila.p)}</th><td>{tasa(fila.tasa)}{nota && <sup aria-label={`Nota ${nota} en desocupación`}>{nota}</sup>}</td>{nacional && <td>{chile === undefined ? "—" : tasa(chile)}</td>}</tr>;
-            })}
-          </tbody>
+          <tbody dangerouslySetInnerHTML={{ __html: filas }} />
         </table>
       </div>
       <p className={estilos.secundario}>Nota a: estimación poco fiable. Nota b: estimación no fiable.</p>

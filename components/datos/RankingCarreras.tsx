@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowUpRight, GitCompare, Plus, Check, Loader2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import data from "@/data/datos-fase3/sence.json";
 
 const number = new Intl.NumberFormat("es-CL");

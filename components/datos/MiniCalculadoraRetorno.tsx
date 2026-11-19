@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { useState } from "react";
 import { ArrowRight, Calculator } from "lucide-react";
 import { Switch } from "@/components/ui/switch";

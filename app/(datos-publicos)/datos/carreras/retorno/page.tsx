@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { Calculator } from "lucide-react";
 import { CalculadoraRetorno } from "@/components/datos/CalculadoraRetorno";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";

@@ -1,5 +1,7 @@
 # REPORTE_DATOS_CARRERAS — Sección `/datos` y `/datos/carreras` (`programbi.com`)
 
+Carreras quedó integrada en el mismo hub que Desempleo, Capacitación e Inflación. Las mediciones y el estado de la entrega integrada se encuentran en el [informe de Datos de Chile](REPORTE_DATOS_DESEMPLEO.md).
+
 - **Rama:** `mejora/datos-carreras` (worktree aislado en `C:/dev/pbi-datos-carreras`, sin tocar el working tree de `mejora/datos-desempleo`)
 - **Base commit:** `1bc1254` (`main`)
 - **Edición oficial procesada:** `2025-2026` (`mifuturo.cl` / SIES, Mineduc), ingresos en pesos de septiembre de 2025 (`pesos_de: "2025-09"`), última referencia IPC comprometida `2026-10` (`114.13`)

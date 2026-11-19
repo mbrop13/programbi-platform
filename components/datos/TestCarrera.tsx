@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,

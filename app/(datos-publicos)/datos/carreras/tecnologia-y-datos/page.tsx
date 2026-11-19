@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, Cpu, TrendingUp } from "lucide-react";
 import { CtaDatos } from "@/components/datos/CtaDatos";
 import { EnResumen } from "@/components/datos/EnResumen";

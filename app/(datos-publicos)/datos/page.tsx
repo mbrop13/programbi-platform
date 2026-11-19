@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { Activity, ArrowUpRight, BookOpen, Calculator, ChartNoAxesCombined, GraduationCap, MapPin, Percent, TrendingUp } from "lucide-react";
 import { notFound } from "next/navigation";
 import { DatosEstructurados, Fuente, Migas, MiniSerie } from "@/components/datos/ElementosDatos";

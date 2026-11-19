@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { notFound } from "next/navigation";
 import { GitCompare } from "lucide-react";
 import { CarrerasParecidas } from "@/components/datos/CarrerasParecidas";

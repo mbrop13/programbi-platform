@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, GraduationCap, MessageCircle } from "lucide-react";
 import { CLASE_GRATIS_HABILITADA } from "@/config/flags";
 import { CUOTAS_SIN_INTERES } from "@/config/cuotas";

@@ -34,7 +34,9 @@
   line-height: 1.6;
 }
 
-.datos :where(a) { color: var(--dato-azul); }
+@layer base {
+  .datos :where(a) { color: var(--dato-azul); }
+}
 .datos :where(a, button, summary, select, [tabindex]):focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
@@ -50,7 +52,7 @@
 .migas { margin: 0 0 2rem; color: var(--dato-texto); font-size: .875rem; }
 .migas ol, .migas li { display: flex; align-items: center; gap: .45rem; }
 .migas ol { margin: 0; padding: 0; flex-wrap: wrap; list-style: none; }
-.migas a { text-decoration-thickness: 1px; text-underline-offset: .2em; }
+.migas a { display: inline-grid; align-items: center; min-block-size: 24px; text-decoration-thickness: 1px; text-underline-offset: .2em; }
 .encabezado, .hubEncabezado { margin: 0 0 1.6rem; }
 .encabezado h1, .hubEncabezado h1 {
   margin: .6rem 0 .35rem;
