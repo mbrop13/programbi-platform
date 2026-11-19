@@ -93,21 +93,21 @@ Medición sobre `next start` mediante `node scripts/datos/check-observatorio.mjs
 | Ruta | HTTP | Title (caracteres) | Description (caracteres) | H1 | Canonical | Robots | JSON-LD | Hero y YoY = JSON | Bytes HTML |
 |---|---|---|---|---|---|---|---|---|---:|
 | `/datos` | 200 | Datos de Chile: empleo, carreras e inflación (44) | 145 | Datos de Chile, explicados en simple | Propio | index, follow | BreadcrumbList, Dataset | Sí | 48.383 |
-| `/datos/desempleo` | 200 | Desempleo en Chile: tasa actual por región (INE) (48) | 153 | Desempleo en Chile | Propio | index, follow | BreadcrumbList, Dataset, FAQPage, ItemList | Sí | 324.697 |
-| `/datos/desempleo/arica-y-parinacota` | 200 | Desempleo en Arica y Parinacota: tasa actual e histórico (56) | 150 | Desempleo en Arica y Parinacota | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 174.016 |
-| `/datos/desempleo/tarapaca` | 200 | Desempleo en Tarapacá: tasa actual e histórico (46) | 154 | Desempleo en Tarapacá | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 176.415 |
-| `/datos/desempleo/antofagasta` | 200 | Desempleo en Antofagasta: tasa actual e histórico (49) | 143 | Desempleo en Antofagasta | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 169.872 |
-| `/datos/desempleo/atacama` | 200 | Desempleo en Atacama: tasa actual e histórico (45) | 153 | Desempleo en Atacama | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 172.717 |
-| `/datos/desempleo/coquimbo` | 200 | Desempleo en Coquimbo: tasa actual e histórico (46) | 154 | Desempleo en Coquimbo | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 166.924 |
-| `/datos/desempleo/valparaiso` | 200 | Desempleo en Valparaíso: tasa actual e histórico (48) | 142 | Desempleo en Valparaíso | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 164.955 |
-| `/datos/desempleo/metropolitana` | 200 | Desempleo en Región Metropolitana: tasa actual e histórico (58) | 153 | Desempleo en Región Metropolitana | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 166.207 |
-| `/datos/desempleo/ohiggins` | 200 | Desempleo en O’Higgins: tasa actual e histórico (47) | 142 | Desempleo en O’Higgins | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 168.002 |
-| `/datos/desempleo/maule` | 200 | Desempleo en Maule: tasa actual e histórico (43) | 151 | Desempleo en Maule | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 165.754 |
-| `/datos/desempleo/nuble` | 200 | Desempleo en Ñuble: tasa actual e histórico (43) | 152 | Desempleo en Ñuble | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 172.449 |
-| `/datos/desempleo/biobio` | 200 | Desempleo en Biobío: tasa actual e histórico (44) | 153 | Desempleo en Biobío | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 165.155 |
-| `/datos/desempleo/araucania` | 200 | Desempleo en La Araucanía: tasa actual e histórico (50) | 144 | Desempleo en La Araucanía | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 167.878 |
-| `/datos/desempleo/los-rios` | 200 | Desempleo en Los Ríos: tasa actual e histórico (46) | 154 | Desempleo en Los Ríos | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 173.711 |
-| `/datos/desempleo/los-lagos` | 200 | Desempleo en Los Lagos: tasa actual e histórico (47) | 155 | Desempleo en Los Lagos | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 175.182 |
+| `/datos/desempleo` | 200 | Desempleo en Chile: tasa actual por región (INE) (48) | 153 | Desempleo en Chile | Propio | index, follow | BreadcrumbList, Dataset, FAQPage, ItemList | Sí | 324.770 |
+| `/datos/desempleo/arica-y-parinacota` | 200 | Desempleo en Arica y Parinacota: tasa actual e histórico (56) | 150 | Desempleo en Arica y Parinacota | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 174.029 |
+| `/datos/desempleo/tarapaca` | 200 | Desempleo en Tarapacá: tasa actual e histórico (46) | 154 | Desempleo en Tarapacá | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 176.428 |
+| `/datos/desempleo/antofagasta` | 200 | Desempleo en Antofagasta: tasa actual e histórico (49) | 143 | Desempleo en Antofagasta | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 169.885 |
+| `/datos/desempleo/atacama` | 200 | Desempleo en Atacama: tasa actual e histórico (45) | 153 | Desempleo en Atacama | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 172.730 |
+| `/datos/desempleo/coquimbo` | 200 | Desempleo en Coquimbo: tasa actual e histórico (46) | 154 | Desempleo en Coquimbo | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 166.937 |
+| `/datos/desempleo/valparaiso` | 200 | Desempleo en Valparaíso: tasa actual e histórico (48) | 142 | Desempleo en Valparaíso | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 164.968 |
+| `/datos/desempleo/metropolitana` | 200 | Desempleo en Región Metropolitana: tasa actual e histórico (58) | 153 | Desempleo en Región Metropolitana | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 166.220 |
+| `/datos/desempleo/ohiggins` | 200 | Desempleo en O’Higgins: tasa actual e histórico (47) | 142 | Desempleo en O’Higgins | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 168.015 |
+| `/datos/desempleo/maule` | 200 | Desempleo en Maule: tasa actual e histórico (43) | 151 | Desempleo en Maule | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 165.767 |
+| `/datos/desempleo/nuble` | 200 | Desempleo en Ñuble: tasa actual e histórico (43) | 152 | Desempleo en Ñuble | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 172.462 |
+| `/datos/desempleo/biobio` | 200 | Desempleo en Biobío: tasa actual e histórico (44) | 153 | Desempleo en Biobío | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 165.168 |
+| `/datos/desempleo/araucania` | 200 | Desempleo en La Araucanía: tasa actual e histórico (50) | 144 | Desempleo en La Araucanía | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 167.891 |
+| `/datos/desempleo/los-rios` | 200 | Desempleo en Los Ríos: tasa actual e histórico (46) | 154 | Desempleo en Los Ríos | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 173.724 |
+| `/datos/desempleo/los-lagos` | 200 | Desempleo en Los Lagos: tasa actual e histórico (47) | 155 | Desempleo en Los Lagos | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 175.195 |
 | `/datos/desempleo/aysen` | 200 | Desempleo en Aysén: tasa actual e histórico (43) | 151 | Desempleo en Aysén | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 187.823 |
 | `/datos/desempleo/magallanes` | 200 | Desempleo en Magallanes: tasa actual e histórico (48) | 142 | Desempleo en Magallanes | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 188.103 |
 | `/datos/desempleo/jovenes` | 200 | Desempleo juvenil en Chile: datos del INE (41) | 146 | Desempleo juvenil en Chile | Propio | index, follow | Dataset, BreadcrumbList | Cifra de fuente propia | 154.523 |
@@ -148,28 +148,28 @@ El diseño de Datos usa estilos propios, navegación con carga por clic y tablas
 
 | Ruta | Performance | Accesibilidad | SEO | LCP (ms) | CLS | TBT (ms) | JS transferido (bytes) |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `/datos/desempleo` | 96 | 100 | 100 | 2.587 | 0,000 | 75 | 182.898 |
-| `/datos/desempleo/metropolitana` | 97 | 100 | 100 | 2.438 | 0,000 | 80 | 182.898 |
-| `/datos/desempleo/nuble` | 97 | 97 | 100 | 2.427 | 0,000 | 79 | 182.898 |
-| `/datos/desempleo/jovenes` | 97 | 100 | 100 | 2.385 | 0,000 | 79 | 176.864 |
-| `/datos` | 98 | 100 | 100 | 2.230 | 0,000 | 71 | 173.959 |
-| `/datos/carreras` | 80 | 100 | 100 | 4.211 | 0,000 | 236 | 321.523 |
-| `/datos/carreras/medicina` | 92 | 100 | 100 | 2.951 | 0,000 | 142 | 248.118 |
-| `/datos/carreras/comparar` | 97 | 100 | 100 | 2.355 | 0,000 | 34 | 184.161 |
-| `/datos/capacitacion` | 98 | 100 | 100 | 2.226 | 0,000 | 89 | 171.011 |
+| `/datos/desempleo` | 96 | 100 | 100 | 2.580 | 0,000 | 75 | 182.991 |
+| `/datos/desempleo/metropolitana` | 97 | 100 | 100 | 2.424 | 0,000 | 76 | 182.991 |
+| `/datos/desempleo/nuble` | 94 | 97 | 100 | 2.900 | 0,000 | 51 | 182.991 |
+| `/datos/desempleo/jovenes` | 95 | 100 | 100 | 2.795 | 0,000 | 37 | 176.957 |
+| `/datos` | 95 | 100 | 100 | 2.678 | 0,000 | 98 | 174.052 |
+| `/datos/carreras` | 91 | 100 | 100 | 3.033 | 0,000 | 128 | 226.050 |
+| `/datos/carreras/medicina` | 92 | 100 | 100 | 2.966 | 0,000 | 125 | 248.199 |
+| `/datos/carreras/comparar` | 96 | 100 | 100 | 2.716 | 0,000 | 45 | 184.257 |
+| `/datos/capacitacion` | 93 | 100 | 100 | 2.777 | 0,000 | 193 | 171.104 |
 
-Los estilos de Carreras e Inflación se cargan en sus rutas. Desempleo declara dos hojas de estilo críticas que suman 11.295 bytes gzip. El ranking muestra las mismas 25 filas como tarjetas en móvil y como tabla en escritorio.
+Nacional, Metropolitana y Ñuble quedaron en 94–97 de rendimiento, con CLS 0,000 y LCP de 2,4–2,9 s. En una segunda medición, Ñuble obtuvo 97, con LCP de 2,43 s y TBT de 86 ms. El máximo adicional de JavaScript de desempleo sobre la portada fue 11.902 bytes gzip al entrar y 131.213 bytes gzip con el explorador.
 
-Nacional, Metropolitana y Ñuble quedaron en 96–97 de rendimiento, con CLS 0,000 y TBT de 75–80 ms. El LCP simulado bajó a 2,4–2,6 s frente al objetivo de 1,8 s. El máximo adicional de JavaScript de desempleo sobre la portada fue 11.902 bytes gzip al entrar y 131.213 bytes gzip con el explorador.
+Las 25 filas iniciales del ranking de carreras se renderizan en HTML y tienen enlaces que funcionan con JavaScript desactivado. Los filtros, la comparación y el gráfico se cargan al acercarse al ranking, al pulsar el botón de activación o al abrir una URL con filtros. La vista inicial conserva el foco del teclado mientras se descarga el módulo. En tres mediciones el ranking obtuvo 88–92 de rendimiento, frente a 73–80 en la ronda anterior. El LCP quedó en 3,03 s y el JavaScript transferido bajó de 321.523 a 226.050 bytes. El TBT varió entre 107 y 253 ms.
 
-Carreras obtuvo 80 en la medición de la tabla y 73 y 78 en dos repeticiones. El LCP quedó entre 4,20 y 4,27 s, frente a 3,52 s en la medición anterior. El TBT osciló entre 236 y 455 ms. Se comprobó por separado el comportamiento de la tabla en móvil y escritorio, incluidos el cambio de tipo de institución, los filtros y la selección para comparar. Todas las métricas se obtuvieron con Chrome local y el perfil móvil simulado de Lighthouse.
+La prueba diagnóstica de la página nacional sirvió el mismo HTML bajo tres variantes locales. El LCP fue de 2,74 s con las hojas externas, 2,53 s al incrustarlas y 1,73 s con los estilos incrustados y el JavaScript ejecutable retirado. La tercera variante se usó para medir el costo del runtime. Los valores de la tabla corresponden al build con todas las funciones, medido en Chrome con el perfil móvil simulado de Lighthouse.
 
 ### Estado de entrega
 
 - Build de Next en producción aprobado con 1.561 páginas estáticas. La corrección del rendimiento y del contraste requirió builds adicionales en un checkout aislado. La única ruta nueva bajo Datos que genera una respuesta a demanda es la tarjeta de carreras, con política pública de caché comprobada por HTTP en local.
 - La auditoría final verificó las 198 páginas indexables y las 17 tarjetas insertables. Las 198 páginas tienen un solo H1, canonical propio, JSON-LD legible, títulos de hasta 60 caracteres y descripciones de 140 a 155 caracteres. Pasaron las 10 pruebas de procesamiento, textos, enlaces y metadatos de carreras.
 - Se volvió a probar en Chromium la tabla sin JavaScript, el mapa, los filtros y enlaces directos, la búsqueda por teclado, el embed desde otro origen y el formulario sin efectuar envíos. Se comprobó el contraste del enlace de contacto después de la corrección.
-- `git diff main --stat` resume el alta de los observatorios y los archivos oficiales procesados. Total `787 files changed, 610043 insertions(+), 35 deletions(-)`. El diff de `config/paises.ts`, `vercel.json`, `app/robots.ts`, blog, guías, precios y rutas de países está vacío.
+- `git diff main --stat` resume el alta de los observatorios y los archivos oficiales procesados. Total `789 files changed, 610137 insertions(+), 35 deletions(-)`. El diff de `config/paises.ts`, `vercel.json`, `app/robots.ts`, blog, guías, precios y rutas de países está vacío.
 
 ### Cierre de publicación
 
@@ -177,4 +177,4 @@ Carreras obtuvo 80 en la medición de la tabla y 73 y 78 en dos repeticiones. El
 - Aplicar la migración de Supabase y habilitar las credenciales del flujo de Amazon SES para comprobar una alta, confirmación y baja reales.
 - Revisar el primer PR automático de cada fuente. El contraste BCCh y el archivo PBIX quedan como opcionales.
 
-VEREDICTO: AMARILLO. Las tres fases y el SEO están integrados y comprobados en local. Siguen pendientes el objetivo de LCP en desempleo, el rendimiento del ranking de carreras, la verificación en Vercel y la activación de las alertas reales.
+VEREDICTO: AMARILLO. Las tres fases y el SEO están integrados y comprobados en local. El LCP de desempleo sigue sobre el objetivo de 1,8 s. Quedan la medición en Vercel y la activación de las alertas reales.

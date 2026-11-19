@@ -69,7 +69,6 @@ export function Observatorio({ slug }: { slug: string }) {
 
   return (
     <article className={estilos.contenedor}>
-      <DatosEstructurados nodos={[breadcrumbs(migas), dataset(slug, nombre, descripcion, serie), faqSchema(preguntas), ...(region ? [] : [itemList])]} />
       <VistaDatos territorio={slug} periodo={actual.p} />
       <Migas elementos={migas} />
       <header className={estilos.encabezado}>
@@ -107,6 +106,7 @@ export function Observatorio({ slug }: { slug: string }) {
         </section>
       </div>
 
+      <DatosEstructurados nodos={[breadcrumbs(migas), dataset(slug, nombre, descripcion, serie), faqSchema(preguntas), ...(region ? [] : [itemList])]} />
       <nav className={estilos.indice} aria-label="En esta página">
         <a href={region ? "#lectura-regional" : "#regiones"}><MapPin size={16} aria-hidden="true" /> {region ? "Panorama regional" : "Mapa y ranking"}</a>
         <a href="#historico"><ChartNoAxesCombined size={16} aria-hidden="true" /> Histórico y comparadores</a>

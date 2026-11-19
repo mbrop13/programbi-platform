@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import {
@@ -20,7 +19,7 @@ import {
   TIPO_ETIQUETAS,
   type RankingItem,
 } from "@/lib/datos/carreras";
-import { entero, fechaCorta, pesos, porcentaje, semestres, variacionPorcentual } from "@/lib/datos/formato";
+import { entero, fechaCorta, mesCorto, pesos, porcentaje, semestres, variacionPorcentual } from "@/lib/datos/formato";
 import { getIpcSeries } from "@/lib/datos/ipc";
 import { PRESETS_MAP, PRESET_SLUGS } from "@/lib/datos/presets";
 import {
@@ -43,8 +42,8 @@ import {
   DatosViewTracker,
 } from "@/components/datos/HubCarrerasExtras";
 import { MigasDatos } from "@/components/datos/MigasDatos";
-import { RankingCarreras } from "@/components/datos/RankingCarreras";
-import { Skeleton } from "@/components/ui/skeleton";
+import { RankingCarrerasProgresivo } from "@/components/datos/RankingCarrerasProgresivo";
+import { TablaRankingCarreras } from "@/components/datos/TablaRankingCarreras";
 
 export const dynamic = "force-static";
 
@@ -174,11 +173,6 @@ export default function CarrerasHubPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:px-6 lg:py-12">
       <DatosViewTracker params={{ pagina: "hub" }} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
-      />
-
       <div className="space-y-4">
         <MigasDatos migas={MIGAS_BASE} />
 
@@ -205,6 +199,10 @@ export default function CarrerasHubPage() {
         frases={resumen}
         fuente={`Fuente: www.mifuturo.cl (SIES, Mineduc), edición ${meta.edicion}.`}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
 
       {/* Buscador rápido */}
       <section aria-label="Buscador de carreras" className="space-y-2">
@@ -213,24 +211,38 @@ export default function CarrerasHubPage() {
 
       {/* Tabla + Filtros + Scatter */}
       <section aria-label="Ranking interactivo de carreras">
-        <Suspense
-          fallback={
-            <div className="space-y-4">
-              <Skeleton className="h-12 w-full rounded-xl" />
-              <Skeleton className="h-[520px] w-full rounded-xl" />
-            </div>
-          }
+        <RankingCarrerasProgresivo
+          initialRows={initialTop25U}
+          areas={areas}
+          regiones={regiones}
+          arancelP95={arancelP95}
+          pesosDe={meta.pesos_de}
+          ultimoMesIpc={meta.ipc.ultimo_mes}
+          ipcSeries={ipcSeries}
         >
-          <RankingCarreras
-            initialRows={initialTop25U}
-            areas={areas}
-            regiones={regiones}
-            arancelP95={arancelP95}
-            pesosDe={meta.pesos_de}
-            ultimoMesIpc={meta.ipc.ultimo_mes}
-            ipcSeries={ipcSeries}
-          />
-        </Suspense>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+            <aside aria-label="Vistas de carreras" className="hidden w-72 shrink-0 space-y-3 rounded-xl border border-[#e2e2dc] bg-white p-5 lg:block">
+              <h2 className="text-base font-bold">Vistas de carreras</h2>
+              <ul className="space-y-2 text-sm">
+                <li><Link className="text-[#1063b8] hover:underline" href="/datos/carreras/mejor-pagadas">Mejor pagadas</Link></li>
+                <li><Link className="text-[#1063b8] hover:underline" href="/datos/carreras/mas-empleabilidad">Más empleabilidad</Link></li>
+              </ul>
+            </aside>
+            <div className="min-w-0 flex-1 space-y-4">
+              <p className="flex min-h-[9rem] items-center rounded-xl border border-[#e2e2dc] bg-white p-3.5 text-sm text-[#5c5c58] sm:min-h-16">
+                Universidades · Mayor sueldo 4.º año · Pesos de {mesCorto(meta.pesos_de)}
+              </p>
+              <TablaRankingCarreras rows={initialTop25U} />
+            </div>
+          </div>
+          <section aria-labelledby="heading-scatter-inicial" className="mt-8 space-y-3">
+            <div>
+              <h2 id="heading-scatter-inicial" className="h2-datos text-[#171716]">Sueldo al 4.º año vs. empleabilidad al 1.er año</h2>
+              <p className="mt-1 text-sm text-[#5c5c58]">Cada punto representa una carrera en universidades según los filtros activos. Haz clic en un punto para ver su ficha.</p>
+            </div>
+            <div aria-hidden="true" className="h-[420px] w-full rounded-xl border border-[#e2e2dc] bg-[#f3f3f0]" />
+          </section>
+        </RankingCarrerasProgresivo>
       </section>
 
       {/* Vistas prefiltradas y herramientas */}
