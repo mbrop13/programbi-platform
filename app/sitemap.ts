@@ -24,6 +24,9 @@ import { guiasDePais, alternatesDeGuia } from "@/lib/guias";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
+import { esFichaIndexable, getCarreras, getMetaCarreras } from "@/lib/datos/carreras";
+import { PRESET_SLUGS } from "@/lib/datos/presets";
+import { ogUrlDe } from "@/lib/datos/seo-carreras";
 
 /**
  * Sitemap único del sitio.
@@ -89,7 +92,8 @@ function entrada(
   path: string,
   priority: number,
   changeFrequency: CambioFrecuencia,
-  lastModified: string = lastmodDe(path)
+  lastModified: string = lastmodDe(path),
+  images?: string[]
 ): EntradaPosible {
   if (!esRutaAnunciable(path)) return null;
   const url = sitemapLoc(path);
@@ -98,6 +102,7 @@ function entrada(
   const languages = hreflangDe(path);
   const entry: EntradaSitemap = { url, lastModified, changeFrequency, priority };
   if (Object.keys(languages).length > 0) entry.alternates = { languages };
+  if (images && images.length > 0) entry.images = images;
   return entry;
 }
 
@@ -350,6 +355,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ).map((pais) => entrada(`/${pais.iso}/preguntas-frecuentes`, 0.55, "monthly")),
   ];
 
+  const metaCarreras = getMetaCarreras();
+  const carrerasLastmod = metaCarreras.fetched_at.slice(0, 10);
+  const carrerasVersion = metaCarreras.edicion;
+  const datosCarrerasPages: EntradaPosible[] = [
+    entrada("/datos", 0.8, "weekly", carrerasLastmod, [ogUrlDe("/datos", carrerasVersion)]),
+    entrada("/datos/inflacion", 0.75, "monthly", carrerasLastmod, [ogUrlDe("/datos/inflacion", carrerasVersion)]),
+    entrada("/datos/carreras", 0.9, "weekly", carrerasLastmod, [ogUrlDe("/datos/carreras", carrerasVersion)]),
+    entrada("/datos/carreras/comparar", 0.8, "monthly", carrerasLastmod, [ogUrlDe("/datos/carreras/comparar", carrerasVersion)]),
+    entrada("/datos/carreras/retorno", 0.75, "monthly", carrerasLastmod, [ogUrlDe("/datos/carreras/retorno", carrerasVersion)]),
+    entrada("/datos/carreras/test", 0.8, "monthly", carrerasLastmod, [ogUrlDe("/datos/carreras/test", carrerasVersion)]),
+    entrada("/datos/carreras/puntaje-ponderado", 0.75, "monthly", carrerasLastmod, [ogUrlDe("/datos/carreras/puntaje-ponderado", carrerasVersion)]),
+    entrada("/datos/carreras/tecnologia-y-datos", 0.8, "monthly", carrerasLastmod, [ogUrlDe("/datos/carreras/tecnologia-y-datos", carrerasVersion)]),
+    ...PRESET_SLUGS.map((preset) =>
+      entrada(`/datos/carreras/${preset}`, 0.8, "weekly", carrerasLastmod, [ogUrlDe(`/datos/carreras/${preset}`, carrerasVersion)])
+    ),
+    ...getCarreras()
+      .filter((c) => esFichaIndexable(c))
+      .map((c) =>
+        entrada(`/datos/carreras/${c.slug}`, 0.75, "monthly", carrerasLastmod, [
+          ogUrlDe(`/datos/carreras/${c.slug}`, carrerasVersion),
+        ])
+      ),
+  ];
+
   return uniqueEntries([
     ...staticPages,
     ...coursePages,
@@ -360,5 +389,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...listiclePages,
     ...guidePages,
     ...guideIndexPages,
+    ...datosCarrerasPages,
   ]);
 }

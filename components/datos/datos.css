@@ -1,0 +1,79 @@
+.datos-scope {
+  --background: #f7f7f4;
+  --foreground: #171716;
+  --card: #ffffff;
+  --card-foreground: #171716;
+  --popover: #ffffff;
+  --popover-foreground: #171716;
+  --primary: #1890ff;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f0ec;
+  --secondary-foreground: #171716;
+  --muted: #f3f3f0;
+  --muted-foreground: #5c5c58;
+  --accent: #f99c00;
+  --accent-foreground: #171716;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e2dc;
+  --input: #d4d4ce;
+  --ring: #1890ff;
+  --radius: 0.75rem;
+  --chart-1: #1890ff;
+  --chart-2: #f99c00;
+  --chart-3: #a3a3a0;
+  --chart-4: #475569;
+  --chart-5: #d4d4d0;
+  background-color: var(--background);
+  color: var(--foreground);
+  color-scheme: light;
+  font-variant-numeric: tabular-nums;
+}
+
+.datos-scope .tabular-nums,
+.datos-scope table,
+.datos-scope input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.datos-scope :where(a, button, summary, input, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.datos-scope .kpi-hero {
+  font-size: clamp(2.75rem, 6.5vw, 4.75rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.datos-scope .h1-datos {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.datos-scope .h2-datos {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+}
+
+.datos-scope .prose-datos p {
+  max-width: 70ch;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .datos-scope *,
+  .datos-scope *::before,
+  .datos-scope *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,13 @@
+import type { Metadata } from "next";
+import { metadataPreset } from "@/lib/datos/seo-carreras";
+import { VistaPreset } from "@/components/datos/VistaPreset";
+
+export const dynamic = "force-static";
+
+export function generateMetadata(): Metadata {
+  return metadataPreset("mejor-sueldo-por-arancel");
+}
+
+export default function MejorSueldoPorArancelPage() {
+  return <VistaPreset slug="mejor-sueldo-por-arancel" />;
+}

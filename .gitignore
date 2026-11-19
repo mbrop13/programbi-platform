@@ -44,4 +44,5 @@ next-env.d.ts
 # scratch files
 /scratch/
 /.lh-tmp/
+/data/carreras/raw/
 
