@@ -139,6 +139,54 @@
       "statusCode": 301
     },
     {
+      "source": "/producto/python-nivel-i",
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
+      "destination": "https://www.programbi.com/cursos/python",
+      "statusCode": 301
+    },
+    {
+      "source": "/producto/sql-nivel-i",
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
+      "destination": "https://www.programbi.com/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/producto/power-bi-nivel-l",
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
+      "destination": "https://www.programbi.com/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/producto/power-bi-nivel-i",
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
+      "destination": "https://www.programbi.com/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/data_analytics",
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
+      "destination": "https://www.programbi.com/cursos/analisis-de-datos",
+      "statusCode": 301
+    },
+    {
+      "source": "/powerbi_sql",
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
+      "destination": "https://www.programbi.com/cursos/analisis-de-datos",
+      "statusCode": 301
+    },
+    {
+      "source": "/bootcamp",
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
+      "destination": "https://www.programbi.com/cursos/analisis-de-datos",
+      "statusCode": 301
+    },
+    {
+      "source": "/curso_data_science",
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
+      "destination": "https://www.programbi.com/cursos/machine-learning",
+      "statusCode": 301
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos",
