@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Bolsa de Trabajo: Datos, Power BI, SQL, Python",
   description:
     "La bolsa de trabajo de datos de ProgramBI: perfiles estilo LinkedIn con certificados verificados. Pre-inscripción abierta para candidatos y empresas.",
+  robots: { index: false, follow: true },
   alternates: { canonical: "/empleos" },
   openGraph: {
     title: "Bolsa de Trabajo ProgramBI — Lanzamiento pronto",

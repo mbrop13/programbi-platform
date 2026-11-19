@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/uy/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Uruguay: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Uruguay en vivo: SQL Server, Power BI y Python en 60 h (19:30 h). Cómo empezar y referencias del mercado."
-h1: "Curso de Análisis de Datos en Uruguay: cómo llegar a analista de datos"
+title: Cómo ser analista de datos en Uruguay 2026 | ProgramBI
+meta: "Ruta paso a paso para ser analista de datos en Uruguay en 2026: qué herramientas aprender (SQL, Power BI y Python), sueldos locales y formación en vivo."
+h1: "Cómo ser analista de datos en Uruguay en 2026: ruta, herramientas y sueldos"
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/uy/cursos/analisis-de-datos
@@ -27,7 +27,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Uruguay: cómo llegar a analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio combina **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**, abre **inscripciones todos los meses** (fecha vigente en la ficha) y el valor es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio combina **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**, abre **inscripciones todos los meses** (fecha vigente en la ficha) y el valor es **{precio_local}**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué hay que saber para ser analista de datos en Uruguay?** SQL para consultar bases, Power BI para armar modelos y tableros, Python para limpiar y explorar datos que en planilla se vuelven inmanejables, y un proyecto que muestre cómo pasás de un dato a una decisión. Es la combinación que aparece tanto en llamados públicos como en empresas que trabajan para el exterior.
 
@@ -126,7 +126,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/a
 - **60 horas** en el básico-intermedio: Power BI (tableros y DAX inicial), SQL Server (consultas y agregaciones) y Python (Pandas y visualización).
 - Temario: SQL desde cero, modelado y DAX, análisis exploratorio, dashboards y reportes automáticos, ETL con Power Query, proyecto final con datos reales, IA como apoyo en cada módulo.
 - **Nivel avanzado** de 60 horas más: automatización, inteligencia de tiempo y modelos.
-- **Grabaciones de por vida** y **certificado** al completar.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado** al completar.
 - Inicio: **ediciones mensuales** (mirá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -137,7 +137,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/a
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de análisis de datos en Uruguay?**
-El nivel básico-intermedio de 60 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 60 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué horario tiene?**
 Lunes y miércoles de 19:30 a 21:30, hora de Uruguay, en vivo por Zoom.
@@ -149,7 +149,7 @@ No. SQL y Python se enseñan desde cero; alcanza con manejar planillas.
 Si solo necesitás tableros, Power BI. Si querés el perfil completo de analista, análisis de datos suma SQL Server y Python.
 
 **¿Puedo recuperar una clase?**
-Sí, todas quedan grabadas con acceso de por vida.
+Sí, todas quedan grabadas con acceso al campus virtual y el material durante el curso.
 
 **¿Recibo certificado?**
 Sí, un certificado digital de ProgramBI al terminar.

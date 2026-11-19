@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: copilot
 url_curso: https://www.programbi.com/uy/cursos/copilot
-title: "Curso de Copilot y Copilot Studio Uruguay | ProgramBI"
-meta: "Curso de Copilot en Uruguay en vivo: 20 h de Copilot en Excel, Outlook, PowerPoint y Word, y agentes con Copilot Studio, de 19:30 a 21:30. Sin programar."
-h1: "Curso de Copilot y Copilot Studio en Uruguay: IA en Office y un agente a tu medida"
+title: Cómo usar Copilot y Copilot Studio en Uruguay | ProgramBI
+meta: Guía para dominar Microsoft Copilot en Excel, Word y Outlook y crear agentes propios en Copilot Studio en Uruguay.
+h1: Cómo usar Microsoft Copilot y crear agentes en Uruguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/uy/cursos/copilot
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Copilot y Copilot Studio en Uruguay: IA en Office y un agente a tu medida
 
-**Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/copilot) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, en 5 módulos de 4 horas. Arrancás usando Microsoft Copilot en **Excel, Outlook, PowerPoint y Word** y terminás diseñando, entrenando y publicando **un agente propio en Copilot Studio** con el conocimiento de tu empresa. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/copilot) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, en 5 módulos de 4 horas. Arrancás usando Microsoft Copilot en **Excel, Outlook, PowerPoint y Word** y terminás diseñando, entrenando y publicando **un agente propio en Copilot Studio** con el conocimiento de tu empresa. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 No se programa. Según la ficha, consultada el 4 de noviembre de 2026, hay **cupos abiertos · nueva cohorte por abrir**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia.
 
@@ -137,7 +137,7 @@ Las clases son de 19:30 a 21:30 en Montevideo. Uruguay mantiene UTC-3 todo el a�
 
 - 20 horas en 5 módulos de 4 horas.
 - En vivo por Zoom; cupos abiertos · edición siguiente en espera.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyecto final: un agente funcional.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.

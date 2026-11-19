@@ -1,26 +1,15 @@
-import type { Metadata } from "next";
-import { esIsoPais, ISO_CHILE } from "@/config/paises";
-import { getContenidoPais } from "@/lib/data/contenido-paises";
-import { metadataLocal } from "@/lib/paises/metadata";
+import { notFound, permanentRedirect } from "next/navigation";
+import { esIsoPais } from "@/config/paises";
 
-const title = "Preguntas frecuentes — Soporte y consultas";
-const description =
-  "Resuelve tus dudas sobre los cursos de análisis de datos en vivo, metodologías, grabaciones de clases, certificados oficiales y asesorías corporativas de ProgramBI.";
-
-export { default } from "../../../(marketing)/faq/page";
-
-export async function generateMetadata({
+/**
+ * Versión por país de /faq: redirige a /{pais}/preguntas-frecuentes.
+ */
+export default async function Page({
   params,
 }: {
   params: Promise<{ pais: string }>;
-}): Promise<Metadata> {
+}) {
   const { pais } = await params;
-  if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
-  const seo = getContenidoPais(pais)?.seoPaginas.faq;
-  return metadataLocal({
-    pais,
-    path: "/faq",
-    title: seo?.title ?? title,
-    description: seo?.description ?? description,
-  });
+  if (!esIsoPais(pais)) notFound();
+  permanentRedirect(`/${pais}/preguntas-frecuentes`);
 }

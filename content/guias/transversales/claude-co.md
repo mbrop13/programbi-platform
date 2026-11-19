@@ -84,7 +84,7 @@ Claude acorta el camino entre una base desordenada y un análisis limpio, pero l
 
 En ProgramBI dictamos el [curso de Claude en vivo](/co/cursos/claude) en **20 horas distribuidas en un único nivel completo** (5 módulos de 4 horas): fundamentos y privacidad de datos, ingeniería de prompts en español, Projects/Artifacts/Slides, **Claude integrado a Excel y tareas administrativas**, y flujos de automatización cotidiana aplicados a un caso real de tu trabajo.
 
-Las clases son en vivo por Zoom los **lunes y miércoles de 17:30 a 19:30, hora de Colombia**, guiadas por **Manuel Oliva** (Magíster en Data Science), con grabaciones de por vida y certificado al finalizar. Consulta los próximos inicios mensuales y el valor vigente en COP (con pago por PSE, Nequi, Mercado Pago Colombia o transferencia) en la [guía del curso Claude en Colombia](/co/guias/curso-claude-colombia) o en la ficha oficial del curso.
+Las clases son en vivo por Zoom los **lunes y miércoles de 17:30 a 19:30, hora de Colombia**, guiadas por **Manuel Oliva** (Magíster en Data Science), con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado al finalizar. Consulta los próximos inicios mensuales y el valor vigente en COP (con pago por PSE, Nequi, Mercado Pago Colombia o transferencia) en la [guía del curso Claude en Colombia](/co/guias/curso-claude-colombia) o en la ficha oficial del curso.
 
 <!-- CTA-END -->
 
@@ -97,7 +97,7 @@ Sí. Puedes adjuntar reportes en `.csv` o `.xlsx` para ubicar diferencias en IVA
 No. Es un **único nivel de 20 horas** (5 módulos de 4 horas) pensado para pasar de cero a casos prácticos de oficina con Excel, Projects y automatización ligera.
 
 **¿A qué hora se dictan las clases para Colombia?**
-Los lunes y miércoles de **17:30 a 19:30 (hora de Colombia)** en modalidad 100 % en vivo por Zoom, con grabaciones de por vida en la plataforma.
+Los lunes y miércoles de **17:30 a 19:30 (hora de Colombia)** en modalidad 100 % en vivo por Zoom, con acceso al campus virtual con las clases grabadas y el material durante el curso.
 
 **¿Cómo se realiza el pago desde Colombia en ProgramBI?**
 La ficha del curso para Colombia muestra el arancel en pesos colombianos (`COP`) e incluye medios locales como PSE, Nequi, Mercado Pago Colombia y transferencia.

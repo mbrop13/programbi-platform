@@ -82,7 +82,7 @@ Claude destaca en la exploración inicial, la escritura de fórmulas, la creaci�
 
 El [curso de Claude en vivo](/pe/cursos/claude) de ProgramBI tiene **20 horas prácticas en 1 solo nivel completo** (5 módulos de 4 horas): arranque seguro y privacidad, diseño de prompts profesionales, Projects y Artifacts, **Claude aplicado a Excel y flujos administrativos**, y automatización cotidiana con proyecto final sobre un archivo real de tu área.
 
-Las sesiones son **lunes y miércoles de 17:30 a 19:30, hora de Perú**, por Zoom con **Manuel Oliva** (Magíster en Data Science), grabaciones disponibles de por vida y certificado digital. Puedes revisar la fecha mensual vigente, el temario completo y el arancel en soles (pagable con Yape, Plin, Mercado Pago Perú o transferencia) en la [guía del curso Claude en Perú](/pe/guias/curso-claude-peru) o descargando el PDF oficial en la ficha del curso.
+Las sesiones son **lunes y miércoles de 17:30 a 19:30, hora de Perú**, por Zoom con **Manuel Oliva** (Magíster en Data Science), acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital. Puedes revisar la fecha mensual vigente, el temario completo y el arancel en soles (pagable con Yape, Plin, Mercado Pago Perú o transferencia) en la [guía del curso Claude en Perú](/pe/guias/curso-claude-peru) o descargando el PDF oficial en la ficha del curso.
 
 <!-- CTA-END -->
 

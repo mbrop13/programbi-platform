@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: python
 url_curso: https://www.programbi.com/cursos/python
-title: "Curso de Python en Chile en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en Chile: Python para datos desde cero en 20 h (lunes y miércoles 19:30). Pandas y automatización."
-h1: "Curso de Python en Chile: Python para datos, online y en vivo"
+title: "Cómo aprender Python en Chile: ruta 2026 | ProgramBI"
+meta: "Guía para aprender Python aplicado a datos en Chile: Pandas, limpieza, visualización y automatización de reportes desde cero."
+h1: Cómo aprender Python para análisis de datos en Chile desde cero
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/python
@@ -27,7 +27,7 @@ nota_hermes: |
 
 # Curso de Python en Chile: Python para datos, online y en vivo
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI](https://www.programbi.com/cursos/python) es un curso **online y en vivo por Zoom** para Chile: **20 horas, 8 módulos, nivel básico-intermedio**, los **lunes y miércoles de 19:30 a 21:30, hora de Chile**. Ofrece **inicios todos los meses** (fecha publicada en la ficha) y cuesta **$169.000 CLP**, con grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI](https://www.programbi.com/cursos/python) es un curso **online y en vivo por Zoom** para Chile: **20 horas, 8 módulos, nivel básico-intermedio**, los **lunes y miércoles de 19:30 a 21:30, hora de Chile**. Ofrece **inicios todos los meses** (fecha publicada en la ficha) y cuesta **$169.000 CLP**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué aprendes?** Python desde cero enfocado en datos, no en desarrollo de software: variables, funciones, listas y diccionarios, y luego Pandas para limpiar, transformar, agrupar y cruzar tablas, gráficos con Matplotlib y conexión a bases de datos y APIs. En la pega se traduce en dejar de copiar y pegar planillas: un script hace en segundos lo que hoy te toma la mañana.
 
@@ -156,7 +156,7 @@ Datos de la [ficha del curso](https://www.programbi.com/cursos/python), revisada
 - **20 horas, 8 módulos**, nivel básico-intermedio, desde cero, para perfiles administrativos, financieros, comerciales, ingenieros y de analítica.
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; e IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
-- **Grabaciones de por vida**, **certificado** al completar y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** al completar y proyectos con datos reales.
 - Próximo inicio: **nuevas ediciones cada mes** (revisa la fecha en la ficha). Valor: **$169.000 CLP**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 - Para equipos: cotización en `/cursos/python/empresas`.
@@ -168,7 +168,7 @@ Datos de la [ficha del curso](https://www.programbi.com/cursos/python), revisada
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Python en Chile?**
-El nivel básico-intermedio cuesta $169.000 CLP e incluye 20 horas en vivo, grabaciones de por vida y certificado.
+El nivel básico-intermedio cuesta $169.000 CLP e incluye 20 horas en vivo, acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de Python es online?**
 Sí, online y en vivo por Zoom, lunes y miércoles de 19:30 a 21:30, hora de Chile. Todas las clases quedan grabadas.

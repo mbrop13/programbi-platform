@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/pe/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Minería en Perú | ProgramBI"
-meta: "Curso de análisis de datos para minería en Perú: Power BI, SQL Server y Python para guardias, flota, mantenimiento y sensores. 60 h por nivel en vivo."
-h1: "Curso de Análisis de Datos para la Minería en Perú: Power BI, SQL y Python para tu chamba en mina"
+title: Power BI y datos para minería en Perú | ProgramBI
+meta: "Guía de análisis de datos para minería en Perú: cómo llevar turnos, flota, OEE y mantención de Excel a Power BI, SQL y Python."
+h1: Cómo aplicar Power BI, SQL y Python en minería en Perú
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/pe/cursos/analisis-de-datos
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta directa:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Perú](https://www.programbi.com/pe/cursos/analisis-de-datos) dura **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, y enseña a aplicar Power BI, SQL Server y Python a la información de una operación minera: reportes de guardia, flota, mantenimiento, combustible, inventarios y lecturas de sensores, con inteligencia artificial generativa como apoyo para escribir consultas y scripts. El nivel básico-intermedio cuesta **{precio_local}** y la ficha indica **cupos abiertos · calendario mensual activo**.
 
-Incluye grabaciones con acceso de por vida, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son a las 17:30, hora de Perú. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Información revisada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son a las 17:30, hora de Perú. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Información revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar fecha».
 
@@ -115,7 +115,7 @@ La ficha presenta además un nivel avanzado para **dominar el ciclo completo del
 ## Datos generales
 
 - **Niveles:** dos niveles de 60 horas cada uno (20 h SQL Server, 20 h Power BI, 20 h Python).
-- **Modalidad:** en vivo por Zoom, con grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, con acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, por confirmar.
 - **Horario:** según la FAQ de la ficha, 17:30 a 19:30, hora de Perú.
 - **Certificado:** al completar.
@@ -141,10 +141,10 @@ No. El nivel básico-intermedio parte desde los fundamentos de Power BI, SQL y P
 Sí. Los temas de guardias, flota, mantenimiento y combustible aplican tanto a la unidad como a las contratistas.
 
 **¿Qué pasa si estoy en mi régimen de trabajo en mina?**
-Las clases quedan grabadas con acceso de por vida, para verlas en tus días de descanso.
+Las clases quedan grabadas con acceso al campus virtual y el material durante el curso, para verlas en tus días de descanso.
 
 **¿En qué se diferencia del curso de Power BI?**
 Este integra tres herramientas con casos mineros; el de Power BI profundiza en una sola con ejemplos generales.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

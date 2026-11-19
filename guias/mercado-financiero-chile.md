@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: mercado-financiero
 url_curso: https://www.programbi.com/cursos/mercado-financiero
-title: "Curso de Mercado Financiero en Chile: guía 2026 | ProgramBI"
-meta: "Curso de mercado financiero en Chile en vivo: carteras con Python, SQL, Power BI e IA en 30 h. Riesgo, retorno, dólar observado y dashboards."
-h1: "Curso de Mercado Financiero en Chile: analiza carteras con datos e IA"
+title: Análisis de datos para finanzas en Chile | ProgramBI
+meta: "Guía de analítica financiera en Chile: cómo combinar Python, SQL, Power BI e IA para valorizar carteras, medir riesgo y armar dashboards."
+h1: Cómo analizar carteras y riesgo financiero con datos e IA en Chile
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/cursos/mercado-financiero
@@ -121,7 +121,7 @@ Según la [ficha del curso para Chile](https://www.programbi.com/cursos/mercado-
 - **En vivo por Zoom**, de **19:30 a 21:30, hora de Chile**. Cupos abiertos · próxima fecha en consulta.
 - **30 horas en 5 módulos**, con Trabajo Aplicado Integrador obligatorio para certificar.
 - Datasets, scripts base, plantillas de Power BI y prompts de IA incluidos.
-- **Grabaciones de por vida** y **certificado**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**.
 - Valor: **$349.000 CLP**. Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
@@ -131,7 +131,7 @@ Según la [ficha del curso para Chile](https://www.programbi.com/cursos/mercado-
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Mercado financiero en Chile?**
-El valor es $349.000 CLP por el programa de 30 horas, con grabaciones de por vida y certificado.
+El valor es $349.000 CLP por el programa de 30 horas, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cuándo y a qué hora son las clases?**
 De 19:30 a 21:30, hora de Chile, en vivo por Zoom. La ficha indica cupos abiertos; la fecha de inicio se confirma ahí o por WhatsApp.

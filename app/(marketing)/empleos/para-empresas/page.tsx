@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   title: "Publica vacantes en la Bolsa de Trabajo",
   description:
     "Publica vacantes de datos y programación y recibe postulantes con certificados verificados en Python, Power BI y SQL Server. Gratis durante el lanzamiento.",
+  robots: { index: false, follow: true },
   alternates: { canonical: "/empleos/para-empresas" },
   openGraph: {
     title: "Publica vacantes en la Bolsa de Trabajo | ProgramBI",

@@ -93,8 +93,33 @@ const nextConfig: NextConfig = {
         destination: "https://www.programbi.com/:path*",
         statusCode: 301,
       },
+      {
+        source: "/",
+        has: [{ type: "host", value: "programbi.cl" }],
+        destination: "https://www.programbi.com/",
+        statusCode: 301,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "programbi.cl" }],
+        destination: "https://www.programbi.com/:path*",
+        statusCode: 301,
+      },
+      {
+        source: "/",
+        has: [{ type: "host", value: "www.programbi.cl" }],
+        destination: "https://www.programbi.com/",
+        statusCode: 301,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.programbi.cl" }],
+        destination: "https://www.programbi.com/:path*",
+        statusCode: 301,
+      },
+      // Los redirects del host capacitaciones.programbi.cl viven únicamente en vercel.json.
 
-      // ── Canibalización `/curso-power-bi` → `/cursos/power-bi` ───────────
+      // ── Canibalización de rutas → URLs canónicas ────────────────────────
       {
         source: "/curso-power-bi",
         destination: "/cursos/power-bi",
@@ -103,6 +128,46 @@ const nextConfig: NextConfig = {
       {
         source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/curso-power-bi",
         destination: "/:pais/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/curso-python",
+        destination: "/cursos/python",
+        statusCode: 301,
+      },
+      {
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/curso-python",
+        destination: "/:pais/cursos/python",
+        statusCode: 301,
+      },
+      {
+        source: "/curso-sql-online",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/curso-sql-online",
+        destination: "/:pais/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/versus/power-bi-vs-excel",
+        destination: "/guias/power-bi-vs-excel",
+        statusCode: 301,
+      },
+      {
+        source: "/analisis-de-datos-mineria",
+        destination: "/power-bi-mineria-chile",
+        statusCode: 301,
+      },
+      {
+        source: "/faq",
+        destination: "/preguntas-frecuentes",
+        statusCode: 301,
+      },
+      {
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/faq",
+        destination: "/:pais/preguntas-frecuentes",
         statusCode: 301,
       },
 

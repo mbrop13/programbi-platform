@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: excel
 url_curso: https://www.programbi.com/cursos/excel
-title: "Curso de Excel en Chile en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Excel online en vivo en Chile: 20 h en 12 módulos, de fórmulas a tablas dinámicas y Power Query, con ruta directa a Power BI."
-h1: "Curso de Excel en Chile: Excel online, en vivo y aplicado a la pega"
+title: Cómo dominar Excel para gestión en Chile | ProgramBI
+meta: "Guía práctica de Excel para el trabajo en Chile: fórmulas avanzadas, tablas dinámicas, Power Query y dashboards para reportes de gestión."
+h1: Cómo aprender Excel avanzado para análisis y gestión en Chile
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/cursos/excel
@@ -28,7 +28,7 @@ nota_hermes: |
 
 # Curso de Excel en Chile: Excel online, en vivo y aplicado a la pega
 
-**Respuesta corta:** el [curso de Excel de ProgramBI para Chile](https://www.programbi.com/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **19:30 a 21:30, hora de Chile**. El valor es **$169.000 CLP** e incluye grabaciones de por vida y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
+**Respuesta corta:** el [curso de Excel de ProgramBI para Chile](https://www.programbi.com/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **19:30 a 21:30, hora de Chile**. El valor es **$169.000 CLP** e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
 
 **¿Qué aprendes?** De fórmulas básicas a lo que piden los avisos de control de gestión y finanzas: BUSCARX, tablas dinámicas avanzadas, funciones de fecha y texto, y Power Query para combinar y limpiar archivos sin copiar y pegar. En la pega se nota así: el informe del cierre deja de tomarte un día y pasa a actualizarse con un clic.
 
@@ -105,7 +105,7 @@ Datos de la [ficha del curso para Chile](https://www.programbi.com/cursos/excel)
 - **20 horas, 12 módulos**, nivel básico-intermedio, pensado para administrativos principiantes o con conocimientos mínimos de Excel.
 - Temario: del entorno y las fórmulas básicas a BUSCARX, INDICE-COINCIDIR, tablas dinámicas avanzadas, funciones de fecha y texto, datos grandes y Power Query con parámetros y funciones M; cada nivel cierra con un proyecto.
 - **Nivel avanzado** disponible en la misma ficha.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Valor: **$169.000 CLP**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
@@ -116,7 +116,7 @@ Datos de la [ficha del curso para Chile](https://www.programbi.com/cursos/excel)
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Excel en Chile?**
-El nivel básico-intermedio de 20 horas cuesta $169.000 CLP, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta $169.000 CLP, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de Excel es online?**
 Sí, online y en vivo por Zoom, de 19:30 a 21:30, hora de Chile. Las clases quedan grabadas.

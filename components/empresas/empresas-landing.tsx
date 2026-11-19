@@ -82,6 +82,36 @@ const TOOLS = [
   },
 ];
 
+const VERTICALS = [
+  {
+    sector: "Minería y Operaciones",
+    title: "Control de faena, flota y mantención",
+    deliverables: [
+      "Tableros de OEE, disponibilidad mecánica y cumplimiento de turnos.",
+      "Seguimiento de órdenes de mantención, detenciones y consumo de insumos.",
+      "Consolidación automatizada desde planillas de operación y bases SQL.",
+    ],
+  },
+  {
+    sector: "Finanzas y Control de Gestión",
+    title: "Cierre mensual sin planillas manuales",
+    deliverables: [
+      "Reportes de presupuesto vs. real, márgenes por centro de costo y EERR.",
+      "Flujo de caja proyectado, cuentas por cobrar y antigüedad de saldos.",
+      "Modelos en Power Query y DAX replicables por el equipo contable.",
+    ],
+  },
+  {
+    sector: "Retail y Comercial",
+    title: "Inventarios, rotación y margen por SKU",
+    deliverables: [
+      "Alertas de quiebres de stock, sobrestock y cobertura por tienda o bodega.",
+      "Análisis de ventas por canal, vendedor, ticket promedio y margen neto.",
+      "Segmentación de clientes y seguimiento de metas comerciales en vivo.",
+    ],
+  },
+];
+
 const EMPRESA_COURSES = [...courses].sort((a, b) => a.sortOrder - b.sortOrder);
 
 export function EmpresasLanding({ paisNombre = "Chile", iso }: EmpresasLandingProps) {
@@ -93,6 +123,7 @@ export function EmpresasLanding({ paisNombre = "Chile", iso }: EmpresasLandingPr
       <LogoSlider className="border-0 bg-transparent" />
       <Includes esUs={esUs} />
       <How />
+      {!esUs && <Verticals />}
       <Topics iso={iso} />
       <Faq esUs={esUs} />
       <Tools />
@@ -236,6 +267,40 @@ function How() {
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function Verticals() {
+  return (
+    <section className="mx-auto max-w-[1400px] border-b border-line px-4 py-20 sm:px-6 lg:px-8">
+      <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
+        Aplicado a tu industria
+      </p>
+      <h2 className="mt-3 max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
+        Qué construyen los equipos según industria
+      </h2>
+      <p className="mt-4 max-w-xl text-mute">
+        Entregables concretos que tu equipo arma durante la capacitación sobre sus propias fuentes y reglas de negocio.
+      </p>
+      <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-3">
+        {VERTICALS.map((v) => (
+          <div key={v.sector} className="bg-paper p-6">
+            <p className="text-[11px] font-semibold tracking-[0.14em] text-faint uppercase">
+              {v.sector}
+            </p>
+            <h3 className="mt-3 text-base font-semibold tracking-tight">{v.title}</h3>
+            <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-mute">
+              {v.deliverables.map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <Check className="mt-0.5 size-4 shrink-0 text-ink" strokeWidth={2.2} />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </section>
   );

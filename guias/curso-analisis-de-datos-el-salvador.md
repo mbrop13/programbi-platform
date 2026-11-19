@@ -24,7 +24,7 @@ nota_hermes: |
 
 **En pocas palabras:** el [curso de Análisis de datos de ProgramBI para El Salvador](https://www.programbi.com/sv/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**, con **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para aprender el oficio completo de analista: sacar datos de una base, modelarlos en tableros y analizarlos con código. El nivel básico-intermedio cuenta con **inicios cada mes** (fecha actualizada en la ficha), con clases **lunes y miércoles de 16:30 a 18:30, hora de El Salvador**. Precio: **{precio_local}**.
 
-Hay dos niveles de 60 horas —básico-intermedio y avanzado— en la misma ficha, grabaciones de por vida en el campus, certificado digital y un proyecto final con datos reales. Cada módulo incluye apoyo de inteligencia artificial para escribir consultas, medidas y scripts. Información revisada en la ficha el 4 de noviembre de 2026.
+Hay dos niveles de 60 horas —básico-intermedio y avanzado— en la misma ficha, acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y un proyecto final con datos reales. Cada módulo incluye apoyo de inteligencia artificial para escribir consultas, medidas y scripts. Información revisada en la ficha el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Inicios todos los meses · 16:30 hora de El Salvador · «Ver el curso».
 
@@ -119,7 +119,7 @@ El curso termina con un **proyecto con datos reales**. La idea es que salgas con
 - **Practica entre clases.** Dos sesiones por semana rinden mucho más si dedicas un rato a repetir lo visto.
 - **Trae tus casos.** Los ejemplos propios, sin datos sensibles, aceleran el aprendizaje.
 - **Usa la IA con criterio.** Te ayuda a escribir la primera versión de una consulta o script; tú la revisas y la entiendes.
-- **Revisa las grabaciones.** Quedan en el campus de por vida, ideales para repasar antes del proyecto.
+- **Revisa las grabaciones.** Quedan en el campus virtual con el material durante el curso, ideales para repasar antes del proyecto.
 
 ## Errores frecuentes de quien empieza
 
@@ -140,7 +140,7 @@ El curso termina con un **proyecto con datos reales**. La idea es que salgas con
 - **Inicio:** cohortes mensuales con cupos disponibles (revisa la ficha).
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de El Salvador.
 - **Duración:** 60 horas por nivel.
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI); según la ficha, ha liderado capacitaciones en AngloAmerican, CAP, Deloitte y SQM.
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -167,10 +167,10 @@ No. El nivel básico-intermedio parte desde los fundamentos de cada herramienta.
 Sí, existe el curso de Power BI por separado, de 20 horas en su nivel básico-intermedio.
 
 **¿Qué pasa si falto a una clase?**
-La sesión queda grabada en el campus con acceso de por vida, así que puedes ponerte al día antes de la clase siguiente y llegar con tus dudas anotadas.
+La sesión queda grabada en el campus virtual con el material durante el curso, así que puedes ponerte al día antes de la clase siguiente y llegar con tus dudas anotadas.
 
 **¿Sirve si trabajo en finanzas o en ventas, no en tecnología?**
 Sí. La ficha lo recomienda justamente para perfiles administrativos, financieros y comerciales que hoy arman reportes en Excel.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

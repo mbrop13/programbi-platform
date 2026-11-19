@@ -5,9 +5,9 @@ pais: py
 hreflang: es-PY
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/py/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Minería en Paraguay | ProgramBI"
-meta: "Análisis de datos para minería e industria en Paraguay: Power BI, SQL, Python para turnos, flota y sensores. 60 h por nivel en vivo por Zoom."
-h1: "Curso de Análisis de Datos para la Minería en Paraguay: Power BI, SQL y Python para operaciones"
+title: Power BI y datos para minería en Paraguay | ProgramBI
+meta: "Guía de análisis de datos para minería en Paraguay: cómo llevar turnos, flota, OEE y mantención de Excel a Power BI, SQL y Python."
+h1: Cómo aplicar Power BI, SQL y Python en minería en Paraguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/py/cursos/analisis-de-datos
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **En pocas palabras:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Paraguay](https://www.programbi.com/py/cursos/analisis-de-datos) tiene **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom y enseña a usar Power BI, SQL Server y Python con datos de operaciones mineras e industriales —turnos, flota, mantenimiento, consumos, inventarios, sensores—, con IA generativa como asistente para escribir consultas y scripts. El nivel básico-intermedio tiene una inversión de **{precio_local}**; la ficha muestra **cupos abiertos · inicio próximo por grupo**.
 
-Incluye grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son de 19:30 a 21:30, hora de Paraguay. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información revisada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son de 19:30 a 21:30, hora de Paraguay. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar por WhatsApp».
 
@@ -113,7 +113,7 @@ La ficha presenta además un nivel avanzado para **dominar el ciclo completo del
 ## Datos del curso
 
 - **Niveles:** dos niveles de 60 horas cada uno (20 h SQL Server, 20 h Power BI, 20 h Python).
-- **Modalidad:** en vivo por Zoom, grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, a confirmar.
 - **Horario:** según la FAQ de la ficha, 19:30 a 21:30, hora de Paraguay.
 - **Certificado:** al completar.
@@ -144,7 +144,7 @@ No. El nivel básico-intermedio arranca desde los fundamentos de las tres herram
 Este integra Power BI, SQL Server y Python con casos de operación minera e industrial; el de Power BI profundiza en una sola herramienta con ejemplos generales de negocio.
 
 **¿Y si no puedo conectarme a una clase?**
-Queda grabada en el campus con acceso de por vida, así que la ves cuando puedas y llegás al día a la clase siguiente.
+Queda grabada en el campus virtual con el material durante el curso, así que la ves cuando puedas y llegás al día a la clase siguiente.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

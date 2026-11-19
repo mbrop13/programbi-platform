@@ -251,7 +251,7 @@ const FINANZAS: NicheLanding = {
     { href: "/power-bi-sql-server-python", label: "Ruta Power BI, SQL Server y Python" },
     { href: "/capacitacion-empresas", label: "Capacitación para empresas" },
     { href: "/precios", label: "Precios y medios de pago" },
-    { href: "/faq", label: "Preguntas frecuentes" },
+    { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
     { href: "/test-nivel", label: "Test de nivel" },
   ],
   closing: {
@@ -469,9 +469,9 @@ const STACK: NicheLanding = {
     { href: "/cursos/sql-server", label: "Ficha de SQL Server" },
     { href: "/cursos/python", label: "Ficha de Python para Datos" },
     { href: "/power-bi-para-finanzas", label: "Power BI para finanzas" },
-    { href: "/analisis-de-datos-mineria", label: "Análisis de datos para minería" },
+    { href: "/power-bi-mineria-chile", label: "Power BI y análisis de datos para minería" },
     { href: "/precios", label: "Precios y medios de pago" },
-    { href: "/faq", label: "Preguntas frecuentes" },
+    { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
     { href: "/test-nivel", label: "Test de nivel" },
   ],
   closing: {
@@ -647,7 +647,7 @@ const MINERIA: NicheLanding = {
     { href: "/power-bi-sql-server-python", label: "Ruta Power BI, SQL Server y Python" },
     { href: "/capacitacion-empresas", label: "Capacitación para empresas" },
     { href: "/precios", label: "Precios y medios de pago" },
-    { href: "/faq", label: "Preguntas frecuentes" },
+    { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
     { href: "/test-nivel", label: "Test de nivel" },
   ],
   closing: {
@@ -867,7 +867,7 @@ const EMPRESAS: NicheLanding = {
     { href: "/power-bi-para-finanzas", label: "Power BI para finanzas" },
     { href: "/power-bi-sql-server-python", label: "Ruta Power BI, SQL Server y Python" },
     { href: "/precios", label: "Precios de cursos abiertos" },
-    { href: "/faq", label: "Preguntas frecuentes" },
+    { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
     { href: "/test-nivel", label: "Test de nivel" },
   ],
   closing: {

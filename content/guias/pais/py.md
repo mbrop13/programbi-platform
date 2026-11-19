@@ -120,7 +120,7 @@ Podés empezar solo con la documentación de Microsoft. Pero la parte que da tra
 - **20 horas, 8 módulos**, básico-intermedio. Inicios mensuales y cupos abiertos; consultá la fecha vigente en la ficha.
 - Consultá la inversión en el PDF del [curso de Power BI en Paraguay](/py/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH e IA en Power BI.
-- **Grabaciones de por vida** y **certificado**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Lectura complementaria: [guía de funciones DAX](/guias/funciones-dax-mas-importantes) y la comparativa [Power BI vs Excel](/guias/power-bi-vs-excel).
 

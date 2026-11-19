@@ -65,7 +65,7 @@ export function LandingHero({ landing }: { landing: NicheLanding }) {
                 Precio y cuotas
               </Link>
               <span aria-hidden="true">·</span>
-              <Link href="/faq" className="font-semibold text-mute no-underline hover:text-ink">
+              <Link href="/preguntas-frecuentes" className="font-semibold text-mute no-underline hover:text-ink">
                 Preguntas frecuentes
               </Link>
               <span aria-hidden="true">·</span>

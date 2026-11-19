@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/pe/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos en Perú: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Perú en vivo: SQL Server, Power BI y Python en 60 h (17:30 Lima). Sueldos locales y ruta práctica paso a paso."
-h1: "Curso de Análisis de Datos en Perú: el camino para ser analista de datos"
+title: Cómo ser analista de datos en Perú 2026 | ProgramBI
+meta: "Ruta paso a paso para ser analista de datos en Perú en 2026: qué herramientas aprender (SQL, Power BI y Python), sueldos locales y formación en vivo."
+h1: "Cómo ser analista de datos en Perú en 2026: ruta, herramientas y sueldos"
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/pe/cursos/analisis-de-datos
@@ -27,7 +27,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Perú: el camino para ser analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI en Perú](https://www.programbi.com/pe/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 17:30 a 19:30, hora de Perú**, se abren **nuevos grupos cada mes** (consulta la fecha en la ficha) y el precio es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI en Perú](https://www.programbi.com/pe/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 17:30 a 19:30, hora de Perú**, se abren **nuevos grupos cada mes** (consulta la fecha en la ficha) y el precio es **{precio_local}**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cómo ser analista de datos en Perú?** Aprende SQL para extraer información, Power BI para modelarla y presentarla, y Python para limpiar y explorar bases grandes. Luego demuéstralo con un proyecto sobre un problema real —colocaciones de una caja, envíos de una agroexportadora— y ya tienes la base que piden las convocatorias de analista.
 
@@ -125,7 +125,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/anali
 - **60 horas** en el básico-intermedio: Power BI, SQL Server y Python, 20 horas cada uno.
 - Contenido: SQL desde cero, modelado y DAX, análisis exploratorio con Pandas, dashboards y reportes automáticos, ETL con Power Query y conexión a bases de datos, proyecto final con datos reales, con IA de apoyo en cada módulo.
 - **Nivel avanzado** de 60 horas adicionales: automatización, inteligencia de tiempo y modelos.
-- **Grabaciones de por vida** y **certificado** al terminar.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado** al terminar.
 - Inicio: **grupos todos los meses** (próxima fecha en la ficha del curso). Precio: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -136,7 +136,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/anali
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de análisis de datos en Perú?**
-El nivel básico-intermedio de 60 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 60 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cuál es el horario en Perú?**
 Lunes y miércoles de 17:30 a 19:30, hora de Perú, en vivo por Zoom.
@@ -148,7 +148,7 @@ Sí. SQL y Python se enseñan desde cero; basta con Excel a nivel usuario.
 Power BI se centra en tableros y DAX. Análisis de datos agrega SQL Server y Python para cubrir todo el ciclo: extraer, modelar y analizar.
 
 **¿Quedan grabadas las clases?**
-Sí, todas, con acceso de por vida en el campus.
+Sí, todas, con acceso al campus virtual y el material durante el curso.
 
 **¿Entregan certificado?**
 Sí, un certificado digital de ProgramBI al completar el curso.

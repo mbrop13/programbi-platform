@@ -29,15 +29,47 @@ const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 const SupportModal = dynamic(() => import("./SupportModal"), { ssr: false });
 const ProfileSettingsModal = dynamic(() => import("./ProfileSettingsModal"), { ssr: false });
 
-const navLinks = [
+const navLinks: Array<{
+  href: string;
+  label: string;
+  hasMega?: boolean;
+  hasRecursos?: boolean;
+}> = [
   { href: "/cursos", label: "Ver Cursos", hasMega: true },
   { href: "/precios", label: "Precios" },
-  { href: "/guias", label: "Guías" },
+  { href: "/plantillas", label: "Recursos", hasRecursos: true },
   { href: "/empresas", label: "Empresas" },
-  { href: "/empleos", label: "Empleos" },
   ...(COMUNIDAD_PUBLICA ? [{ href: "/comunidad", label: "Comunidad" }] : []),
   { href: "/blog", label: "Blog" },
 ];
+
+const RECURSOS_LINKS = [
+  {
+    href: "/plantillas",
+    label: "Plantillas Power BI y SQL",
+    desc: "8 datasets, medidas DAX, SQL y Python gratis",
+  },
+  {
+    href: "/simulador-pl-300",
+    label: "Simulador PL-300",
+    desc: "40 preguntas tipo examen Microsoft en español",
+  },
+  {
+    href: "/herramientas/excel-a-dax",
+    label: "Conversor Excel a DAX",
+    desc: "Traduce 28 fórmulas de Excel a Power BI",
+  },
+  {
+    href: "/sueldos-analista-datos-chile",
+    label: "Sueldos analista de datos Chile",
+    desc: "Benchmark salarial y calculadora Bruto ↔ Líquido",
+  },
+  {
+    href: "/guias",
+    label: "Guías prácticas",
+    desc: "Roadmaps, comparativas y tutoriales paso a paso",
+  },
+] as const;
 
 const courseGroups = NAV_COURSE_GROUPS;
 
@@ -46,7 +78,9 @@ export default function Navbar() {
   const [isHidden, setIsHidden] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
+  const [isMobileRecursosOpen, setIsMobileRecursosOpen] = useState(false);
   const [isMegaOpen, setIsMegaOpen] = useState(false);
+  const [isRecursosOpen, setIsRecursosOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; tab: "login" | "register"; redirectUrl?: string }>({
     isOpen: false,
@@ -66,6 +100,7 @@ export default function Navbar() {
   const [loading, setLoading] = useState(true);
 
   const megaTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const recursosTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const paisNav = paisDesdeRuta(pathname) ?? ISO_CHILE;
@@ -116,6 +151,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!isHidden) return;
     setIsMegaOpen(false);
+    setIsRecursosOpen(false);
     setIsUserMenuOpen(false);
   }, [isHidden]);
 
@@ -201,7 +237,10 @@ export default function Navbar() {
   }, [user]);
 
   useEffect(() => {
-    if (!isMobileOpen) setIsMobileCoursesOpen(false);
+    if (!isMobileOpen) {
+      setIsMobileCoursesOpen(false);
+      setIsMobileRecursosOpen(false);
+    }
   }, [isMobileOpen]);
 
   useEffect(() => {
@@ -227,6 +266,15 @@ export default function Navbar() {
 
   const handleMegaLeave = () => {
     megaTimeout.current = setTimeout(() => setIsMegaOpen(false), 150);
+  };
+
+  const handleRecursosEnter = () => {
+    if (recursosTimeout.current) clearTimeout(recursosTimeout.current);
+    setIsRecursosOpen(true);
+  };
+
+  const handleRecursosLeave = () => {
+    recursosTimeout.current = setTimeout(() => setIsRecursosOpen(false), 150);
   };
 
   const handleUserMenuEnter = () => {
@@ -363,6 +411,45 @@ export default function Navbar() {
                           </Link>
                         </div>
                       </div>
+                  ) : null}
+                </div>
+              ) : link.hasRecursos ? (
+                <div
+                  key={link.href}
+                  className="relative"
+                  onMouseEnter={handleRecursosEnter}
+                  onMouseLeave={handleRecursosLeave}
+                >
+                  <Link href={hrefNav(link.href)} className="inline-flex items-center gap-1 transition-colors hover:text-ink no-underline">
+                    {link.label}
+                    <ChevronDown size={14} className={isRecursosOpen ? "rotate-180" : ""} />
+                  </Link>
+
+                  {isRecursosOpen ? (
+                    <div
+                      className="absolute top-[calc(100%+14px)] left-1/2 w-[340px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-line bg-paper p-2.5 shadow-[0_25px_80px_rgba(23,23,22,0.10)]"
+                      onMouseEnter={handleRecursosEnter}
+                      onMouseLeave={handleRecursosLeave}
+                    >
+                      <ul className="space-y-0.5">
+                        {RECURSOS_LINKS.map((item) => (
+                          <li key={item.href}>
+                            <Link
+                              href={hrefNav(item.href)}
+                              onClick={() => setIsRecursosOpen(false)}
+                              className="block rounded-xl px-3 py-2.5 no-underline transition-colors hover:bg-wash"
+                            >
+                              <span className="block text-sm font-semibold leading-tight text-ink">
+                                {item.label}
+                              </span>
+                              <span className="mt-0.5 block text-xs leading-snug text-mute">
+                                {item.desc}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ) : null}
                 </div>
               ) : (
@@ -585,6 +672,39 @@ export default function Navbar() {
                         >
                           Ver todos los cursos <ArrowRight size={14} />
                         </Link>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : link.hasRecursos ? (
+                  <div key={link.href} className="border-b border-line py-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileRecursosOpen((v) => !v)}
+                      aria-expanded={isMobileRecursosOpen}
+                      className="flex w-full items-center justify-between py-3 text-left"
+                    >
+                      <span className="text-lg font-medium text-ink">{link.label}</span>
+                      <ChevronDown
+                        size={18}
+                        className={`text-mute transition-transform ${isMobileRecursosOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                    {isMobileRecursosOpen ? (
+                      <div className="pb-3">
+                        <ul className="space-y-1">
+                          {RECURSOS_LINKS.map((item) => (
+                            <li key={item.href}>
+                              <Link
+                                href={hrefNav(item.href)}
+                                onClick={() => setIsMobileOpen(false)}
+                                className="block rounded-md px-1 py-2 no-underline"
+                              >
+                                <span className="block text-[15px] font-medium text-ink">{item.label}</span>
+                                <span className="block text-xs text-mute">{item.desc}</span>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     ) : null}
                   </div>

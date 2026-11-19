@@ -5,9 +5,9 @@ pais: mx
 hreflang: es-MX
 curso: python
 url_curso: https://www.programbi.com/mx/cursos/python
-title: "Curso de Python en México en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en México: Python para datos desde cero en 20 h, lunes y miércoles 16:30 CDMX. Pandas, ejemplos con CFDI y automatización."
-h1: "Curso de Python en México: aprende Python para datos en vivo"
+title: Cómo aprender Python para datos en México | ProgramBI
+meta: "Guía para aprender Python aplicado a datos en México: Pandas, limpieza, visualización y automatización de reportes desde cero."
+h1: Cómo aprender Python para análisis de datos en México desde cero
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/mx/cursos/python
@@ -26,7 +26,7 @@ nota_hermes: |
 
 # Curso de Python en México: aprende Python para datos en vivo
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI en México](https://www.programbi.com/mx/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Las clases son **lunes y miércoles de 16:30 a 18:30, hora del centro de México**, abre **nuevos grupos todos los meses** (fecha disponible en la ficha) y la inversión es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI en México](https://www.programbi.com/mx/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Las clases son **lunes y miércoles de 16:30 a 18:30, hora del centro de México**, abre **nuevos grupos todos los meses** (fecha disponible en la ficha) y la inversión es **{precio_local}**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué vas a aprender?** Python desde cero con enfoque en análisis: fundamentos del lenguaje, estructuras de datos y, sobre todo, Pandas para limpiar, transformar, agrupar y unir tablas; gráficos con Matplotlib y conexión a bases de datos y APIs. El objetivo práctico es que el reporte que hoy armas a mano cada semana se genere con un script.
 
@@ -165,7 +165,7 @@ Datos de la [ficha del curso para México](https://www.programbi.com/mx/cursos/p
 - **20 horas, 8 módulos**, nivel básico-intermedio, desde cero.
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Inicio: **cohortes mensuales** (consulta el próximo arranque en la ficha). Inversión: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -176,7 +176,7 @@ Datos de la [ficha del curso para México](https://www.programbi.com/mx/cursos/p
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Python en México?**
-La inversión del nivel básico-intermedio de 20 horas es {precio_local}, con grabaciones de por vida y certificado.
+La inversión del nivel básico-intermedio de 20 horas es {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Es un curso de Python online?**
 Sí, online y en vivo por Zoom, lunes y miércoles de 16:30 a 18:30, hora del centro de México.

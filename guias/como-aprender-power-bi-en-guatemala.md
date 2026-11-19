@@ -25,7 +25,7 @@ nota_hermes: |
 
 **La respuesta rápida:** para aprender Power BI desde Guatemala con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/gt/cursos/power-bi) tiene un **nivel básico-intermedio de 20 horas por Zoom**, que va de la conexión y limpieza de datos con Power Query al modelo, DAX inicial, dashboards y publicación con roles. Abre **nuevas cohortes cada mes** (fecha actualizada en la ficha), con clases **lunes y miércoles de 16:30 a 18:30, hora de Guatemala**. Precio: **{precio_local}**.
 
-Todas las clases quedan grabadas con acceso de por vida, se entrega certificado digital y existe un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Datos de la ficha del curso, revisada el 4 de noviembre de 2026.
+Todas las clases quedan grabadas con acceso al campus virtual y el material durante el curso, se entrega certificado digital y existe un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Datos de la ficha del curso, revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cohortes cada mes · 16:30 hora de Guatemala · «Ver el curso».
 
@@ -119,7 +119,7 @@ Este recorrido coincide con el orden del curso, así que sirve tanto para prepar
 - **Inicio:** inicios mensuales programados; confirma tu fecha en la ficha del curso.
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de Guatemala (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -140,7 +140,7 @@ Hay apertura mensual de cohortes, lunes y miércoles de 16:30 a 18:30, hora de G
 No. Con Excel básico puedes empezar; el nivel básico-intermedio parte desde cero.
 
 **¿Qué pasa si falto a una clase?**
-Queda grabada en el campus con acceso de por vida, para que la veas cuando puedas.
+Queda grabada en el campus virtual con el material durante el curso, para que la veas cuando puedas.
 
 **¿El curso es oficial de Microsoft?**
 No. Es un curso de ProgramBI que cubre fundamentos útiles para la PL-300; el temario oficial está en Microsoft Learn.
@@ -155,4 +155,4 @@ Sí, y es lo más recomendable: aprendes más rápido con problemas que conoces.
 Sí. En todos esos rubros hay reportes que se repiten y datos de varias fuentes; Power BI está pensado justamente para automatizarlos y compartirlos.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

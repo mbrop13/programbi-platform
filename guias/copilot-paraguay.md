@@ -5,9 +5,9 @@ pais: py
 hreflang: es-PY
 curso: copilot
 url_curso: https://www.programbi.com/py/cursos/copilot
-title: "Curso de Copilot y Copilot Studio Paraguay | ProgramBI"
-meta: "Curso de Copilot en Paraguay en vivo: 20 h de Copilot en Excel, Outlook, PowerPoint y Word, y agentes con Copilot Studio, de 19:30 a 21:30. Sin programar."
-h1: "Curso de Copilot y Copilot Studio en Paraguay: trabajá con IA y creá agentes para tu empresa"
+title: Cómo usar Copilot y Copilot Studio en Paraguay | ProgramBI
+meta: Guía para dominar Microsoft Copilot en Excel, Word y Outlook y crear agentes propios en Copilot Studio en Paraguay.
+h1: Cómo usar Microsoft Copilot y crear agentes en Paraguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/py/cursos/copilot
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Copilot y Copilot Studio en Paraguay: trabajá con IA y creá agentes para tu empresa
 
-**Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/copilot) es un programa **en vivo por Zoom de 20 horas**, de **19:30 a 21:30, hora de Paraguay**, en 5 módulos de 4 horas. Primero aprendés a usar Microsoft Copilot en **Excel, Outlook, PowerPoint y Word**; después diseñás, entrenás y publicás **un agente propio en Copilot Studio** con la información de tu empresa. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/copilot) es un programa **en vivo por Zoom de 20 horas**, de **19:30 a 21:30, hora de Paraguay**, en 5 módulos de 4 horas. Primero aprendés a usar Microsoft Copilot en **Excel, Outlook, PowerPoint y Word**; después diseñás, entrenás y publicás **un agente propio en Copilot Studio** con la información de tu empresa. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 No hace falta programar. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · inicio próximo por grupo**. Para la fecha y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp.
 
@@ -124,13 +124,13 @@ Si te interesa automatizar procesos de punta a punta, el [curso de Power Automat
 
 ## Horario
 
-Según la ficha, las clases son de 19:30 a 21:30, hora de Paraguay (UTC-3), el mismo horario que en Chile. Si un día no llegás, la clase queda grabada con acceso de por vida en el campus.
+Según la ficha, las clases son de 19:30 a 21:30, hora de Paraguay (UTC-3), el mismo horario que en Chile. Si un día no llegás, la clase queda grabada con acceso al campus virtual y el material durante el curso.
 
 ## Resumen
 
 - 20 horas en 5 módulos de 4 horas.
 - En vivo por Zoom; cupos abiertos · cronograma abierto por Zoom.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyecto final: un agente funcional.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.

@@ -1,0 +1,262 @@
+// ============================================================================
+// Pack de 35 Patrones DAX Listos para Producción — Power BI (ProgramBI)
+// Organizado por categoría:
+//   1. Agregaciones seguras (01–05)
+//   2. CALCULATE y modificación de contexto (06–12)
+//   3. Inteligencia de tiempo (13–19)
+//   4. Iteradores X-functions (20–25)
+//   5. Rankings y Pareto / Top N (26–30)
+//   6. Patrones de negocio LATAM (31–35)
+// ============================================================================
+
+// --- 1. AGREGACIONES SEGURAS ---
+
+// 01. Suma base con protección BLANK -> 0
+01_Ventas_Totales =
+COALESCE ( SUM ( Ventas[VentaNeta] ), 0 )
+
+// 02. División segura (evita #DIV/0! y usa BLANK() para ocultar filas vacías)
+02_Margen_Pct =
+DIVIDE ( [01_Ventas_Totales] - SUM ( Ventas[Costo] ), [01_Ventas_Totales] )
+
+// 03. Conteo de clientes únicos
+03_Clientes_Unicos =
+DISTINCTCOUNT ( Ventas[ClienteID] )
+
+// 04. Ticket promedio por orden
+04_Ticket_Promedio =
+DIVIDE ( [01_Ventas_Totales], DISTINCTCOUNT ( Ventas[OrdenID] ) )
+
+// 05. Promedio diario real (incluye días sin venta si se usa Calendario)
+05_Venta_Promedio_Diaria =
+AVERAGEX ( VALUES ( Calendario[Fecha] ), [01_Ventas_Totales] )
+
+
+// --- 2. CALCULATE Y CONTEXTO DE FILTRO ---
+
+// 06. Filtro simple sobre columna dimensional
+06_Ventas_Canal_Online =
+CALCULATE ( [01_Ventas_Totales], Canal[Nombre] = "Ecommerce" )
+
+// 07. Participación sobre el total visible (respeta slicers externos)
+07_Share_Sobre_Seleccion =
+DIVIDE (
+    [01_Ventas_Totales],
+    CALCULATE ( [01_Ventas_Totales], ALLSELECTED ( Producto ) )
+)
+
+// 08. Participación sobre el total absoluto (ignora filtros de la tabla)
+08_Share_Sobre_Total_Global =
+DIVIDE (
+    [01_Ventas_Totales],
+    CALCULATE ( [01_Ventas_Totales], REMOVEFILTERS ( Producto ) )
+)
+
+// 09. KEEPFILTERS: intersecta en lugar de sobreescribir filtros del visual
+09_Ventas_Regiones_Norte =
+CALCULATE (
+    [01_Ventas_Totales],
+    KEEPFILTERS ( Geografia[Region] IN { "Antofagasta", "Atacama", "Tarapaca" } )
+)
+
+// 10. Condición con variables (evita reevaluar la medida)
+10_Clientes_Alto_Valor =
+CALCULATE (
+    DISTINCTCOUNT ( Ventas[ClienteID] ),
+    FILTER (
+        VALUES ( Ventas[ClienteID] ),
+        [01_Ventas_Totales] >= 1000000
+    )
+)
+
+// 11. Uso de relación inactiva (ej. Fecha de Despacho vs Fecha de Pedido)
+11_Ventas_Por_Fecha_Despacho =
+CALCULATE (
+    [01_Ventas_Totales],
+    USERELATIONSHIP ( Calendario[Fecha], Ventas[FechaDespacho] )
+)
+
+// 12. Conteo de meses con ventas positivas
+12_Meses_Con_Venta =
+COUNTROWS (
+    FILTER (
+        VALUES ( Calendario[AnioMes] ),
+        [01_Ventas_Totales] > 0
+    )
+)
+
+
+// --- 3. INTELIGENCIA DE TIEMPO ---
+
+// 13. Acumulado año calendario (YTD)
+13_Ventas_YTD =
+TOTALYTD ( [01_Ventas_Totales], Calendario[Fecha] )
+
+// 14. Acumulado año fiscal (cierre marzo, ej. minería/multinacionales)
+14_Ventas_FY_YTD =
+TOTALYTD ( [01_Ventas_Totales], Calendario[Fecha], "03-31" )
+
+// 15. Mismo período año anterior (LY)
+15_Ventas_LY =
+CALCULATE ( [01_Ventas_Totales], SAMEPERIODLASTYEAR ( Calendario[Fecha] ) )
+
+// 16. Crecimiento interanual YoY %
+16_Crecimiento_YoY_Pct =
+VAR _actual = [01_Ventas_Totales]
+VAR _anterior = [15_Ventas_LY]
+RETURN
+    IF (
+        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _anterior ),
+        DIVIDE ( _actual - _anterior, _anterior )
+    )
+
+// 17. Mes anterior (MoM)
+17_Ventas_Mes_Anterior =
+CALCULATE ( [01_Ventas_Totales], DATEADD ( Calendario[Fecha], -1, MONTH ) )
+
+// 18. Promedio móvil últimos 3 meses (Rolling 3M)
+18_Promedio_Movil_3M =
+AVERAGEX (
+    DATESINPERIOD ( Calendario[Fecha], LASTDATE ( Calendario[Fecha] ), -3, MONTH ),
+    [01_Ventas_Totales]
+)
+
+// 19. Acumulado móvil 12 meses (MAT - Moving Annual Total)
+19_Ventas_MAT_12M =
+CALCULATE (
+    [01_Ventas_Totales],
+    DATESINPERIOD ( Calendario[Fecha], MAX ( Calendario[Fecha] ), -12, MONTH )
+)
+
+
+// --- 4. ITERADORES (X-FUNCTIONS) ---
+
+// 20. Ingreso calculado fila a fila (sin columna calculada)
+20_Ingreso_Bruto_SUMX =
+SUMX ( Ventas, Ventas[Cantidad] * Ventas[PrecioUnitario] )
+
+// 21. Margen neto con descuento por línea y tabla relacionada
+21_Margen_Real_SUMX =
+SUMX (
+    Ventas,
+    Ventas[Cantidad] * ( Ventas[PrecioUnitario] * ( 1 - Ventas[DescuentoPct] ) - RELATED ( Producto[CostoUnitario] ) )
+)
+
+// 22. Precio promedio ponderado real
+22_Precio_Ponderado =
+DIVIDE (
+    SUMX ( Ventas, Ventas[Cantidad] * Ventas[PrecioUnitario] ),
+    SUM ( Ventas[Cantidad] )
+)
+
+// 23. Máxima venta mensual histórica
+23_Mejor_Mes_Historico =
+MAXX ( VALUES ( Calendario[AnioMes] ), [01_Ventas_Totales] )
+
+// 24. Concatenación dinámica de filtros activos (útil para títulos)
+24_Filtro_Regiones_Texto =
+IF (
+    ISFILTERED ( Geografia[Region] ),
+    "Regiones: " & CONCATENATEX ( VALUES ( Geografia[Region] ), Geografia[Region], ", " ),
+    "Todas las regiones"
+)
+
+// 25. Ajuste por inflación (moneda constante usando tabla IPC)
+25_Ventas_Moneda_Constante =
+VAR _ipcActual = MAX ( IPC[IndiceUltimo] )
+RETURN
+    SUMX (
+        VALUES ( Calendario[AnioMes] ),
+        [01_Ventas_Totales] * DIVIDE ( _ipcActual, MAX ( IPC[IndiceMes] ) )
+    )
+
+
+// --- 5. RANKINGS Y PARETO / TOP N ---
+
+// 26. Ranking dinámico denso
+26_Ranking_Producto =
+IF (
+    HASONEVALUE ( Producto[Nombre] ),
+    RANKX ( ALLSELECTED ( Producto[Nombre] ), [01_Ventas_Totales], , DESC, DENSE )
+)
+
+// 27. Ventas solo de Top 5 clientes
+27_Ventas_Top5_Clientes =
+CALCULATE (
+    [01_Ventas_Totales],
+    KEEPFILTERS ( TOPN ( 5, ALLSELECTED ( Cliente[Nombre] ), [01_Ventas_Totales], DESC ) )
+)
+
+// 28. Porcentaje acumulado Pareto (ABC)
+28_Pareto_Acumulado_Pct =
+VAR _ventaActual = [01_Ventas_Totales]
+VAR _total = CALCULATE ( [01_Ventas_Totales], ALLSELECTED ( Producto[Nombre] ) )
+VAR _acumulado =
+    SUMX (
+        FILTER ( ALLSELECTED ( Producto[Nombre] ), [01_Ventas_Totales] >= _ventaActual ),
+        [01_Ventas_Totales]
+    )
+RETURN
+    DIVIDE ( _acumulado, _total )
+
+// 29. Clasificación ABC automática
+29_Categoria_ABC =
+VAR _p = [28_Pareto_Acumulado_Pct]
+RETURN
+    SWITCH ( TRUE (), ISBLANK ( _p ), BLANK (), _p <= 0.80, "A", _p <= 0.95, "B", "C" )
+
+// 30. Nombre del producto líder en el contexto actual
+30_Producto_Lider =
+MAXX (
+    TOPN ( 1, VALUES ( Producto[Nombre] ), [01_Ventas_Totales], DESC ),
+    Producto[Nombre]
+)
+
+
+// --- 6. PATRONES DE NEGOCIO LATAM ---
+
+// 31. Clientes nuevos (primera compra en el período actual)
+31_Clientes_Nuevos =
+VAR _minFecha = MIN ( Calendario[Fecha] )
+VAR _maxFecha = MAX ( Calendario[Fecha] )
+RETURN
+    COUNTROWS (
+        FILTER (
+            VALUES ( Ventas[ClienteID] ),
+            VAR _primeraCompra = CALCULATE ( MIN ( Ventas[Fecha] ), REMOVEFILTERS ( Calendario ) )
+            RETURN _primeraCompra >= _minFecha && _primeraCompra <= _maxFecha
+        )
+    )
+
+// 32. Conversión a USD desde CLP usando tabla TipoCambio diaria
+32_Ventas_USD =
+SUMX (
+    VALUES ( Calendario[Fecha] ),
+    DIVIDE ( [01_Ventas_Totales], AVERAGE ( TipoCambio[ValorUSD_CLP] ) )
+)
+
+// 33. Cumplimiento de meta con semáforo textual
+33_Estado_Meta =
+VAR _cumpl = DIVIDE ( [01_Ventas_Totales], SUM ( Metas[MontoMeta] ) )
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( _cumpl ), "Sin meta",
+        _cumpl >= 1, "Cumplida",
+        _cumpl >= 0.85, "En riesgo",
+        "Bajo meta"
+    )
+
+// 34. Días desde la última venta (recencia)
+34_Dias_Sin_Venta =
+DATEDIFF ( MAX ( Ventas[Fecha] ), TODAY (), DAY )
+
+// 35. Selector dinámico de métrica con parámetro / tabla desconectada
+35_Metrica_Seleccionada =
+SWITCH (
+    SELECTEDVALUE ( SelectorMetrica[Opcion], "Ventas" ),
+    "Ventas", [01_Ventas_Totales],
+    "Margen %", [02_Margen_Pct],
+    "Ticket", [04_Ticket_Promedio],
+    [01_Ventas_Totales]
+)

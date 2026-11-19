@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos para Minería en Chile | ProgramBI"
-meta: "Análisis de datos para minería en Chile: Power BI, SQL Server y Python aplicados a turnos, flota y mantención. 60 h por nivel en vivo por Zoom."
-h1: "Curso de Análisis de Datos para la Minería en Chile: Power BI, SQL y Python para faena"
+title: Power BI y datos para minería en Chile | ProgramBI
+meta: "Guía de análisis de datos para minería en Chile: cómo llevar turnos, flota, OEE y mantención de Excel a Power BI, SQL y Python."
+h1: Cómo aplicar Power BI, SQL y Python en minería en Chile
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/cursos/analisis-de-datos
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería,](https://www.programbi.com/cursos/analisis-de-datos) es una formación de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que enseña Power BI, SQL Server y Python aplicados a la operación minera: reportes de turno automatizados, consultas a las bases de la mina, indicadores de tonelaje, disponibilidad y costo por tonelada, y análisis de datos de sensores, con apoyo de IA generativa. El nivel básico-intermedio cuesta **$338.000 CLP** y la ficha muestra **cupos abiertos · próxima edición disponible**.
 
-Incluye grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. En Chile las clases son de 19:30 a 21:30, los lunes y miércoles o los martes y jueves, un horario que permite conectarse después del turno de día. Datos revisados en la ficha el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y proyectos con datos reales. En Chile las clases son de 19:30 a 21:30, los lunes y miércoles o los martes y jueves, un horario que permite conectarse después del turno de día. Datos revisados en la ficha el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · $338.000 CLP · «Consultar fecha».
 
@@ -100,7 +100,7 @@ La misma ficha presenta un nivel avanzado orientado a **dominar el ciclo complet
 ## Datos del curso
 
 - **Niveles:** dos niveles de 60 horas cada uno (20 h SQL Server, 20 h Power BI, 20 h Python).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, consulta la próxima cohorte.
 - **Horario:** 19:30 a 21:30, hora de Chile; lunes y miércoles o martes y jueves.
 - **Certificado:** al completar.
@@ -126,7 +126,7 @@ El nivel básico-intermedio es ideal para quienes inician; parte desde los funda
 Sí. Los ejemplos de turnos, flota, mantención y combustible aplican tanto a la minera como a la empresa contratista que le reporta indicadores cada mes, y el RLS del módulo 4 sirve para compartir tableros por área.
 
 **¿Qué pasa si tengo turno el día de la clase?**
-Cada sesión queda grabada en el campus con acceso de por vida, así que puedes verla al bajar de faena y llegar al día a la siguiente clase con tus dudas anotadas.
+Cada sesión queda grabada en el campus virtual con el material durante el curso, así que puedes verla al bajar de faena y llegar al día a la siguiente clase con tus dudas anotadas.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones en el campus.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

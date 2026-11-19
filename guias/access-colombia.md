@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: access
 url_curso: https://www.programbi.com/co/cursos/access
-title: "Curso de Access en Colombia para administrativos | ProgramBI"
-meta: "Curso de Microsoft Access en Colombia: 20 h en vivo, 7 módulos de tablas, consultas SQL, formularios, informes y macros para personal administrativo."
-h1: "Curso de Access en Colombia: bases de datos para el trabajo administrativo"
+title: Cómo usar Microsoft Access en Colombia | ProgramBI
+meta: "Guía práctica para aprender Microsoft Access en Colombia: tablas, relaciones, consultas SQL, formularios, informes y macros aplicadas al trabajo diario."
+h1: Cómo usar Microsoft Access para administración en Colombia
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/co/cursos/access
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **En resumen:** el [curso de Microsoft Access de ProgramBI para Colombia](https://www.programbi.com/co/cursos/access) es un programa **en vivo por Zoom de 20 horas y 7 módulos** que enseña al personal administrativo a diseñar, construir y administrar bases de datos relacionales: tablas con claves y relaciones, consultas con criterios y SQL básico, formularios con validaciones, informes de gestión exportables a PDF y Excel, y macros para automatizar tareas. Valor: **{precio_local}**. La ficha reporta **cupos abiertos · programación continua en vivo**.
 
-Las grabaciones quedan disponibles de por vida en el campus, se entrega certificado al completar y el curso cierra con un proyecto integrador sobre un proceso empresarial. En las preguntas frecuentes de la ficha, la clase se ubica a las 17:30, hora de Colombia. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia. Información consultada el 4 de noviembre de 2026.
+Las grabaciones quedan disponibles en el campus virtual durante el curso, se entrega certificado al completar y el curso cierra con un proyecto integrador sobre un proceso empresarial. En las preguntas frecuentes de la ficha, la clase se ubica a las 17:30, hora de Colombia. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia. Información consultada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar próxima fecha».
 
@@ -113,7 +113,7 @@ La ficha señala como público al **personal administrativo que necesita almacen
 ## Información general
 
 - **Intensidad:** 20 horas, 7 módulos.
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, próxima cohorte por confirmar.
 - **Horario:** según la FAQ de la ficha, 17:30 a 19:30, hora de Colombia.
 - **Certificado:** al completar.
@@ -148,4 +148,4 @@ Excel avanzado profundiza en fórmulas, tablas dinámicas y análisis dentro de 
 Sí. Comprender tablas, claves y relaciones facilita el modelado de datos en Power BI y en SQL Server.
 
 **¿Qué recibo al finalizar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones en el campus.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

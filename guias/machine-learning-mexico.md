@@ -5,9 +5,9 @@ pais: mx
 hreflang: es-MX
 curso: machine-learning
 url_curso: https://www.programbi.com/mx/cursos/machine-learning
-title: "Curso de Machine Learning en México: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en México en vivo: 20 h de regresión, clasificación, clustering y anomalías con Python a las 16:30 CDMX."
-h1: "Curso de Machine Learning en México: de los datos a la predicción"
+title: Cómo aprender Machine Learning en México | ProgramBI
+meta: "Ruta práctica de Machine Learning en México: qué base de Python necesitas, algoritmos clave con Scikit-learn y casos aplicados a negocios."
+h1: Cómo aprender Machine Learning con Python para negocios en México
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/mx/cursos/machine-learning
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Machine Learning en México: de los datos a la predicción
 
-**Respuesta corta:** el [curso de Machine Learning de ProgramBI para México](https://www.programbi.com/mx/cursos/machine-learning) dura **20 horas en vivo por Zoom**, en horario de **16:30 a 18:30, hora del centro de México**, y enseña a construir modelos predictivos con Python: regresión, clasificación, árboles y ensembles, validación, clustering, PCA, detección de anomalías y reglas de asociación. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Machine Learning de ProgramBI para México](https://www.programbi.com/mx/cursos/machine-learning) dura **20 horas en vivo por Zoom**, en horario de **16:30 a 18:30, hora del centro de México**, y enseña a construir modelos predictivos con Python: regresión, clasificación, árboles y ensembles, validación, clustering, PCA, detección de anomalías y reglas de asociación. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 Está pensado para quien **ya programa en Python** y quiere aplicarlo a problemas de negocio. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · fechas vigentes en calendario**.
 
@@ -127,7 +127,7 @@ Según la ficha para México, las clases son de 16:30 a 18:30 en Ciudad de Méxi
 
 - **20 horas** en dos módulos: supervisado y no supervisado.
 - **En vivo por Zoom**, 16:30 a 18:30 CDMX; cupos abiertos y próximas fechas de apertura.
-- **Grabaciones de por vida** y **certificado digital**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado digital**.
 - Proyectos con datos reales.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Precio: **{precio_local}**.
@@ -148,7 +148,7 @@ De 16:30 a 18:30, hora del centro de México. Según la época del año puede co
 Sí, manejo de Python. El curso no enseña el lenguaje desde cero.
 
 **¿Qué pasa si no puedo conectarme a una clase?**
-Queda grabada y la puedes ver cuando quieras; el acceso es de por vida.
+Queda grabada y la puedes ver cuando quieras; el acceso es en el campus virtual durante el curso.
 
 **¿Recibo constancia?**
 Sí, un certificado digital de ProgramBI al completar el curso.

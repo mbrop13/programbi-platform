@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: excel
 url_curso: https://www.programbi.com/uy/cursos/excel
-title: "Curso de Excel en Uruguay en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Excel online en vivo en Uruguay: 20 h, 12 módulos, de fórmulas a tablas dinámicas y Power Query, 19:30. Temario y ejemplos con datos uruguayos."
-h1: "Curso de Excel en Uruguay: planillas online, en vivo y sin errores"
+title: Cómo dominar Excel para gestión en Uruguay | ProgramBI
+meta: "Guía práctica de Excel para el trabajo en Uruguay: fórmulas avanzadas, tablas dinámicas, Power Query y dashboards para reportes de gestión."
+h1: Cómo aprender Excel avanzado para análisis y gestión en Uruguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/uy/cursos/excel
@@ -28,7 +28,7 @@ nota_hermes: |
 
 # Curso de Excel en Uruguay: planillas online, en vivo y sin errores
 
-**Respuesta corta:** el [curso de Excel de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **19:30 a 21:30, hora de Uruguay**. El valor es **{precio_local}** e incluye grabaciones de por vida y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
+**Respuesta corta:** el [curso de Excel de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **19:30 a 21:30, hora de Uruguay**. El valor es **{precio_local}** e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
 
 **¿Qué aprendés?** De lo básico a lo que piden las búsquedas administrativas en Uruguay: BUSCARX para traer datos de clientes, tablas dinámicas para ventas, cobros y gastos, funciones de fecha y texto, y Power Query para unificar las planillas de vendedores o sucursales. En la oficina: informes que se actualizan solos y no dependen de una sola persona.
 
@@ -105,7 +105,7 @@ En BuscoJobs, Gallito Trabajo, LinkedIn y Uruguay Concursa, Excel aparece en lla
 
 ## Qué mirar al elegir un curso de Excel en Uruguay
 
-Que sea en vivo y en hora uruguaya, que incluya Power Query, que trabaje con casos de oficina reales, que tenga grabaciones de por vida y que termine con un proyecto que puedas mostrar.
+Que sea en vivo y en hora uruguaya, que incluya Power Query, que trabaje con casos de oficina reales, que tenga acceso al campus virtual con las clases grabadas y el material durante el curso y que termine con un proyecto que puedas mostrar.
 
 ## El curso de Excel en vivo de ProgramBI (Uruguay)
 
@@ -115,7 +115,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/e
 - **20 horas, 12 módulos**, nivel básico-intermedio, pensado para administrativos principiantes o con conocimientos mínimos de Excel.
 - Temario: del entorno y las fórmulas básicas a BUSCARX, INDICE-COINCIDIR, tablas dinámicas avanzadas, funciones de fecha y texto, datos grandes y Power Query con parámetros y funciones M; cada nivel cierra con un proyecto.
 - **Nivel avanzado** disponible en la misma ficha.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
@@ -126,7 +126,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/e
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Excel en Uruguay?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de Excel es online?**
 Sí, online y en vivo por Zoom, de 19:30 a 21:30, hora de Uruguay. Las clases quedan grabadas.

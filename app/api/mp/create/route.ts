@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import { getPricingVariantForUser } from "@/lib/experiments/user-variant";
 import { getPais } from "@/config/paises";
 import { bloqueoPorMercado } from "@/lib/paises/arbitraje";
+import { resolveOrCreateGuestUser } from "@/lib/pago/guest-user";
 
 /**
  * POST /api/mp/create
@@ -15,12 +16,27 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Debes iniciar sesión para comprar" }, { status: 401 });
-    }
-
     const body = await req.json();
-    let { items, couponCode } = body;
+    const { couponCode } = body;
+    let { items } = body;
+
+    let userId: string;
+    let email: string;
+    if (user) {
+      userId = user.id;
+      email = user.email || "";
+    } else {
+      const guest = await resolveOrCreateGuestUser(req.headers, {
+        name: body.guestName,
+        email: body.guestEmail,
+        whatsapp: body.guestWhatsapp,
+      });
+      if (!guest.ok) {
+        return NextResponse.json({ error: guest.error }, { status: guest.status });
+      }
+      userId = guest.userId;
+      email = guest.email;
+    }
 
     // Anti-arbitraje: con IP de EE.UU. solo se cobra el precio de EE.UU.
     const bloqueo = bloqueoPorMercado(
@@ -42,16 +58,18 @@ export async function POST(req: NextRequest) {
 
     const { courses: masterCourses } = await import("@/lib/data/courses");
     
-    // Evaluate discount based on user subscription profile
+    // Evaluate discount based on authenticated user subscription profile only
     let baseDiscountPercent = 0;
     let specDiscountPercent = 0;
-    
-    const { data: profile } = await supabase.from('profiles').select('subscription_plan').eq('id', user.id).single();
-    if (profile?.subscription_plan) {
-      const userPlan = profile.subscription_plan;
-      if (userPlan === 'pro') { baseDiscountPercent = 20; specDiscountPercent = 10; }
-      else if (userPlan === 'max') { baseDiscountPercent = 25; specDiscountPercent = 12.5; }
-      else if (userPlan === 'ultra') { baseDiscountPercent = 40; specDiscountPercent = 20; }
+
+    if (user) {
+      const { data: profile } = await supabase.from('profiles').select('subscription_plan').eq('id', user.id).single();
+      if (profile?.subscription_plan) {
+        const userPlan = profile.subscription_plan;
+        if (userPlan === 'pro') { baseDiscountPercent = 20; specDiscountPercent = 10; }
+        else if (userPlan === 'max') { baseDiscountPercent = 25; specDiscountPercent = 12.5; }
+        else if (userPlan === 'ultra') { baseDiscountPercent = 40; specDiscountPercent = 20; }
+      }
     }
 
     const { getActivePromotions, getPriceOverrides } = await import("@/lib/supabase/comunidad-ai");
@@ -68,14 +86,22 @@ export async function POST(req: NextRequest) {
     // El precio publicado es el techo: el panel puede aplicar un descuento por
     // override, nunca cobrar más que el monto que muestra la ficha.
     const getOverriddenPrice = (slug: string, levelName: string, codePrice: number) => {
-       const override = priceOverrides.find((o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
+       const override = priceOverrides.find((o: { item_type?: string; item_id?: string; level_name?: string; price?: unknown }) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
        return override && typeof override.price === 'number' && override.price > 0 && override.price < codePrice
          ? override.price
          : codePrice;
     };
 
     let grandTotalClp = 0;
-    const validatedItems: any[] = [];
+    const validatedItems: Array<{
+      slug: string;
+      levelName: string;
+      quantity: number;
+      pricePerUnit: number;
+      title: string;
+      selectedStartDate?: string | null;
+      hasPromoDiscount: boolean;
+    }> = [];
 
     for (const item of items) {
        if (item.courseSlug === "asesoria") {
@@ -93,14 +119,14 @@ export async function POST(req: NextRequest) {
           continue;
        }
 
-       const masterCourse = masterCourses.find((c: any) => c.slug === item.courseSlug);
+       const masterCourse = masterCourses.find((c) => c.slug === item.courseSlug);
        if (!masterCourse) {
          return NextResponse.json({ error: `Curso no encontrado: ${item.courseSlug}` }, { status: 404 });
        }
        
        let basePrice = 0;
        if (item.levelName) {
-         const masterLevel = masterCourse.levels?.find((l: any) => 
+         const masterLevel = masterCourse.levels?.find((l) => 
            l.name.toLowerCase().includes(item.levelName.toLowerCase()) || 
            item.levelName.toLowerCase().includes(l.name.toLowerCase())
          );
@@ -153,7 +179,6 @@ export async function POST(req: NextRequest) {
         });
     }
 
-    const email = user.email || "";
     // A-32 (OWASP ASVS L3): use a CSPRNG for order identifiers so they cannot
     // be predicted or collide. Math.random() is NOT cryptographically secure.
     const commerceOrder = `PBI-${randomUUID()}`;
@@ -173,7 +198,7 @@ export async function POST(req: NextRequest) {
     // Apply coupon discount if present
     if (couponCode) {
       const { validateCouponAction } = await import("@/lib/supabase/comunidad-ai");
-      const itemSlugs = (items || []).map((i: any) => i.courseSlug || i.slug).filter(Boolean);
+      const itemSlugs = (items || []).map((i: { courseSlug?: string; slug?: string }) => i.courseSlug || i.slug).filter(Boolean);
       const couponRes = await validateCouponAction(couponCode, itemSlugs);
       if (!couponRes.valid) {
         return NextResponse.json({ error: couponRes.message || "Cupón inválido" }, { status: 400 });
@@ -276,7 +301,7 @@ export async function POST(req: NextRequest) {
       notificationUrl: `${APP_URL}/api/mercadopago/webhook`,
       metadata: {
         type: "course_purchase",
-        user_id: user.id,
+        user_id: userId,
         commerce_order: commerceOrder,
         pais,
         mp_account: chargeCuenta,
@@ -300,9 +325,9 @@ export async function POST(req: NextRequest) {
       currency: chargeCurrency,
     });
 
-    const pricingVariant = await getPricingVariantForUser(adminDb, user.id);
+    const pricingVariant = await getPricingVariantForUser(adminDb, userId);
     const paymentRow: Record<string, unknown> = {
-      user_id: user.id,
+      user_id: userId,
       course_id: firstCourseId?.id || null,
       flow_order: commerceOrder, // Reusing column for commerce order ID
       flow_token: preference.id, // Reusing column for MP preference ID
@@ -312,16 +337,16 @@ export async function POST(req: NextRequest) {
       payment_method: tempMetadata,
     };
     if (pricingVariant) paymentRow.pricing_variant = pricingVariant;
-    const paymentInsert = await adminDb.from("payments").insert(paymentRow as any);
+    const paymentInsert = await adminDb.from("payments").insert(paymentRow as never);
     if (paymentInsert.error && paymentRow.pricing_variant) {
       delete paymentRow.pricing_variant;
-      await adminDb.from("payments").insert(paymentRow as any);
+      await adminDb.from("payments").insert(paymentRow as never);
     }
 
     // Save scheduling_slots as pending_payment
     const { scheduling_slots = [] } = body;
     if (Array.isArray(scheduling_slots) && scheduling_slots.length > 0) {
-      const slotsToInsert = scheduling_slots.map((slot: any) => ({
+      const slotsToInsert = scheduling_slots.map((slot: { date: string; time: string }) => ({
         slot_date: slot.date,
         slot_time: slot.time,
         status: "pending_payment",
@@ -338,7 +363,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log("💰 MP Payment created:", commerceOrder, "Items:", validatedItems.length, "user:", user.id, "Total:", chargeAmount, chargeCurrency);
+    console.log("💰 MP Payment created:", commerceOrder, "Items:", validatedItems.length, "user:", userId, "Total:", chargeAmount, chargeCurrency);
 
     return NextResponse.json({
       url: preference.init_point,
@@ -346,11 +371,12 @@ export async function POST(req: NextRequest) {
       commerceOrder,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating MercadoPago payment:", error);
     const isProd = process.env.NODE_ENV === "production";
+    const errMsg = error instanceof Error ? error.message : "Error al procesar el pago";
     return NextResponse.json(
-      { error: isProd ? "Error al procesar el pago" : (error.message || "Error al procesar el pago") },
+      { error: isProd ? "Error al procesar el pago" : errMsg },
       { status: 500 }
     );
   }

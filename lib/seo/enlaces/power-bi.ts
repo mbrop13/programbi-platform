@@ -5,6 +5,9 @@ import type { EnlaceCurso } from "./tipos";
  * Solo rutas que ya existen en el repo (verificadas con 200 en el smoke).
  */
 export const ENLACES_POWER_BI: EnlaceCurso[] = [
+  { href: "/plantillas", label: "Plantillas Power BI y medidas DAX gratis" },
+  { href: "/simulador-pl-300", label: "Simulador gratuito examen PL-300" },
+  { href: "/herramientas/excel-a-dax", label: "Conversor de fórmulas Excel a DAX" },
   { href: "/power-bi-para-finanzas", label: "Power BI para finanzas" },
   { href: "/power-bi-mineria-chile", label: "Power BI para minería" },
   { href: "/migrar-excel-a-power-bi", label: "Migrar de Excel a Power BI" },

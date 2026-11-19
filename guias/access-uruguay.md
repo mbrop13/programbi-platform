@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: access
 url_curso: https://www.programbi.com/uy/cursos/access
-title: "Curso de Access en Uruguay en vivo | ProgramBI"
-meta: "Curso de Microsoft Access en Uruguay: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros a las 19:30 h."
-h1: "Curso de Access en Uruguay: del archivo de Excel a una base de datos ordenada"
+title: Cómo usar Microsoft Access en Uruguay | ProgramBI
+meta: "Guía práctica para aprender Microsoft Access en Uruguay: tablas, relaciones, consultas SQL, formularios, informes y macros aplicadas al trabajo diario."
+h1: Cómo usar Microsoft Access para administración en Uruguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/uy/cursos/access
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Para ir al grano:** el [curso de Microsoft Access de ProgramBI en Uruguay](https://www.programbi.com/uy/cursos/access) es una formación **en vivo por Zoom de 20 horas, organizada en 7 módulos**, para administrativos que necesitan guardar, ordenar y consultar información de distintas áreas: diseñás tablas relacionadas, escribís consultas con SQL básico, armás formularios con validaciones, generás informes que exportás a PDF y Excel, y automatizás tareas con macros. Cuesta **{precio_local}** y la ficha marca **cupos abiertos · nueva cohorte por abrir**.
 
-Quedan las grabaciones de por vida en el campus, recibís certificado al completar y cerrás con un proyecto integrador sobre un proceso de empresa. Las preguntas frecuentes de la ficha ubican la clase a las 19:30, hora de Uruguay. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: ficha del curso, consultada el 4 de noviembre de 2026.
+Quedan las acceso al campus virtual con las clases grabadas y el material durante el curso, recibís certificado al completar y cerrás con un proyecto integrador sobre un proceso de empresa. Las preguntas frecuentes de la ficha ubican la clase a las 19:30, hora de Uruguay. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: ficha del curso, consultada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar fecha».
 
@@ -115,7 +115,7 @@ La ficha lo orienta al **personal administrativo que necesita almacenar, organiz
 ## Datos de la cohorte
 
 - **Carga horaria:** 20 horas, 7 módulos.
-- **Modalidad:** en vivo por Zoom, grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, a confirmar.
 - **Horario:** según la FAQ de la ficha, 19:30 a 21:30, hora de Uruguay.
 - **Certificado:** al completar.
@@ -150,7 +150,7 @@ Son cosas distintas y complementarias: Access guarda, ordena y controla la infor
 No. En Excel avanzado trabajás fórmulas, tablas dinámicas y análisis dentro de la hoja. Acá aprendés a guardar la información en tablas relacionadas, a controlar la carga con formularios y a generar informes que se regeneran solos cada vez que los abrís.
 
 **¿Y si falto a una clase?**
-Queda grabada en el campus con acceso de por vida, así que podés ponerte al día antes del módulo siguiente.
+Queda grabada en el campus virtual con el material durante el curso, así que podés ponerte al día antes del módulo siguiente.
 
 **¿Qué recibo al final?**
-Certificado digital de ProgramBI y grabaciones de por vida.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: claude
 url_curso: https://www.programbi.com/cursos/claude
-title: "Curso de Claude en Chile online en vivo | ProgramBI"
-meta: "Curso de Claude en Chile en vivo: 20 h para usar la IA de Anthropic en trabajo administrativo, Excel y documentos. Cupos abiertos, 19:30 hora Chile."
-h1: "Curso de Claude en Chile: IA para tu trabajo administrativo, en vivo"
+title: Cómo usar Claude AI en el trabajo en Chile | ProgramBI
+meta: "Guía práctica para usar Claude (Anthropic) en Chile: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+h1: Cómo usar Claude AI para trabajo administrativo en Chile
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/claude
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Claude de ProgramBI](https://www.programbi.com/cursos/claude) es un programa **en vivo por Zoom de 20 horas en 5 módulos de 4 horas** para usar Claude, el asistente de IA de Anthropic, en el trabajo administrativo: prompts que funcionan, Projects, Docs y Slides, Excel y automatización ligera, **sin programar**. Tiene **inicios todos los meses** (próxima fecha en la ficha), con clases los **lunes y miércoles de 19:30 a 21:30, hora de Chile**, y cuesta **$169.000 CLP**.
 
-Incluye grabaciones de por vida, certificado y un proyecto final integrador con un proceso real de tu pega. Datos según la ficha del curso, revisada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado y un proyecto final integrador con un proceso real de tu pega. Datos según la ficha del curso, revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · lunes y miércoles 19:30 a 21:30 (Chile) · «Ver el curso».
 
@@ -117,7 +117,7 @@ Claude no reemplaza a Power BI. Claude te ayuda a explorar, limpiar y redactar; 
 - **Inicio:** grupos nuevos cada mes; confirma la próxima fecha en la ficha del curso.
 - **Días y horario:** lunes y miércoles, 19:30 a 21:30, hora de Chile, en vivo por Zoom.
 - **Duración:** 20 horas en 5 módulos de 4 horas.
-- **Incluye:** grabaciones de por vida, certificado digital y proyecto final con un proceso real.
+- **Incluye:** acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final con un proceso real.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Valor:** $169.000 CLP. Puedes pagar en 3 cuotas sin interés.
 
@@ -126,7 +126,7 @@ Claude no reemplaza a Power BI. Claude te ayuda a explorar, limpiar y redactar; 
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Claude en Chile?**
-$169.000 CLP por las 20 horas en vivo, con grabaciones de por vida y certificado.
+$169.000 CLP por las 20 horas en vivo, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cuándo empieza y a qué hora son las clases?**
 Hay inicios nuevos todos los meses; las clases son lunes y miércoles de 19:30 a 21:30, hora de Chile (fecha vigente en la ficha).

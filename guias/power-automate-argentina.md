@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: power-automate
 url_curso: https://www.programbi.com/ar/cursos/power-automate
-title: "Curso de Power Automate Argentina: guía 2026 | ProgramBI"
-meta: "Curso de Power Automate en Argentina en vivo: 20 h para automatizar mails, Teams, SharePoint y Excel sin código a las 19:30 h. Incluye RPA."
-h1: "Curso de Power Automate en Argentina: sacate de encima las tareas repetitivas"
+title: Cómo automatizar con Power Automate en Argentina | ProgramBI
+meta: "Guía práctica de Power Automate y RPA en Argentina: automatiza correos, aprobaciones y archivos entre Excel, Outlook y Teams sin programar."
+h1: Cómo automatizar flujos y tareas con Power Automate en Argentina
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/ar/cursos/power-automate
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Power Automate en Argentina: sacate de encima las tareas repetitivas
 
-**Respuesta corta:** el [curso de Power Automate de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/power-automate) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Argentina**, organizadas en 10 módulos para automatizar procesos **sin programar**. Vas a armar flujos de nube automatizados, instantáneos y programados; conectar Outlook, Teams, OneDrive y SharePoint; usar expresiones y variables; montar aprobaciones; automatizar programas de escritorio con Power Automate Desktop; y diseñar flujos con Copilot. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Power Automate de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/power-automate) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Argentina**, organizadas en 10 módulos para automatizar procesos **sin programar**. Vas a armar flujos de nube automatizados, instantáneos y programados; conectar Outlook, Teams, OneDrive y SharePoint; usar expresiones y variables; montar aprobaciones; automatizar programas de escritorio con Power Automate Desktop; y diseñar flujos con Copilot. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · consultá las próximas fechas**. Se paga en pesos argentinos con Mercado Pago o transferencia bancaria.
 
@@ -125,7 +125,7 @@ Las clases son de 19:30 a 21:30 en Buenos Aires. Argentina usa UTC-3 todo el añ
 
 - 20 horas, 10 módulos, sin programar.
 - En vivo por Zoom; cupos abiertos · fechas disponibles al consultar.
-- Grabaciones de por vida, certificado y proyecto final real.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso, certificado y proyecto final real.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
 

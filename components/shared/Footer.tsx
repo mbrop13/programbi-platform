@@ -21,10 +21,11 @@ const socialLinks = [
 const companyLinks = [
   { label: "Ver Cursos", href: "/cursos" },
   { label: "Precios", href: "/precios" },
+  { label: "Plantillas Power BI y SQL", href: "/plantillas" },
+  { label: "Simulador PL-300 gratis", href: "/simulador-pl-300" },
+  { label: "Conversor Excel a DAX", href: "/herramientas/excel-a-dax" },
+  { label: "Sueldos analista de datos Chile", href: "/sueldos-analista-datos-chile" },
   { label: "Referidos", href: "/referidos" },
-  // Una sola entrada a la bolsa: antes el pie repartía /empleos en cuatro
-  // anchors (publicar, talento, vacantes) y diluía el enlazado interno.
-  { label: "Bolsa de trabajo", href: "/empleos" },
   ...(COMUNIDAD_PUBLICA ? [{ label: "Comunidad", href: "/comunidad" }] : []),
   ...(LISTADO_PROFESORES_INDEXABLE ? [{ label: "Profesores", href: "/profesores" }] : []),
   { label: "Blog", href: "/blog" },

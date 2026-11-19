@@ -5,9 +5,9 @@ pais: py
 hreflang: es-PY
 curso: claude
 url_curso: https://www.programbi.com/py/cursos/claude
-title: "Curso de Claude en Paraguay online en vivo | ProgramBI"
-meta: "Curso de Claude en Paraguay en vivo por Zoom: 20 h para oficina, Excel y presentaciones. Horario 19:30 de Paraguay; grupos nuevos cada mes."
-h1: "Curso de Claude en Paraguay: aprendé a trabajar con la IA de Anthropic, en vivo"
+title: Cómo usar Claude AI en el trabajo en Paraguay | ProgramBI
+meta: "Guía práctica para usar Claude (Anthropic) en Paraguay: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+h1: Cómo usar Claude AI para trabajo administrativo en Paraguay
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/py/cursos/claude
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **En pocas palabras:** el [curso de Claude de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/claude) tiene **20 horas de clases en vivo por Zoom** —cinco módulos de cuatro horas cada uno— y te enseña a usar Claude, el asistente de inteligencia artificial de Anthropic, en el trabajo de oficina: textos, resúmenes, planillas de Excel, presentaciones y automatizaciones simples, **todo sin programar**. Lanza **nuevos grupos todos los meses** (consultá la fecha en la ficha), con clases **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**. Inversión: **{precio_local}**.
 
-Te quedás con las grabaciones de por vida, obtenés un certificado digital y cerrás con un proyecto final hecho sobre una tarea real de tu empresa. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información de la ficha del curso, revisada el 4 de noviembre de 2026.
+Te quedás con las clases grabadas y el material en el campus virtual durante el curso, obtenés un certificado digital y cerrás con un proyecto final hecho sobre una tarea real de tu empresa. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información de la ficha del curso, revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Nuevos grupos cada mes · lunes y miércoles 19:30 (Paraguay) · «Ver el curso».
 
@@ -96,7 +96,7 @@ Si la diferencia es clara, ya tenés un argumento concreto para proponer que otr
 
 ## Después de la última clase
 
-El proyecto final no termina el día de la presentación. La idea es que lo sigas usando y mejorando: ajustar la plantilla cuando cambie un formato, actualizar los documentos del Project cuando cambie una política y sumar nuevas tareas a medida que ganás confianza. Como las grabaciones quedan disponibles de por vida, podés volver al módulo que necesites cuando quieras dar el siguiente paso, por ejemplo, hacia la automatización ligera del módulo 5.
+El proyecto final no termina el día de la presentación. La idea es que lo sigas usando y mejorando: ajustar la plantilla cuando cambie un formato, actualizar los documentos del Project cuando cambie una política y sumar nuevas tareas a medida que ganás confianza. Como las grabaciones quedan disponibles en el campus virtual durante el curso, podés volver al módulo que necesites cuando quieras dar el siguiente paso, por ejemplo, hacia la automatización ligera del módulo 5.
 
 ## A quién apunta
 
@@ -109,7 +109,7 @@ La ficha lo dirige a **trabajo administrativo**, con el mismo temario para parti
 - **Inicio:** apertura mensual de cohortes; mirá la próxima fecha en la ficha.
 - **Días y hora:** lunes y miércoles, de 19:30 a 21:30, hora de Paraguay.
 - **Duración:** 20 horas, cinco módulos de cuatro horas.
-- **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
+- **Incluye:** acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final.
 - **Docente:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Inversión:** {precio_local}; confirmá monto y medio de pago por WhatsApp.
 
@@ -135,4 +135,4 @@ Solo dentro de lo que permitan la política interna y el plan de Claude que usen
 No. Claude explora y redacta; Power BI publica y actualiza tableros.
 
 **¿Qué pasa si no llego a una clase?**
-Queda grabada y tenés acceso de por vida, así que podés ponerte al día antes de la sesión siguiente y llegar con las dudas anotadas.
+Queda grabada y tenés acceso al campus virtual con las clases grabadas y el material durante el curso, así que podés ponerte al día antes de la sesión siguiente y llegar con las dudas anotadas.

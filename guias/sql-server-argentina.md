@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: sql-server
 url_curso: https://www.programbi.com/ar/cursos/sql-server
-title: "Curso de SQL Server Argentina en vivo: guía 2026 | ProgramBI"
-meta: "Curso de SQL online en vivo en Argentina: SQL Server desde cero en 20 h, martes y jueves 19:30. Temario, consultas de ejemplo y cómo sumarlo a Power BI."
-h1: "Curso de SQL Server en Argentina: aprendé SQL online y en vivo"
+title: Cómo aprender SQL Server en Argentina 2026 | ProgramBI
+meta: "Guía práctica para aprender SQL Server en Argentina: consultas SELECT, JOINs, CTEs, funciones de ventana y conexión directa con Power BI."
+h1: Cómo aprender SQL Server para análisis de datos en Argentina
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/ar/cursos/sql-server
@@ -26,7 +26,7 @@ nota_hermes: |
 
 # Curso de SQL Server en Argentina: aprendé SQL online y en vivo
 
-**Respuesta corta:** el [curso de SQL Server de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/sql-server) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Se cursa **martes y jueves de 19:30 a 21:30, hora de Argentina**, abre **nuevas cohortes todos los meses** (fecha vigente en la ficha) y cuesta **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de SQL Server de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/sql-server) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Se cursa **martes y jueves de 19:30 a 21:30, hora de Argentina**, abre **nuevas cohortes todos los meses** (fecha vigente en la ficha) y cuesta **{precio_local}**. Tenés acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué vas a saber hacer?** Consultar bases de datos sin depender de nadie: filtrar, agrupar, cruzar tablas con `JOIN`, usar subconsultas, CTEs, tablas temporales, funciones de ventana y `PIVOT`. Es la habilidad más pedida en búsquedas de datos y la que hace que tus tableros de Power BI tengan números confiables.
 
@@ -161,7 +161,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 - **20 horas, 8 módulos**, nivel básico-intermedio, desde cero.
 - Temario: SELECT, WHERE y ORDER BY; funciones y operadores; GROUP BY y HAVING; subconsultas; JOINs y vistas; CTEs y tablas temporales; funciones de ventana; PIVOT y UNPIVOT; IA aplicada a SQL Server.
 - **Nivel avanzado** (20 h): procedimientos almacenados y diseño de esquemas.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Inicio: **cohortes todos los meses** (consultá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -172,7 +172,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 ## Preguntas frecuentes
 
 **¿Cuánto sale el curso de SQL Server en Argentina?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Es online?**
 Sí, online y en vivo por Zoom, martes y jueves de 19:30 a 21:30, hora de Argentina.

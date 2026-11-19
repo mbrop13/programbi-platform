@@ -5,9 +5,9 @@ pais: mx
 hreflang: es-MX
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/mx/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos en México: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en México en vivo: SQL Server, Power BI y Python en 60 h (16:30 CDMX). Sueldos y guía para entrar al área."
-h1: "Curso de Análisis de Datos en México: la ruta para ser analista de datos"
+title: Cómo ser analista de datos en México 2026 | ProgramBI
+meta: "Ruta paso a paso para ser analista de datos en México en 2026: qué herramientas aprender (SQL, Power BI y Python), sueldos locales y formación en vivo."
+h1: "Cómo ser analista de datos en México en 2026: ruta, herramientas y sueldos"
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/mx/cursos/analisis-de-datos
@@ -28,7 +28,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en México: la ruta para ser analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI para México](https://www.programbi.com/mx/cursos/analisis-de-datos) es un programa en vivo por Zoom con **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta) en su nivel básico-intermedio. Las clases son **lunes y miércoles de 16:30 a 18:30, hora del centro de México (CDMX)**, hay **cohortes nuevas cada mes** (consulta la fecha vigente en la ficha) y la inversión es de **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI para México](https://www.programbi.com/mx/cursos/analisis-de-datos) es un programa en vivo por Zoom con **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta) en su nivel básico-intermedio. Las clases son **lunes y miércoles de 16:30 a 18:30, hora del centro de México (CDMX)**, hay **cohortes nuevas cada mes** (consulta la fecha vigente en la ficha) y la inversión es de **{precio_local}**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cómo convertirte en analista de datos en México?** Domina tres herramientas en este orden —SQL para sacar datos, Power BI para modelarlos y presentarlos, Python para limpiar y explorar volúmenes grandes— y arma un proyecto con datos de una operación real. Con eso cubres lo que piden la mayoría de las vacantes de «data analyst» en OCC o LinkedIn.
 
@@ -124,7 +124,7 @@ Información de la [ficha del curso para México](https://www.programbi.com/mx/c
 - **60 horas** en el nivel básico-intermedio: Power BI (tableros y DAX inicial), SQL Server (consultas y agregaciones) y Python (Pandas y visualización), 20 horas cada uno.
 - Temario: SQL desde cero, modelado y DAX, análisis exploratorio con Pandas, dashboards y reportes automáticos, ETL con Power Query, proyecto final con datos reales e IA como apoyo en cada módulo.
 - **Nivel avanzado** de otras 60 horas (automatización, inteligencia de tiempo y modelos): 120 horas en total.
-- **Grabaciones de por vida** y **certificado** digital al completar.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado** digital al completar.
 - Próximo inicio: **nuevas cohortes mensuales** (fecha exacta en la ficha). Inversión: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
@@ -135,7 +135,7 @@ Información de la [ficha del curso para México](https://www.programbi.com/mx/c
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de análisis de datos en México?**
-La inversión es de {precio_local} por el nivel básico-intermedio de 60 horas, con grabaciones de por vida y certificado.
+La inversión es de {precio_local} por el nivel básico-intermedio de 60 horas, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿A qué hora son las clases en México?**
 Lunes y miércoles de 16:30 a 18:30, hora del centro de México (CDMX), en vivo por Zoom.
@@ -147,7 +147,7 @@ Sí. SQL y Python se enseñan desde cero. Basta con manejar Excel a nivel de tab
 Si tu meta es solo hacer tableros, Power BI. Si quieres el puesto de analista de datos —extraer, modelar y analizar—, el de análisis de datos, que suma SQL Server y Python.
 
 **¿Qué pasa si falto a una sesión?**
-Cada clase queda grabada en el campus y tienes acceso de por vida.
+Cada clase queda grabada y tienes acceso al campus virtual con las clases grabadas y el material durante el curso.
 
 **¿Recibo constancia al terminar?**
 Sí, un certificado digital de ProgramBI al completar el curso.

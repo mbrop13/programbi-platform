@@ -24,7 +24,7 @@ nota_hermes: |
 
 **En pocas palabras:** el [curso de Análisis de datos de ProgramBI para Guatemala](https://www.programbi.com/gt/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**, con **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para aprender a sacar datos de una base, convertirlos en tableros y analizarlos con código. El nivel básico-intermedio ofrece **nuevas cohortes mensuales** (fecha publicada en la ficha), con clases **lunes y miércoles de 16:30 a 18:30, hora de Guatemala**. Precio: **{precio_local}**.
 
-En la misma ficha hay dos niveles de 60 horas —básico-intermedio y avanzado—, y el programa incluye grabaciones de por vida, certificado digital, proyecto final con datos reales e inteligencia artificial como apoyo en cada módulo. Información de la ficha revisada el 4 de noviembre de 2026.
+En la misma ficha hay dos niveles de 60 horas —básico-intermedio y avanzado—, y el programa incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital, proyecto final con datos reales e inteligencia artificial como apoyo en cada módulo. Información de la ficha revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cohortes cada mes · 16:30 hora de Guatemala · «Ver el curso».
 
@@ -153,7 +153,7 @@ Ambos niveles tienen 60 horas, 20 por herramienta.
 - **Inicio:** apertura mensual de grupos (fecha vigente en la ficha del curso).
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de Guatemala.
 - **Duración:** 60 horas por nivel (20 por herramienta).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI); según la ficha, ha liderado capacitaciones en AngloAmerican, CAP, Deloitte y SQM.
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -177,7 +177,7 @@ Abrimos grupos mensualmente los lunes y miércoles de 16:30 a 18:30, hora de Gua
 No. El nivel básico-intermedio parte desde cero en cada una de las tres herramientas, paso a paso.
 
 **¿Qué pasa si falto?**
-La clase queda grabada en el campus con acceso de por vida, para que te pongas al día antes de la siguiente.
+La clase queda grabada en el campus virtual con el material durante el curso, para que te pongas al día antes de la siguiente.
 
 **¿Puedo tomar solo una herramienta?**
 Sí. Los cursos de SQL Server, Power BI y Python existen por separado; este programa los integra con un proyecto común.
@@ -186,4 +186,4 @@ Sí. Los cursos de SQL Server, Power BI y Python existen por separado; este prog
 Sí. En todos esos sectores hay bases de datos, reportes que se repiten cada mes y decisiones que mejoran con análisis; el método que aprendes se adapta a cualquier rubro.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

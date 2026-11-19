@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { randomUUID } from "crypto";
 import { getPricingVariantForUser } from "@/lib/experiments/user-variant";
 import { bloqueoPorMercado } from "@/lib/paises/arbitraje";
+import { resolveOrCreateGuestUser } from "@/lib/pago/guest-user";
 
 /**
  * POST /api/flow/create
@@ -14,12 +15,9 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Debes iniciar sesión para comprar" }, { status: 401 });
-    }
-
     const body = await req.json();
-    const { items, couponCode } = body;
+    const { couponCode } = body;
+    let { items } = body;
 
     // Flow cobra con el precio de Chile: con IP de EE.UU. se rechaza.
     const bloqueo = bloqueoPorMercado(req.headers, "cl");
@@ -27,10 +25,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(bloqueo, { status: 409 });
     }
 
+    let userId: string;
+    let email: string;
+    if (user) {
+      userId = user.id;
+      email = user.email || "";
+    } else {
+      const guest = await resolveOrCreateGuestUser(req.headers, {
+        name: body.guestName,
+        email: body.guestEmail,
+        whatsapp: body.guestWhatsapp,
+      });
+      if (!guest.ok) {
+        return NextResponse.json({ error: guest.error }, { status: guest.status });
+      }
+      userId = guest.userId;
+      email = guest.email;
+    }
+
     if (!items || !Array.isArray(items) || items.length === 0) {
       // Backwards compatibility with old single-course checkout
       if (body.courseSlug) {
-        items.push({ courseSlug: body.courseSlug, levelName: body.levelName, quantity: 1 });
+        items = [{ courseSlug: body.courseSlug, levelName: body.levelName, quantity: 1 }];
       } else {
          return NextResponse.json({ error: "No se enviaron cursos para comprar" }, { status: 400 });
       }
@@ -38,16 +54,18 @@ export async function POST(req: NextRequest) {
 
     const { courses: masterCourses } = await import("@/lib/data/courses");
     
-    // Evaluate discount based on user subscription profile
+    // Evaluate discount based on authenticated user subscription profile only
     let baseDiscountPercent = 0;
     let specDiscountPercent = 0;
-    
-    const { data: profile } = await supabase.from('profiles').select('subscription_plan').eq('id', user.id).single();
-    if (profile?.subscription_plan) {
-      const userPlan = profile.subscription_plan;
-      if (userPlan === 'pro') { baseDiscountPercent = 20; specDiscountPercent = 10; }
-      else if (userPlan === 'max') { baseDiscountPercent = 25; specDiscountPercent = 12.5; }
-      else if (userPlan === 'ultra') { baseDiscountPercent = 40; specDiscountPercent = 20; }
+
+    if (user) {
+      const { data: profile } = await supabase.from('profiles').select('subscription_plan').eq('id', user.id).single();
+      if (profile?.subscription_plan) {
+        const userPlan = profile.subscription_plan;
+        if (userPlan === 'pro') { baseDiscountPercent = 20; specDiscountPercent = 10; }
+        else if (userPlan === 'max') { baseDiscountPercent = 25; specDiscountPercent = 12.5; }
+        else if (userPlan === 'ultra') { baseDiscountPercent = 40; specDiscountPercent = 20; }
+      }
     }
 
     const { getActivePromotions, getPriceOverrides } = await import("@/lib/supabase/comunidad-ai");
@@ -57,14 +75,22 @@ export async function POST(req: NextRequest) {
 
 
     const getOverriddenPrice = (slug: string, levelName: string, codePrice: number) => {
-       const override = priceOverrides.find((o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
+       const override = priceOverrides.find((o: { item_type?: string; item_id?: string; level_name?: string; price?: unknown }) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
        return override && typeof override.price === 'number' && override.price > 0 && override.price < codePrice
          ? override.price
          : codePrice;
     };
 
     let grandTotalClp = 0;
-    const validatedItems = [];
+    const validatedItems: Array<{
+      slug: string;
+      levelName: string;
+      quantity: number;
+      pricePerUnit: number;
+      title: string;
+      selectedStartDate?: string | null;
+      hasPromoDiscount: boolean;
+    }> = [];
 
     for (const item of items) {
        if (item.courseSlug === "asesoria") {
@@ -141,7 +167,6 @@ export async function POST(req: NextRequest) {
         });
     }
 
-    const email = user.email || "";
     // A-32 (OWASP ASVS L3): use a CSPRNG for order identifiers so they cannot
     // be predicted or collide. Math.random() is NOT cryptographically secure.
     const commerceOrder = `PBI-${randomUUID()}`;
@@ -163,7 +188,7 @@ export async function POST(req: NextRequest) {
     // Apply coupon discount if present
     if (couponCode) {
       const { validateCouponAction } = await import("@/lib/supabase/comunidad-ai");
-      const itemSlugs = (items || []).map((i: any) => i.courseSlug || i.slug).filter(Boolean);
+      const itemSlugs = (items || []).map((i: { courseSlug?: string; slug?: string }) => i.courseSlug || i.slug).filter(Boolean);
       const couponRes = await validateCouponAction(couponCode, itemSlugs);
       if (!couponRes.valid) {
         return NextResponse.json({ error: couponRes.message || "Cupón inválido" }, { status: 400 });
@@ -176,7 +201,7 @@ export async function POST(req: NextRequest) {
         grandTotalClp = Math.floor(grandTotalClp * discountMultiplier);
       } else {
         let finalTotalClp = 0;
-        for (const valItem of (validatedItems as any[])) {
+        for (const valItem of validatedItems) {
           const itemSubtotal = valItem.pricePerUnit * valItem.quantity;
           if (!valItem.hasPromoDiscount) {
             finalTotalClp += Math.floor(itemSubtotal * (1 - (couponRes.discount_percentage / 100)));
@@ -195,7 +220,7 @@ export async function POST(req: NextRequest) {
       amount: grandTotalClp,
       email,
       optional: {
-        userId: user.id
+        userId
       },
     });
 
@@ -212,9 +237,9 @@ export async function POST(req: NextRequest) {
       couponCode: couponCode || null
     });
 
-    const pricingVariant = await getPricingVariantForUser(adminDb, user.id);
+    const pricingVariant = await getPricingVariantForUser(adminDb, userId);
     const paymentRow: Record<string, unknown> = {
-      user_id: user.id,
+      user_id: userId,
       course_id: firstCourseId?.id || null,
       flow_order: commerceOrder,
       flow_token: flowResult.token,
@@ -224,10 +249,10 @@ export async function POST(req: NextRequest) {
       payment_method: tempMetadata,
     };
     if (pricingVariant) paymentRow.pricing_variant = pricingVariant;
-    const paymentInsert = await adminDb.from("payments").insert(paymentRow as any);
+    const paymentInsert = await adminDb.from("payments").insert(paymentRow as never);
     if (paymentInsert.error && paymentRow.pricing_variant) {
       delete paymentRow.pricing_variant;
-      await adminDb.from("payments").insert(paymentRow as any);
+      await adminDb.from("payments").insert(paymentRow as never);
     }
 
     // Save scheduling_slots as pending_payment
@@ -250,7 +275,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log("💰 Multi-cart Payment created:", commerceOrder, "Items:", validatedItems.length, "user:", user.id);
+    console.log("💰 Multi-cart Payment created:", commerceOrder, "Items:", validatedItems.length, "user:", userId);
 
     return NextResponse.json({
       url: flowResult.url,
@@ -258,11 +283,12 @@ export async function POST(req: NextRequest) {
       commerceOrder,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating Flow payment:", error);
     const isProd = process.env.NODE_ENV === "production";
+    const errMsg = error instanceof Error ? error.message : "Error al procesar el pago";
     return NextResponse.json(
-      { error: isProd ? "Error al procesar el pago" : (error.message || "Error al procesar el pago") },
+      { error: isProd ? "Error al procesar el pago" : errMsg },
       { status: 500 }
     );
   }

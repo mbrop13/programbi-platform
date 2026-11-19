@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: sql-server
 url_curso: https://www.programbi.com/pe/cursos/sql-server
-title: "Curso de SQL Server en Perú en vivo: guía 2026 | ProgramBI"
-meta: "Curso de SQL Server en vivo en Perú: consultas SQL desde cero en 20 h (martes y jueves 17:30 Lima) con ejercicios prácticos y Power BI."
-h1: "Curso de SQL Server en Perú: aprende SQL online, en vivo y desde cero"
+title: Cómo aprender SQL Server en Perú 2026 | ProgramBI
+meta: "Guía práctica para aprender SQL Server en Perú: consultas SELECT, JOINs, CTEs, funciones de ventana y conexión directa con Power BI."
+h1: Cómo aprender SQL Server para análisis de datos en Perú
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/pe/cursos/sql-server
@@ -25,7 +25,7 @@ nota_hermes: |
 
 # Curso de SQL Server en Perú: aprende SQL online, en vivo y desde cero
 
-**Respuesta corta:** el [curso de SQL Server de ProgramBI en Perú](https://www.programbi.com/pe/cursos/sql-server) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **martes y jueves de 17:30 a 19:30, hora de Perú**. Tiene **inicios todos los meses** (revisa la próxima fecha en la ficha) y cuesta **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de SQL Server de ProgramBI en Perú](https://www.programbi.com/pe/cursos/sql-server) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **martes y jueves de 17:30 a 19:30, hora de Perú**. Tiene **inicios todos los meses** (revisa la próxima fecha en la ficha) y cuesta **{precio_local}**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué aprendes?** A sacar tú mismo la información de una base de datos: consultas con `SELECT` y `WHERE`, resúmenes con `GROUP BY`, cruces con `JOIN`, subconsultas, CTEs, tablas temporales, funciones de ventana y `PIVOT`. Es la habilidad que más se repite en las convocatorias de analista y la que alimenta tus tableros de Power BI.
 
@@ -163,7 +163,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/sql-s
 - **20 horas, 8 módulos**, nivel básico-intermedio, desde cero.
 - Temario: SELECT, WHERE y ORDER BY; funciones y operadores; GROUP BY y HAVING; subconsultas; JOINs y vistas; CTEs y tablas temporales; funciones de ventana; PIVOT y UNPIVOT; IA aplicada a SQL Server.
 - **Nivel avanzado** (20 h): procedimientos almacenados y diseño de esquemas.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Inicio: **grupos todos los meses** (próxima fecha en la ficha). Precio: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -174,7 +174,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/sql-s
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de SQL Server en Perú?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de SQL es online?**
 Sí, online y en vivo por Zoom, martes y jueves de 17:30 a 19:30, hora de Perú.

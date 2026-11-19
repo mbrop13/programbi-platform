@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: access
 url_curso: https://www.programbi.com/pe/cursos/access
-title: "Curso de Access en Perú para administrativos | ProgramBI"
-meta: "Curso de Microsoft Access en Perú: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros a las 17:30 hora Lima."
-h1: "Curso de Access en Perú: organiza la información de tu chamba en bases de datos"
+title: Cómo usar Microsoft Access en Perú | ProgramBI
+meta: "Guía práctica para aprender Microsoft Access en Perú: tablas, relaciones, consultas SQL, formularios, informes y macros aplicadas al trabajo diario."
+h1: Cómo usar Microsoft Access para administración en Perú
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/pe/cursos/access
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta directa:** el [curso de Microsoft Access de ProgramBI para Perú](https://www.programbi.com/pe/cursos/access) dura **20 horas en vivo por Zoom**, repartidas en **7 módulos**, y está hecho para personal administrativo que quiere diseñar, construir y administrar bases de datos relacionales: tablas con claves y relaciones, consultas con criterios y SQL básico, formularios de registro con validaciones, informes exportables a PDF y Excel y macros para automatizar tareas frecuentes. El precio es **{precio_local}** y la ficha indica **cupos abiertos · calendario mensual activo**.
 
-Incluye grabaciones con acceso de por vida, certificado al completar y un proyecto integrador basado en un proceso empresarial. De acuerdo con las preguntas frecuentes de la ficha, las clases son a las 17:30, hora de Perú. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Información revisada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y un proyecto integrador basado en un proceso empresarial. De acuerdo con las preguntas frecuentes de la ficha, las clases son a las 17:30, hora de Perú. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Información revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar fecha».
 
@@ -122,7 +122,7 @@ Elige un proceso de tu chamba que hoy dependa de una hoja de cálculo y reúne e
 ## Datos generales
 
 - **Duración:** 20 horas, 7 módulos.
-- **Modalidad:** en vivo por Zoom, con grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, con acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, por confirmar.
 - **Horario:** según la FAQ de la ficha, 17:30 a 19:30, hora de Perú.
 - **Certificado:** al completar.
@@ -157,4 +157,4 @@ Sí. Entender tablas, claves y relaciones facilita mucho el modelado de datos en
 Access sirve muy bien para la base de un área o de un proceso, e incluye formularios e informes listos para usar; SQL Server está pensado para bases más grandes, compartidas por muchas personas y sistemas a la vez.
 
 **¿Qué obtengo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

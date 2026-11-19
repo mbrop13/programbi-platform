@@ -32,7 +32,7 @@ const SOLO_PAGINAS = process.argv.includes("--solo-paginas");
 const RAPIDO = process.argv.includes("--rapido");
 const VERBOSE = process.argv.includes("--verbose");
 
-const PAISES = ["ec", "uy", "cr", "do", "gt", "ve", "bo", "sv"];
+const PAISES = ["ar", "co", "mx", "pe", "uy"];
 
 const SLUGS = [
   "analisis-de-datos",
@@ -58,8 +58,7 @@ const RUTAS_NOINDEX = {};
 
 /** Variantes que la regla deja indexables y hay que verificar como tales. */
 const EXCEPCIONES_INDEXABLES = [
-  { pais: "ve", ruta: "/implementacion-power-bi" },
-  { pais: "uy", ruta: "/faq" },
+  { pais: "uy", ruta: "/preguntas-frecuentes" },
   { pais: "uy", ruta: "/implementacion-power-bi" },
   { pais: "uy", ruta: "/migrar-excel-a-power-bi" },
 ];
@@ -289,7 +288,7 @@ async function revisarSitemap() {
 }
 
 /** Países con indexación global permitida; el noindex por ruta se resta aparte. */
-const PAISES_INDEXABLES = ["cl", "ar", "co", "mx", "pe", "uy", "ve", "bo", "cr", "do", "ec", "gt", "sv"];
+const PAISES_INDEXABLES = ["cl", "ar", "co", "mx", "pe", "uy"];
 
 /** Variantes indexables de una ruta: todas menos las consolidadas por WS9. */
 function variantesIndexables(ruta) {

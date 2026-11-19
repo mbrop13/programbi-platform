@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: ia-productividad
 url_curso: https://www.programbi.com/pe/cursos/ia-productividad
-title: "Curso de IA en Productividad en Perú: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Perú en vivo: 20 h para automatizar informes con ChatGPT, Claude, Gemini y Copilot de 17:30 a 19:30 hora Lima."
-h1: "Curso de IA en Productividad en Perú: informes que se arman solos"
+title: Cómo usar IA para productividad en Perú | ProgramBI
+meta: "Guía para aplicar ChatGPT, Claude, Gemini y Copilot en Perú: automatiza reportes, Excel, documentos y correos sin programar."
+h1: Cómo automatizar informes de oficina con IA en Perú
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/pe/cursos/ia-productividad
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de IA en Productividad en Perú: informes que se arman solos
 
-**Respuesta corta:** el [curso de IA en Productividad de ProgramBI en Perú](https://www.programbi.com/pe/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Perú**, con 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes usando **ChatGPT, Claude, Gemini, Copilot y automatizaciones sin código**. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de IA en Productividad de ProgramBI en Perú](https://www.programbi.com/pe/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Perú**, con 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes usando **ChatGPT, Claude, Gemini, Copilot y automatizaciones sin código**. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 Es un curso 100 % práctico, sin programación. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · calendario mensual activo**. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
@@ -123,13 +123,13 @@ Muchos informes recurrentes terminan convirtiéndose en tableros. Para ese paso,
 
 ## Horario desde Perú
 
-Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año y Chile cambia con el horario de verano, por lo que la ficha indica que la clase se ve a las 17:30 cuando Chile está en verano y a las 18:30 en invierno. La ficha de cada cohorte muestra la hora exacta, y todas las sesiones quedan grabadas con acceso de por vida.
+Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año y Chile cambia con el horario de verano, por lo que la ficha indica que la clase se ve a las 17:30 cuando Chile está en verano y a las 18:30 en invierno. La ficha de cada cohorte muestra la hora exacta, y todas las sesiones quedan grabadas con acceso al campus virtual y el material durante el curso.
 
 ## Resumen
 
 - 20 horas, 6 módulos, 100 % prácticos.
 - En vivo por Zoom; cupos abiertos · consulta de fechas al día.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyecto final con tu propio informe.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.

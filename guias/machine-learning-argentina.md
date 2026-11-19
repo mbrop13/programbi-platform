@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: machine-learning
 url_curso: https://www.programbi.com/ar/cursos/machine-learning
-title: "Curso de Machine Learning Argentina: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en Argentina en vivo: 20 h de regresión, clasificación, clustering y anomalías con Python a las 19:30 hora local."
-h1: "Curso de Machine Learning en Argentina: modelos que predicen, con Python"
+title: Cómo aprender Machine Learning en Argentina | ProgramBI
+meta: "Ruta práctica de Machine Learning en Argentina: qué base de Python necesitas, algoritmos clave con Scikit-learn y casos aplicados a negocios."
+h1: Cómo aprender Machine Learning con Python para negocios en Argentina
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/ar/cursos/machine-learning
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Machine Learning en Argentina: modelos que predicen, con Python
 
-**Respuesta corta:** el [curso de Machine Learning de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/machine-learning) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Argentina**, para quienes ya programan en Python y quieren armar modelos predictivos aplicados a negocios. Vas a ver aprendizaje supervisado —regresión, clasificación con logística y SVM, árboles y ensembles, validación cruzada— y no supervisado —K-Means, PCA, t-SNE, anomalías y reglas de asociación—. El precio es **{precio_local}**, con grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Machine Learning de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/machine-learning) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Argentina**, para quienes ya programan en Python y quieren armar modelos predictivos aplicados a negocios. Vas a ver aprendizaje supervisado —regresión, clasificación con logística y SVM, árboles y ensembles, validación cruzada— y no supervisado —K-Means, PCA, t-SNE, anomalías y reglas de asociación—. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · consultá las próximas fechas**. El pago se hace en pesos argentinos con Mercado Pago o transferencia.
 
@@ -141,7 +141,7 @@ Las clases son de 19:30 a 21:30 en Buenos Aires. Argentina usa UTC-3 todo el añ
 
 - 20 horas en 2 módulos, supervisado y no supervisado.
 - En vivo por Zoom; cupos abiertos · fechas disponibles al consultar.
-- Grabaciones de por vida, certificado digital, proyectos con datos reales.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital, proyectos con datos reales.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
 
@@ -161,7 +161,7 @@ Sí. El curso es para quienes ya lo manejan; no arranca desde cero.
 La ficha muestra cupos abiertos para el próximo grupo. Escribí por WhatsApp para saber la próxima.
 
 **¿Qué pasa si me pierdo una clase?**
-Queda grabada y la ves cuando quieras, con acceso de por vida.
+Queda grabada y la ves cuando quieras, con acceso al campus virtual y el material durante el curso.
 
 **¿Me dan certificado?**
 Sí, un certificado digital de ProgramBI al completar el curso.

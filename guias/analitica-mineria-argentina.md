@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/ar/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Minería en Argentina | ProgramBI"
-meta: "Curso de análisis de datos para minería en Argentina: Power BI, SQL Server y Python para turnos, flota, mantenimiento y sensores. 60 h por nivel en vivo."
-h1: "Curso de Análisis de Datos para la Minería en Argentina: datos de operación que se entienden"
+title: Power BI y datos para minería en Argentina | ProgramBI
+meta: "Guía de análisis de datos para minería en Argentina: cómo llevar turnos, flota, OEE y mantención de Excel a Power BI, SQL y Python."
+h1: Cómo aplicar Power BI, SQL y Python en minería en Argentina
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/ar/cursos/analisis-de-datos
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Lo esencial:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en Argentina](https://www.programbi.com/ar/cursos/analisis-de-datos) son **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, para que aprendas a trabajar con Power BI, SQL Server y Python sobre datos reales de una operación: partes de turno, flota, mantenimiento, combustible, inventarios y sensores, con IA generativa como apoyo para escribir consultas y scripts. El nivel básico-intermedio sale **{precio_local}** y la ficha muestra **cupos abiertos · consultá las próximas fechas**.
 
-Tenés grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son a las 19:30, hora argentina. Pagás en pesos argentinos con Mercado Pago o transferencia. Datos revisados el 4 de noviembre de 2026.
+Tenés acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, las clases son a las 19:30, hora argentina. Pagás en pesos argentinos con Mercado Pago o transferencia. Datos revisados el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar fecha».
 
@@ -109,7 +109,7 @@ La ficha también muestra un nivel avanzado, para **dominar el ciclo completo de
 ## Datos del curso
 
 - **Niveles:** dos niveles de 60 horas cada uno (20 h SQL Server, 20 h Power BI, 20 h Python).
-- **Modalidad:** en vivo por Zoom, grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, a confirmar.
 - **Horario:** según la FAQ de la ficha, 19:30 a 21:30, hora argentina.
 - **Certificado:** al completar.
@@ -135,10 +135,10 @@ No. El nivel básico-intermedio arranca desde los fundamentos de las tres herram
 Sí. Turnos, flota, mantenimiento, consumos y sensores aparecen en todo tipo de operación.
 
 **¿Y si estoy en rotación y no me puedo conectar?**
-Las clases quedan grabadas en el campus con acceso de por vida, así que las ves cuando bajás del yacimiento y llegás al día a la clase siguiente.
+Las clases quedan grabadas en el campus virtual con el material durante el curso, así que las ves cuando bajás del yacimiento y llegás al día a la clase siguiente.
 
 **¿Qué diferencia tiene con el curso de Power BI?**
 El de Power BI profundiza en una sola herramienta con ejemplos de negocio en general; este combina Power BI, SQL Server y Python con casos de mina, planta y mantenimiento.
 
 **¿Qué me llevo al terminar?**
-Certificado digital de ProgramBI y las grabaciones de por vida.
+Certificado digital de ProgramBI y las clases grabadas y el material en el campus virtual durante el curso.

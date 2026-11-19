@@ -395,7 +395,7 @@ export default async function PreciosPage({
               Ver cursos
             </Link>
             <Link
-              href={href("/faq")}
+              href={href("/preguntas-frecuentes")}
               className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
             >
               Preguntas frecuentes

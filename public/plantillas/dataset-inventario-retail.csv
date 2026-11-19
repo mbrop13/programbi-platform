@@ -1,0 +1,61 @@
+FechaCorte,Bodega,SKU,Producto,Categoria,StockInicial,Entradas,Salidas,StockFinal,StockMinimo,CostoUnitarioCLP,PrecioVentaCLP,LeadTimeDias,VentaUltimos30Dias
+2026-03-31,Santiago Centro,SKU-1001,Notebook Pro 14,Computacion,20,0,12,8,12,520000,799000,7,20
+2026-03-31,Santiago Centro,SKU-1002,Monitor IPS 27,Computacion,27,18,17,28,13,145000,229000,5,25
+2026-03-31,Santiago Centro,SKU-1003,Teclado Mecanico,Perifericos,34,21,22,33,14,32000,59900,3,30
+2026-03-31,Santiago Centro,SKU-1004,Mouse Ergonomico,Perifericos,41,24,27,38,15,18000,34900,3,35
+2026-03-31,Santiago Centro,SKU-1005,Silla Gerencial,Mobiliario,48,0,32,16,16,110000,199000,10,40
+2026-03-31,Santiago Centro,SKU-1006,Escritorio Ajustable,Mobiliario,55,30,37,48,17,185000,319000,12,45
+2026-03-31,Santiago Centro,SKU-1007,Hub USB-C 8en1,Accesorios,62,33,42,53,18,21000,42900,4,50
+2026-03-31,Santiago Centro,SKU-1008,Webcam FullHD,Perifericos,69,36,47,58,19,28000,54900,4,55
+2026-03-31,Santiago Centro,SKU-1009,Audifonos ANC,Audio,76,0,12,64,20,65000,129900,6,20
+2026-03-31,Santiago Centro,SKU-1010,SSD NVMe 1TB,Almacenamiento,23,17,17,23,21,49000,89900,5,25
+2026-03-31,Santiago Centro,SKU-1011,Router WiFi 6,Redes,30,20,22,28,12,55000,99900,6,30
+2026-03-31,Santiago Centro,SKU-1012,UPS 1200VA,Energia,37,23,27,33,13,72000,134900,8,35
+2026-03-31,Santiago Centro,SKU-1013,Impresora Laser,Oficina,44,0,32,12,14,135000,219000,9,40
+2026-03-31,Santiago Centro,SKU-1014,Toner Negro XL,Insumos,51,29,37,0,15,29000,54900,3,45
+2026-03-31,Santiago Centro,SKU-1015,Cable HDMI 2m,Accesorios,58,32,42,48,16,4500,11900,2,50
+2026-03-31,Santiago Centro,SKU-1016,Tablet 11 Pulgadas,Computacion,65,35,47,53,17,210000,349000,7,55
+2026-03-31,Santiago Centro,SKU-1017,Docking Station,Accesorios,72,0,12,60,18,89000,159900,6,20
+2026-03-31,Santiago Centro,SKU-1018,Microfono USB,Audio,79,16,17,78,19,38000,74900,5,25
+2026-03-31,Santiago Centro,SKU-1019,Soporte Monitor,Mobiliario,26,19,22,23,20,24000,49900,4,30
+2026-03-31,Santiago Centro,SKU-1020,Switch 8 Puertos,Redes,33,22,27,28,21,31000,59900,5,35
+2026-03-31,Santiago Centro,SKU-1021,Memoria RAM 16GB,Almacenamiento,40,0,32,8,12,27000,52900,4,40
+2026-03-31,Santiago Centro,SKU-1022,Mochila Notebook,Accesorios,47,28,37,38,13,19000,39900,3,45
+2026-03-31,Santiago Centro,SKU-1023,Lampara Escritorio,Oficina,54,31,42,43,14,15000,32900,4,50
+2026-03-31,Santiago Centro,SKU-1024,Cargador GaN 65W,Energia,61,34,47,48,15,17000,35900,3,55
+2026-03-31,Santiago Centro,SKU-1025,Disco Externo 2TB,Almacenamiento,68,0,12,56,16,44000,79900,5,20
+2026-03-31,Santiago Centro,SKU-1026,Proyector Portatil,Oficina,75,15,17,73,17,195000,329000,10,25
+2026-03-31,Santiago Centro,SKU-1027,Lector Codigo Barra,Oficina,22,18,22,18,18,34000,64900,5,30
+2026-03-31,Santiago Centro,SKU-1028,Adaptador Ethernet,Accesorios,29,21,27,23,19,9000,19900,2,35
+2026-03-31,Santiago Centro,SKU-1029,Parlante Conferencia,Audio,36,0,32,4,20,58000,109900,6,40
+2026-03-31,Santiago Centro,SKU-1030,Estabilizador Voltaje,Energia,43,27,37,33,21,22000,44900,4,45
+2026-03-31,Antofagasta,SKU-1001,Notebook Pro 14,Computacion,33,15,19,29,12,520000,799000,7,27
+2026-03-31,Antofagasta,SKU-1002,Monitor IPS 27,Computacion,40,18,24,34,13,145000,229000,5,32
+2026-03-31,Antofagasta,SKU-1003,Teclado Mecanico,Perifericos,47,21,29,39,14,32000,59900,3,37
+2026-03-31,Antofagasta,SKU-1004,Mouse Ergonomico,Perifericos,54,0,34,20,15,18000,34900,3,42
+2026-03-31,Antofagasta,SKU-1005,Silla Gerencial,Mobiliario,61,27,39,0,16,110000,199000,10,47
+2026-03-31,Antofagasta,SKU-1006,Escritorio Ajustable,Mobiliario,68,30,44,54,17,185000,319000,12,52
+2026-03-31,Antofagasta,SKU-1007,Hub USB-C 8en1,Accesorios,75,33,49,59,18,21000,42900,4,57
+2026-03-31,Antofagasta,SKU-1008,Webcam FullHD,Perifericos,22,0,14,8,19,28000,54900,4,22
+2026-03-31,Antofagasta,SKU-1009,Audifonos ANC,Audio,29,39,19,49,20,65000,129900,6,27
+2026-03-31,Antofagasta,SKU-1010,SSD NVMe 1TB,Almacenamiento,36,17,24,29,21,49000,89900,5,32
+2026-03-31,Antofagasta,SKU-1011,Router WiFi 6,Redes,43,20,29,34,12,55000,99900,6,37
+2026-03-31,Antofagasta,SKU-1012,UPS 1200VA,Energia,50,0,34,16,13,72000,134900,8,42
+2026-03-31,Antofagasta,SKU-1013,Impresora Laser,Oficina,57,26,39,44,14,135000,219000,9,47
+2026-03-31,Antofagasta,SKU-1014,Toner Negro XL,Insumos,64,29,44,49,15,29000,54900,3,52
+2026-03-31,Antofagasta,SKU-1015,Cable HDMI 2m,Accesorios,71,32,49,54,16,4500,11900,2,57
+2026-03-31,Antofagasta,SKU-1016,Tablet 11 Pulgadas,Computacion,78,0,14,64,17,210000,349000,7,22
+2026-03-31,Antofagasta,SKU-1017,Docking Station,Accesorios,25,38,19,44,18,89000,159900,6,27
+2026-03-31,Antofagasta,SKU-1018,Microfono USB,Audio,32,16,24,24,19,38000,74900,5,32
+2026-03-31,Antofagasta,SKU-1019,Soporte Monitor,Mobiliario,39,19,29,29,20,24000,49900,4,37
+2026-03-31,Antofagasta,SKU-1020,Switch 8 Puertos,Redes,46,0,34,12,21,31000,59900,5,42
+2026-03-31,Antofagasta,SKU-1021,Memoria RAM 16GB,Almacenamiento,53,25,39,39,12,27000,52900,4,47
+2026-03-31,Antofagasta,SKU-1022,Mochila Notebook,Accesorios,60,28,44,44,13,19000,39900,3,52
+2026-03-31,Antofagasta,SKU-1023,Lampara Escritorio,Oficina,67,31,49,0,14,15000,32900,4,57
+2026-03-31,Antofagasta,SKU-1024,Cargador GaN 65W,Energia,74,0,14,60,15,17000,35900,3,22
+2026-03-31,Antofagasta,SKU-1025,Disco Externo 2TB,Almacenamiento,21,37,19,39,16,44000,79900,5,27
+2026-03-31,Antofagasta,SKU-1026,Proyector Portatil,Oficina,28,15,24,19,17,195000,329000,10,32
+2026-03-31,Antofagasta,SKU-1027,Lector Codigo Barra,Oficina,35,18,29,24,18,34000,64900,5,37
+2026-03-31,Antofagasta,SKU-1028,Adaptador Ethernet,Accesorios,42,0,34,8,19,9000,19900,2,42
+2026-03-31,Antofagasta,SKU-1029,Parlante Conferencia,Audio,49,24,39,34,20,58000,109900,6,47
+2026-03-31,Antofagasta,SKU-1030,Estabilizador Voltaje,Energia,56,27,44,39,21,22000,44900,4,52

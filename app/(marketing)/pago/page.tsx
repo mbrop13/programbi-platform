@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import PagoClient from "./PagoClient";
 import { estadosPublicos } from "@/lib/paises/cobro";
@@ -31,10 +30,6 @@ export default async function PagoPage({
   const catalogPromise = getCheckoutCatalog();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/");
-  }
-
   const catalog = await catalogPromise;
 
   return (
@@ -52,7 +47,8 @@ export default async function PagoPage({
         curso={uno(query.curso)}
         nivel={uno(query.nivel)}
         servicio={uno(query.servicio)}
-        userEmail={user.email ?? ""}
+        userEmail={user?.email ?? ""}
+        isAuthenticated={Boolean(user)}
       />
     </Suspense>
   );

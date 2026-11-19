@@ -5,9 +5,9 @@ pais: mx
 hreflang: es-MX
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/mx/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Minería en México | ProgramBI"
-meta: "Curso de análisis de datos para minería en México: Power BI, SQL Server y Python para turnos, flota, mantenimiento y sensores. 60 h por nivel en vivo."
-h1: "Curso de Análisis de Datos para la Minería en México: del reporte de turno al dashboard"
+title: Power BI y datos para minería en México | ProgramBI
+meta: "Guía de análisis de datos para minería en México: cómo llevar turnos, flota, OEE y mantención de Excel a Power BI, SQL y Python."
+h1: Cómo aplicar Power BI, SQL y Python en minería en México
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/mx/cursos/analisis-de-datos
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en México](https://www.programbi.com/mx/cursos/analisis-de-datos) son **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, donde aprendes a usar Power BI, SQL Server y Python sobre datos de operación minera —turnos, flota, mantenimiento, combustible, sensores— con apoyo de IA generativa para escribir consultas y scripts. El nivel básico-intermedio tiene un precio de **{precio_local}**, y actualmente hay **cupos abiertos · fechas vigentes en calendario**.
 
-Incluye grabaciones de por vida, certificado al completar y proyectos con datos reales. Las preguntas frecuentes de la ficha indican clases a las 16:30, hora del centro de México. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Información revisada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y proyectos con datos reales. Las preguntas frecuentes de la ficha indican clases a las 16:30, hora del centro de México. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Información revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar fecha».
 
@@ -109,7 +109,7 @@ La ficha también muestra un nivel avanzado para **dominar el ciclo completo del
 ## Datos clave
 
 - **Niveles:** dos niveles de 60 horas cada uno (20 h SQL Server, 20 h Power BI, 20 h Python).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos; consulta la próxima cohorte.
 - **Horario:** según la FAQ de la ficha, 16:30 a 18:30, hora del centro de México.
 - **Certificado:** al completar.
@@ -135,7 +135,7 @@ No. El nivel básico-intermedio empieza desde los fundamentos de Power BI, SQL y
 Los ejemplos son de minería, pero la ficha lo orienta también a profesionales industriales: turnos, flota, mantenimiento y sensores existen en muchas plantas.
 
 **¿Qué pasa si estoy en rol de trabajo y no puedo conectarme?**
-Las clases quedan grabadas con acceso de por vida, así que puedes verlas en tus días de descanso y retomar el ritmo sin perder contenido.
+Las clases quedan grabadas con acceso al campus virtual y el material durante el curso, así que puedes verlas en tus días de descanso y retomar el ritmo sin perder contenido.
 
 **¿Qué diferencia hay con el curso de Power BI?**
 El curso de Power BI se centra en una sola herramienta con ejemplos de negocio en general; este combina Power BI, SQL y Python con casos de turnos, flota, mantenimiento y sensores propios de la minería.

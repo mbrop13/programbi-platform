@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: claude
 url_curso: https://www.programbi.com/co/cursos/claude
-title: "Curso de Claude en Colombia online en vivo | ProgramBI"
-meta: "Curso de Claude en Colombia en vivo por Zoom: 20 h para aplicar IA en oficina, Excel y reportes. Horario 17:30 Bogotá e inicios mensuales."
-h1: "Curso de Claude en Colombia: IA de Anthropic para el trabajo de oficina, en vivo"
+title: Cómo usar Claude AI en el trabajo en Colombia | ProgramBI
+meta: "Guía práctica para usar Claude (Anthropic) en Colombia: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+h1: Cómo usar Claude AI para trabajo administrativo en Colombia
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/co/cursos/claude
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **En resumen:** el [curso de Claude de ProgramBI para Colombia](https://www.programbi.com/co/cursos/claude) es un programa **en vivo por Zoom de 20 horas** —cinco módulos de cuatro horas— para incorporar Claude, el asistente de inteligencia artificial de Anthropic, en las labores administrativas: redactar, resumir, ordenar hojas de cálculo, preparar presentaciones y automatizar tareas sencillas **sin escribir código**. Abre **cohortes nuevas cada mes** (próxima fecha en la ficha) y las sesiones son **lunes y miércoles, de 17:30 a 19:30, hora de Colombia**. Valor: **{precio_local}**.
 
-Cada clase queda grabada con acceso de por vida, hay certificado digital al finalizar y se cierra con un proyecto aplicado a un proceso de su propia empresa. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia. Información tomada de la ficha del curso, consultada el 4 de noviembre de 2026.
+Cada clase queda grabada con acceso al campus virtual y el material durante el curso, hay certificado digital al finalizar y se cierra con un proyecto aplicado a un proceso de su propia empresa. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia. Información tomada de la ficha del curso, consultada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cohortes cada mes · lunes y miércoles 17:30 hora Colombia · «Ver el curso».
 
@@ -104,7 +104,7 @@ El valor no está en que Claude "haga" el proceso, sino en que la persona sale c
 - **Inicio:** inscripciones mensuales abiertas; consulte la siguiente fecha en la ficha.
 - **Sesiones:** lunes y miércoles, de 17:30 a 19:30, hora de Colombia (19:30 a 21:30 en Chile).
 - **Intensidad:** 20 horas en 5 módulos de 4 horas.
-- **Incluye:** grabaciones de por vida, certificado digital, proyecto final.
+- **Incluye:** acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital, proyecto final.
 - **Docente:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Valor:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
 
@@ -134,4 +134,4 @@ Solo dentro de lo que permitan la Ley 1581 de 2012, la política de su empresa y
 No. Claude ayuda a explorar y redactar; Power BI publica tableros que se actualizan.
 
 **¿Y si no puedo asistir a una sesión?**
-La grabación queda disponible de por vida, así que puede ponerse al día antes de la sesión siguiente.
+La grabación queda disponible en el campus virtual durante el curso, así que puede ponerse al día antes de la sesión siguiente.

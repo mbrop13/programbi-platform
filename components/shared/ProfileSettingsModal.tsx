@@ -1011,7 +1011,7 @@ export default function ProfileSettingsModal({
                             color: "text-emerald-600 bg-emerald-50",
                           },
                           {
-                            href: "/faq",
+                            href: "/preguntas-frecuentes",
                             icon: LifeBuoy,
                             title: "Centro de ayuda",
                             desc: "Preguntas frecuentes y soporte",

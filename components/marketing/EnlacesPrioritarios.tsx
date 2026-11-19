@@ -23,9 +23,9 @@ const OBJETIVOS = [
     text: "SQL para consultar, Power BI para modelar y Python para automatizar lo que se repite.",
   },
   {
-    href: "/analisis-de-datos-mineria",
+    href: "/power-bi-mineria-chile",
     kicker: "Minería",
-    title: "Análisis de datos para minería",
+    title: "Power BI y análisis de datos para minería",
     text: "Reportes de turno, OEE y mantenimiento con los datos que ya existen en faena.",
   },
   {
@@ -132,6 +132,26 @@ export function ObjetivosCursos({ contexto = "home" }: { contexto?: Contexto }) 
  */
 const RECURSOS = [
   {
+    href: "/plantillas",
+    title: "Plantillas gratuitas de Power BI y SQL",
+    text: "8 datasets descargables con medidas DAX, 40 ejercicios SQL resueltos y notebook Python.",
+  },
+  {
+    href: "/simulador-pl-300",
+    title: "Simulador gratuito examen PL-300",
+    text: "40 preguntas técnicas en español por dominio oficial, puntaje sobre 1000 y explicaciones.",
+  },
+  {
+    href: "/herramientas/excel-a-dax",
+    title: "Conversor de fórmulas Excel a DAX",
+    text: "Traduce BUSCARV, SUMAR.SI, SI.ERROR y 25 fórmulas más de Excel a Power BI.",
+  },
+  {
+    href: "/sueldos-analista-datos-chile",
+    title: "Sueldos analista de datos en Chile",
+    text: "Benchmark salarial referencial por rol y calculadora Bruto ↔ Líquido.",
+  },
+  {
     href: "/versus",
     title: "Comparativas de herramientas de datos",
     text: "Power BI vs Excel, SQL Server vs PostgreSQL y Python vs R, con criterio para elegir.",
@@ -157,37 +177,22 @@ const RECURSOS = [
     text: "Regresión, clasificación y redes neuronales con Python, en nivel avanzado.",
   },
   {
-    href: "/power-bi-mineria-chile",
-    title: "Power BI para minería en Chile",
-    text: "Reportes de faena, OEE y el Excel que cuesta soltar, con el curso o el pack in-company.",
-  },
-  {
     href: "/glosario",
     title: "Glosario de términos de datos",
     text: "SQL, DAX, Power BI y Machine Learning definidos para usar en una reunión.",
   },
   {
-    href: "/faq",
+    href: "/preguntas-frecuentes",
     title: "Preguntas frecuentes",
     text: "Clases, grabaciones, certificados, cuotas y medios de pago por país.",
   },
   {
-    href: "/empleos",
-    title: "Bolsa de trabajo de datos",
-    text: "Perfiles con certificados verificados y preinscripción abierta para candidatos y empresas.",
-  },
-  {
-    href: "/empleos/vacantes",
-    title: "Vacantes publicadas",
-    text: "Ofertas de datos y tecnología de empresas verificadas, con postulación en línea.",
-  },
-  {
-    href: "/curso-sql-online",
-    title: "Curso SQL online en vivo",
+    href: "/cursos/sql-server",
+    title: "Curso SQL Server en vivo",
     text: "Consultas SELECT, JOINs, GROUP BY y procedimientos almacenados en SQL Server, 20 horas por nivel.",
   },
   {
-    href: "/curso-python",
+    href: "/cursos/python",
     title: "Curso Python para análisis de datos",
     text: "Pandas, limpieza, visualización y automatización de reportes en vivo desde cero, 20 horas por nivel.",
   },
@@ -220,12 +225,11 @@ export function RecursosDatos({ contexto = "home" }: { contexto?: Contexto }) {
         >
           {contexto === "cursos"
             ? "Compara, consulta y sigue con tu carrera"
-            : "Comparativas, glosario y bolsa de trabajo"}
+            : "Plantillas, herramientas gratuitas y comparativas"}
         </h2>
         <p className="mt-4 max-w-[62ch] text-sm leading-relaxed text-mute">
-          Páginas de apoyo para elegir herramienta, resolver una duda puntual o buscar
-          trabajo en datos. Todas se actualizan con la misma información de precios y
-          horarios del sitio.
+          Recursos gratuitos para practicar con datasets reales, simular el PL-300, comparar
+          herramientas o resolver dudas sobre el programa.
         </p>
 
         <ul className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">

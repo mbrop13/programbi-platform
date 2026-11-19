@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/ar/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Argentina: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Argentina en vivo: SQL Server, Power BI y Python en 60 h (lunes y miércoles 19:30). Sueldos Sysarmy y ruta."
-h1: "Curso de Análisis de Datos en Argentina: cómo ser analista de datos"
+title: Cómo ser analista de datos en Argentina 2026 | ProgramBI
+meta: "Ruta paso a paso para ser analista de datos en Argentina en 2026: qué herramientas aprender (SQL, Power BI y Python), sueldos locales y formación en vivo."
+h1: "Cómo ser analista de datos en Argentina en 2026: ruta, herramientas y sueldos"
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/ar/cursos/analisis-de-datos
@@ -28,7 +28,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Argentina: cómo ser analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/analisis-de-datos) es en vivo por Zoom y en su nivel básico-intermedio cubre **SQL Server, Power BI y Python en 60 horas** (20 por herramienta). Se cursa **lunes y miércoles de 19:30 a 21:30, hora de Argentina**, abre nuevas cohortes todos los meses (próxima fecha en la ficha) y cuesta **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/analisis-de-datos) es en vivo por Zoom y en su nivel básico-intermedio cubre **SQL Server, Power BI y Python en 60 horas** (20 por herramienta). Se cursa **lunes y miércoles de 19:30 a 21:30, hora de Argentina**, abre nuevas cohortes todos los meses (próxima fecha en la ficha) y cuesta **{precio_local}**. Tenés acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cómo ser analista de datos en Argentina?** Aprendé a consultar bases con SQL, a modelar y mostrar resultados en Power BI y a usar Python para limpiar y explorar lo que Excel no banca. Sumale un proyecto propio y, si apuntás a laburos remotos para afuera, inglés. Con eso cubrís lo que se repite en la mayoría de los avisos.
 
@@ -128,7 +128,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 - **60 horas** en el básico-intermedio: Power BI (tableros y DAX inicial), SQL Server (consultas y agregaciones) y Python (Pandas y visualización).
 - Temas: SQL desde cero, modelado y DAX, análisis exploratorio, dashboards y reportes automáticos, ETL con Power Query, proyecto final con datos reales, IA de apoyo en cada módulo.
 - **Nivel avanzado** con 60 horas más: automatización, inteligencia de tiempo y modelos.
-- **Grabaciones de por vida** y **certificado** al completar.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado** al completar.
 - Inicio: **inicios todos los meses** (consultá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -139,7 +139,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 ## Preguntas frecuentes
 
 **¿Cuánto sale el curso de análisis de datos en Argentina?**
-El nivel básico-intermedio de 60 horas cuesta {precio_local} e incluye grabaciones de por vida y certificado.
+El nivel básico-intermedio de 60 horas cuesta {precio_local} e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué días y a qué hora se cursa?**
 Lunes y miércoles de 19:30 a 21:30, hora de Argentina, en vivo por Zoom.
@@ -151,7 +151,7 @@ No. SQL y Python arrancan desde cero; alcanza con manejar Excel básico.
 Si solo querés tableros, Power BI. Si buscás el puesto de analista completo, el de análisis de datos suma SQL Server y Python.
 
 **¿Qué pasa si me pierdo una clase?**
-Queda grabada en el campus y la podés ver cuando quieras, de por vida.
+Queda grabada en el campus y la podés ver en el campus virtual durante el curso.
 
 **¿Hay certificado?**
 Sí, certificado digital de ProgramBI al completar el curso.

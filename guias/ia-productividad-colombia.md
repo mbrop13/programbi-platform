@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: ia-productividad
 url_curso: https://www.programbi.com/co/cursos/ia-productividad
-title: "Curso de IA en Productividad Colombia: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Colombia en vivo: 20 h para automatizar reportes con ChatGPT, Claude, Gemini y Copilot a las 17:30 hora Bogotá."
-h1: "Curso de IA en Productividad en Colombia: automatiza tus informes administrativos"
+title: Cómo usar IA para productividad en Colombia | ProgramBI
+meta: "Guía para aplicar ChatGPT, Claude, Gemini y Copilot en Colombia: automatiza reportes, Excel, documentos y correos sin programar."
+h1: Cómo automatizar informes de oficina con IA en Colombia
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/co/cursos/ia-productividad
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de IA en Productividad en Colombia: automatiza tus informes administrativos
 
-**Respuesta corta:** el [curso de IA en Productividad de ProgramBI en Colombia](https://www.programbi.com/co/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Colombia**, con 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes usando **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. El valor es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de IA en Productividad de ProgramBI en Colombia](https://www.programbi.com/co/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Colombia**, con 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes usando **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. El valor es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 Es 100 % práctico y no requiere programar. Según la ficha, revisada el 4 de noviembre de 2026, hay **cupos abiertos · programación continua en vivo**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia.
 
@@ -122,13 +122,13 @@ Cuando los informes se vuelven recurrentes, muchas veces el siguiente paso es un
 
 ## Horario
 
-Las clases son de 17:30 a 19:30 en Bogotá. Colombia se mantiene en UTC-5 todo el año y Chile cambia con el horario de verano; por eso la ficha indica que la clase se ve a las 17:30 en verano chileno y a las 18:30 en invierno. La ficha de la cohorte muestra la equivalencia exacta, y todas las sesiones quedan grabadas con acceso de por vida en el campus virtual.
+Las clases son de 17:30 a 19:30 en Bogotá. Colombia se mantiene en UTC-5 todo el año y Chile cambia con el horario de verano; por eso la ficha indica que la clase se ve a las 17:30 en verano chileno y a las 18:30 en invierno. La ficha de la cohorte muestra la equivalencia exacta, y todas las sesiones quedan grabadas con acceso al campus virtual y el material durante el curso virtual.
 
 ## Resumen
 
 - 20 horas, 6 módulos prácticos.
 - En vivo por Zoom; cupos abiertos · próximas ediciones en marcha.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyecto final con tu propio informe.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Valor: {precio_local}.

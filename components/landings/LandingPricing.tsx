@@ -100,8 +100,8 @@ export function LandingPricing({ landing }: { landing: NicheLanding }) {
               /precios
             </Link>{" "}
             y las condiciones en{" "}
-            <Link href="/faq" className="font-semibold text-mute underline-offset-2 hover:underline">
-              /faq
+            <Link href="/preguntas-frecuentes" className="font-semibold text-mute underline-offset-2 hover:underline">
+              /preguntas-frecuentes
             </Link>
             .
           </>
@@ -109,8 +109,8 @@ export function LandingPricing({ landing }: { landing: NicheLanding }) {
           <>
             La propuesta se envía con temas, formato y valor según el alcance. Revisa las
             condiciones generales en{" "}
-            <Link href="/faq" className="font-semibold text-mute underline-offset-2 hover:underline">
-              /faq
+            <Link href="/preguntas-frecuentes" className="font-semibold text-mute underline-offset-2 hover:underline">
+              /preguntas-frecuentes
             </Link>
             .
           </>

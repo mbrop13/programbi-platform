@@ -99,7 +99,7 @@ Antes de usar Claude con datos de la empresa, confirma con tu área de TI o de c
 - **En vivo por Zoom**, lunes y miércoles de **16:30 a 18:30, hora de México**. Abrimos grupos todos los meses; consulta la próxima fecha en la ficha del curso.
 - **Inversión local en MXN:** revisa el arancel vigente y opciones de pago descargando el PDF de temario y precios en esta página o en la [guía del curso Claude para México](/mx/guias/curso-claude-mexico).
 - **20 horas, 5 módulos**: primeros pasos y privacidad; prompting práctico; Projects, Artifacts, Docs y Slides; Claude para Excel y tareas administrativas; automatización ligera y proyecto final con un proceso real de tu trabajo.
-- **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**. Revisa los detalles en la ficha del [curso Claude en vivo](/mx/cursos/claude).
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**. Instructor: **Manuel Oliva**. Revisa los detalles en la ficha del [curso Claude en vivo](/mx/cursos/claude).
 
 <!-- CTA-END -->
 
@@ -110,4 +110,4 @@ Antes de usar Claude con datos de la empresa, confirma con tu área de TI o de c
 **¿Sirve si no sé nada de IA?** Sí. El curso parte desde crear la cuenta y la primera conversación.
 **¿Puedo usar Claude con archivos del trabajo?** Sí, con los cuidados de privacidad que defina tu empresa; lo vemos en el módulo 1.
 **¿Claude hace fórmulas de Excel?** Sí, y las explica. Revisa siempre el resultado con un caso conocido.
-**¿Queda grabado?** Sí, todas las clases quedan en el campus de por vida.
+**¿Queda grabado?** Sí, todas las clases quedan en el campus virtual con el material durante el curso.

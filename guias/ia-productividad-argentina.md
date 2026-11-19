@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: ia-productividad
 url_curso: https://www.programbi.com/ar/cursos/ia-productividad
-title: "Curso IA en Productividad Argentina: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Argentina: 20 h en vivo para automatizar informes con ChatGPT, Claude, Gemini y Copilot a las 19:30 Buenos Aires."
-h1: "Curso de IA en Productividad en Argentina: tus informes de oficina, en piloto automático"
+title: Cómo usar IA para productividad en Argentina | ProgramBI
+meta: "Guía para aplicar ChatGPT, Claude, Gemini y Copilot en Argentina: automatiza reportes, Excel, documentos y correos sin programar."
+h1: Cómo automatizar informes de oficina con IA en Argentina
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/ar/cursos/ia-productividad
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de IA en Productividad en Argentina: tus informes de oficina, en piloto automático
 
-**Respuesta corta:** el [curso de IA en Productividad de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/ia-productividad) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Argentina**, repartidas en 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes con **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de IA en Productividad de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/ia-productividad) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Argentina**, repartidas en 6 módulos para que el personal administrativo automatice informes diarios, resúmenes ejecutivos y reportes recurrentes con **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 No hace falta programar ni haber usado IA antes. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · consultá las próximas fechas**. Se paga en pesos argentinos con Mercado Pago o transferencia.
 
@@ -119,13 +119,13 @@ Cuando un informe se vuelve fijo, muchas veces el paso siguiente es un tablero. 
 
 ## Horario
 
-Las clases son de 19:30 a 21:30 en Buenos Aires. Argentina usa UTC-3 todo el año y Chile cambia entre UTC-3 y UTC-4, por eso la ficha aclara que la clase puede verse a las 19:30 o a las 20:30 según la época. La hora exacta figura en la ficha de tu cohorte, y todas las clases quedan grabadas con acceso de por vida.
+Las clases son de 19:30 a 21:30 en Buenos Aires. Argentina usa UTC-3 todo el año y Chile cambia entre UTC-3 y UTC-4, por eso la ficha aclara que la clase puede verse a las 19:30 o a las 20:30 según la época. La hora exacta figura en la ficha de tu cohorte, y todas las clases quedan grabadas con acceso al campus virtual y el material durante el curso.
 
 ## Resumen
 
 - 20 horas, 6 módulos, 100 % prácticos.
 - En vivo por Zoom; cupos abiertos · fechas disponibles al consultar.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyecto final: tu propio informe automatizado.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.

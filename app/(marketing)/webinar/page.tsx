@@ -19,6 +19,7 @@ const share = pageOg({
 export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
+  robots: { index: false, follow: true },
   alternates: { canonical: absoluteUrl(PATH) },
   openGraph: {
     title: TITLE,

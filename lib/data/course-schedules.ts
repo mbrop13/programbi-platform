@@ -12,36 +12,10 @@ export interface CourseSchedule {
   max_students?: number;
 }
 
-// Fallback static schedules (used if DB not available)
-export const staticSchedules: Omit<CourseSchedule, 'id'>[] = [
-  {
-    course_slug: "power-bi",
-    level_name: "Básico",
-    start_date: "2026-06-09",
-    schedule_days: "Martes y Jueves",
-    schedule_time: "19:30 a 21:30",
-    duration_hours: 16,
-    is_active: true,
-  },
-  {
-    course_slug: "sql-server",
-    level_name: "Básico",
-    start_date: "2026-06-22",
-    schedule_days: "Lunes y Miércoles",
-    schedule_time: "19:30 a 21:30",
-    duration_hours: 16,
-    is_active: true,
-  },
-  {
-    course_slug: "python",
-    level_name: "Básico",
-    start_date: "2026-05-25",
-    schedule_days: "Lunes y Miércoles",
-    schedule_time: "19:30 a 21:30",
-    duration_hours: 16,
-    is_active: true,
-  },
-];
+// Fallback static schedules (used if DB not available).
+// Vacío para no exponer fechas vencidas (p. ej. mayo/junio 2026) ni duraciones
+// desactualizadas cuando la DB no responde; los helpers muestran OPEN_COHORT_LABEL.
+export const staticSchedules: Omit<CourseSchedule, 'id'>[] = [];
 
 // Cursos que son parte del programa "Análisis de Datos"
 export const analisisDeDatosSlugs = ["sql-server", "power-bi", "python"];

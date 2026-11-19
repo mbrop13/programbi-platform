@@ -31,6 +31,10 @@ export const EMPRESAS_FAQS: EmpresaFaq[] = [
     a: "Sí. Factura electrónica, orden de compra si la necesitan y reporte de asistencia por persona.",
   },
   {
+    q: "¿Trabajan con SENCE, orden de compra o cierre de presupuesto anual?",
+    a: "Facturamos directamente con factura electrónica y orden de compra para ejecutar rápido sin trabas burocráticas, ideal también para el cierre de presupuesto anual de capacitación. Si la empresa evalúa franquicia tributaria o coordinación vía OTIC, nuestro equipo comercial revisa alternativas en la propuesta.",
+  },
+  {
     q: "¿Entregan certificado?",
     a: "Sí. Cada participante recibe certificado al completar el programa, además del reporte de asistencia para la empresa.",
   },

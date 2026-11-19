@@ -96,7 +96,7 @@ Solo se puede: la documentación de Microsoft es buena y hay mucho video. El pro
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30**, hora de Chile, después de la pega.
 - **20 horas, 8 módulos**, nivel básico-intermedio. Inicios todos los meses; revisa la próxima fecha confirmada en la ficha del curso.
 - Temario: Power Query, parámetros y funciones M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH y funciones de IA de Power BI (preguntas en lenguaje natural e insights automáticos).
-- **Grabaciones de por vida** en el campus y **certificado** al completar.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado** al completar.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 - Recursos y rutas relacionadas: ficha del [curso de Power BI en vivo](/cursos/power-bi), referencia práctica de [funciones DAX](/guias/funciones-dax-mas-importantes), comparativa [Power BI vs Excel](/guias/power-bi-vs-excel) y el programa de [Análisis de datos completo](/cursos/analisis-de-datos).
 - Para equipos corporativos, revisa [capacitación para empresas](/empresas).
@@ -118,7 +118,7 @@ Power BI Desktop es gratuito para Windows. Para compartir informes en la nube de
 Power BI Desktop no tiene versión para Mac. Se usa con una máquina virtual con Windows o desde un PC. Avísanos antes de inscribirte y te orientamos.
 
 **¿El curso de ProgramBI entrega certificado?**
-Sí, un certificado digital de ProgramBI al completar el curso, además del acceso de por vida a las grabaciones.
+Sí, un certificado digital de ProgramBI al completar el curso, además del acceso al campus virtual con las clases grabadas y el material durante el curso.
 
 **¿Qué pide un aviso de analista BI en Chile además de Power BI?**
 Con frecuencia SQL, Excel avanzado y, en empresas grandes, experiencia con un ERP como SAP. Por eso el curso trabaja conexión a bases de datos y modelamiento, no solo visualización.

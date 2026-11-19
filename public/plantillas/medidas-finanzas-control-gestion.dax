@@ -1,0 +1,102 @@
+// ============================================================================
+// Pack de Medidas DAX — Flujo de Caja y Control de Gestión (Finanzas)
+// Compatible con: public/plantillas/dataset-finanzas-flujo-caja.csv
+// Tabla principal: Finanzas | Tabla calendario recomendada: Calendario[Fecha]
+// ============================================================================
+
+// 1. REAL VS PRESUPUESTO
+Monto Real CLP =
+SUM ( Finanzas[RealCLP] )
+
+Monto Presupuesto CLP =
+SUM ( Finanzas[PresupuestoCLP] )
+
+Desviacion CLP =
+[Monto Real CLP] - [Monto Presupuesto CLP]
+
+Desviacion % =
+DIVIDE ( [Desviacion CLP], ABS ( [Monto Presupuesto CLP] ), 0 )
+
+Cumplimiento Presupuesto % =
+DIVIDE ( [Monto Real CLP], [Monto Presupuesto CLP], 0 )
+
+// 2. ESTADO DE RESULTADOS Y EBITDA
+Ingresos Operacionales =
+CALCULATE (
+    [Monto Real CLP],
+    Finanzas[TipoFlujo] = "Ingreso",
+    Finanzas[Categoria] = "Operacional"
+)
+
+Costos Directos =
+CALCULATE (
+    [Monto Real CLP],
+    Finanzas[TipoFlujo] = "Egreso",
+    Finanzas[Categoria] = "Costo Venta"
+)
+
+Gastos Administracion y Ventas =
+CALCULATE (
+    [Monto Real CLP],
+    Finanzas[TipoFlujo] = "Egreso",
+    Finanzas[Categoria] = "Gasto Operacional"
+)
+
+EBITDA CLP =
+[Ingresos Operacionales] - ABS ( [Costos Directos] ) - ABS ( [Gastos Administracion y Ventas] )
+
+Margen EBITDA % =
+DIVIDE ( [EBITDA CLP], [Ingresos Operacionales], 0 )
+
+// 3. FLUJO DE CAJA Y LIQUIDEZ
+Entradas Caja CLP =
+CALCULATE ( [Monto Real CLP], Finanzas[TipoFlujo] = "Ingreso" )
+
+Salidas Caja CLP =
+CALCULATE ( ABS ( [Monto Real CLP] ), Finanzas[TipoFlujo] = "Egreso" )
+
+Flujo Neto Caja CLP =
+[Entradas Caja CLP] - [Salidas Caja CLP]
+
+Flujo Caja Acumulado =
+CALCULATE (
+    [Flujo Neto Caja CLP],
+    FILTER (
+        ALLSELECTED ( Calendario[Fecha] ),
+        Calendario[Fecha] <= MAX ( Calendario[Fecha] )
+    )
+)
+
+// 4. CUENTAS POR COBRAR Y CAPITAL DE TRABAJO
+Cuentas por Cobrar Pendientes =
+CALCULATE (
+    [Monto Real CLP],
+    Finanzas[CuentaContable] = "Cuentas por Cobrar",
+    Finanzas[EstadoPago] = "Pendiente"
+)
+
+Cuentas por Cobrar Vencidas =
+CALCULATE (
+    [Monto Real CLP],
+    Finanzas[CuentaContable] = "Cuentas por Cobrar",
+    Finanzas[EstadoPago] = "Vencido"
+)
+
+Morosidad CxC % =
+DIVIDE (
+    [Cuentas por Cobrar Vencidas],
+    [Cuentas por Cobrar Pendientes] + [Cuentas por Cobrar Vencidas],
+    0
+)
+
+// 5. SEMAFORIZACIÓN DE DESVIACIÓN
+Semaforo Presupuesto =
+VAR _desv = [Desviacion %]
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( _desv ), BLANK (),
+        _desv >= 0, "Sobre presupuesto",
+        _desv >= -0.05, "En rango",
+        "Alerta desviación"
+    )

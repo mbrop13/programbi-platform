@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: power-automate
 url_curso: https://www.programbi.com/co/cursos/power-automate
-title: "Curso de Power Automate Colombia: guía 2026 | ProgramBI"
-meta: "Curso de Power Automate en Colombia en vivo: 20 h para automatizar correo, Teams, SharePoint y Excel sin código, 17:30 hora de Bogotá. Aprobaciones y RPA."
-h1: "Curso de Power Automate en Colombia: automatiza procesos de oficina sin código"
+title: Cómo automatizar con Power Automate en Colombia | ProgramBI
+meta: "Guía práctica de Power Automate y RPA en Colombia: automatiza correos, aprobaciones y archivos entre Excel, Outlook y Teams sin programar."
+h1: Cómo automatizar flujos y tareas con Power Automate en Colombia
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/co/cursos/power-automate
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Power Automate en Colombia: automatiza procesos de oficina sin código
 
-**Respuesta corta:** el [curso de Power Automate de ProgramBI en Colombia](https://www.programbi.com/co/cursos/power-automate) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Colombia**, con 10 módulos para eliminar tareas repetitivas **sin escribir código**. Cubre flujos de nube automatizados, instantáneos y programados; integración con Outlook, Teams, OneDrive y SharePoint; expresiones y variables; aprobaciones; RPA de escritorio con Power Automate Desktop; y Copilot para diseñar flujos con IA. El valor es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Power Automate de ProgramBI en Colombia](https://www.programbi.com/co/cursos/power-automate) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Colombia**, con 10 módulos para eliminar tareas repetitivas **sin escribir código**. Cubre flujos de nube automatizados, instantáneos y programados; integración con Outlook, Teams, OneDrive y SharePoint; expresiones y variables; aprobaciones; RPA de escritorio con Power Automate Desktop; y Copilot para diseñar flujos con IA. El valor es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · programación continua en vivo**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia.
 
@@ -134,7 +134,7 @@ Las clases son de 17:30 a 19:30 en Bogotá. Colombia se mantiene en UTC-5 todo e
 
 - 20 horas, 10 módulos, sin programar.
 - En vivo por Zoom; cupos abiertos · próximas ediciones en marcha.
-- Grabaciones de por vida, certificado digital y proyecto final con un proceso real.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final con un proceso real.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Valor: {precio_local}.
 

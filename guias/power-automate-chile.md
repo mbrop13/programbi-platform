@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: power-automate
 url_curso: https://www.programbi.com/cursos/power-automate
-title: "Curso de Power Automate en Chile: guía 2026 | ProgramBI"
-meta: "Curso de Power Automate en Chile en vivo por Zoom: 20 h para automatizar Outlook, Teams, Excel y SharePoint sin código, con RPA y Copilot."
-h1: "Curso de Power Automate en Chile: automatiza tu pega sin programar"
+title: Cómo automatizar con Power Automate en Chile | ProgramBI
+meta: "Guía práctica de Power Automate y RPA en Chile: automatiza correos, aprobaciones y archivos entre Excel, Outlook y Teams sin programar."
+h1: Cómo automatizar flujos y tareas con Power Automate en Chile
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/cursos/power-automate
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Power Automate de ProgramBI](https://www.programbi.com/cursos/power-automate) es un programa **en vivo por Zoom de 20 horas en 10 módulos** para automatizar tareas repetitivas **sin escribir código**: flujos de nube automatizados, instantáneos y programados; conectores con Outlook, Teams, OneDrive y SharePoint; aprobaciones; RPA de escritorio con Power Automate Desktop y Copilot para diseñar flujos con IA. Cuesta **$169.000 CLP** y las clases son de **19:30 a 21:30, hora de Chile**.
 
-Está pensado para **profesionales sin experiencia en programación** que pierden horas copiando datos entre Excel, Outlook y Teams. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · próxima edición disponible**, e incluye grabaciones de por vida y certificado.
+Está pensado para **profesionales sin experiencia en programación** que pierden horas copiando datos entre Excel, Outlook y Teams. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · próxima edición disponible**, e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Chile) · «Ver el curso».
 
@@ -121,7 +121,7 @@ Según la [ficha](https://www.programbi.com/cursos/power-automate), consultada e
 
 - **20 horas en 10 módulos**, no-code.
 - **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos con inicio próximo a consultar.
-- **Grabaciones de por vida** y **certificado digital**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado digital**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Valor: **$169.000 CLP**.
 
@@ -132,7 +132,7 @@ Según la [ficha](https://www.programbi.com/cursos/power-automate), consultada e
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Power Automate en Chile?**
-$169.000 CLP por las 20 horas en vivo, con grabaciones de por vida y certificado.
+$169.000 CLP por las 20 horas en vivo, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Necesito saber programar?**
 No. Es un curso no-code: conectores, condiciones y Copilot.

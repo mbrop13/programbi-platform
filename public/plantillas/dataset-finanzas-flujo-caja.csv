@@ -1,0 +1,73 @@
+Fecha,Mes,Pais,CentroCosto,CuentaContable,Categoria,TipoFlujo,EstadoPago,PresupuestoCLP,RealCLP
+2026-01-31,Enero,Chile,Comercial,Ventas B2B,Operacional,Ingreso,Pagado,85000000,74800000
+2026-01-31,Enero,Chile,Comercial,Ventas B2C,Operacional,Ingreso,Pagado,42000000,38640000
+2026-01-31,Enero,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Pendiente,18500000,17760000
+2026-01-31,Enero,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Vencido,6200000,6200000
+2026-01-31,Enero,Chile,Operaciones,Costo Servicios,Costo Venta,Egreso,Pagado,-34000000,-35360000
+2026-01-31,Enero,Chile,Operaciones,Licencias Cloud,Costo Venta,Egreso,Pagado,-12500000,-13500000
+2026-01-31,Enero,Chile,Administracion,Remuneraciones,Gasto Operacional,Egreso,Pagado,-29000000,-32480000
+2026-01-31,Enero,Chile,Administracion,Arriendo Oficinas,Gasto Operacional,Egreso,Pagado,-7800000,-6864000
+2026-01-31,Enero,Chile,Marketing,Pauta Digital,Gasto Operacional,Egreso,Pagado,-6400000,-5888000
+2026-01-31,Enero,Chile,TI,Infraestructura,Gasto Operacional,Egreso,Pagado,-4900000,-4704000
+2026-01-31,Enero,Chile,Logistica,Despachos,Costo Venta,Egreso,Pagado,-5200000,-5200000
+2026-01-31,Enero,Chile,Finanzas,Impuestos Mensuales,No Operacional,Egreso,Pagado,-8100000,-8424000
+2026-02-28,Febrero,Chile,Comercial,Ventas B2B,Operacional,Ingreso,Pagado,86700000,86700000
+2026-02-28,Febrero,Chile,Comercial,Ventas B2C,Operacional,Ingreso,Pagado,42840000,44553600
+2026-02-28,Febrero,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Pendiente,18870000,20379600
+2026-02-28,Febrero,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Vencido,6324000,7082880
+2026-02-28,Febrero,Chile,Operaciones,Costo Servicios,Costo Venta,Egreso,Pagado,-34680000,-30518400
+2026-02-28,Febrero,Chile,Operaciones,Licencias Cloud,Costo Venta,Egreso,Pagado,-12750000,-11730000
+2026-02-28,Febrero,Chile,Administracion,Remuneraciones,Gasto Operacional,Egreso,Pagado,-29580000,-28396800
+2026-02-28,Febrero,Chile,Administracion,Arriendo Oficinas,Gasto Operacional,Egreso,Pagado,-7956000,-7956000
+2026-02-28,Febrero,Chile,Marketing,Pauta Digital,Gasto Operacional,Egreso,Pagado,-6528000,-6789120
+2026-02-28,Febrero,Chile,TI,Infraestructura,Gasto Operacional,Egreso,Pagado,-4998000,-5397840
+2026-02-28,Febrero,Chile,Logistica,Despachos,Costo Venta,Egreso,Pagado,-5304000,-5940480
+2026-02-28,Febrero,Chile,Finanzas,Impuestos Mensuales,No Operacional,Egreso,Pagado,-8262000,-7270560
+2026-03-31,Marzo,Chile,Comercial,Ventas B2B,Operacional,Ingreso,Pagado,88400000,99008000
+2026-03-31,Marzo,Chile,Comercial,Ventas B2C,Operacional,Ingreso,Pagado,43680000,38438400
+2026-03-31,Marzo,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Pendiente,19240000,17700800
+2026-03-31,Marzo,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Vencido,6448000,6190080
+2026-03-31,Marzo,Chile,Operaciones,Costo Servicios,Costo Venta,Egreso,Pagado,-35360000,-35360000
+2026-03-31,Marzo,Chile,Operaciones,Licencias Cloud,Costo Venta,Egreso,Pagado,-13000000,-13520000
+2026-03-31,Marzo,Chile,Administracion,Remuneraciones,Gasto Operacional,Egreso,Pagado,-30160000,-32572800
+2026-03-31,Marzo,Chile,Administracion,Arriendo Oficinas,Gasto Operacional,Egreso,Pagado,-8112000,-9085440
+2026-03-31,Marzo,Chile,Marketing,Pauta Digital,Gasto Operacional,Egreso,Pagado,-6656000,-5857280
+2026-03-31,Marzo,Chile,TI,Infraestructura,Gasto Operacional,Egreso,Pagado,-5096000,-4688320
+2026-03-31,Marzo,Chile,Logistica,Despachos,Costo Venta,Egreso,Pagado,-5408000,-5191680
+2026-03-31,Marzo,Chile,Finanzas,Impuestos Mensuales,No Operacional,Egreso,Pagado,-8424000,-8424000
+2026-04-30,Abril,Chile,Comercial,Ventas B2B,Operacional,Ingreso,Pagado,90100000,86496000
+2026-04-30,Abril,Chile,Comercial,Ventas B2C,Operacional,Ingreso,Pagado,44520000,44520000
+2026-04-30,Abril,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Pendiente,19610000,20394400
+2026-04-30,Abril,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Vencido,6572000,7097760
+2026-04-30,Abril,Chile,Operaciones,Costo Servicios,Costo Venta,Egreso,Pagado,-36040000,-40364800
+2026-04-30,Abril,Chile,Operaciones,Licencias Cloud,Costo Venta,Egreso,Pagado,-13250000,-11660000
+2026-04-30,Abril,Chile,Administracion,Remuneraciones,Gasto Operacional,Egreso,Pagado,-30740000,-28280800
+2026-04-30,Abril,Chile,Administracion,Arriendo Oficinas,Gasto Operacional,Egreso,Pagado,-8268000,-7937280
+2026-04-30,Abril,Chile,Marketing,Pauta Digital,Gasto Operacional,Egreso,Pagado,-6784000,-6784000
+2026-04-30,Abril,Chile,TI,Infraestructura,Gasto Operacional,Egreso,Pagado,-5194000,-5401760
+2026-04-30,Abril,Chile,Logistica,Despachos,Costo Venta,Egreso,Pagado,-5512000,-5952960
+2026-04-30,Abril,Chile,Finanzas,Impuestos Mensuales,No Operacional,Egreso,Pagado,-8586000,-9616320
+2026-05-31,Mayo,Chile,Comercial,Ventas B2B,Operacional,Ingreso,Pagado,91800000,99144000
+2026-05-31,Mayo,Chile,Comercial,Ventas B2C,Operacional,Ingreso,Pagado,45360000,50803200
+2026-05-31,Mayo,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Pendiente,19980000,17582400
+2026-05-31,Mayo,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Vencido,6696000,6160320
+2026-05-31,Mayo,Chile,Operaciones,Costo Servicios,Costo Venta,Egreso,Pagado,-36720000,-35251200
+2026-05-31,Mayo,Chile,Operaciones,Licencias Cloud,Costo Venta,Egreso,Pagado,-13500000,-13500000
+2026-05-31,Mayo,Chile,Administracion,Remuneraciones,Gasto Operacional,Egreso,Pagado,-31320000,-32572800
+2026-05-31,Mayo,Chile,Administracion,Arriendo Oficinas,Gasto Operacional,Egreso,Pagado,-8424000,-9097920
+2026-05-31,Mayo,Chile,Marketing,Pauta Digital,Gasto Operacional,Egreso,Pagado,-6912000,-7741440
+2026-05-31,Mayo,Chile,TI,Infraestructura,Gasto Operacional,Egreso,Pagado,-5292000,-4656960
+2026-05-31,Mayo,Chile,Logistica,Despachos,Costo Venta,Egreso,Pagado,-5616000,-5166720
+2026-05-31,Mayo,Chile,Finanzas,Impuestos Mensuales,No Operacional,Egreso,Pagado,-8748000,-8398080
+2026-06-30,Junio,Chile,Comercial,Ventas B2B,Operacional,Ingreso,Pagado,93500000,86020000
+2026-06-30,Junio,Chile,Comercial,Ventas B2C,Operacional,Ingreso,Pagado,46200000,44352000
+2026-06-30,Junio,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Pendiente,20350000,20350000
+2026-06-30,Junio,Chile,Finanzas,Cuentas por Cobrar,Operacional,Ingreso,Vencido,6820000,7092800
+2026-06-30,Junio,Chile,Operaciones,Costo Servicios,Costo Venta,Egreso,Pagado,-37400000,-40392000
+2026-06-30,Junio,Chile,Operaciones,Licencias Cloud,Costo Venta,Egreso,Pagado,-13750000,-15400000
+2026-06-30,Junio,Chile,Administracion,Remuneraciones,Gasto Operacional,Egreso,Pagado,-31900000,-28072000
+2026-06-30,Junio,Chile,Administracion,Arriendo Oficinas,Gasto Operacional,Egreso,Pagado,-8580000,-7893600
+2026-06-30,Junio,Chile,Marketing,Pauta Digital,Gasto Operacional,Egreso,Pagado,-7040000,-6758400
+2026-06-30,Junio,Chile,TI,Infraestructura,Gasto Operacional,Egreso,Pagado,-5390000,-5390000
+2026-06-30,Junio,Chile,Logistica,Despachos,Costo Venta,Egreso,Pagado,-5720000,-5948800
+2026-06-30,Junio,Chile,Finanzas,Impuestos Mensuales,No Operacional,Egreso,Pagado,-8910000,-9622800

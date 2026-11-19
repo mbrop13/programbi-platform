@@ -97,4 +97,4 @@ Power BI Desktop es nativo para Windows. En Mac puedes consumir y editar informe
 Power BI incluye **Row-Level Security (RLS)** integrado en el modelo de datos para que cada usuario vea únicamente las filas permitidas. En Looker Studio puedes filtrar por correo del lector sobre ciertas fuentes, pero el control semántico avanzado en Google suele apoyarse en BigQuery o en Looker empresarial.
 
 **¿Cuánto dura el curso de Power BI en ProgramBI?**
-Cada nivel del curso de Power BI dura **20 horas** en vivo por Zoom (Básico, Intermedio o Avanzado), con grabaciones de por vida, proyectos aplicados y certificado.
+Cada nivel del curso de Power BI dura **20 horas** en vivo por Zoom (Básico, Intermedio o Avanzado), con acceso al campus virtual con las clases grabadas y el material durante el curso, proyectos aplicados y certificado.

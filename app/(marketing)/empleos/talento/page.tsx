@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   title: "Talento certificado en datos",
   description:
     "Directorio de profesionales formados en ProgramBI con certificados verificados en Python, Power BI, SQL Server y Machine Learning. Disponibles para empresas.",
+  robots: { index: false, follow: true },
   alternates: { canonical: "/empleos/talento" },
   openGraph: {
     title: "Talento certificado en datos | ProgramBI",

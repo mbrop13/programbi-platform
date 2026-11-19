@@ -96,7 +96,7 @@ Claude es excelente para la exploración inicial, la limpieza guiada y la redacc
 
 - **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30**, hora de Chile. Cupos abiertos con inicios mensuales; revisa la fecha vigente en la ficha del curso.
 - **20 horas, 5 módulos** de 4 horas: primeros pasos y privacidad; prompting práctico; Projects, Artifacts, Docs y Slides; **Claude para Excel y tareas administrativas** (limpieza, fórmulas, tendencias y anomalías, conectores, Claude Cowork); y automatización ligera con proyecto final sobre un proceso real de tu trabajo.
-- **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**, Magíster en Data Science (UAI). Revisa todos los detalles en la [guía del curso de Claude en Chile](/guias/curso-claude-chile) o entra directo a la ficha del [curso de Claude](/cursos/claude).
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**. Instructor: **Manuel Oliva**, Magíster en Data Science (UAI). Revisa todos los detalles en la [guía del curso de Claude en Chile](/guias/curso-claude-chile) o entra directo a la ficha del [curso de Claude](/cursos/claude).
 
 <!-- CTA-END -->
 

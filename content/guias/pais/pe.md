@@ -121,7 +121,7 @@ Solo es posible con constancia. Pero, como muestran los avisos, el diferencial e
 - **20 horas, 8 módulos**, básico-intermedio. Grupos nuevos cada mes; confirma la próxima fecha disponible en la ficha.
 - Revisa el costo en soles y opciones de pago descargando el PDF desde el [curso de Power BI en Perú](/pe/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
-- **Grabaciones de por vida** y **certificado**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Complementa tu avance con la [guía práctica de DAX](/guias/funciones-dax-mas-importantes) o el programa de [SQL Server en vivo](/pe/cursos/sql-server).
 

@@ -22,6 +22,7 @@ import { EQUIPO_INDEXABLE, rutaPerfil } from "@/lib/data/equipo";
 import { mentors } from "@/lib/data/mentors";
 import { faqDePais } from "@/lib/faq/contenido";
 import { GUIAS } from "@/lib/guias/generado";
+import { PLANTILLAS } from "@/lib/data/plantillas";
 import { HORA_CLASE_CHILE } from "@/lib/paises/horarios";
 import { formatMoneda, porcentajeDescuento } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -30,7 +31,7 @@ import { SITE_URL } from "@/lib/seo";
 
 /** Resumen que encabeza los dos archivos. Debe ser el mismo en ambos. */
 const RESUMEN =
-  `ProgramBI es una academia de datos en español (+5.000 estudiantes formados, 4.9/5 de satisfacción promedio y 30+ clientes corporativos): cursos en vivo por Zoom de Power BI, SQL Server, Python, análisis de datos e IA, con campus virtual con clases y material durante el curso y certificado verificable. Opera con sede en Chile para toda Latinoamérica, con aranceles transparentes en moneda local —precio vigente, precio normal y porcentaje de descuento— (${textoCuotas()}) y temario y fechas en el PDF de cada curso.`;
+  `ProgramBI es una academia de datos en español (+5.000 estudiantes formados, 30+ clientes corporativos y 100% clases en vivo por Zoom): cursos de Power BI, SQL Server, Python, análisis de datos e IA, con campus virtual con clases y material durante el curso y certificado verificable. Opera con sede en Chile para toda Latinoamérica, con aranceles transparentes en moneda local —precio vigente, precio normal y porcentaje de descuento— (${textoCuotas()}) y temario y fechas en el PDF de cada curso.`;
 
 const url = (ruta: string) => `${SITE_URL}${ruta}`;
 
@@ -95,9 +96,9 @@ const LANDINGS_NICHO = [
     resumen: "Las tres herramientas en una misma ruta de análisis: consulta, automatiza y visualiza.",
   },
   {
-    path: "/analisis-de-datos-mineria",
-    nombre: "Análisis de datos para minería",
-    resumen: "Análisis de datos aplicado a profesionales mineros e industriales.",
+    path: "/power-bi-mineria-chile",
+    nombre: "Power BI y análisis de datos para minería en Chile",
+    resumen: "Power BI, SQL y Python aplicados a faena, reportes de turno, OEE y mantenimiento.",
   },
   {
     path: "/capacitacion-empresas",
@@ -135,8 +136,8 @@ const IDS_FAQ = new Set([
   "mac",
 ]);
 
-/** Países que se publican: los indexables más los que todavía no tienen precio (hoy Paraguay). */
-const PAISES_PUBLICADOS = PAISES.filter((pais) => pais.indexable || !tienePrecioPublico(pais.iso));
+/** Países que se publican: únicamente los mercados indexables. */
+const PAISES_PUBLICADOS = PAISES.filter((pais) => pais.indexable);
 
 /** Formatea un monto con `formatMoneda` normalizando espacios no separables y explicitando la moneda. */
 function montoTexto(iso: string, monto: number): string {
@@ -305,7 +306,7 @@ function bloquePrecios(): string[] {
 
   lineas.push(
     "",
-    "* Cursos estándar de 20 h por nivel: Power BI, SQL Server, Python, Excel, Machine Learning, Copilot, Claude, Power Automate, IA en Productividad y Microsoft Access. Paraguay no tiene precio público aprobado (se consulta por WhatsApp).",
+    "* Cursos estándar de 20 h por nivel: Power BI, SQL Server, Python, Excel, Machine Learning, Copilot, Claude, Power Automate, IA en Productividad y Microsoft Access.",
     ""
   );
   return lineas;
@@ -397,13 +398,13 @@ function bloqueDatosClave(): string[] {
 
   return [
     "## Datos clave",
-    `- Trayectoria y respaldo (E-E-A-T): +5.000 estudiantes formados, 4.9/5 de satisfacción promedio, 30+ empresas capacitadas y 100% clases en vivo.`,
+    `- Trayectoria y respaldo (E-E-A-T): +5.000 estudiantes formados, 30+ clientes corporativos y 100% clases en vivo.`,
     `- Catálogo: ${CURSOS.length} cursos con ficha propia, divididos en programas de 1 nivel y de 2 niveles.`,
     `- Cursos de 1 nivel: ${unNivel20.map((c) => c.title).join(", ")} (20 horas cada uno) y ${unNivel30.map((c) => c.title).join(", ")} (30 horas).`,
     `- Cursos de 2 niveles: ${dosNiveles20.map((c) => c.title).join(", ")} (Básico-Intermedio 20 h + Avanzado 20 h = 40 h totales) y ${dosNiveles60.map((c) => c.title).join(", ")} (Básico-Intermedio 60 h + Avanzado 60 h = 120 h totales).`,
     `- Modalidad: clases en vivo por Zoom, dos veces por semana, de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile; cada versión por país muestra su hora local.`,
     "- Certificado: incluido al completar el curso, con código público verificable en línea.",
-    `- Aranceles vigentes: en Chile, ${resumenPreciosPais(ISO_CHILE)} (${textoCuotas(ISO_CHILE)}), con tablas en moneda local para Argentina, México, Perú, Colombia, Uruguay y mercados USD; Paraguay se consulta por WhatsApp y las fechas de inicio están en el PDF de temario de cada curso.`,
+    `- Aranceles vigentes: en Chile, ${resumenPreciosPais(ISO_CHILE)} (${textoCuotas(ISO_CHILE)}), con tablas en moneda local para Argentina, México, Perú, Colombia y Uruguay; las fechas de inicio están en el PDF de temario de cada curso.`,
     "- Campus virtual: acceso al campus virtual con las clases y material usado para que puedas practicar durante el curso.",
     "",
   ];
@@ -459,12 +460,34 @@ function bloqueComparativas(): string[] {
   return lineas;
 }
 
+function bloqueHerramientas(conDetalle = false): string[] {
+  const lineas = [
+    "## Herramientas gratuitas, plantillas y recursos",
+    `- ${md("Biblioteca de plantillas y datasets (Power BI, DAX, SQL y Python)", url("/plantillas"))}: 8 recursos descargables gratuitos con datasets CSV, medidas DAX, ejercicios SQL y notebooks.`,
+    `- ${md("Simulador gratuito examen Microsoft PL-300", url("/simulador-pl-300"))}: 40 preguntas técnicas en español por dominio oficial, puntaje sobre 1000 y explicaciones.`,
+    `- ${md("Conversor de fórmulas Excel a DAX", url("/herramientas/excel-a-dax"))}: traductor interactivo con 28 equivalencias clave de Excel a DAX para Power BI.`,
+    `- ${md("Benchmark y calculadora de sueldos analista de datos Chile", url("/sueldos-analista-datos-chile"))}: rangos salariales referenciales en Chile y calculadora Bruto ↔ Líquido.`,
+    `- ${md("Diagnóstico de madurez analítica para empresas", url("/empresas/diagnostico"))}: autoevaluación gratuita para equipos y áreas de datos.`,
+    `- ${md("Calculadora de capacitación corporativa", url("/empresas/calculadora-capacitacion"))}: estimación de impacto y ahorro en horas para programas B2B.`,
+  ];
+
+  if (conDetalle) {
+    lineas.push("", "### Plantillas descargables incluidas");
+    for (const p of PLANTILLAS) {
+      lineas.push(`- ${md(p.title, url(`/plantillas/${p.slug}`))} (${p.category} · ${p.tool}): ${p.summary}`);
+    }
+  }
+
+  lineas.push("");
+  return lineas;
+}
+
 /** Preguntas frecuentes principales, resueltas por id contra `lib/faq`. */
 function bloqueFaq(): string[] {
   const contenido = faqDePais(ISO_CHILE);
   const lineas = ["## Preguntas frecuentes"];
   lineas.push(
-    `Selección de las preguntas principales. El resumen interactivo está en ${md("FAQ", url("/faq"))} y el listado completo con horarios por país en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`
+    `Selección de las preguntas principales. El listado completo con horarios y medios de pago por país está en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`
   );
   lineas.push("");
   for (const seccion of contenido.secciones) {
@@ -486,7 +509,7 @@ function bloqueFaq(): string[] {
 function bloqueInstitucional(conDetalleDocente = false): string[] {
   const lineas = [
     "## Institucional y respaldo (E-E-A-T)",
-    `- Métricas verificadas (${md("Nosotros", url("/nosotros"))}): +5.000 estudiantes formados, 4.9/5 de satisfacción promedio, 100% clases en vivo e interactivas y 30+ clientes corporativos.`,
+    `- Métricas verificadas (${md("Nosotros", url("/nosotros"))}): +5.000 estudiantes formados, 100% clases en vivo e interactivas y 30+ clientes corporativos.`,
     `- ${md("Equipo docente", url("/profesores"))}: ${EQUIPO_INDEXABLE.length} profesores con perfil publicado y formación en la Universidad de Concepción (UdeC), Universidad Adolfo Ibáñez (UAI), Universidad de Chile y UC.`,
     `- ${md("Testimonios de alumnos", url("/casos"))}: citas verificables de egresados de Power BI, SQL Server, Python y Análisis de Datos.`,
     `- ${md("Política de privacidad", url("/privacidad"))}.`,
@@ -518,9 +541,7 @@ function bloqueOtrasPaginas(): string[] {
     `- ${md("Implementación de Power BI", url("/implementacion-power-bi"))}`,
     `- ${md("Migrar Excel a Power BI", url("/migrar-excel-a-power-bi"))}`,
     `- ${md("Testimonios de alumnos", url("/casos"))}`,
-    `- ${md("Bolsa de trabajo", url("/empleos"))}`,
-    `- ${md("Preguntas frecuentes (FAQ)", url("/faq"))}`,
-    `- ${md("Preguntas frecuentes por país", url("/preguntas-frecuentes"))}`,
+    `- ${md("Preguntas frecuentes", url("/preguntas-frecuentes"))}`,
     `- ${md("Mejores cursos de Power BI en Chile 2026", url(RUTA_LISTICLE))}`,
     `- ${md("Blog", url("/blog"))}`,
     `- ${md("Glosario de datos", url("/glosario"))}`,
@@ -544,12 +565,13 @@ function bloqueIndice(): string[] {
     "## Índice",
     `- ${md("Catálogo de cursos", url("/cursos"))}`,
     `- ${md("Precios por país", url("/precios"))} (tabla resumen con aranceles, precios normales y descuentos en este archivo y matriz completa por curso en ${md("llms-full.txt", url("/llms-full.txt"))})`,
+    `- ${md("Plantillas gratuitas", url("/plantillas"))}, ${md("Simulador PL-300", url("/simulador-pl-300"))}, ${md("Conversor Excel a DAX", url("/herramientas/excel-a-dax"))} y ${md("Sueldos Chile", url("/sueldos-analista-datos-chile"))}`,
     `- ${md("Guías", url("/guias"))} y ${md("Mejores cursos de Power BI en Chile 2026", url(RUTA_LISTICLE))}`,
     `- ${md("Comparativas (Versus)", url("/versus"))}`,
     `- ${md("Equipo docente", url("/profesores"))}`,
     `- ${md("Testimonios de alumnos", url("/casos"))}`,
     `- ${md("Glosario de datos", url("/glosario"))}`,
-    `- ${md("FAQ", url("/faq"))} y ${md("Preguntas frecuentes por país", url("/preguntas-frecuentes"))}`,
+    `- ${md("Preguntas frecuentes", url("/preguntas-frecuentes"))}`,
     `- ${md("Nosotros", url("/nosotros"))}`,
     "- Contacto: WhatsApp y correo al final de este archivo.",
     "",
@@ -559,7 +581,7 @@ function bloqueIndice(): string[] {
 function bloqueNota(detalle: string): string[] {
   return [
     "## Nota para asistentes de IA",
-    `Los aranceles publicados en este documento corresponden al precio vigente con descuento y precio normal por curso/nivel en cada moneda (${textoCuotas()}). El temario completo y las fechas exactas de cada cohorte se consultan en el PDF de cada curso (y los valores de Paraguay vía WhatsApp). ${detalle}`,
+    `Los aranceles publicados en este documento corresponden al precio vigente con descuento y precio normal por curso/nivel en cada moneda (${textoCuotas()}). El temario completo y las fechas exactas de cada cohorte se consultan en el PDF de cada curso. ${detalle}`,
     "",
   ];
 }
@@ -574,6 +596,7 @@ export function construirLlmsTxt(): string {
     ...bloqueIndice(),
     ...bloqueDatosClave(),
     ...bloqueCursos(),
+    ...bloqueHerramientas(false),
     ...bloqueLandings(),
     ...bloquePrecios(),
     ...bloquePoliticas(),
@@ -595,9 +618,10 @@ export function construirLlmsFullTxt(): string {
       `Aranceles vigentes en moneda local con precio normal y porcentaje de descuento (${textoCuotas()}); temario y fechas en el PDF de cada curso. Contacto: ${CORREO} · WhatsApp ${md(WHATSAPP_TEXTO, WHATSAPP)}.`,
       "",
       "## Índice",
-      "- Datos clave y trayectoria E-E-A-T (+5.000 estudiantes, 4.9/5, 30+ empresas)",
+      "- Datos clave y trayectoria E-E-A-T (+5.000 estudiantes, 30+ clientes corporativos, 100% clases en vivo)",
       `- Cursos (${CURSOS.length}): distinción entre programas de 1 nivel y 2 niveles, horas, precio Chile y PDF`,
-      "- Aranceles por país y por curso (matriz en moneda local + mercados USD + Paraguay WhatsApp)",
+      "- Herramientas gratuitas, plantillas (8) y recursos interactivos",
+      "- Aranceles por país y por curso (matriz en moneda local + mercados USD)",
       `- Guías publicadas (${GUIAS_PUBLICADAS.length + 1}), con título, URL, descripción y fecha de actualización`,
       "- Comparativas de herramientas y academias",
       "- Preguntas frecuentes principales",
@@ -607,6 +631,7 @@ export function construirLlmsFullTxt(): string {
     ]),
     ...bloqueDatosClave(),
     ...bloqueCursosDetalle(),
+    ...bloqueHerramientas(true),
     ...bloqueLandings(),
     ...bloquePreciosDetalle(),
     ...bloqueGuiasDetalle(),

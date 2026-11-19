@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: copilot
 url_curso: https://www.programbi.com/co/cursos/copilot
-title: "Curso de Copilot y Copilot Studio Colombia | ProgramBI"
-meta: "Curso de Copilot en Colombia en vivo: 20 h de Copilot en Excel, Outlook, PowerPoint y Word, y agentes en Copilot Studio, 17:30 Bogotá."
-h1: "Curso de Copilot y Copilot Studio en Colombia: IA en Office y agentes para tu equipo"
+title: Cómo usar Copilot y Copilot Studio en Colombia | ProgramBI
+meta: Guía para dominar Microsoft Copilot en Excel, Word y Outlook y crear agentes propios en Copilot Studio en Colombia.
+h1: Cómo usar Microsoft Copilot y crear agentes en Colombia
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/co/cursos/copilot
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Copilot y Copilot Studio en Colombia: IA en Office y agentes para tu equipo
 
-**Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI en Colombia](https://www.programbi.com/co/cursos/copilot) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Colombia**, organizado en 5 módulos de 4 horas. Primero aprendes a usar Microsoft Copilot en **Excel, Outlook, PowerPoint y Word**; después diseñas, entrenas y publicas **un agente propio en Copilot Studio**, con conocimiento de tu empresa, temas, entidades y diseño conversacional. El valor es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI en Colombia](https://www.programbi.com/co/cursos/copilot) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Colombia**, organizado en 5 módulos de 4 horas. Primero aprendes a usar Microsoft Copilot en **Excel, Outlook, PowerPoint y Word**; después diseñas, entrenas y publicas **un agente propio en Copilot Studio**, con conocimiento de tu empresa, temas, entidades y diseño conversacional. El valor es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 No se requiere programar. Según la ficha, revisada el 4 de noviembre de 2026, hay **cupos abiertos · programación continua en vivo**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia.
 
@@ -126,13 +126,13 @@ Copilot Studio y Power Automate comparten la Power Platform; si quieres automati
 
 ## Horario
 
-Las clases son de 17:30 a 19:30 en Bogotá. Colombia se mantiene en UTC-5 todo el año y Chile cambia con el horario de verano; por eso la ficha indica que la clase se ve a las 17:30 en verano chileno y a las 18:30 en invierno. La ficha de la cohorte muestra la equivalencia exacta, y todas las sesiones quedan grabadas con acceso de por vida.
+Las clases son de 17:30 a 19:30 en Bogotá. Colombia se mantiene en UTC-5 todo el año y Chile cambia con el horario de verano; por eso la ficha indica que la clase se ve a las 17:30 en verano chileno y a las 18:30 en invierno. La ficha de la cohorte muestra la equivalencia exacta, y todas las sesiones quedan grabadas con acceso al campus virtual y el material durante el curso.
 
 ## Resumen
 
 - 20 horas en 5 módulos de 4 horas.
 - En vivo por Zoom; cupos abiertos · próximas ediciones en marcha.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyecto final: un agente funcional.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Valor: {precio_local}.

@@ -1,0 +1,73 @@
+Fecha,Turno,Faena,Equipo,TipoEquipo,HorasCalendario,HorasProgramadas,HorasOperativas,HorasDetencionNoPlanificada,NumFallas,TonelajeMovido,MetaTonelaje,DisponibilidadTarget
+2026-03-01,Dia,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,10.9,0,0,21838,24000,0.88
+2026-03-01,Dia,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,10.9,0,0,22293,24000,0.88
+2026-03-01,Dia,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,10.1,0.8,1,28104,32000,0.88
+2026-03-01,Dia,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,8.5,2.4,2,17717,23500,0.88
+2026-03-01,Dia,Radomiro Tomic,CARG-09,Cargador Frontal,12,10.5,9.9,0,0,15953,18000,0.88
+2026-03-01,Dia,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,10.1,0.8,1,20235,24000,0.88
+2026-03-01,Noche,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,10.9,0,0,21838,24000,0.88
+2026-03-01,Noche,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,10.9,0,0,22293,24000,0.88
+2026-03-01,Noche,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,9.3,1.6,2,25878,32000,0.88
+2026-03-01,Noche,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,10.9,0,0,22719,23500,0.88
+2026-03-01,Noche,Radomiro Tomic,CARG-09,Cargador Frontal,12,10.5,9.9,0,0,15953,18000,0.88
+2026-03-01,Noche,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,10.1,0.8,1,20235,24000,0.88
+2026-03-02,Dia,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,10.9,0,0,22293,24000,0.88
+2026-03-02,Dia,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,10.1,0.8,1,21078,24000,0.88
+2026-03-02,Dia,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,8.5,2.4,2,24125,32000,0.88
+2026-03-02,Dia,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,10.5,9.9,0,0,20828,23500,0.88
+2026-03-02,Dia,Radomiro Tomic,CARG-09,Cargador Frontal,12,11.5,10.1,0.8,1,15176,18000,0.88
+2026-03-02,Dia,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,10.9,0,0,22293,24000,0.88
+2026-03-02,Noche,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,10.9,0,0,22293,24000,0.88
+2026-03-02,Noche,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,9.3,1.6,2,19409,24000,0.88
+2026-03-02,Noche,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,10.9,0,0,30937,32000,0.88
+2026-03-02,Noche,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,10.5,9.9,0,0,20828,23500,0.88
+2026-03-02,Noche,Radomiro Tomic,CARG-09,Cargador Frontal,12,11.5,10.1,0.8,1,15176,18000,0.88
+2026-03-02,Noche,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,8.5,2.4,2,17384,24000,0.88
+2026-03-03,Dia,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,10.1,0.8,1,21078,24000,0.88
+2026-03-03,Dia,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,8.5,2.4,2,18094,24000,0.88
+2026-03-03,Dia,Collahuasi Norte,PALA-04,Pala Electrica,12,10.5,9.9,0,0,28361,32000,0.88
+2026-03-03,Dia,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,10.1,0.8,1,19814,23500,0.88
+2026-03-03,Dia,Radomiro Tomic,CARG-09,Cargador Frontal,12,11.5,10.9,0,0,16720,18000,0.88
+2026-03-03,Dia,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,7.7,3.2,2,16070,24000,0.88
+2026-03-03,Noche,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,9.3,1.6,2,19409,24000,0.88
+2026-03-03,Noche,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,10.9,0,0,23203,24000,0.88
+2026-03-03,Noche,Collahuasi Norte,PALA-04,Pala Electrica,12,10.5,9.9,0,0,28361,32000,0.88
+2026-03-03,Noche,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,10.1,0.8,1,19814,23500,0.88
+2026-03-03,Noche,Radomiro Tomic,CARG-09,Cargador Frontal,12,11.5,8.5,2.4,2,13038,18000,0.88
+2026-03-03,Noche,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,10.9,0,0,22748,24000,0.88
+2026-03-04,Dia,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,8.5,2.4,2,18094,24000,0.88
+2026-03-04,Dia,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,10.5,9.9,0,0,21271,24000,0.88
+2026-03-04,Dia,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,10.1,0.8,1,26980,32000,0.88
+2026-03-04,Dia,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,10.9,0,0,21828,23500,0.88
+2026-03-04,Dia,Radomiro Tomic,CARG-09,Cargador Frontal,12,11.5,7.7,3.2,2,12052,18000,0.88
+2026-03-04,Dia,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,10.1,0.8,1,21500,24000,0.88
+2026-03-04,Noche,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,10.9,0,0,23203,24000,0.88
+2026-03-04,Noche,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,10.5,9.9,0,0,21271,24000,0.88
+2026-03-04,Noche,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,10.1,0.8,1,26980,32000,0.88
+2026-03-04,Noche,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,8.5,2.4,2,17022,23500,0.88
+2026-03-04,Noche,Radomiro Tomic,CARG-09,Cargador Frontal,12,11.5,10.9,0,0,17061,18000,0.88
+2026-03-04,Noche,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,10.1,0.8,1,21500,24000,0.88
+2026-03-05,Dia,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,10.5,9.9,0,0,21271,24000,0.88
+2026-03-05,Dia,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,10.1,0.8,1,20235,24000,0.88
+2026-03-05,Dia,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,10.9,0,0,29724,32000,0.88
+2026-03-05,Dia,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,7.7,3.2,2,15735,23500,0.88
+2026-03-05,Dia,Radomiro Tomic,CARG-09,Cargador Frontal,12,11.5,10.1,0.8,1,16125,18000,0.88
+2026-03-05,Dia,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,10.5,9.9,0,0,21271,24000,0.88
+2026-03-05,Noche,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,10.5,9.9,0,0,21271,24000,0.88
+2026-03-05,Noche,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,10.1,0.8,1,20235,24000,0.88
+2026-03-05,Noche,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,8.5,2.4,2,23179,32000,0.88
+2026-03-05,Noche,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,10.9,0,0,22274,23500,0.88
+2026-03-05,Noche,Radomiro Tomic,CARG-09,Cargador Frontal,12,11.5,10.1,0.8,1,16125,18000,0.88
+2026-03-05,Noche,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,10.5,9.9,0,0,21271,24000,0.88
+2026-03-06,Dia,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,10.1,0.8,1,20235,24000,0.88
+2026-03-06,Dia,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,10.9,0,0,22293,24000,0.88
+2026-03-06,Dia,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,7.7,3.2,2,21426,32000,0.88
+2026-03-06,Dia,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,10.1,0.8,1,21052,23500,0.88
+2026-03-06,Dia,Radomiro Tomic,CARG-09,Cargador Frontal,12,10.5,9.9,0,0,15953,18000,0.88
+2026-03-06,Dia,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,10.9,0,0,21838,24000,0.88
+2026-03-06,Noche,Escondida Sur,CAEX-101,Camion Extraccion 240T,12,11.5,10.1,0.8,1,20235,24000,0.88
+2026-03-06,Noche,Escondida Sur,CAEX-102,Camion Extraccion 240T,12,11.5,8.5,2.4,2,17384,24000,0.88
+2026-03-06,Noche,Collahuasi Norte,PALA-04,Pala Electrica,12,11.5,10.9,0,0,30330,32000,0.88
+2026-03-06,Noche,Collahuasi Norte,CAEX-205,Camion Extraccion 240T,12,11.5,10.1,0.8,1,21052,23500,0.88
+2026-03-06,Noche,Radomiro Tomic,CARG-09,Cargador Frontal,12,10.5,9.9,0,0,15953,18000,0.88
+2026-03-06,Noche,Radomiro Tomic,CAEX-312,Camion Extraccion 240T,12,11.5,7.7,3.2,2,15427,24000,0.88

@@ -87,7 +87,7 @@ nota_hermes: |
 
 # Curso de <Curso> en <País>: <beneficio concreto>, en vivo
 
-**Respuesta corta:** el [curso de <Curso> de ProgramBI](https://www.programbi.com/<pais>/cursos/<curso>) son **<N> horas en vivo por Zoom**, en **<N> módulos**, para <público objetivo>. Incluye grabaciones de por vida, certificado y <proyecto o práctica>. Cuesta **{precio_local}** y <estado de la cohorte>. Datos revisados en la ficha el <fecha>.
+**Respuesta corta:** el [curso de <Curso> de ProgramBI](https://www.programbi.com/<pais>/cursos/<curso>) son **<N> horas en vivo por Zoom**, en **<N> módulos**, para <público objetivo>. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado y <proyecto o práctica>. Cuesta **{precio_local}** y <estado de la cohorte>. Datos revisados en la ficha el <fecha>.
 
 <Segundo párrafo: qué problema resuelve, para quién es y qué sale sabiendo hacer. Sin promesas que no estén en la ficha.>
 
@@ -123,7 +123,7 @@ nota_hermes: |
 - **Precio:** {precio_local}. <Formas de pago vigentes en la ficha.>
 - **Inicio:** <fecha o «cupos abiertos»>.
 - **Horario:** <días y hora local del país>.
-- **Modalidad:** en vivo por Zoom, con grabaciones de por vida en el campus.
+- **Modalidad:** en vivo por Zoom, con acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** al completar el curso.
 
 **[CTA-MID]** — Descarga el temario o consulta disponibilidad por WhatsApp.
@@ -161,7 +161,7 @@ nota_hermes: |
 <Respuesta según el requisito real de la ficha.>
 
 **¿Qué incluye además de las clases?**
-Grabaciones de por vida, certificado y <proyecto, comunidad o material>.
+Acceso al campus virtual con las clases grabadas y el material durante el curso, certificado y <proyecto, comunidad o material>.
 
 **¿Puedo pagar en cuotas?**
 <Respuesta según la ficha del país; no generalices si no aplica.>

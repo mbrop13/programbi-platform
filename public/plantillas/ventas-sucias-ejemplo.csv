@@ -1,0 +1,53 @@
+ID_Venta,Fecha,Sucursal,Vendedor,Categoria,Unidades,Monto_Bruto,Costo,Estado
+V-1001,2026-02-02,PROVIDENCIA,DIEGO FUENTES ,servicios,2,"CLP 175.000",78750,completado 
+V-1002,03/03/2026,concepcion ,camila soto,HARDWARE,3,200000,"$90.000",completado 
+V-1003,2026-01-04,Antofagasta,Matias Herrera,Software,4,"$ 225.000",101250,completado 
+V-1004,05/02/2026, vina del mar,valentina rojas,servicios,5,"CLP 250.000","$112.500",completado 
+V-1005,2026-03-06, santiago centro ,DIEGO FUENTES ,HARDWARE,6,275000,123750,completado 
+V-1006,07/01/2026,PROVIDENCIA,camila soto,Software,7,"$ 300.000","$135.000",completado 
+V-1007,2026-02-08,concepcion ,Matias Herrera,servicios,8,"CLP 325.000",146250,completado 
+V-1008,09/03/2026,Antofagasta,valentina rojas,HARDWARE,1,350000,"$157.500",completado 
+V-1009,2026-01-10, vina del mar,DIEGO FUENTES ,Software,2,"$ 375.000",168750,completado 
+V-1010,11/02/2026, santiago centro ,camila soto,servicios,3,"CLP 400.000","$180.000",completado 
+V-1010,11/02/2026, santiago centro ,camila soto,servicios,3,"CLP 400.000","$180.000",completado 
+V-1011,2026-03-12,PROVIDENCIA,Matias Herrera,HARDWARE,4,425000,191250,anulado
+V-1012,13/01/2026,concepcion ,valentina rojas,Software,5,"$ 450.000","$202.500",completado 
+V-1013,2026-02-14,Antofagasta,DIEGO FUENTES ,servicios,6,"CLP 475.000",213750,completado 
+V-1014,15/03/2026, vina del mar,camila soto,HARDWARE,7,500000,"$225.000",completado 
+V-1015,2026-01-16, santiago centro ,Matias Herrera,Software,8,"$ 525.000",236250,completado 
+V-1016,17/02/2026,PROVIDENCIA,valentina rojas,servicios,1,"CLP 550.000","$247.500",completado 
+V-1017,2026-03-18,concepcion ,DIEGO FUENTES ,HARDWARE,2,575000,258750,completado 
+V-1018,19/01/2026,Antofagasta,camila soto,Software,3,"$ 600.000","$270.000",completado 
+V-1019,2026-02-20, vina del mar,Matias Herrera,servicios,4,"CLP 625.000",281250,completado 
+V-1020,21/03/2026, santiago centro ,valentina rojas,HARDWARE,5,650000,"$292.500",completado 
+V-1021,2026-01-22,PROVIDENCIA,DIEGO FUENTES ,Software,6,"$ 675.000",303750,completado 
+V-1022,23/02/2026,concepcion ,camila soto,servicios,7,"CLP 700.000","$315.000",anulado
+V-1023,2026-03-24,Antofagasta,Matias Herrera,HARDWARE,8,725000,326250,completado 
+V-1024,25/01/2026, vina del mar,valentina rojas,Software,1,"$ 750.000","$337.500",completado 
+V-1025,2026-02-26, santiago centro ,DIEGO FUENTES ,servicios,2,"CLP 775.000",348750,completado 
+V-1025,2026-02-26, santiago centro ,DIEGO FUENTES ,servicios,2,"CLP 775.000",348750,completado 
+V-1026,27/03/2026,PROVIDENCIA,camila soto,HARDWARE,3,800000,"$360.000",completado 
+V-1027,2026-01-01,concepcion ,Matias Herrera,Software,4,"$ 825.000",371250,completado 
+V-1028,02/02/2026,Antofagasta,valentina rojas,servicios,5,"CLP 850.000","$382.500",completado 
+V-1029,2026-03-03, vina del mar,DIEGO FUENTES ,HARDWARE,6,875000,393750,completado 
+V-1030,04/01/2026, santiago centro ,camila soto,Software,7,"$ 900.000","$405.000",completado 
+V-1031,2026-02-05,PROVIDENCIA,Matias Herrera,servicios,8,"CLP 925.000",416250,completado 
+V-1032,06/03/2026,concepcion ,valentina rojas,HARDWARE,1,950000,"$427.500",completado 
+V-1033,2026-01-07,Antofagasta,DIEGO FUENTES ,Software,2,"$ 975.000",438750,anulado
+V-1034,08/02/2026, vina del mar,camila soto,servicios,3,"CLP 1.000.000","$450.000",completado 
+V-1035,2026-03-09, santiago centro ,Matias Herrera,HARDWARE,4,1025000,461250,completado 
+V-1036,10/01/2026,PROVIDENCIA,valentina rojas,Software,5,"$ 1.050.000","$472.500",completado 
+V-1037,2026-02-11,concepcion ,DIEGO FUENTES ,servicios,6,"CLP 1.075.000",483750,completado 
+V-1038,12/03/2026,Antofagasta,camila soto,HARDWARE,7,1100000,"$495.000",completado 
+V-1039,2026-01-13, vina del mar,Matias Herrera,Software,8,"$ 1.125.000",506250,completado 
+V-1040,14/02/2026, santiago centro ,valentina rojas,servicios,1,"CLP 1.150.000","$517.500",completado 
+V-1041,2026-03-15,PROVIDENCIA,DIEGO FUENTES ,HARDWARE,2,1175000,528750,completado 
+V-1042,16/01/2026,concepcion ,camila soto,Software,3,"$ 1.200.000","$540.000",completado 
+V-1043,2026-02-17,Antofagasta,Matias Herrera,servicios,4,"CLP 1.225.000",551250,completado 
+V-1044,18/03/2026, vina del mar,valentina rojas,HARDWARE,5,1250000,"$562.500",anulado
+V-1045,2026-01-19, santiago centro ,DIEGO FUENTES ,Software,6,"$ 1.275.000",573750,completado 
+V-1046,20/02/2026,PROVIDENCIA,camila soto,servicios,7,"CLP 1.300.000","$585.000",completado 
+V-1047,2026-03-21,concepcion ,Matias Herrera,HARDWARE,8,1325000,596250,completado 
+V-1048,22/01/2026,Antofagasta,valentina rojas,Software,1,"$ 1.350.000","$607.500",completado 
+V-1049,2026-02-23, vina del mar,DIEGO FUENTES ,servicios,2,"CLP 1.375.000",618750,completado 
+V-1050,24/03/2026, santiago centro ,camila soto,HARDWARE,3,1400000,"$630.000",completado 

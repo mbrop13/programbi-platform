@@ -43,16 +43,22 @@ function coincide(ruta: string, patron: string): boolean {
 /**
  * Rutas que NUNCA se anuncian ni llevan hreflang, en ningún país.
  *
- * - `/pago`: noindex, follow + `Disallow: /pago` (WS3).
- * - `/curso-power-bi`: 301 a `/cursos/power-bi` (WS3). Sus variantes de país
- *   también son 301; se cubren con el prefijo de país de más abajo.
- *
- * `/curso-python` y `/curso-sql-online` NO entran aquí: por decisión de Radar
- * siguen indexables y anunciadas en Chile y en los países prioritarios porque
- * tienen contenido propio por país de la fase 4. En los países secundarios sí
- * se consolidan como variante thin vía `RUTAS_NOINDEX_PAIS` (WS9).
+ * - `/pago`, `/empleos`, `/webinar`: noindex, follow.
+ * - `/curso-power-bi`, `/curso-python`, `/curso-sql-online`,
+ *   `/analisis-de-datos-mineria`, `/versus/power-bi-vs-excel`, `/faq`:
+ *   redirigen con 301 a su URL canónica (sus variantes de país también).
  */
-export const RUTAS_NOINDEX_GLOBAL: readonly string[] = ["/pago", "/curso-power-bi"];
+export const RUTAS_NOINDEX_GLOBAL: readonly string[] = [
+  "/pago",
+  "/curso-power-bi",
+  "/curso-python",
+  "/curso-sql-online",
+  "/analisis-de-datos-mineria",
+  "/versus/power-bi-vs-excel",
+  "/faq",
+  "/empleos",
+  "/webinar",
+];
 
 /** ¿La ruta es noindex/redirigida en todo el sitio (incluida Chile)? */
 export function esRutaNoindexGlobal(path: string): boolean {

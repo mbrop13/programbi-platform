@@ -5,9 +5,9 @@ pais: mx
 hreflang: es-MX
 curso: access
 url_curso: https://www.programbi.com/mx/cursos/access
-title: "Curso de Access en México para administrativos | ProgramBI"
-meta: "Curso de Microsoft Access en México: 20 h en vivo por Zoom, 7 módulos de tablas, consultas SQL, formularios, informes y macros. Cupos abiertos."
-h1: "Curso de Access en México: ordena la información de tu área con bases de datos"
+title: Cómo usar Microsoft Access en México | ProgramBI
+meta: "Guía práctica para aprender Microsoft Access en México: tablas, relaciones, consultas SQL, formularios, informes y macros aplicadas al trabajo diario."
+h1: Cómo usar Microsoft Access para administración en México
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/mx/cursos/access
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Microsoft Access de ProgramBI para México](https://www.programbi.com/mx/cursos/access) son **20 horas en vivo por Zoom** distribuidas en **7 módulos**, pensadas para personal administrativo que necesita dejar atrás las hojas de cálculo desbordadas: aprenderás a diseñar tablas relacionadas, consultar con SQL básico, capturar datos con formularios, generar informes de gestión y automatizar tareas con macros. El precio es **{precio_local}** y hoy hay **cupos abiertos · fechas vigentes en calendario**.
 
-Incluye grabaciones de por vida en el campus, certificado al completar y un proyecto integrador sobre un proceso de empresa. La sección de preguntas frecuentes de la ficha ubica las clases a las 16:30, hora del centro de México. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Información revisada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y un proyecto integrador sobre un proceso de empresa. La sección de preguntas frecuentes de la ficha ubica las clases a las 16:30, hora del centro de México. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Información revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar fecha».
 
@@ -116,7 +116,7 @@ Access resuelve muy bien la base de un área o de un proceso. Cuando la informac
 ## Ficha rápida
 
 - **Duración:** 20 horas, 7 módulos.
-- **Modalidad:** en vivo por Zoom, con grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, con acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos; consulta la próxima cohorte.
 - **Horario:** según la FAQ de la ficha, 16:30 a 18:30, hora del centro de México; confírmalo al inscribirte.
 - **Certificado:** al completar.
@@ -151,4 +151,4 @@ No. Access es ideal para la base de un área o de un proceso, con formularios e 
 Sí. Entender tablas, relaciones y consultas te facilita mucho el modelado de datos en Power BI.
 
 **¿Qué obtengo al final?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

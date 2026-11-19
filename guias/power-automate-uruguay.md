@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: power-automate
 url_curso: https://www.programbi.com/uy/cursos/power-automate
-title: "Curso de Power Automate Uruguay: guía 2026 | ProgramBI"
-meta: "Curso de Power Automate en Uruguay en vivo: 20 h para automatizar mails, Teams, SharePoint y Excel de 19:30 a 21:30 h con RPA."
-h1: "Curso de Power Automate en Uruguay: automatizá Microsoft 365 sin escribir código"
+title: Cómo automatizar con Power Automate en Uruguay | ProgramBI
+meta: "Guía práctica de Power Automate y RPA en Uruguay: automatiza correos, aprobaciones y archivos entre Excel, Outlook y Teams sin programar."
+h1: Cómo automatizar flujos y tareas con Power Automate en Uruguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/uy/cursos/power-automate
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Power Automate en Uruguay: automatizá Microsoft 365 sin escribir código
 
-**Respuesta corta:** el [curso de Power Automate de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/power-automate) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, en 10 módulos pensados para automatizar tareas repetitivas **sin programar**. Vas a crear flujos de nube automatizados, instantáneos y programados; integrar Outlook, Teams, OneDrive y SharePoint; trabajar con expresiones y variables; armar aprobaciones; usar RPA de escritorio con Power Automate Desktop; y apoyarte en Copilot para diseñar flujos. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Power Automate de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/power-automate) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, en 10 módulos pensados para automatizar tareas repetitivas **sin programar**. Vas a crear flujos de nube automatizados, instantáneos y programados; integrar Outlook, Teams, OneDrive y SharePoint; trabajar con expresiones y variables; armar aprobaciones; usar RPA de escritorio con Power Automate Desktop; y apoyarte en Copilot para diseñar flujos. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 La ficha, consultada el 4 de noviembre de 2026, indica **cupos abiertos · nueva cohorte por abrir**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia bancaria.
 
@@ -131,7 +131,7 @@ Las clases son de 19:30 a 21:30 en Montevideo. Uruguay mantiene UTC-3 todo el a�
 
 - 20 horas, 10 módulos, sin programar.
 - En vivo por Zoom; cupos abiertos · edición siguiente en espera.
-- Grabaciones de por vida, certificado digital y proyecto final real.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final real.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
 

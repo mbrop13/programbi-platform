@@ -14,7 +14,7 @@ import { courseBrochurePath } from "@/lib/pricing-gate";
 export default function CountryContent({ contenido }: { contenido: ContenidoPais }) {
   const pais = getPais(contenido.iso);
   const hrefCursos = rutaLocal(pais.iso, "/cursos");
-  const hrefFaq = rutaLocal(pais.iso, "/faq");
+  const hrefFaq = rutaLocal(pais.iso, "/preguntas-frecuentes");
   const horario = horarioLocal(pais.iso);
 
   return (

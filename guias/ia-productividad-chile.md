@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: ia-productividad
 url_curso: https://www.programbi.com/cursos/ia-productividad
-title: "Curso de IA en Productividad Chile: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en Chile en vivo: 20 h para automatizar informes de oficina con ChatGPT, Claude, Gemini y Copilot, sin programar."
-h1: "Curso de IA en Productividad en Chile: informes de oficina en minutos"
+title: Cómo usar IA para productividad en Chile | ProgramBI
+meta: "Guía para aplicar ChatGPT, Claude, Gemini y Copilot en Chile: automatiza reportes, Excel, documentos y correos sin programar."
+h1: Cómo automatizar informes de oficina con IA en Chile
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/cursos/ia-productividad
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de IA en Productividad en Chile: informes de oficina en minutos
 
-**Respuesta corta:** el [curso de IA en Productividad de ProgramBI](https://www.programbi.com/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas en 6 módulos** para personal administrativo que quiere automatizar informes diarios, resúmenes ejecutivos y reportes recurrentes con **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. Cuesta **$169.000 CLP**, las clases son de **19:30 a 21:30, hora de Chile**, e incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de IA en Productividad de ProgramBI](https://www.programbi.com/cursos/ia-productividad) es un programa **en vivo por Zoom de 20 horas en 6 módulos** para personal administrativo que quiere automatizar informes diarios, resúmenes ejecutivos y reportes recurrentes con **ChatGPT, Claude, Gemini, Copilot y flujos sin código**. Cuesta **$169.000 CLP**, las clases son de **19:30 a 21:30, hora de Chile**, e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 Es **100 % práctico**: se trabaja con informes administrativos, financieros, de control de gestión y contables. La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · próxima edición disponible**, y el proyecto final consiste en automatizar tu propio informe diario real.
 
@@ -114,7 +114,7 @@ Según la [ficha](https://www.programbi.com/cursos/ia-productividad), consultada
 
 - **20 horas en 6 módulos**, 100 % prácticos.
 - **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos con inicio próximo a consultar.
-- **Grabaciones de por vida** y **certificado digital**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado digital**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Valor: **$169.000 CLP**.
 
@@ -143,4 +143,4 @@ Automatizas tu propio informe diario real, o el más frecuente de tu trabajo, y 
 Sí. El curso trabaja con Word o Google Docs, PowerPoint o Google Slides, y Outlook o Gmail, así que se adapta a cualquiera de los dos entornos.
 
 **¿Las clases quedan grabadas?**
-Sí, todas, con acceso de por vida en el campus virtual, para que repitas cualquier ejercicio cuando lo necesites.
+Sí, todas, con acceso al campus virtual y el material durante el curso virtual, para que repitas cualquier ejercicio cuando lo necesites.

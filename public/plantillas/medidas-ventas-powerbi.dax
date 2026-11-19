@@ -1,0 +1,106 @@
+// ============================================================================
+// Pack de Medidas DAX — Dashboard de Ventas Comerciales (Power BI)
+// Compatible con: public/plantillas/plantilla-ventas-powerbi.csv
+// Tabla principal: Ventas | Tabla calendario recomendada: Calendario[Fecha]
+// ============================================================================
+
+// 1. MÉTRICAS BASE
+Ventas Totales =
+SUM ( Ventas[VentaNeta] )
+
+Costo Total =
+SUM ( Ventas[Costo] )
+
+Margen Bruto =
+SUM ( Ventas[Margen] )
+
+Margen % =
+DIVIDE ( [Margen Bruto], [Ventas Totales], 0 )
+
+Unidades Vendidas =
+SUM ( Ventas[Unidades] )
+
+Transacciones =
+COUNTROWS ( Ventas )
+
+Ticket Promedio =
+DIVIDE ( [Ventas Totales], [Transacciones], 0 )
+
+Precio Promedio Ponderado =
+DIVIDE ( [Ventas Totales], [Unidades Vendidas], 0 )
+
+// 2. MONEDA LOCAL (EJEMPLO CHILE CLP Y FILTRO POR PAÍS)
+Ventas Chile CLP =
+CALCULATE (
+    [Ventas Totales],
+    Ventas[Pais] = "Chile",
+    Ventas[Moneda] = "CLP"
+)
+
+Participacion Ventas % =
+DIVIDE (
+    [Ventas Totales],
+    CALCULATE ( [Ventas Totales], ALLSELECTED ( Ventas ) ),
+    0
+)
+
+// 3. INTELIGENCIA DE TIEMPO (Requiere tabla Calendario marcada como tabla de fechas)
+Ventas YTD =
+TOTALYTD ( [Ventas Totales], Calendario[Fecha] )
+
+Ventas MTD =
+TOTALMTD ( [Ventas Totales], Calendario[Fecha] )
+
+Ventas Año Anterior (LY) =
+CALCULATE (
+    [Ventas Totales],
+    SAMEPERIODLASTYEAR ( Calendario[Fecha] )
+)
+
+Variacion YoY $ =
+[Ventas Totales] - [Ventas Año Anterior (LY)]
+
+Variacion YoY % =
+DIVIDE ( [Variacion YoY $], [Ventas Año Anterior (LY)], 0 )
+
+Ventas Mes Anterior (PM) =
+CALCULATE (
+    [Ventas Totales],
+    DATEADD ( Calendario[Fecha], -1, MONTH )
+)
+
+Variacion MoM % =
+DIVIDE ( [Ventas Totales] - [Ventas Mes Anterior (PM)], [Ventas Mes Anterior (PM)], 0 )
+
+// 4. RANKINGS Y TOP PERFORMERS
+Ranking Vendedores =
+IF (
+    HASONEVALUE ( Ventas[Vendedor] ),
+    RANKX ( ALLSELECTED ( Ventas[Vendedor] ), [Ventas Totales], , DESC, DENSE )
+)
+
+Ranking Regiones =
+IF (
+    HASONEVALUE ( Ventas[Region] ),
+    RANKX ( ALLSELECTED ( Ventas[Region] ), [Ventas Totales], , DESC, DENSE )
+)
+
+Ventas Top 3 Productos =
+CALCULATE (
+    [Ventas Totales],
+    KEEPFILTERS (
+        TOPN ( 3, ALLSELECTED ( Ventas[Producto] ), [Ventas Totales], DESC )
+    )
+)
+
+// 5. FORMATO DINÁMICO Y KPI STATUS
+Estado Margen =
+VAR _margen = [Margen %]
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( _margen ), BLANK (),
+        _margen >= 0.45, "Saludable",
+        _margen >= 0.30, "Aceptable",
+        "Bajo objetivo"
+    )

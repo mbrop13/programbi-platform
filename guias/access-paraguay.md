@@ -5,9 +5,9 @@ pais: py
 hreflang: es-PY
 curso: access
 url_curso: https://www.programbi.com/py/cursos/access
-title: "Curso de Access en Paraguay en vivo | ProgramBI"
-meta: "Curso de Microsoft Access en Paraguay: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros a las 19:30 h."
-h1: "Curso de Access en Paraguay: aprendé a construir bases de datos para tu oficina"
+title: Cómo usar Microsoft Access en Paraguay | ProgramBI
+meta: "Guía práctica para aprender Microsoft Access en Paraguay: tablas, relaciones, consultas SQL, formularios, informes y macros aplicadas al trabajo diario."
+h1: Cómo usar Microsoft Access para administración en Paraguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/py/cursos/access
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **En pocas palabras:** el [curso de Microsoft Access de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/access) tiene **20 horas de clases en vivo por Zoom** en **7 módulos** y está pensado para personal administrativo que necesita almacenar, organizar y consultar información sin depender de planillas frágiles: vas a diseñar tablas relacionadas, consultar con SQL básico, cargar datos con formularios validados, generar informes en PDF y Excel y automatizar tareas con macros. Inversión: **{precio_local}**. Hoy la ficha muestra **cupos abiertos · inicio próximo por grupo**.
 
-Incluye grabaciones de por vida en el campus, certificado al completar y un proyecto integrador sobre un proceso empresarial. Según las preguntas frecuentes de la ficha, las clases son de 19:30 a 21:30, hora de Paraguay. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información revisada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y un proyecto integrador sobre un proceso empresarial. Según las preguntas frecuentes de la ficha, las clases son de 19:30 a 21:30, hora de Paraguay. Para confirmar el monto y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp. Información revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar por WhatsApp».
 
@@ -114,7 +114,7 @@ La ficha lo dirige al **personal administrativo que necesita almacenar, organiza
 ## Datos del curso
 
 - **Duración:** 20 horas, 7 módulos.
-- **Modalidad:** en vivo por Zoom, grabaciones de por vida en el campus.
+- **Modalidad:** en vivo por Zoom, acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, a confirmar.
 - **Horario:** según la FAQ de la ficha, 19:30 a 21:30, hora de Paraguay.
 - **Certificado:** al completar.
@@ -148,7 +148,7 @@ Microsoft Access en tu computadora; confirmalo con informática antes de la prim
 Sí. Entender tablas, claves y relaciones facilita el modelado de datos en Power BI.
 
 **¿Y si no puedo conectarme a una clase?**
-Queda grabada en el campus con acceso de por vida, así que podés verla antes de la sesión siguiente y llegar con tus dudas anotadas.
+Queda grabada en el campus virtual con el material durante el curso, así que podés verla antes de la sesión siguiente y llegar con tus dudas anotadas.
 
 **¿En qué se diferencia de un curso de Excel avanzado?**
 Excel avanzado profundiza en fórmulas y análisis dentro de la planilla; este curso te enseña a guardar la información en tablas relacionadas, controlar la carga con formularios y generar informes automáticos.
@@ -157,4 +157,4 @@ Excel avanzado profundiza en fórmulas y análisis dentro de la planilla; este c
 Access resuelve la base de un área o de un proceso e incluye formularios e informes; SQL Server apunta a bases más grandes, compartidas por mucha gente y por otros sistemas.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

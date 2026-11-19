@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: copilot
 url_curso: https://www.programbi.com/cursos/copilot
-title: "Curso de Copilot y Copilot Studio en Chile | ProgramBI"
-meta: "Curso de Copilot en Chile en vivo: 20 h de Copilot en Excel, Outlook, PowerPoint y Word, más agentes propios en Copilot Studio por Zoom."
-h1: "Curso de Copilot y Copilot Studio en Chile: IA en Office y agentes propios"
+title: Cómo usar Copilot y Copilot Studio en Chile | ProgramBI
+meta: Guía para dominar Microsoft Copilot en Excel, Word y Outlook y crear agentes propios en Copilot Studio en Chile.
+h1: Cómo usar Microsoft Copilot y crear agentes en Chile
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/cursos/copilot
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI](https://www.programbi.com/cursos/copilot) es un programa **en vivo por Zoom de 20 horas en 5 módulos de 4 horas**. La primera parte aplica Microsoft Copilot en **Excel, Outlook, PowerPoint y Word**; la segunda enseña a diseñar, entrenar y publicar **un agente propio en Copilot Studio**, con conocimiento de tu empresa, temas, entidades y diseño conversacional. Cuesta **$169.000 CLP** y las clases son de **19:30 a 21:30, hora de Chile**.
 
-La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · próxima edición disponible**. Incluye grabaciones de por vida, certificado y un proyecto final: un agente funcional sobre un caso real de tu pega.
+La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · próxima edición disponible**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado y un proyecto final: un agente funcional sobre un caso real de tu pega.
 
 **[CTA-TOP]** — Cupos abiertos · 19:30 a 21:30 (Chile) · «Ver el curso».
 
@@ -113,7 +113,7 @@ Según la [ficha](https://www.programbi.com/cursos/copilot), consultada el 4 de 
 
 - **20 horas en 5 módulos** de 4 horas.
 - **En vivo por Zoom**, de 19:30 a 21:30, hora de Chile; cupos abiertos · próxima fecha en consulta.
-- **Grabaciones de por vida** y **certificado digital**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado digital**.
 - Proyecto final: un agente funcional sobre un caso real.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Valor: **$169.000 CLP**.
@@ -125,7 +125,7 @@ Según la [ficha](https://www.programbi.com/cursos/copilot), consultada el 4 de 
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Copilot en Chile?**
-$169.000 CLP por las 20 horas en vivo, con grabaciones de por vida y certificado.
+$169.000 CLP por las 20 horas en vivo, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué diferencia hay entre Copilot y Copilot Studio?**
 Copilot te asiste dentro de Excel, Outlook, PowerPoint y Word. Copilot Studio sirve para construir agentes propios con el conocimiento de tu empresa.

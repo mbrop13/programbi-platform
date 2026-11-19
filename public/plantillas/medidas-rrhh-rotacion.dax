@@ -1,0 +1,67 @@
+// ============================================================================
+// Pack de Medidas DAX — RRHH, Dotación, Rotación y Ausentismo (Power BI)
+// Compatible con: public/plantillas/dataset-rrhh-dotacion.csv
+// Tabla principal: Dotacion
+// ============================================================================
+
+// 1. DOTACIÓN (HEADCOUNT)
+Headcount Activo =
+CALCULATE (
+    DISTINCTCOUNT ( Dotacion[ID_Empleado] ),
+    Dotacion[Estado] = "Activo"
+)
+
+Ingresos del Periodo =
+CALCULATE (
+    DISTINCTCOUNT ( Dotacion[ID_Empleado] ),
+    NOT ISBLANK ( Dotacion[FechaIngreso] ),
+    Dotacion[Estado] = "Activo"
+)
+
+Egresos del Periodo =
+CALCULATE (
+    DISTINCTCOUNT ( Dotacion[ID_Empleado] ),
+    Dotacion[Estado] = "Egresado"
+)
+
+Egresos Voluntarios =
+CALCULATE (
+    [Egresos del Periodo],
+    Dotacion[MotivoEgreso] = "Renuncia voluntaria"
+)
+
+// 2. ROTACIÓN DE PERSONAL
+Dotacion Promedio =
+DIVIDE ( [Headcount Activo] + ( [Headcount Activo] + [Egresos del Periodo] ), 2, [Headcount Activo] )
+
+Tasa Rotacion % =
+DIVIDE ( [Egresos del Periodo], [Dotacion Promedio], 0 )
+
+Tasa Rotacion Voluntaria % =
+DIVIDE ( [Egresos Voluntarios], [Dotacion Promedio], 0 )
+
+// 3. AUSENTISMO LABORAL
+Dias Ausencia =
+SUM ( Dotacion[DiasAusenciaMes] )
+
+Dias Laborales Totales =
+SUM ( Dotacion[DiasLaboralesMes] )
+
+Tasa Ausentismo % =
+DIVIDE ( [Dias Ausencia], [Dias Laborales Totales], 0 )
+
+// 4. ANTIGÜEDAD Y MASA SALARIAL
+Antiguedad Promedio Años =
+AVERAGEX (
+    FILTER ( Dotacion, Dotacion[Estado] = "Activo" ),
+    DIVIDE ( DATEDIFF ( Dotacion[FechaIngreso], TODAY (), DAY ), 365.25 )
+)
+
+Masa Salarial Mensual CLP =
+CALCULATE (
+    SUM ( Dotacion[SueldoBrutoCLP] ),
+    Dotacion[Estado] = "Activo"
+)
+
+Sueldo Bruto Promedio CLP =
+DIVIDE ( [Masa Salarial Mensual CLP], [Headcount Activo], 0 )

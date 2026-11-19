@@ -1,0 +1,92 @@
+// ============================================================================
+// Pack de Medidas DAX — Control de Inventario y Clasificación ABC (Power BI)
+// Compatible con: public/plantillas/dataset-inventario-retail.csv
+// Tabla principal: Inventario
+// ============================================================================
+
+// 1. STOCK Y VALORIZACIÓN
+Stock Actual Unidades =
+SUM ( Inventario[StockFinal] )
+
+Stock Minimo Unidades =
+SUM ( Inventario[StockMinimo] )
+
+Valor Inventario CLP =
+SUMX ( Inventario, Inventario[StockFinal] * Inventario[CostoUnitarioCLP] )
+
+Valor Venta Potencial CLP =
+SUMX ( Inventario, Inventario[StockFinal] * Inventario[PrecioVentaCLP] )
+
+Costo Venta 30D CLP =
+SUMX ( Inventario, Inventario[VentaUltimos30Dias] * Inventario[CostoUnitarioCLP] )
+
+// 2. ROTACIÓN Y COBERTURA (DÍAS DE INVENTARIO)
+Venta Diaria Promedio Unidades =
+DIVIDE ( SUM ( Inventario[VentaUltimos30Dias] ), 30, 0 )
+
+Dias de Inventario =
+DIVIDE ( [Stock Actual Unidades], [Venta Diaria Promedio Unidades], BLANK () )
+
+Rotacion Anual Veces =
+DIVIDE ( [Costo Venta 30D CLP] * 12, [Valor Inventario CLP], 0 )
+
+// 3. QUIEBRES DE STOCK Y ALERTA REPOSICIÓN
+SKUs Totales =
+DISTINCTCOUNT ( Inventario[SKU] )
+
+SKUs en Quiebre =
+CALCULATE (
+    DISTINCTCOUNT ( Inventario[SKU] ),
+    Inventario[StockFinal] = 0
+)
+
+Quiebre de Stock % =
+DIVIDE ( [SKUs en Quiebre], [SKUs Totales], 0 )
+
+SKUs Bajo Minimo =
+COUNTROWS (
+    FILTER (
+        Inventario,
+        Inventario[StockFinal] > 0 && Inventario[StockFinal] <= Inventario[StockMinimo]
+    )
+)
+
+Estado Stock =
+VAR _stock = [Stock Actual Unidades]
+VAR _min = [Stock Minimo Unidades]
+RETURN
+    SWITCH (
+        TRUE (),
+        _stock = 0, "Quiebre",
+        _stock <= _min, "Reponer urgente",
+        "Normal"
+    )
+
+// 4. CLASIFICACIÓN ABC POR VALOR DE VENTA 30 DÍAS
+Venta 30D CLP =
+SUMX ( Inventario, Inventario[VentaUltimos30Dias] * Inventario[PrecioVentaCLP] )
+
+Participacion Acumulada ABC % =
+VAR _ventaActual = [Venta 30D CLP]
+VAR _totalGlobal = CALCULATE ( [Venta 30D CLP], ALLSELECTED ( Inventario[SKU] ) )
+VAR _acumulado =
+    SUMX (
+        FILTER (
+            ALLSELECTED ( Inventario[SKU] ),
+            [Venta 30D CLP] >= _ventaActual
+        ),
+        [Venta 30D CLP]
+    )
+RETURN
+    DIVIDE ( _acumulado, _totalGlobal, 0 )
+
+Clase ABC =
+VAR _pct = [Participacion Acumulada ABC %]
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( _pct ), BLANK (),
+        _pct <= 0.80, "A (80%)",
+        _pct <= 0.95, "B (15%)",
+        "C (5%)"
+    )

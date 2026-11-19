@@ -5,9 +5,9 @@ pais: mx
 hreflang: es-MX
 curso: excel
 url_curso: https://www.programbi.com/mx/cursos/excel
-title: "Curso de Excel en México en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Excel online en vivo en México: 20 h, 12 módulos, de fórmulas a tablas dinámicas y Power Query, 16:30 CDMX. Temario, ejemplos con datos mexicanos."
-h1: "Curso de Excel en México: Excel online, en vivo y para tu trabajo"
+title: Cómo dominar Excel para gestión en México | ProgramBI
+meta: "Guía práctica de Excel para el trabajo en México: fórmulas avanzadas, tablas dinámicas, Power Query y dashboards para reportes de gestión."
+h1: Cómo aprender Excel avanzado para análisis y gestión en México
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/mx/cursos/excel
@@ -27,7 +27,7 @@ nota_hermes: |
 
 # Curso de Excel en México: Excel online, en vivo y para tu trabajo
 
-**Respuesta corta:** el [curso de Excel de ProgramBI para México](https://www.programbi.com/mx/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **16:30 a 18:30, hora del centro de México**. El valor es **{precio_local}** e incluye grabaciones de por vida y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
+**Respuesta corta:** el [curso de Excel de ProgramBI para México](https://www.programbi.com/mx/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **16:30 a 18:30, hora del centro de México**. El valor es **{precio_local}** e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
 
 **¿Qué aprendes?** Desde lo básico hasta lo que piden las vacantes administrativas y financieras en México: BUSCARX para cruzar contra catálogos, tablas dinámicas para el reporte semanal, funciones de fecha y texto, y Power Query para unir los reportes de cada sucursal o CEDIS. El resultado práctico: menos horas de copiar y pegar y reportes que no se rompen.
 
@@ -112,7 +112,7 @@ Datos de la [ficha del curso para México](https://www.programbi.com/mx/cursos/e
 - **20 horas, 12 módulos**, nivel básico-intermedio, pensado para administrativos principiantes o con conocimientos mínimos de Excel.
 - Temario: del entorno y las fórmulas básicas a BUSCARX, INDICE-COINCIDIR, tablas dinámicas avanzadas, funciones de fecha y texto, datos grandes y Power Query con parámetros y funciones M; cada nivel cierra con un proyecto.
 - **Nivel avanzado** disponible en la misma ficha.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
@@ -123,7 +123,7 @@ Datos de la [ficha del curso para México](https://www.programbi.com/mx/cursos/e
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Excel en México?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de Excel es online?**
 Sí, online y en vivo por Zoom, de 16:30 a 18:30, hora del centro de México. Las clases quedan grabadas.

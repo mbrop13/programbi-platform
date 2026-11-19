@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: excel
 url_curso: https://www.programbi.com/co/cursos/excel
-title: "Curso de Excel en Colombia en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Excel online en vivo en Colombia: 20 h, 12 módulos, de fórmulas a tablas dinámicas y Power Query, 17:30. Temario y ejemplos con datos colombianos."
-h1: "Curso de Excel en Colombia: Excel online y en vivo para el trabajo"
+title: Cómo dominar Excel para gestión en Colombia | ProgramBI
+meta: "Guía práctica de Excel para el trabajo en Colombia: fórmulas avanzadas, tablas dinámicas, Power Query y dashboards para reportes de gestión."
+h1: Cómo aprender Excel avanzado para análisis y gestión en Colombia
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/co/cursos/excel
@@ -28,7 +28,7 @@ nota_hermes: |
 
 # Curso de Excel en Colombia: Excel online y en vivo para el trabajo
 
-**Respuesta corta:** el [curso de Excel de ProgramBI para Colombia](https://www.programbi.com/co/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **17:30 a 19:30, hora de Colombia**. El valor es **{precio_local}** e incluye grabaciones de por vida y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
+**Respuesta corta:** el [curso de Excel de ProgramBI para Colombia](https://www.programbi.com/co/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **17:30 a 19:30, hora de Colombia**. El valor es **{precio_local}** e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
 
 **¿Qué aprendes?** De las bases a lo que filtran los reclutadores en Colombia: BUSCARX e INDICE-COINCIDIR, tablas dinámicas para cartera y facturación, funciones de fecha y texto, y Power Query para importar planos sin dañar cédulas ni NIT. En el trabajo diario, eso significa informes semanales que se actualizan solos y menos errores de copiado.
 
@@ -115,7 +115,7 @@ Datos de la [ficha del curso para Colombia](https://www.programbi.com/co/cursos/
 - **20 horas, 12 módulos**, nivel básico-intermedio, pensado para administrativos principiantes o con conocimientos mínimos de Excel.
 - Temario: del entorno y las fórmulas básicas a BUSCARX, INDICE-COINCIDIR, tablas dinámicas avanzadas, funciones de fecha y texto, datos grandes y Power Query con parámetros y funciones M; cada nivel cierra con un proyecto.
 - **Nivel avanzado** disponible en la misma ficha.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
@@ -126,7 +126,7 @@ Datos de la [ficha del curso para Colombia](https://www.programbi.com/co/cursos/
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Excel en Colombia?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de Excel es online?**
 Sí, online y en vivo por Zoom, de 17:30 a 19:30, hora de Colombia. Las clases quedan grabadas.

@@ -19,6 +19,7 @@ import { TESTIMONIOS_PUBLICADOS } from "@/lib/data/testimonials";
 import { SITE_ACTUALIZADO, lastmodDe } from "@/lib/seo/lastmod";
 import { PAISES_CARPETA, esIndexable, esIsoPais } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
+import { PLANTILLAS } from "@/lib/data/plantillas";
 import { guiasDePais, alternatesDeGuia } from "@/lib/guias";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
@@ -193,13 +194,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // `/curso-power-bi` ya no se anuncia: WS3 lo redirige 301 a /cursos/power-bi.
     // Se deja fuera también por `esRutaNoindexGlobal`, pero no se lista dos veces.
     entrada("/curso-power-bi-vs-pack-adopcion", 0.8, "monthly"),
-    // WS3 aún evalúa si estas landings son 301. Si lo son, se agregan a
-    // RUTAS_NOINDEX_GLOBAL y desaparecen solas del sitemap y del hreflang.
-    entrada("/curso-sql-online", 0.85, "weekly"),
-    entrada("/curso-python", 0.85, "weekly"),
     entrada("/power-bi-mineria-chile", 0.8, "monthly"),
     entrada("/cursos", 0.85, "weekly"),
     entrada("/precios", 0.85, "monthly"),
+    entrada("/plantillas", 0.85, "weekly"),
+    ...PLANTILLAS.map((p) => entrada(`/plantillas/${p.slug}`, 0.8, "monthly")),
+    entrada("/simulador-pl-300", 0.85, "monthly"),
+    entrada("/herramientas/excel-a-dax", 0.8, "monthly"),
+    entrada("/sueldos-analista-datos-chile", 0.8, "monthly"),
     entrada("/verificar-certificado", 0.5, "monthly"),
     // La raíz del test de nivel SÍ es indexable; las variantes país no (WS6)
     // y se filtran más abajo por `esRutaIndexablePais`.
@@ -210,7 +212,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Fase 5: landings de nicho (SSR, contenido propio).
     entrada("/power-bi-para-finanzas", 0.8, "monthly"),
     entrada("/power-bi-sql-server-python", 0.8, "monthly"),
-    entrada("/analisis-de-datos-mineria", 0.8, "monthly"),
     entrada("/capacitacion-empresas", 0.8, "monthly"),
     // /casos solo cuando hay testimonios publicables; /profesores es indexable
     // por decisión de WS1 (lista en lib/seo/indexabilidad.ts).
@@ -219,14 +220,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...PROFESORES_INDEXABLES.map((path) => entrada(path, 0.5, "monthly")),
     entrada("/referidos", 0.7, "weekly"),
     entrada("/referidos/terminos", 0.2, "yearly"),
-    entrada("/faq", 0.5, "monthly"),
-    entrada("/webinar", 0.5, "weekly"),
     entrada("/glosario", 0.45, "weekly"),
     entrada("/blog", 0.25, "weekly"),
-    entrada("/empleos", 0.5, "weekly"),
-    entrada("/empleos/vacantes", 0.45, "daily"),
-    entrada("/empleos/para-empresas", 0.4, "monthly"),
-    entrada("/empleos/talento", 0.4, "daily"),
     entrada("/versus", 0.4, "monthly"),
     entrada("/privacidad", 0.1, "yearly"),
     entrada("/terminos", 0.1, "yearly"),
@@ -272,15 +267,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/migrar-excel-a-power-bi", priority: 0.9, changeFrequency: "monthly" },
     { path: "/por-que-fallan-proyectos-power-bi", priority: 0.8, changeFrequency: "monthly" },
     { path: "/curso-power-bi-vs-pack-adopcion", priority: 0.8, changeFrequency: "monthly" },
-    { path: "/curso-sql-online", priority: 0.85, changeFrequency: "weekly" },
-    { path: "/curso-python", priority: 0.85, changeFrequency: "weekly" },
     { path: "/cursos", priority: 0.85, changeFrequency: "weekly" },
     { path: "/precios", priority: 0.85, changeFrequency: "monthly" },
     { path: "/test-nivel", priority: 0.75, changeFrequency: "monthly" },
     { path: "/test-nivel/sql", priority: 0.7, changeFrequency: "monthly" },
     { path: "/test-nivel/excel", priority: 0.7, changeFrequency: "monthly" },
     { path: "/nosotros", priority: 0.5, changeFrequency: "monthly" },
-    { path: "/faq", priority: 0.5, changeFrequency: "monthly" },
     ...courses.map((course) => ({
       path: `/cursos/${course.slug}`,
       priority: coursePriority(course.slug),
@@ -313,10 +305,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return [entrada(path, 0.5, "monthly", comparativasLastModified)];
     }
   );
-
-  // Página de Miami (solo Estados Unidos). Sale null mientras `us` no sea
-  // indexable: `entrada` pasa por `esRutaAnunciable`.
-  const miamiPages: EntradaPosible[] = [entrada("/us/miami", 0.8, "monthly")];
 
   // Listicle de Power BI en Chile: página propia, hermana de la ruta [slug].
   const listiclePages: EntradaPosible[] = [
@@ -368,7 +356,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...blogPages,
     ...countryPages,
     ...comparativaPaisPages,
-    ...miamiPages,
     ...listiclePages,
     ...guidePages,
     ...guideIndexPages,

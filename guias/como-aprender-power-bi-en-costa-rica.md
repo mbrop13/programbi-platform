@@ -25,7 +25,7 @@ nota_hermes: |
 
 **En resumen:** para aprender Power BI desde Costa Rica con acompañamiento, el [curso de Power BI de ProgramBI](https://www.programbi.com/cr/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas en vivo por Zoom**: conexión de fuentes, limpieza con Power Query, relaciones, DAX inicial, dashboards y publicación con roles. Iniciamos **nuevos grupos cada mes** (fecha confirmada en la ficha), con sesiones **lunes y miércoles de 16:30 a 18:30, hora de Costa Rica**. Precio: **{precio_local}**.
 
-Las clases quedan grabadas con acceso de por vida, se entrega certificado digital y existe un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Información tomada de la ficha del curso el 4 de noviembre de 2026.
+Las clases quedan grabadas con acceso al campus virtual y el material durante el curso, se entrega certificado digital y existe un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Información tomada de la ficha del curso el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · 16:30 hora de Costa Rica · «Ver el curso».
 
@@ -117,7 +117,7 @@ Una computadora con Windows, ya que Microsoft indica que [Power BI Desktop](http
 - **Inicio:** cohortes cada mes con cupos abiertos (consulta la ficha).
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de Costa Rica (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -138,7 +138,7 @@ Comenzamos un grupo nuevo cada mes, lunes y miércoles de 16:30 a 18:30, hora de
 No. El nivel básico-intermedio parte desde cero; basta con un manejo básico de Excel.
 
 **¿Puedo ver las clases después?**
-Sí. Todas quedan grabadas en el campus con acceso de por vida, así que puede repasar los temas de DAX y modelado las veces que necesite, incluso después de terminar el curso.
+Sí. Todas quedan grabadas en el campus virtual con el material durante el curso, así que puede repasar los temas de DAX y modelado las veces que necesite.
 
 **¿El curso es oficial de Microsoft?**
 No. Es un curso de ProgramBI que cubre fundamentos útiles para la PL-300; el temario oficial está en Microsoft Learn.
@@ -147,4 +147,4 @@ No. Es un curso de ProgramBI que cubre fundamentos útiles para la PL-300; el te
 Power BI se puede usar en español o en inglés; lo que aprende en el curso aplica igual, y los conceptos de Power Query, modelo y DAX son los mismos.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

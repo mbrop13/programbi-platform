@@ -81,7 +81,7 @@ Si todavía quieres reforzar fórmulas clásicas, Power Query y tablas dinámica
 
 ## Aprende Copilot en Excel y Copilot Studio en vivo
 
-En ProgramBI dictamos el [curso de Copilot y Copilot Studio en vivo](/cursos/copilot) en **20 horas distribuidas en 1 único nivel (Intermedio-Avanzado)**, organizado en 5 módulos de 4 horas. El Módulo 1 aborda directamente **Copilot en Excel, Outlook, PowerPoint y Word**, y los Módulos 2 al 5 te llevan a diseñar, conectar conocimiento y publicar tus propios agentes en **Copilot Studio** con gobernanza empresarial, en clases en vivo por Zoom y grabaciones de por vida.
+En ProgramBI dictamos el [curso de Copilot y Copilot Studio en vivo](/cursos/copilot) en **20 horas distribuidas en 1 único nivel (Intermedio-Avanzado)**, organizado en 5 módulos de 4 horas. El Módulo 1 aborda directamente **Copilot en Excel, Outlook, PowerPoint y Word**, y los Módulos 2 al 5 te llevan a diseñar, conectar conocimiento y publicar tus propios agentes en **Copilot Studio** con gobernanza empresarial, en clases en vivo por Zoom y acceso al campus virtual con las clases grabadas y el material durante el curso.
 
 <!-- CTA-END -->
 

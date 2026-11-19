@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: excel
 url_curso: https://www.programbi.com/ar/cursos/excel
-title: "Curso de Excel en Argentina en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Excel online en vivo en Argentina: 20 h, 12 módulos, de fórmulas a tablas dinámicas y Power Query, 19:30. Temario y ejemplos con datos argentinos."
-h1: "Curso de Excel en Argentina: Excel online y en vivo para tu laburo"
+title: Cómo dominar Excel para gestión en Argentina | ProgramBI
+meta: "Guía práctica de Excel para el trabajo en Argentina: fórmulas avanzadas, tablas dinámicas, Power Query y dashboards para reportes de gestión."
+h1: Cómo aprender Excel avanzado para análisis y gestión en Argentina
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/ar/cursos/excel
@@ -28,7 +28,7 @@ nota_hermes: |
 
 # Curso de Excel en Argentina: Excel online y en vivo para tu laburo
 
-**Respuesta corta:** el [curso de Excel de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **19:30 a 21:30, hora de Argentina**. El valor es **{precio_local}** e incluye grabaciones de por vida y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
+**Respuesta corta:** el [curso de Excel de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **19:30 a 21:30, hora de Argentina**. El valor es **{precio_local}** e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
 
 **¿Qué aprendés?** De lo básico a lo que te piden en compras, pricing y administración: BUSCARX para traer precios vigentes, tablas dinámicas con variaciones mensuales, funciones de fecha y texto, y Power Query para combinar las listas de todos tus proveedores. En el laburo: cada cambio de precios deja de ser una semana de planillas.
 
@@ -114,7 +114,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 - **20 horas, 12 módulos**, nivel básico-intermedio, pensado para administrativos principiantes o con conocimientos mínimos de Excel.
 - Temario: del entorno y las fórmulas básicas a BUSCARX, INDICE-COINCIDIR, tablas dinámicas avanzadas, funciones de fecha y texto, datos grandes y Power Query con parámetros y funciones M; cada nivel cierra con un proyecto.
 - **Nivel avanzado** disponible en la misma ficha.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
@@ -125,7 +125,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Excel en Argentina?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de Excel es online?**
 Sí, online y en vivo por Zoom, de 19:30 a 21:30, hora de Argentina. Las clases quedan grabadas.

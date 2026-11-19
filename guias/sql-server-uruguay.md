@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: sql-server
 url_curso: https://www.programbi.com/uy/cursos/sql-server
-title: "Curso de SQL Server Uruguay en vivo: guía 2026 | ProgramBI"
-meta: "Curso de SQL online en vivo en Uruguay: SQL Server desde cero en 20 h, martes y jueves 19:30. Temario, ejemplos y cómo conectarlo con Power BI."
-h1: "Curso de SQL Server en Uruguay: aprendé SQL online y en vivo"
+title: Cómo aprender SQL Server en Uruguay 2026 | ProgramBI
+meta: "Guía práctica para aprender SQL Server en Uruguay: consultas SELECT, JOINs, CTEs, funciones de ventana y conexión directa con Power BI."
+h1: Cómo aprender SQL Server para análisis de datos en Uruguay
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/uy/cursos/sql-server
@@ -25,7 +25,7 @@ nota_hermes: |
 
 # Curso de SQL Server en Uruguay: aprendé SQL online y en vivo
 
-**Respuesta corta:** el [curso de SQL Server de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/sql-server) es **online y en vivo por Zoom**, con **20 horas en 8 módulos**, nivel básico-intermedio. Las clases son **martes y jueves de 19:30 a 21:30, hora de Uruguay**, abre **ediciones nuevas todos los meses** (fecha actualizada en la ficha) y el valor es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de SQL Server de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/sql-server) es **online y en vivo por Zoom**, con **20 horas en 8 módulos**, nivel básico-intermedio. Las clases son **martes y jueves de 19:30 a 21:30, hora de Uruguay**, abre **ediciones nuevas todos los meses** (fecha actualizada en la ficha) y el valor es **{precio_local}**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué vas a aprender?** A consultar bases de datos por tu cuenta: filtrar con `WHERE`, resumir con `GROUP BY`, cruzar tablas con `JOIN`, armar subconsultas, CTEs, tablas temporales, funciones de ventana y `PIVOT`. Es la habilidad base de cualquier perfil de datos y la que hace confiables tus tableros de Power BI.
 
@@ -151,7 +151,7 @@ Cuando empezás a consultar bases reales, tené presente:
 - **En vivo y en hora uruguaya.**
 - **Temario hasta funciones de ventana y `PIVOT`.**
 - **Proyecto con datos reales.**
-- **Grabaciones de por vida.**
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso.**
 - **Integración con Power BI.**
 
 ## El curso SQL Server en vivo de ProgramBI (Uruguay)
@@ -162,7 +162,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/s
 - **20 horas, 8 módulos**, nivel básico-intermedio, desde cero.
 - Temario: SELECT, WHERE y ORDER BY; funciones y operadores; GROUP BY y HAVING; subconsultas; JOINs y vistas; CTEs y tablas temporales; funciones de ventana; PIVOT y UNPIVOT; IA aplicada a SQL Server.
 - **Nivel avanzado** (20 h): procedimientos almacenados y diseño de esquemas.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Inicio: **ediciones mensuales** (mirá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -173,7 +173,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/s
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de SQL Server en Uruguay?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Es un curso online?**
 Sí, online y en vivo por Zoom, martes y jueves de 19:30 a 21:30, hora de Uruguay.

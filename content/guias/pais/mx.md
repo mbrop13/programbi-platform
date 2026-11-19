@@ -114,7 +114,7 @@ Con disciplina, se puede aprender solo con la documentación de Microsoft y prá
 - **20 horas, 8 módulos**, nivel básico-intermedio. Cohortes mensuales con cupo abierto; revisa la siguiente fecha en la ficha.
 - Consulta aranceles vigentes en pesos mexicanos al descargar el PDF en la ficha del [curso de Power BI en México](/mx/cursos/power-bi).
 - Temario: Power Query y funciones M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
-- **Grabaciones de por vida** y **certificado** al completar.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado** al completar.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Lecturas recomendadas: [fórmulas DAX más usadas](/guias/funciones-dax-mas-importantes), [Power BI vs Excel](/guias/power-bi-vs-excel) y el programa integral de [Análisis de datos](/mx/cursos/analisis-de-datos).
 

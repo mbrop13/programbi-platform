@@ -1,0 +1,75 @@
+// ============================================================================
+// Pack de Medidas DAX — OEE y Mantenimiento Flota Minera (Power BI)
+// Compatible con: public/plantillas/dataset-mineria-oee-flota.csv
+// Tabla principal: FlotaMinera
+// ============================================================================
+
+// 1. HORAS Y DISPONIBILIDAD MECÁNICA
+Horas Calendario =
+SUM ( FlotaMinera[HorasCalendario] )
+
+Horas Programadas =
+SUM ( FlotaMinera[HorasProgramadas] )
+
+Horas Operativas =
+SUM ( FlotaMinera[HorasOperativas] )
+
+Horas Detencion No Planificada =
+SUM ( FlotaMinera[HorasDetencionNoPlanificada] )
+
+Horas Detencion Programada =
+[Horas Calendario] - [Horas Programadas]
+
+Disponibilidad Mecanica % =
+DIVIDE (
+    [Horas Programadas] - [Horas Detencion No Planificada],
+    [Horas Programadas],
+    0
+)
+
+// 2. UTILIZACIÓN Y RENDIMIENTO
+Utilizacion Efectiva % =
+DIVIDE (
+    [Horas Operativas],
+    [Horas Programadas] - [Horas Detencion No Planificada],
+    0
+)
+
+Utilizacion Nominal % =
+DIVIDE ( [Horas Operativas], [Horas Calendario], 0 )
+
+// 3. PRODUCTIVIDAD Y OEE (Overall Equipment Effectiveness)
+Tonelaje Movido =
+SUM ( FlotaMinera[TonelajeMovido] )
+
+Meta Tonelaje =
+SUM ( FlotaMinera[MetaTonelaje] )
+
+Cumplimiento Tonelaje % =
+DIVIDE ( [Tonelaje Movido], [Meta Tonelaje], 0 )
+
+Tonelaje por Hora Operativa =
+DIVIDE ( [Tonelaje Movido], [Horas Operativas], 0 )
+
+Tonelaje por Turno =
+DIVIDE ( [Tonelaje Movido], COUNTROWS ( FlotaMinera ), 0 )
+
+OEE % =
+[Disponibilidad Mecanica %] * [Utilizacion Efectiva %] * MIN ( [Cumplimiento Tonelaje %], 1 )
+
+// 4. CONFIABILIDAD (MTBF y MTTR)
+Numero de Fallas =
+SUM ( FlotaMinera[NumFallas] )
+
+MTBF Horas =
+DIVIDE ( [Horas Operativas], [Numero de Fallas], BLANK () )
+
+MTTR Horas =
+DIVIDE ( [Horas Detencion No Planificada], [Numero de Fallas], BLANK () )
+
+// 5. RANKING DE EQUIPOS CRÍTICOS
+Ranking Tonelaje Equipo =
+IF (
+    HASONEVALUE ( FlotaMinera[Equipo] ),
+    RANKX ( ALLSELECTED ( FlotaMinera[Equipo] ), [Tonelaje Movido], , DESC, DENSE )
+)

@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Análisis de datos de ProgramBI para República Dominicana](https://www.programbi.com/do/cursos/analisis-de-datos) es una formación **en vivo por Zoom de 60 horas por nivel**, repartidas en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para dar el salto de "el que hace los reportes" a analista de datos. El nivel básico-intermedio abre **grupos todos los meses** (consulta la fecha exacta en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de República Dominicana**. Precio: **{precio_local}**.
 
-En la misma ficha hay dos niveles de 60 horas —básico-intermedio y avanzado—, y el programa incluye grabaciones con acceso de por vida, certificado digital, proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información de la ficha del curso, revisada el 4 de noviembre de 2026.
+En la misma ficha hay dos niveles de 60 horas —básico-intermedio y avanzado—, y el programa incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital, proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información de la ficha del curso, revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · 18:30 hora RD · «Ver el curso».
 
@@ -138,7 +138,7 @@ Ese paquete te sirve para tu trabajo actual, para una entrevista o para tu porta
 - **Inicio:** todos los meses inicia una cohorte nueva (ver ficha).
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de República Dominicana.
 - **Duración:** 60 horas por nivel (20 por herramienta).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI); según la ficha, ha liderado capacitaciones en AngloAmerican, CAP, Deloitte y SQM.
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -162,7 +162,7 @@ Tenemos inicios mensuales; nos conectamos lunes y miércoles de 18:30 a 20:30, h
 No. El nivel básico-intermedio parte desde cero en cada herramienta.
 
 **¿Qué pasa si falto a una clase?**
-Queda grabada en el campus con acceso de por vida, para que te pongas al día.
+Queda grabada en el campus virtual con el material durante el curso, para que te pongas al día.
 
 **¿Puedo tomar solo Power BI o solo SQL?**
 Sí. Existen los cursos por separado; este programa los integra con un proyecto común.
@@ -171,4 +171,4 @@ Sí. Existen los cursos por separado; este programa los integra con un proyecto 
 Sí. En todos esos sectores hay bases de datos, reportes que se repiten y preguntas de negocio que se responden mejor con SQL, Power BI y Python que con hojas sueltas de Excel.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: python
 url_curso: https://www.programbi.com/pe/cursos/python
-title: "Curso de Python en Perú en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en Perú: Python para datos desde cero en 20 h (lunes y miércoles 17:30 Lima). Pandas y automatización."
-h1: "Curso de Python en Perú: Python para datos, online y desde cero"
+title: Cómo aprender Python para datos en Perú | ProgramBI
+meta: "Guía para aprender Python aplicado a datos en Perú: Pandas, limpieza, visualización y automatización de reportes desde cero."
+h1: Cómo aprender Python para análisis de datos en Perú desde cero
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/pe/cursos/python
@@ -26,7 +26,7 @@ nota_hermes: |
 
 # Curso de Python en Perú: Python para datos, online y desde cero
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI en Perú](https://www.programbi.com/pe/cursos/python) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **lunes y miércoles de 17:30 a 19:30, hora de Perú**. Cuenta con **inicios todos los meses** (revisa la próxima fecha en la ficha) y cuesta **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI en Perú](https://www.programbi.com/pe/cursos/python) es **online y en vivo por Zoom**: **20 horas, 8 módulos**, nivel básico-intermedio, los **lunes y miércoles de 17:30 a 19:30, hora de Perú**. Cuenta con **inicios todos los meses** (revisa la próxima fecha en la ficha) y cuesta **{precio_local}**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué aprendes?** Python desde los fundamentos con enfoque en análisis de datos: variables, funciones, listas y diccionarios, y luego Pandas para limpiar, transformar, agrupar y cruzar información; gráficos con Matplotlib y conexión a bases de datos y APIs. En tu chamba, eso se traduce en automatizar el consolidado que hoy armas juntando archivos de cada agencia, fundo o tienda.
 
@@ -167,7 +167,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/pytho
 - **20 horas, 8 módulos**, nivel básico-intermedio, desde cero.
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Inicio: **grupos todos los meses** (próxima fecha en la ficha). Precio: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -178,7 +178,7 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/pytho
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Python en Perú?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de Python es online?**
 Sí, online y en vivo por Zoom, lunes y miércoles de 17:30 a 19:30, hora de Perú.

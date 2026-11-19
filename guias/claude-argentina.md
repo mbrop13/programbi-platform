@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: claude
 url_curso: https://www.programbi.com/ar/cursos/claude
-title: "Curso de Claude en Argentina online en vivo | ProgramBI"
-meta: "Curso de Claude en Argentina en vivo: 20 h para usar la IA de Anthropic en oficina, planillas y documentos. Clases 19:30 hora argentina; inicios cada mes."
-h1: "Curso de Claude en Argentina: sacale provecho a la IA de Anthropic en tu laburo"
+title: Cómo usar Claude AI en el trabajo en Argentina | ProgramBI
+meta: "Guía práctica para usar Claude (Anthropic) en Argentina: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+h1: Cómo usar Claude AI para trabajo administrativo en Argentina
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/ar/cursos/claude
@@ -112,7 +112,7 @@ La ficha lo orienta a **trabajo administrativo**, con el mismo temario para part
 - **Inicio:** todos los meses abre un grupo nuevo (consultá la fecha en la ficha).
 - **Días y hora:** lunes y miércoles, 19:30 a 21:30, hora argentina (misma hora que en Chile y Uruguay, según la ficha).
 - **Duración:** 20 horas, cinco módulos de cuatro.
-- **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
+- **Incluye:** acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final.
 - **Docente:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
 
@@ -140,4 +140,4 @@ Depende de tu política interna, del plan de Claude y de la Ley 25.326. Se ve en
 Sí. Lo que generás se exporta a Google Docs, y el módulo 4 muestra conectores con Drive, mail y calendario.
 
 **¿Y si me pierdo una clase?**
-Queda grabada y la ves cuando quieras, de por vida.
+Queda grabada y la ves en el campus virtual durante el curso.

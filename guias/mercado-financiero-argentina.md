@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: mercado-financiero
 url_curso: https://www.programbi.com/ar/cursos/mercado-financiero
-title: "Curso de Mercado Financiero Argentina: guía 2026 | ProgramBI"
-meta: "Curso de mercado financiero en Argentina en vivo: carteras con Python, SQL, Power BI e IA en 30 h, 19:30 h. Riesgo, retorno y tableros."
-h1: "Curso de Mercado Financiero en Argentina: carteras con datos e IA"
+title: Análisis de datos para finanzas en Argentina | ProgramBI
+meta: "Guía de analítica financiera en Argentina: cómo combinar Python, SQL, Power BI e IA para valorizar carteras, medir riesgo y armar dashboards."
+h1: Cómo analizar carteras y riesgo financiero con datos e IA en Argentina
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/ar/cursos/mercado-financiero
@@ -118,7 +118,7 @@ Si querés reforzar una pieza antes de este programa, tenés el [curso de Python
 
 ## Datos prácticos de la cohorte
 
-La [ficha para Argentina](https://www.programbi.com/ar/cursos/mercado-financiero) (consultada el 4 de noviembre de 2026) indica clases en vivo por Zoom de 19:30 a 21:30, hora de Argentina, con cupos abiertos y fecha de inicio por confirmar. Son 30 horas; el valor es {precio_local}. Cada clase queda grabada y tenés acceso de por vida. Al aprobar el proyecto final recibís certificado. Enseña Manuel Oliva, Magíster en Data Science de la UAI.
+La [ficha para Argentina](https://www.programbi.com/ar/cursos/mercado-financiero) (consultada el 4 de noviembre de 2026) indica clases en vivo por Zoom de 19:30 a 21:30, hora de Argentina, con cupos abiertos y fecha de inicio por confirmar. Son 30 horas; el valor es {precio_local}. Cada clase queda grabada y tenés acceso al campus virtual con las clases grabadas y el material durante el curso. Al aprobar el proyecto final recibís certificado. Enseña Manuel Oliva, Magíster en Data Science de la UAI.
 
 **Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
 
@@ -127,7 +127,7 @@ La [ficha para Argentina](https://www.programbi.com/ar/cursos/mercado-financiero
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Mercado financiero en Argentina?**
-El valor es {precio_local} por el programa de 30 horas, con grabaciones de por vida y certificado.
+El valor es {precio_local} por el programa de 30 horas, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cuándo y a qué hora son las clases?**
 De 19:30 a 21:30, hora de Argentina, en vivo por Zoom. La ficha indica cupos abiertos; la fecha de inicio se confirma ahí o por WhatsApp.

@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: machine-learning
 url_curso: https://www.programbi.com/co/cursos/machine-learning
-title: "Curso de Machine Learning Colombia: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en Colombia en vivo: 20 h de modelos predictivos con Python (regresión, clasificación, clustering) a las 17:30 Bogotá."
-h1: "Curso de Machine Learning en Colombia: aprende a predecir con Python"
+title: Cómo aprender Machine Learning en Colombia | ProgramBI
+meta: "Ruta práctica de Machine Learning en Colombia: qué base de Python necesitas, algoritmos clave con Scikit-learn y casos aplicados a negocios."
+h1: Cómo aprender Machine Learning con Python para negocios en Colombia
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/co/cursos/machine-learning
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Machine Learning en Colombia: aprende a predecir con Python
 
-**Respuesta corta:** el [curso de Machine Learning de ProgramBI en Colombia](https://www.programbi.com/co/cursos/machine-learning) es un programa **en vivo de 20 horas por Zoom**, de **17:30 a 19:30, hora de Colombia**, para quienes ya saben Python y quieren crear modelos predictivos aplicados a negocios. Cubre aprendizaje supervisado (regresión, clasificación, árboles, ensembles y validación) y no supervisado (K-Means, PCA, t-SNE, anomalías y reglas de asociación). El valor es **{precio_local}** e incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Machine Learning de ProgramBI en Colombia](https://www.programbi.com/co/cursos/machine-learning) es un programa **en vivo de 20 horas por Zoom**, de **17:30 a 19:30, hora de Colombia**, para quienes ya saben Python y quieren crear modelos predictivos aplicados a negocios. Cubre aprendizaje supervisado (regresión, clasificación, árboles, ensembles y validación) y no supervisado (K-Means, PCA, t-SNE, anomalías y reglas de asociación). El valor es **{precio_local}** e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 Según la ficha consultada el 4 de noviembre de 2026, la próxima cohorte tiene **cupos abiertos · programación continua en vivo**. Se paga en pesos colombianos con Mercado Pago Colombia, PSE o Nequi.
 
@@ -122,7 +122,7 @@ La ficha indica clases de 17:30 a 19:30 en Bogotá. Como Colombia se mantiene en
 
 - 20 horas, 2 módulos: supervisado y no supervisado.
 - En vivo por Zoom, 17:30 a 19:30 hora de Colombia; cupos abiertos · próximas ediciones en marcha.
-- Grabaciones de por vida, certificado digital y proyectos con datos reales.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyectos con datos reales.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Valor: {precio_local}, en pesos colombianos.
 
@@ -145,7 +145,7 @@ La ficha muestra cupos abiertos con calendario activo; se puede consultar por Wh
 Sí, certificado digital de ProgramBI al completar el curso.
 
 **¿Puedo ver las clases después?**
-Sí, todas quedan grabadas con acceso de por vida en el campus virtual.
+Sí, todas quedan grabadas con acceso al campus virtual y el material durante el curso virtual.
 
 **¿Me sirve si trabajo en cartera o en riesgo de crédito?**
 Sí. La clasificación del módulo 1 —regresión logística, árboles y ensembles— es la base de los modelos de probabilidad de atraso, y el curso enseña a validarlos y explicarlos.

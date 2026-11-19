@@ -321,9 +321,8 @@ export default function CourseDetailClient({
     country: pais,
   });
 
-  // Particular: la compra siempre está disponible (haya o no fecha publicada).
-  // Logueado se nombra "Comprar ahora"; sin sesión, "Inscribirse" abre el registro
-  // y luego cae en /pago.
+  // Particular: la compra siempre está disponible (haya o no fecha publicada),
+  // tanto con sesión iniciada como en modo invitado directamente en /pago.
   const checkoutLabel = isLoggedIn
     ? etiquetaBoton(pais, "Comprar ahora")
     : etiquetaBoton(pais, "Inscribirse");
@@ -335,13 +334,6 @@ export default function CourseDetailClient({
     trackCtaClick(checkoutLabel, "course_detail_sidebar", {
       course_slug: course.slug,
     });
-
-    if (!isLoggedIn) {
-      trackClickRegistro({ cta_position: "course_detail_sidebar", course: course.slug });
-      setAuthRedirect(dest);
-      setShowAuthModal(true);
-      return;
-    }
 
     router.push(dest);
   };

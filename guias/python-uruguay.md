@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: python
 url_curso: https://www.programbi.com/uy/cursos/python
-title: "Curso de Python Uruguay en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en Uruguay: Python para datos desde cero en 20 h (lunes y miércoles 19:30). Pandas y automatización."
-h1: "Curso de Python en Uruguay: Python para datos, online y en vivo"
+title: Cómo aprender Python para datos en Uruguay | ProgramBI
+meta: "Guía para aprender Python aplicado a datos en Uruguay: Pandas, limpieza, visualización y automatización de reportes desde cero."
+h1: Cómo aprender Python para análisis de datos en Uruguay desde cero
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/uy/cursos/python
@@ -27,7 +27,7 @@ nota_hermes: |
 
 # Curso de Python en Uruguay: Python para datos, online y en vivo
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos**, nivel básico-intermedio. Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**, tiene **ediciones nuevas todos los meses** (fecha actualizada en la ficha) y el valor es **{precio_local}**. Incluye grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos**, nivel básico-intermedio. Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**, tiene **ediciones nuevas todos los meses** (fecha actualizada en la ficha) y el valor es **{precio_local}**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué vas a aprender?** Python desde cero con foco en análisis: fundamentos del lenguaje y, sobre todo, Pandas para limpiar, transformar, agrupar y cruzar datos; gráficos con Matplotlib y conexión a bases de datos y APIs. En la práctica, vas a poder automatizar el informe que hoy armás juntando planillas y a trabajar con datos abiertos sin abrirlos uno por uno.
 
@@ -155,7 +155,7 @@ En BuscoJobs, Gallito Trabajo, LinkedIn y Uruguay Concursa, Python aparece en b�
 - **Enfocado en datos**, con Pandas como eje.
 - **En vivo y en hora uruguaya**.
 - **Con casos de negocio y datos reales**.
-- **Con grabaciones de por vida**.
+- **Con acceso al campus virtual con las clases grabadas y el material durante el curso**.
 - **Que conecte con SQL y Power BI**.
 
 ## El curso Python en vivo de ProgramBI (Uruguay)
@@ -166,7 +166,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/p
 - **20 horas, 8 módulos**, nivel básico-intermedio, desde cero.
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Inicio: **ediciones mensuales** (mirá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -177,7 +177,7 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/p
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Python en Uruguay?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Es un curso online?**
 Sí, online y en vivo por Zoom, lunes y miércoles de 19:30 a 21:30, hora de Uruguay.

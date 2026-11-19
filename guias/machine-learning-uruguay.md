@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: machine-learning
 url_curso: https://www.programbi.com/uy/cursos/machine-learning
-title: "Curso de Machine Learning Uruguay: guía 2026 | ProgramBI"
-meta: "Curso de machine learning en Uruguay en vivo por Zoom: 20 h de modelos predictivos, clustering y anomalías con Python de 19:30 a 21:30 h."
-h1: "Curso de Machine Learning en Uruguay: predicción y patrones con Python"
+title: Cómo aprender Machine Learning en Uruguay | ProgramBI
+meta: "Ruta práctica de Machine Learning en Uruguay: qué base de Python necesitas, algoritmos clave con Scikit-learn y casos aplicados a negocios."
+h1: Cómo aprender Machine Learning con Python para negocios en Uruguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/uy/cursos/machine-learning
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de Machine Learning en Uruguay: predicción y patrones con Python
 
-**Respuesta corta:** el [curso de Machine Learning de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/machine-learning) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, para quienes ya manejan Python y quieren construir modelos predictivos aplicados a negocios. Recorre aprendizaje supervisado —regresión, clasificación con logística y SVM, árboles, ensembles y validación cruzada— y no supervisado —K-Means, PCA, t-SNE, detección de anomalías y reglas de asociación—. El precio es **{precio_local}** e incluye grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Machine Learning de ProgramBI para Uruguay](https://www.programbi.com/uy/cursos/machine-learning) son **20 horas en vivo por Zoom**, de **19:30 a 21:30, hora de Uruguay**, para quienes ya manejan Python y quieren construir modelos predictivos aplicados a negocios. Recorre aprendizaje supervisado —regresión, clasificación con logística y SVM, árboles, ensembles y validación cruzada— y no supervisado —K-Means, PCA, t-SNE, detección de anomalías y reglas de asociación—. El precio es **{precio_local}** e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 Según la ficha consultada el 4 de noviembre de 2026, hay **cupos abiertos · nueva cohorte por abrir**. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia.
 
@@ -143,7 +143,7 @@ Las clases son de 19:30 a 21:30 en Montevideo. Uruguay mantiene UTC-3 todo el a�
 
 - 20 horas en 2 módulos: supervisado y no supervisado.
 - En vivo por Zoom; cupos abiertos · edición siguiente en espera.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyectos con datos reales.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
@@ -167,7 +167,7 @@ La ficha muestra cupos abiertos para la edición entrante. Consultá por WhatsAp
 Sí, con cuidado: la validación cruzada que se ve en el módulo 1 es especialmente útil cuando hay pocos datos.
 
 **¿Hay grabaciones y certificado?**
-Sí: grabaciones con acceso de por vida y certificado digital al completar.
+Sí: acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital al completar.
 
 **¿Puedo usar datos de mi empresa?**
 Sí, anonimizados. Trabajar sobre un problema propio, como el margen por lote o el riesgo de clientes, hace que el proyecto tenga valor inmediato en tu trabajo y sea fácil de mostrar.

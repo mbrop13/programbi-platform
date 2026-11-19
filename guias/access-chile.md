@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: access
 url_curso: https://www.programbi.com/cursos/access
-title: "Curso de Access en Chile para administrativos | ProgramBI"
-meta: "Curso de Microsoft Access en Chile: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros para administración."
-h1: "Curso de Access en Chile: bases de datos para administrativos, en vivo"
+title: Cómo usar Microsoft Access en Chile | ProgramBI
+meta: "Guía práctica para aprender Microsoft Access en Chile: tablas, relaciones, consultas SQL, formularios, informes y macros aplicadas al trabajo diario."
+h1: Cómo usar Microsoft Access para administración en Chile
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/cursos/access
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Microsoft Access de ProgramBI](https://www.programbi.com/cursos/access) son **20 horas en vivo por Zoom**, en **7 módulos**, para que el personal administrativo aprenda a diseñar, construir y administrar bases de datos relacionales: tablas y relaciones, consultas con SQL básico, formularios de ingreso, informes de gestión exportables a PDF y Excel, y macros. Cuesta **$169.000 CLP**, y la ficha muestra **cupos abiertos · próxima edición disponible**.
 
-Incluye grabaciones de por vida en el campus, certificado al completar y un proyecto integrador con un proceso real de empresa. Según las preguntas frecuentes de la ficha, las clases son de 19:30 a 21:30, hora de Chile. Datos revisados en la ficha el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y un proyecto integrador con un proceso real de empresa. Según las preguntas frecuentes de la ficha, las clases son de 19:30 a 21:30, hora de Chile. Datos revisados en la ficha el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · $169.000 CLP · «Consultar fecha».
 
@@ -104,7 +104,7 @@ La ficha lo define para el **personal administrativo que necesita almacenar, org
 ## Datos del curso
 
 - **Duración:** 20 horas en 7 módulos.
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida en el campus.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, consulta la próxima fecha.
 - **Horario:** según la FAQ de la ficha, 19:30 a 21:30, hora de Chile.
 - **Certificado:** al completar.
@@ -136,4 +136,4 @@ Access es ideal para bases de un área o un proceso; SQL Server, para bases más
 Sí. El módulo 1 enseña a importar datos desde Excel y archivos externos, y el módulo 5 a exportar informes de vuelta a Excel o PDF, así que ambas herramientas conviven sin problema en tu día a día.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

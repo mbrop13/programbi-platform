@@ -145,8 +145,11 @@ export type Pais = {
   voseo: boolean;
   /**
    * ¿La versión por país puede indexarse?
-   * Desde el 17 nov 2026 todos los mercados se indexan (decisión de Manu).
-   * `false` deja un país en noindex, follow y fuera del sitemap y de los hreflang.
+   * Solo se indexan los 6 mercados principales con contenido local y tabla de
+   * precios propia (cl, ar, mx, pe, co, uy). Los demás quedan en `false`
+   * (noindex, follow; fuera del sitemap y hreflang) para evitar ~300+ URLs
+   * casi duplicadas que diluyen la calidad del sitio; se pueden reactivar por
+   * mercado cuando tengan pasarela local y copy único.
    */
   indexable: boolean;
   /** Zona horaria IANA. Sirve para convertir el horario de las clases. */
@@ -182,6 +185,15 @@ const MEDIOS_PAGO_USD = [
   "Mercado Pago (tarjeta de crédito o débito)",
   "Tarjeta de crédito o débito internacional",
   "Transferencia bancaria en dólares",
+];
+
+// Mientras no exista MERCADOPAGO_ACCESS_TOKEN_<ISO> activo, el checkout opera
+// con la cuenta de Chile en CLP usando medios internacionales. Los métodos
+// locales (OXXO/SPEI, PSE/Nequi, Yape/Plin, etc.) se pueden re-agregar cuando
+// la cuenta local de Mercado Pago esté activa en cada país.
+const MEDIOS_PAGO_INTERNACIONAL = [
+  "Tarjeta de crédito o débito internacional (vía Mercado Pago)",
+  "Transferencia bancaria internacional",
 ];
 
 function contactoPendiente(): Pais["contacto"] {
@@ -228,7 +240,7 @@ export const PAISES: Pais[] = [
     voseo: true,
     indexable: true,
     zonaHoraria: "America/Argentina/Buenos_Aires",
-    mediosPago: ["Mercado Pago Argentina (tarjeta de crédito o débito)", "Mercado Pago Wallet", "Transferencia bancaria en pesos"],
+    mediosPago: MEDIOS_PAGO_INTERNACIONAL,
     contacto: contactoPendiente(),
   },
   {
@@ -244,7 +256,7 @@ export const PAISES: Pais[] = [
     listas: listas(205),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/La_Paz",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -264,7 +276,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/Bogota",
-    mediosPago: ["Mercado Pago Colombia (tarjeta de crédito o débito)", "PSE", "Nequi", "Transferencia bancaria en pesos"],
+    mediosPago: MEDIOS_PAGO_INTERNACIONAL,
     contacto: contactoPendiente(),
   },
   {
@@ -281,7 +293,7 @@ export const PAISES: Pais[] = [
     listas: listas(249),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Costa_Rica",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -299,7 +311,7 @@ export const PAISES: Pais[] = [
     listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Guayaquil",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -317,14 +329,14 @@ export const PAISES: Pais[] = [
     listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/El_Salvador",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
   },
   {
     // Estados Unidos: hispanohablantes que viven y trabajan allá (Miami primero).
-    // Precio provisional (249/499) y cobro por ahora en CLP: Manu pidió indexarlo igual.
+    // Precio provisional (249/499) y cobro en CLP fallback: noindex hasta tener pasarela y copy propio.
     iso: "us",
     nombre: "Estados Unidos",
     idioma: "es-US",
@@ -343,7 +355,7 @@ export const PAISES: Pais[] = [
     listas: preciosVacios(),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     // Hora del Este (Miami, Nueva York). Central y Pacífico se explican en el texto.
     zonaHoraria: "America/New_York",
     mediosPago: ["Tarjeta de crédito o débito"],
@@ -364,7 +376,7 @@ export const PAISES: Pais[] = [
     listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Guatemala",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -382,7 +394,7 @@ export const PAISES: Pais[] = [
     listas: listas(205),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Tegucigalpa",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -402,7 +414,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/Mexico_City",
-    mediosPago: ["Mercado Pago México (tarjeta de crédito o débito)", "SPEI", "OXXO", "Mercado Pago Wallet"],
+    mediosPago: MEDIOS_PAGO_INTERNACIONAL,
     contacto: contactoPendiente(),
   },
   {
@@ -418,7 +430,7 @@ export const PAISES: Pais[] = [
     listas: listas(190),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Managua",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -437,7 +449,7 @@ export const PAISES: Pais[] = [
     listas: listas(249),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Panama",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -457,7 +469,7 @@ export const PAISES: Pais[] = [
     listas: preciosVacios(),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Asuncion",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -477,7 +489,7 @@ export const PAISES: Pais[] = [
     voseo: false,
     indexable: true,
     zonaHoraria: "America/Lima",
-    mediosPago: ["Mercado Pago Perú (tarjeta de crédito o débito)", "Yape o Plin", "Transferencia bancaria en soles"],
+    mediosPago: MEDIOS_PAGO_INTERNACIONAL,
     contacto: contactoPendiente(),
   },
   {
@@ -493,7 +505,7 @@ export const PAISES: Pais[] = [
     listas: listas(235),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Santo_Domingo",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),
@@ -513,7 +525,7 @@ export const PAISES: Pais[] = [
     voseo: true,
     indexable: true,
     zonaHoraria: "America/Montevideo",
-    mediosPago: ["Mercado Pago Uruguay (tarjeta de crédito o débito)", "Mercado Pago Wallet", "Transferencia bancaria en pesos uruguayos"],
+    mediosPago: MEDIOS_PAGO_INTERNACIONAL,
     contacto: contactoPendiente(),
   },
   {
@@ -529,7 +541,7 @@ export const PAISES: Pais[] = [
     listas: listas(190),
     dispositivo: "computadora",
     voseo: false,
-    indexable: true,
+    indexable: false,
     zonaHoraria: "America/Caracas",
     mediosPago: MEDIOS_PAGO_USD,
     contacto: contactoPendiente(),

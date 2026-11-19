@@ -23,6 +23,7 @@ const ogImage = ogImageUrl({
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
+  robots: { index: false, follow: true },
   alternates: { canonical: "/empleos/vacantes" },
   openGraph: {
     title: "Vacantes | Bolsa de Trabajo ProgramBI",

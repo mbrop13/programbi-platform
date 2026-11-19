@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: copilot
 url_curso: https://www.programbi.com/pe/cursos/copilot
-title: "Curso de Copilot y Copilot Studio en Perú | ProgramBI"
-meta: "Curso de Copilot en Perú en vivo: 20 h de Copilot en Excel, Outlook, PowerPoint y Word, y agentes con Copilot Studio, de 17:30 a 19:30 hora de Lima."
-h1: "Curso de Copilot y Copilot Studio en Perú: la IA de Microsoft aplicada a tu chamba"
+title: Cómo usar Copilot y Copilot Studio en Perú | ProgramBI
+meta: Guía para dominar Microsoft Copilot en Excel, Word y Outlook y crear agentes propios en Copilot Studio en Perú.
+h1: Cómo usar Microsoft Copilot y crear agentes en Perú
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/pe/cursos/copilot
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Copilot y Copilot Studio en Perú: la IA de Microsoft aplicada a tu chamba
 
-**Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI en Perú](https://www.programbi.com/pe/cursos/copilot) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Perú**, dividido en 5 módulos de 4 horas. Empiezas usando Microsoft Copilot en **Excel, Outlook, PowerPoint y Word** y terminas diseñando, entrenando y publicando **un agente propio en Copilot Studio** con el conocimiento de tu organización. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Copilot y Copilot Studio de ProgramBI en Perú](https://www.programbi.com/pe/cursos/copilot) es un programa **en vivo por Zoom de 20 horas**, de **17:30 a 19:30, hora de Perú**, dividido en 5 módulos de 4 horas. Empiezas usando Microsoft Copilot en **Excel, Outlook, PowerPoint y Word** y terminas diseñando, entrenando y publicando **un agente propio en Copilot Studio** con el conocimiento de tu organización. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 No necesitas programar. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · calendario mensual activo**. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia.
 
@@ -127,7 +127,7 @@ Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año
 
 - 20 horas en 5 módulos de 4 horas.
 - En vivo por Zoom; cupos abiertos · consulta de fechas al día.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyecto final: un agente funcional.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.

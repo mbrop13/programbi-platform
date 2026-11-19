@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta directa:** el [curso de Análisis de datos de ProgramBI para Ecuador](https://www.programbi.com/ec/cursos/analisis-de-datos) es una formación **en vivo por Zoom de 60 horas por nivel**, organizada en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para quienes quieren pasar de armar reportes en Excel a trabajar como analistas de datos. El nivel básico-intermedio lanza **grupos nuevos cada mes** (próxima fecha en la ficha), con clases **lunes y miércoles de 17:30 a 19:30, hora de Ecuador**. Precio: **{precio_local}**.
 
-La ficha incluye dos niveles de 60 horas —básico-intermedio y avanzado—, grabaciones con acceso de por vida, certificado digital, un proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información revisada el 4 de noviembre de 2026.
+La ficha incluye dos niveles de 60 horas —básico-intermedio y avanzado—, acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital, un proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Grupos cada mes · 17:30 hora de Ecuador · «Ver el curso».
 
@@ -124,7 +124,7 @@ Prepárate con cuatro pasos sencillos. Primero, repasa lo básico de Excel —fi
 - **Inicio:** nuevas ediciones todos los meses (fecha vigente en la ficha).
 - **Días y horario:** lunes y miércoles, 17:30 a 19:30, hora de Ecuador.
 - **Duración:** 60 horas por nivel (20 por herramienta).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI); según la ficha, ha liderado capacitaciones en AngloAmerican, CAP, Deloitte y SQM.
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -148,7 +148,7 @@ Iniciamos cohortes todos los meses en horario lunes y miércoles de 17:30 a 19:3
 No. El nivel básico-intermedio parte desde cero en cada una de las tres herramientas.
 
 **¿Qué pasa si no puedo asistir a una clase?**
-Queda grabada en el campus con acceso de por vida, para que te pongas al día antes de la siguiente sesión.
+Queda grabada en el campus virtual con el material durante el curso, para que te pongas al día antes de la siguiente sesión.
 
 **¿Puedo tomar solo una de las herramientas?**
 Sí. Los cursos de SQL Server, Power BI y Python existen por separado; este programa los integra con un proyecto común.
@@ -157,4 +157,4 @@ Sí. Los cursos de SQL Server, Power BI y Python existen por separado; este prog
 Sí. Comercio, banca, manufactura, exportación, servicios o sector público: en todos hay datos que ordenar y decisiones que mejoran con análisis.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: excel
 url_curso: https://www.programbi.com/pe/cursos/excel
-title: "Curso de Excel en Perú en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Excel online en vivo en Perú: 20 h en 12 módulos, de fórmulas a tablas dinámicas y Power Query a las 17:30 h con casos locales."
-h1: "Curso de Excel en Perú: Excel online, en vivo y para tu chamba"
+title: Cómo dominar Excel para gestión en Perú | ProgramBI
+meta: "Guía práctica de Excel para el trabajo en Perú: fórmulas avanzadas, tablas dinámicas, Power Query y dashboards para reportes de gestión."
+h1: Cómo aprender Excel avanzado para análisis y gestión en Perú
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/pe/cursos/excel
@@ -28,7 +28,7 @@ nota_hermes: |
 
 # Curso de Excel en Perú: Excel online, en vivo y para tu chamba
 
-**Respuesta corta:** el [curso de Excel de ProgramBI para Perú](https://www.programbi.com/pe/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **17:30 a 19:30, hora de Perú**. El valor es **{precio_local}** e incluye grabaciones de por vida y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
+**Respuesta corta:** el [curso de Excel de ProgramBI para Perú](https://www.programbi.com/pe/cursos/excel) es **online y en vivo por Zoom**: **20 horas en 12 módulos**, nivel básico-intermedio, en horario de **17:30 a 19:30, hora de Perú**. El valor es **{precio_local}** e incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado. La próxima cohorte tiene cupos abiertos; la fecha de inicio se confirma en la ficha del curso.
 
 **¿Qué aprendes?** Desde las bases hasta lo que evalúan empresas y convocatorias en Perú: BUSCARX, tablas dinámicas por agencia o producto, funciones de fecha y texto, y Power Query para consolidar los archivos de todas tus sedes. En tu chamba, el consolidado del lunes deja de tomarte la mañana.
 
@@ -114,7 +114,7 @@ Datos de la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/exc
 - **20 horas, 12 módulos**, nivel básico-intermedio, pensado para administrativos principiantes o con conocimientos mínimos de Excel.
 - Temario: del entorno y las fórmulas básicas a BUSCARX, INDICE-COINCIDIR, tablas dinámicas avanzadas, funciones de fecha y texto, datos grandes y Power Query con parámetros y funciones M; cada nivel cierra con un proyecto.
 - **Nivel avanzado** disponible en la misma ficha.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
@@ -125,7 +125,7 @@ Datos de la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/exc
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Excel en Perú?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿El curso de Excel es online?**
 Sí, online y en vivo por Zoom, de 17:30 a 19:30, hora de Perú. Las clases quedan grabadas.

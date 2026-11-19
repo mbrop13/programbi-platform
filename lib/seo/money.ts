@@ -147,7 +147,7 @@ export const COURSE_SEO: Record<
       {
         q: "¿Es lo mismo que el curso de análisis de datos para minería?",
         soloChile: true,
-        a: "Es el mismo programa, con el mismo arancel vigente por nivel, y los ejemplos puestos en faena: turnos, flota, OEE y mantención. El detalle de aranceles y descuentos se descarga en el PDF de temario y precios del curso. Puedes ver ese enfoque en /analisis-de-datos-mineria. El certificado es el mismo certificado digital de ProgramBI al completar.",
+        a: "Es el mismo programa, con el mismo arancel vigente por nivel, y los ejemplos puestos en faena: turnos, flota, OEE y mantención. El detalle de aranceles y descuentos se descarga en el PDF de temario y precios del curso. Puedes ver ese enfoque en /power-bi-mineria-chile. El certificado es el mismo certificado digital de ProgramBI al completar.",
       },
     ],
   },
@@ -168,8 +168,8 @@ export const COURSE_SEO: Record<
         a: "En el curso usamos casos de vertical minera (producción, flota, mantenimiento). Un proyecto in-company se arma con los datos de tu área — ver /empresas.",
       },
       {
-        q: "¿Es capacitación SENCE?",
-        a: "Los cursos abiertos y el Pack se facturan directo. El valor es la formación o la adopción, no un código SENCE.",
+        q: "¿Es capacitación SENCE o con factura corporativa?",
+        a: "ProgramBI factura directamente con factura electrónica y orden de compra para agilizar el inicio sin demoras administrativas. Si tu empresa evalúa franquicia tributaria SENCE o gestión vía OTIC, puedes consultar directamente con nuestro equipo corporativo en /empresas para armar una propuesta a medida.",
       },
     ],
   },

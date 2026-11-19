@@ -5,9 +5,9 @@ pais: pe
 hreflang: es-PE
 curso: claude
 url_curso: https://www.programbi.com/pe/cursos/claude
-title: "Curso de Claude en Perú online en vivo | ProgramBI"
-meta: "Curso de Claude en Perú en vivo por Zoom: 20 h para aplicar la IA de Anthropic en oficina, Excel y reportes. Horario 17:30 Lima; cupos abiertos."
-h1: "Curso de Claude en Perú: la IA de Anthropic aplicada a tu chamba administrativa"
+title: Cómo usar Claude AI en el trabajo en Perú | ProgramBI
+meta: "Guía práctica para usar Claude (Anthropic) en Perú: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+h1: Cómo usar Claude AI para trabajo administrativo en Perú
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/pe/cursos/claude
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta directa:** el [curso de Claude de ProgramBI para Perú](https://www.programbi.com/pe/cursos/claude) dura **20 horas en vivo por Zoom**, divididas en cinco módulos de cuatro horas, y enseña a usar Claude —el asistente de inteligencia artificial creado por Anthropic— en labores de oficina: correos, informes, hojas de Excel, presentaciones y pequeñas automatizaciones, **sin necesidad de programar**. Abre **nuevos grupos todos los meses** (revisa la próxima fecha en la ficha), con clases **lunes y miércoles de 17:30 a 19:30, hora de Perú**. Precio: **{precio_local}**.
 
-El programa incluye grabaciones con acceso de por vida, certificado digital y un proyecto final construido sobre un proceso de tu propia chamba. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Los datos provienen de la ficha del curso, revisada el 4 de noviembre de 2026.
+El programa incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y un proyecto final construido sobre un proceso de tu propia chamba. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Los datos provienen de la ficha del curso, revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Inicios cada mes · lunes y miércoles 17:30 hora de Perú · «Ver el curso».
 
@@ -117,7 +117,7 @@ De acuerdo con la ficha, el curso apunta al **trabajo administrativo**, con el m
 - **Inicio:** cohortes cada mes con cupos abiertos; verifica la fecha en la ficha.
 - **Clases:** lunes y miércoles, de 17:30 a 19:30, hora de Perú (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas en cinco módulos de cuatro horas.
-- **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
+- **Incluye:** acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
 
@@ -145,4 +145,4 @@ Según lo que permitan la Ley 29733, tu política interna y el plan de Claude co
 No; son complementarios: Claude explora y redacta, y Power BI publica tableros actualizados.
 
 **¿Qué pasa si no puedo asistir?**
-La clase queda grabada con acceso de por vida.
+La clase queda grabada con acceso al campus virtual y el material durante el curso.

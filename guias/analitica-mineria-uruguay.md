@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/uy/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Minería en Uruguay | ProgramBI"
-meta: "Análisis de datos para minería e industria en Uruguay: Power BI, SQL y Python para turnos, flota, mantenimiento y sensores. 60 h en vivo."
-h1: "Curso de Análisis de Datos para la Minería en Uruguay: datos de planta, flota y mantenimiento"
+title: Power BI y datos para minería en Uruguay | ProgramBI
+meta: "Guía de análisis de datos para minería en Uruguay: cómo llevar turnos, flota, OEE y mantención de Excel a Power BI, SQL y Python."
+h1: Cómo aplicar Power BI, SQL y Python en minería en Uruguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/uy/cursos/analisis-de-datos
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Para ir al grano:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, en Uruguay](https://www.programbi.com/uy/cursos/analisis-de-datos) es una formación de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que enseña Power BI, SQL Server y Python aplicados a operaciones mineras e industriales: reportes de turno, flota, mantenimiento, consumos, inventarios y sensores, con IA generativa para acelerar la escritura de consultas y scripts. El nivel básico-intermedio cuesta **{precio_local}** y la ficha marca **cupos abiertos · nueva cohorte por abrir**.
 
-Incluye grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, la clase es a las 19:30, hora de Uruguay. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: la ficha del curso, consultada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y proyectos con datos reales. Según las preguntas frecuentes de la ficha, la clase es a las 19:30, hora de Uruguay. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: la ficha del curso, consultada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar fecha».
 
@@ -117,7 +117,7 @@ La ficha también presenta un nivel avanzado para **dominar el ciclo completo de
 ## Datos de la cohorte
 
 - **Niveles:** dos niveles de 60 horas cada uno (20 h SQL Server, 20 h Power BI, 20 h Python).
-- **Modalidad:** en vivo por Zoom, grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, a confirmar.
 - **Horario:** según la FAQ de la ficha, 19:30 a 21:30, hora de Uruguay.
 - **Certificado:** al completar.
@@ -146,7 +146,7 @@ No. El nivel básico-intermedio parte de los fundamentos de Power BI, SQL y Pyth
 Este combina tres herramientas con casos de operación; el de Power BI profundiza en una sola con ejemplos generales.
 
 **¿Y si falto?**
-La clase queda grabada en el campus con acceso de por vida, así que podés verla cuando tengas un rato libre y llegar al día a la siguiente sesión con tus dudas anotadas.
+La clase queda grabada en el campus virtual con el material durante el curso, así que podés verla cuando tengas un rato libre y llegar al día a la siguiente sesión con tus dudas anotadas.
 
 **¿Qué recibo al final?**
-Certificado digital de ProgramBI y grabaciones de por vida.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

@@ -1,7 +1,7 @@
 export const stats = [
-  { value: "+5.000", label: "Estudiantes egresados" },
-  { value: "+10", label: "Programas activos" },
-  { value: "98%", label: "Tasa de satisfacción" },
+  { value: "+5.000", label: "Estudiantes formados" },
+  { value: "13", label: "Programas en vivo" },
+  { value: "100%", label: "Clases en vivo por Zoom" },
 ];
 
 export default function Metrics() {

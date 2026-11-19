@@ -25,7 +25,7 @@ nota_hermes: |
 
 **En pocas palabras:** el [curso de Análisis de datos de ProgramBI para Bolivia](https://www.programbi.com/bo/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**: **20 horas de SQL Server, 20 de Power BI y 20 de Python**, pensado para que puedas extraer datos, modelarlos en tableros y analizarlos con código como lo hace un analista profesional. El nivel básico-intermedio abre **cohortes todos los meses** (próxima fecha en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de Bolivia**. Precio: **{precio_local}**.
 
-La ficha presenta dos niveles de 60 horas —básico-intermedio y avanzado—, con grabaciones de por vida en el campus, certificado digital, proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información revisada el 4 de noviembre de 2026.
+La ficha presenta dos niveles de 60 horas —básico-intermedio y avanzado—, con acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital, proyecto final con datos reales y apoyo de inteligencia artificial en cada módulo. Información revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Inicios mensuales · 18:30 hora de Bolivia · «Ver el curso».
 
@@ -134,7 +134,7 @@ Al terminar el nivel básico-intermedio deberías poder:
 - **Inicio:** cada mes abre un nuevo grupo (revisa la próxima fecha en la ficha).
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de Bolivia.
 - **Duración:** 60 horas por nivel (20 por herramienta).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI); según la ficha, ha liderado capacitaciones en AngloAmerican, CAP, Deloitte y SQM.
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -158,7 +158,7 @@ Hay inicios nuevos todos los meses; las clases son lunes y miércoles de 18:30 a
 No. El nivel básico-intermedio parte desde cero en cada herramienta.
 
 **¿Qué pasa si falto a una clase?**
-Queda grabada en el campus con acceso de por vida, para que te pongas al día antes de la siguiente.
+Queda grabada en el campus virtual con el material durante el curso, para que te pongas al día antes de la siguiente.
 
 **¿Puedo tomar solo una herramienta?**
 Sí. Los cursos de SQL Server, Power BI y Python existen por separado, cada uno con su propia ficha.
@@ -170,4 +170,4 @@ Sí. En todos esos ámbitos hay bases de datos, reportes que se repiten cada mes
 Una computadora con Windows para instalar Power BI Desktop y una conexión estable para las clases en vivo. Revisa los requisitos técnicos publicados por Microsoft antes de empezar. Si usas Mac, trabajarás con Power BI web, directamente en el navegador.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

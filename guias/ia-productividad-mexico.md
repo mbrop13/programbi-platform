@@ -5,9 +5,9 @@ pais: mx
 hreflang: es-MX
 curso: ia-productividad
 url_curso: https://www.programbi.com/mx/cursos/ia-productividad
-title: "Curso de IA en Productividad México: guía 2026 | ProgramBI"
-meta: "Curso de IA en productividad en México en vivo: 20 h para automatizar reportes de oficina con ChatGPT, Claude, Gemini y Copilot, 16:30 CDMX. Sin programar."
-h1: "Curso de IA en Productividad en México: reportes de oficina con inteligencia artificial"
+title: Cómo usar IA para productividad en México | ProgramBI
+meta: "Guía para aplicar ChatGPT, Claude, Gemini y Copilot en México: automatiza reportes, Excel, documentos y correos sin programar."
+h1: Cómo automatizar informes de oficina con IA en México
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/mx/cursos/ia-productividad
@@ -22,7 +22,7 @@ nota_hermes: |
 
 # Curso de IA en Productividad en México: reportes de oficina con inteligencia artificial
 
-**Respuesta corta:** el [curso de IA en Productividad de ProgramBI para México](https://www.programbi.com/mx/cursos/ia-productividad) son **20 horas en vivo por Zoom**, de **16:30 a 18:30, hora del centro de México**, en 6 módulos prácticos para que el personal administrativo automatice reportes diarios, resúmenes ejecutivos y tareas repetitivas con **ChatGPT, Claude, Gemini, Copilot y automatizaciones sin código**. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de IA en Productividad de ProgramBI para México](https://www.programbi.com/mx/cursos/ia-productividad) son **20 horas en vivo por Zoom**, de **16:30 a 18:30, hora del centro de México**, en 6 módulos prácticos para que el personal administrativo automatice reportes diarios, resúmenes ejecutivos y tareas repetitivas con **ChatGPT, Claude, Gemini, Copilot y automatizaciones sin código**. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 No necesitas programar. La ficha, revisada el 4 de noviembre de 2026, indica **cupos abiertos · fechas vigentes en calendario**, y el pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO.
 
@@ -126,13 +126,13 @@ Muchos reportes diarios terminan convirtiéndose en un tablero. Para ese paso, r
 
 ## Horario desde México
 
-Las clases son de 16:30 a 18:30 en Ciudad de México. Como México dejó el horario de verano en la mayor parte del país y Chile sí lo aplica, la ficha advierte que la clase puede verse a las 16:30 o a las 17:30 según la época; la hora exacta aparece en la ficha de tu cohorte. Todas las sesiones quedan grabadas con acceso de por vida en el campus.
+Las clases son de 16:30 a 18:30 en Ciudad de México. Como México dejó el horario de verano en la mayor parte del país y Chile sí lo aplica, la ficha advierte que la clase puede verse a las 16:30 o a las 17:30 según la época; la hora exacta aparece en la ficha de tu cohorte. Todas las sesiones quedan grabadas con acceso al campus virtual y el material durante el curso.
 
 ## Resumen
 
 - 20 horas, 6 módulos, 100 % prácticos.
 - En vivo por Zoom; cupos abiertos · calendario vigente por Zoom.
-- Grabaciones de por vida y certificado digital.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 - Proyecto final: tu propio informe diario automatizado.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.

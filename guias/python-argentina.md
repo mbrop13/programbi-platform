@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: python
 url_curso: https://www.programbi.com/ar/cursos/python
-title: "Curso de Python Argentina en vivo: guía 2026 | ProgramBI"
-meta: "Curso de Python online en vivo en Argentina: Python para datos desde cero en 20 h, lunes y miércoles 19:30. Pandas, listas de precios y automatización."
-h1: "Curso de Python en Argentina: Python para datos, online y en vivo"
+title: Cómo aprender Python para datos en Argentina | ProgramBI
+meta: "Guía para aprender Python aplicado a datos en Argentina: Pandas, limpieza, visualización y automatización de reportes desde cero."
+h1: Cómo aprender Python para análisis de datos en Argentina desde cero
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/ar/cursos/python
@@ -27,7 +27,7 @@ nota_hermes: |
 
 # Curso de Python en Argentina: Python para datos, online y en vivo
 
-**Respuesta corta:** el [curso de Python para datos de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Se cursa **lunes y miércoles de 19:30 a 21:30, hora de Argentina**, abre **nuevas cohortes cada mes** (fecha vigente en la ficha) y cuesta **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de Python para datos de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/python) es **online y en vivo por Zoom**, con **20 horas en 8 módulos** de nivel básico-intermedio. Se cursa **lunes y miércoles de 19:30 a 21:30, hora de Argentina**, abre **nuevas cohortes cada mes** (fecha vigente en la ficha) y cuesta **{precio_local}**. Tenés acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué vas a aprender?** Python desde cero con foco en análisis: las bases del lenguaje y, sobre todo, Pandas para limpiar, transformar, agrupar y cruzar tablas; gráficos con Matplotlib y conexión a bases de datos y APIs. En el laburo, eso significa que la planilla que actualizás a mano cada vez que cambia una lista de precios se recalcula sola con un script.
 
@@ -167,7 +167,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 - **20 horas, 8 módulos**, nivel básico-intermedio, desde cero.
 - Temario: variables, tipos de datos y operadores; control de flujo y funciones; listas, diccionarios y tuplas; módulos y librerías; DataFrames y Series con Pandas; limpieza y transformación; GroupBy, agregaciones y Merge; conexión a bases de datos y APIs; visualización con Matplotlib; IA aplicada a Python.
 - **Nivel avanzado**: análisis avanzado con Pandas y ciencia de datos aplicada a negocios.
-- **Grabaciones de por vida**, **certificado** y proyectos con datos reales.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso**, **certificado** y proyectos con datos reales.
 - Inicio: **cohortes todos los meses** (consultá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -178,7 +178,7 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 ## Preguntas frecuentes
 
 **¿Cuánto sale el curso de Python en Argentina?**
-El nivel básico-intermedio de 20 horas cuesta {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 20 horas cuesta {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Es online?**
 Sí, online y en vivo por Zoom, lunes y miércoles de 19:30 a 21:30, hora de Argentina.

@@ -5,9 +5,9 @@ pais: py
 hreflang: es-PY
 curso: power-automate
 url_curso: https://www.programbi.com/py/cursos/power-automate
-title: "Curso de Power Automate Paraguay: guía 2026 | ProgramBI"
-meta: "Curso de Power Automate en Paraguay en vivo: 20 h para automatizar correo, Teams, SharePoint y Excel de 19:30 a 21:30 h con RPA."
-h1: "Curso de Power Automate en Paraguay: tu oficina en piloto automático"
+title: Cómo automatizar con Power Automate en Paraguay | ProgramBI
+meta: "Guía práctica de Power Automate y RPA en Paraguay: automatiza correos, aprobaciones y archivos entre Excel, Outlook y Teams sin programar."
+h1: Cómo automatizar flujos y tareas con Power Automate en Paraguay
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/py/cursos/power-automate
@@ -23,7 +23,7 @@ nota_hermes: |
 
 # Curso de Power Automate en Paraguay: tu oficina en piloto automático
 
-**Respuesta corta:** el [curso de Power Automate de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/power-automate) es un programa **en vivo por Zoom de 20 horas**, de **19:30 a 21:30, hora de Paraguay**, con 10 módulos para automatizar tareas repetitivas **sin escribir código**. Aprendés a crear flujos de nube automatizados, instantáneos y programados; a conectar Outlook, Teams, OneDrive y SharePoint; a usar expresiones y variables; a montar aprobaciones; a automatizar programas de escritorio con Power Automate Desktop; y a diseñar flujos con Copilot. El precio es **{precio_local}**, con grabaciones de por vida y certificado digital.
+**Respuesta corta:** el [curso de Power Automate de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/power-automate) es un programa **en vivo por Zoom de 20 horas**, de **19:30 a 21:30, hora de Paraguay**, con 10 módulos para automatizar tareas repetitivas **sin escribir código**. Aprendés a crear flujos de nube automatizados, instantáneos y programados; a conectar Outlook, Teams, OneDrive y SharePoint; a usar expresiones y variables; a montar aprobaciones; a automatizar programas de escritorio con Power Automate Desktop; y a diseñar flujos con Copilot. El precio es **{precio_local}**, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital.
 
 La ficha, revisada el 4 de noviembre de 2026, muestra **cupos abiertos · inicio próximo por grupo**. Para la fecha y la forma de pago desde Paraguay, lo más rápido es escribir por WhatsApp.
 
@@ -124,13 +124,13 @@ Con la información llegando ordenada, armar tableros es mucho más fácil. Para
 
 ## Horario
 
-Según la ficha, las clases son de 19:30 a 21:30, hora de Paraguay (UTC-3), el mismo horario que en Chile. Si algún día no llegás, la clase queda grabada en el campus con acceso de por vida.
+Según la ficha, las clases son de 19:30 a 21:30, hora de Paraguay (UTC-3), el mismo horario que en Chile. Si algún día no llegás, la clase queda grabada en el campus virtual con el material durante el curso.
 
 ## Resumen
 
 - 20 horas, 10 módulos, sin programar.
 - En vivo por Zoom; cupos abiertos · cronograma abierto por Zoom.
-- Grabaciones de por vida, certificado digital y proyecto final real.
+- Acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final real.
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
 
@@ -159,4 +159,4 @@ Propone un diseño a partir de tu descripción; después lo revisás y ajustás.
 La ficha muestra cupos abiertos con nueva fecha cercana.
 
 **¿Las clases quedan grabadas?**
-Sí, todas, con acceso de por vida en el campus, además del certificado digital al completar el curso.
+Sí, todas, con acceso al campus virtual y el material durante el curso, además del certificado digital al completar el curso.

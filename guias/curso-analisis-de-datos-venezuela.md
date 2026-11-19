@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Análisis de datos de ProgramBI para Venezuela](https://www.programbi.com/ve/cursos/analisis-de-datos) es una formación **en vivo por Zoom** con dos niveles de **60 horas** cada uno; cada nivel reparte **20 horas para SQL Server, 20 para Power BI y 20 para Python**. El nivel básico-intermedio tiene **inicios todos los meses** (revisa la próxima fecha en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de Venezuela**. Precio: **{precio_local}**.
 
-Incluye grabaciones en el campus con acceso de por vida, certificado digital y un proyecto final con datos reales, además de apoyo de inteligencia artificial en cada módulo para generar y revisar consultas, medidas y scripts. Datos tomados de la ficha del curso el 4 de noviembre de 2026.
+Incluye grabaciones en el campus virtual con el material durante el curso, certificado digital y un proyecto final con datos reales, además de apoyo de inteligencia artificial en cada módulo para generar y revisar consultas, medidas y scripts. Datos tomados de la ficha del curso el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Nuevas cohortes cada mes · 18:30 hora de Venezuela · «Ver el curso».
 
@@ -101,7 +101,7 @@ Buena parte del trabajo de un analista se puede hacer a distancia: consultas, mo
 
 - **Bloquea las horas de clase** en tu agenda como si fueran una reunión de trabajo.
 - **Practica media hora** el día siguiente a cada sesión.
-- **Si se cae la conexión**, no te angusties: la grabación queda en el campus de por vida.
+- **Si se cae la conexión**, no te angusties: la grabación queda en el campus virtual con el material durante el curso.
 - **Pregunta en vivo** con tus propios casos; es la ventaja de un curso sincrónico.
 - **Termina el proyecto final**, aunque no sea perfecto: es lo que vas a mostrar.
 
@@ -124,7 +124,7 @@ Buena parte del trabajo de un analista se puede hacer a distancia: consultas, mo
 - **Inicio:** fechas de arranque cada mes, publicadas en la ficha del programa.
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de Venezuela.
 - **Duración:** 60 horas por nivel (20 por herramienta).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI); según la ficha, ha liderado capacitaciones en AngloAmerican, CAP, Deloitte y SQM.
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -148,7 +148,7 @@ Lunes y miércoles de 18:30 a 20:30, hora de Venezuela, con inicios nuevos todos
 No. El nivel básico-intermedio parte de cero en cada herramienta.
 
 **¿Qué pasa si pierdo una clase?**
-Queda grabada en el campus con acceso de por vida.
+Queda grabada en el campus virtual con el material durante el curso.
 
 **¿Me sirve para trabajar de forma remota?**
 Te da las habilidades técnicas que piden muchos avisos de analista; el portafolio y la búsqueda dependen de ti.
@@ -160,4 +160,4 @@ Sí. Existen los cursos de SQL Server, Power BI y Python por separado; el de An�
 Necesitas una computadora con Windows para instalar Power BI Desktop y una conexión estable para las clases en vivo. Los requisitos técnicos exactos de Power BI Desktop están publicados en Microsoft Learn; revísalos antes de la primera sesión. Si usas Mac, trabajarás con Power BI web, directamente en el navegador.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CourseImage from "@/components/shared/CourseImage";
+import AuthModal from "@/components/shared/AuthModal";
+import { getSavedLeadInfo } from "@/lib/pricing-gate";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock, Calendar, Building2, User, Users,
@@ -126,6 +128,7 @@ export default function PagoClient({
   nivel = "",
   servicio = "",
   userEmail = "",
+  isAuthenticated = false,
 }: {
   estados?: Record<string, { marker: string | null; moneda: string; modo: string }>;
   catalog: CheckoutCatalog;
@@ -133,8 +136,11 @@ export default function PagoClient({
   nivel?: string;
   servicio?: string;
   userEmail?: string;
+  isAuthenticated?: boolean;
 }) {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const authRedirectUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
   const paisPago = normalizarPais(searchParams.get("pais"));
   const estadoPago = estados[paisPago];
   const initialSlug = curso || searchParams.get("curso") || "";
@@ -187,6 +193,20 @@ export default function PagoClient({
   const [notifySuccess, setNotifySuccess] = useState<Set<string>>(new Set());
   
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [guestName, setGuestName] = useState(initialName);
+  const [guestEmail, setGuestEmail] = useState(initialEmail);
+  const [guestWhatsapp, setGuestWhatsapp] = useState("");
+  const [guestError, setGuestError] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+    const saved = getSavedLeadInfo();
+    if (!saved) return;
+    if (saved.name) setGuestName((prev) => prev || saved.name);
+    if (saved.email) setGuestEmail((prev) => prev || saved.email);
+    if (saved.whatsapp) setGuestWhatsapp((prev) => prev || saved.whatsapp);
+  }, [isAuthenticated]);
   const [isSubmittingEnterprise, setIsSubmittingEnterprise] = useState(false);
   const [enterpriseSuccess, setEnterpriseSuccess] = useState(false);
 
@@ -569,8 +589,34 @@ export default function PagoClient({
   const finalPriceWithCoupon = totalPrice - couponDiscountAmount;
   const hasExtraLicenses = cartItemCount > Object.keys(cart).length;
 
+  const validateGuestFields = (): boolean => {
+    if (isAuthenticated) return true;
+    const name = guestName.trim();
+    const email = guestEmail.trim();
+    const whatsappDigits = guestWhatsapp.replace(/\D/g, "");
+
+    if (name.length < 2) {
+      setGuestError("Ingresa tu nombre completo para continuar.");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setGuestError("Ingresa un correo electrónico válido para enviarte el acceso.");
+      return false;
+    }
+    if (whatsappDigits.length < 7) {
+      setGuestError("Ingresa un WhatsApp válido (mínimo 7 dígitos).");
+      return false;
+    }
+    setGuestError(null);
+    return true;
+  };
+
   const handleCheckout = async () => {
     if (cartItems.length === 0) return;
+    if (!validateGuestFields()) {
+      setIsMobileCartOpen(true);
+      return;
+    }
     setIsCheckingOut(true);
     trackCheckoutStart({
       courseSlugs: cartItems.map((item) => item.slug),
@@ -588,6 +634,13 @@ export default function PagoClient({
         body: JSON.stringify({
           couponCode: appliedCoupon?.code || null,
           pais: paisPago,
+          ...(!isAuthenticated
+            ? {
+                guestName: guestName.trim(),
+                guestEmail: guestEmail.trim(),
+                guestWhatsapp: guestWhatsapp.trim(),
+              }
+            : {}),
           items: cartItems.map(item => ({
             courseSlug: item.slug,
             levelName: item.levelName,
@@ -1366,6 +1419,81 @@ export default function PagoClient({
                                 </div>
                               )}
 
+                              {!isAuthenticated && (
+                                <div className="mb-5 rounded-xl border border-line bg-wash p-4">
+                                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                                    <p className="text-xs font-bold text-ink">
+                                      Tus datos para recibir el acceso y comprobante
+                                    </p>
+                                    <button
+                                      type="button"
+                                      onClick={() => setShowLoginModal(true)}
+                                      className="cursor-pointer border-none bg-transparent p-0 text-[11px] font-semibold text-mute underline underline-offset-2 hover:text-ink"
+                                    >
+                                      Ya tengo cuenta — Iniciar sesión
+                                    </button>
+                                  </div>
+                                  <div className="space-y-2.5">
+                                    <div>
+                                      <label htmlFor="desktop-guest-name" className="mb-1 block text-[11px] font-semibold text-mute">
+                                        Nombre completo
+                                      </label>
+                                      <input
+                                        id="desktop-guest-name"
+                                        type="text"
+                                        autoComplete="name"
+                                        placeholder="Tu nombre y apellido"
+                                        value={guestName}
+                                        onChange={(e) => {
+                                          setGuestName(e.target.value);
+                                          if (guestError) setGuestError(null);
+                                        }}
+                                        className={fieldClass}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label htmlFor="desktop-guest-email" className="mb-1 block text-[11px] font-semibold text-mute">
+                                        Email
+                                      </label>
+                                      <input
+                                        id="desktop-guest-email"
+                                        type="email"
+                                        autoComplete="email"
+                                        placeholder="tu@correo.com"
+                                        value={guestEmail}
+                                        onChange={(e) => {
+                                          setGuestEmail(e.target.value);
+                                          if (guestError) setGuestError(null);
+                                        }}
+                                        className={fieldClass}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label htmlFor="desktop-guest-whatsapp" className="mb-1 block text-[11px] font-semibold text-mute">
+                                        WhatsApp
+                                      </label>
+                                      <input
+                                        id="desktop-guest-whatsapp"
+                                        type="tel"
+                                        autoComplete="tel"
+                                        placeholder="+56 9 1234 5678"
+                                        value={guestWhatsapp}
+                                        onChange={(e) => {
+                                          setGuestWhatsapp(e.target.value);
+                                          if (guestError) setGuestError(null);
+                                        }}
+                                        className={fieldClass}
+                                      />
+                                    </div>
+                                  </div>
+                                  {guestError && (
+                                    <p className="mt-2.5 text-xs font-semibold text-danger">
+                                      {guestError}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+
                               <motion.button
                                 type="button"
                                 onClick={handleCheckout}
@@ -1598,6 +1726,66 @@ export default function PagoClient({
                         </div>
                       ))}
                     </div>
+
+                    {!isAuthenticated && (
+                      <div className="mt-4 rounded-xl border border-line bg-paper p-3.5">
+                        <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+                          <p className="text-xs font-bold text-ink">
+                            Tus datos para recibir el acceso y comprobante
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setShowLoginModal(true)}
+                            className="cursor-pointer border-none bg-transparent p-0 text-[11px] font-semibold text-mute underline underline-offset-2 hover:text-ink"
+                          >
+                            Ya tengo cuenta — Iniciar sesión
+                          </button>
+                        </div>
+                        <div className="space-y-2">
+                          <input
+                            id="mobile-guest-name"
+                            type="text"
+                            autoComplete="name"
+                            placeholder="Nombre completo"
+                            value={guestName}
+                            onChange={(e) => {
+                              setGuestName(e.target.value);
+                              if (guestError) setGuestError(null);
+                            }}
+                            className={fieldClass}
+                          />
+                          <input
+                            id="mobile-guest-email"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="Email"
+                            value={guestEmail}
+                            onChange={(e) => {
+                              setGuestEmail(e.target.value);
+                              if (guestError) setGuestError(null);
+                            }}
+                            className={fieldClass}
+                          />
+                          <input
+                            id="mobile-guest-whatsapp"
+                            type="tel"
+                            autoComplete="tel"
+                            placeholder="WhatsApp (ej. +56 9 1234 5678)"
+                            value={guestWhatsapp}
+                            onChange={(e) => {
+                              setGuestWhatsapp(e.target.value);
+                              if (guestError) setGuestError(null);
+                            }}
+                            className={fieldClass}
+                          />
+                        </div>
+                        {guestError && (
+                          <p className="mt-2 text-xs font-semibold text-danger">
+                            {guestError}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -1642,6 +1830,15 @@ export default function PagoClient({
         </>
       )}
     </AnimatePresence>
+
+    {!isAuthenticated && (
+      <AuthModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        defaultTab="login"
+        redirectUrl={authRedirectUrl}
+      />
+    )}
     </>
   );
 }

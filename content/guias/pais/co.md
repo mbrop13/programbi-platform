@@ -123,7 +123,7 @@ Hay mucho material gratis, y si eres constante puedes avanzar solo. Pero la mayo
 - **20 horas, 8 módulos**, básico-intermedio. Abrimos grupos cada mes; consulta la próxima fecha en la ficha del programa.
 - Valores en COP y medios de pago locales incluidos al abrir el temario del [curso de Power BI para Colombia](/co/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
-- **Grabaciones de por vida** y **certificado**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), más de 5.000 profesionales formados.
 - Si estás migrando desde hojas de cálculo, revisa [Power BI vs Excel](/guias/power-bi-vs-excel) y la ruta de [Análisis de datos en Colombia](/co/cursos/analisis-de-datos).
 

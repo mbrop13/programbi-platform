@@ -122,7 +122,7 @@ Solo se puede, y en Argentina hay una comunidad tech muy activa. El tema es que 
 - **20 horas, 8 módulos**, básico-intermedio. Nuevas cohortes todos los meses; consultá la próxima fecha en la ficha del curso.
 - Aranceles actualizados en ARS disponibles en el PDF del [curso de Power BI en Argentina](/ar/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores (como SUMX), tabla de métricas con SWITCH e IA en Power BI.
-- **Grabaciones de por vida** y **certificado**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Sumá base técnica con las [funciones DAX esenciales](/guias/funciones-dax-mas-importantes) o el programa de [Análisis de datos completo](/ar/cursos/analisis-de-datos).
 

@@ -5,9 +5,9 @@ pais: ar
 hreflang: es-AR
 curso: access
 url_curso: https://www.programbi.com/ar/cursos/access
-title: "Curso de Access en Argentina en vivo | ProgramBI"
-meta: "Curso de Microsoft Access en Argentina: 20 h en vivo por Zoom, 7 módulos de tablas, SQL, formularios, informes y macros a las 19:30 h."
-h1: "Curso de Access en Argentina: armá bases de datos para tu área, en vivo"
+title: Cómo usar Microsoft Access en Argentina | ProgramBI
+meta: "Guía práctica para aprender Microsoft Access en Argentina: tablas, relaciones, consultas SQL, formularios, informes y macros aplicadas al trabajo diario."
+h1: Cómo usar Microsoft Access para administración en Argentina
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/ar/cursos/access
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Lo esencial:** el [curso de Microsoft Access de ProgramBI para Argentina](https://www.programbi.com/ar/cursos/access) son **20 horas en vivo por Zoom**, en **7 módulos**, para que quien trabaja en administración aprenda a diseñar, construir y mantener bases de datos relacionales: tablas y relaciones, consultas con SQL básico, formularios de carga con validaciones, informes que se exportan a PDF y Excel, y macros. Sale **{precio_local}** y la ficha muestra **cupos abiertos · consultá las próximas fechas**.
 
-Tenés las grabaciones de por vida en el campus, certificado al completar y un proyecto integrador sobre un proceso real de empresa. Según las preguntas frecuentes de la ficha, las clases son a las 19:30, hora argentina, la misma que en Chile y Uruguay. Pagás en pesos argentinos con Mercado Pago o transferencia. Datos revisados el 4 de noviembre de 2026.
+Tenés las acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y un proyecto integrador sobre un proceso real de empresa. Según las preguntas frecuentes de la ficha, las clases son a las 19:30, hora argentina, la misma que en Chile y Uruguay. Pagás en pesos argentinos con Mercado Pago o transferencia. Datos revisados el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar fecha».
 
@@ -125,7 +125,7 @@ La ficha lo dirige al **personal administrativo que necesita almacenar, organiza
 ## Datos del curso
 
 - **Duración:** 20 horas, 7 módulos.
-- **Modalidad:** en vivo por Zoom, grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, a confirmar.
 - **Horario:** según la FAQ de la ficha, 19:30 a 21:30, hora argentina.
 - **Certificado:** al completar.
@@ -160,4 +160,4 @@ Sí. Entender tablas, claves y relaciones te facilita muchísimo el modelado de 
 No. Excel avanzado se enfoca en fórmulas y análisis dentro de la planilla; acá aprendés a guardar la información en tablas relacionadas, a controlar la carga con formularios y a generar informes que se actualizan solos.
 
 **¿Qué me llevo al terminar?**
-Certificado digital de ProgramBI y las grabaciones de por vida.
+Certificado digital de ProgramBI y las clases grabadas y el material en el campus virtual durante el curso.

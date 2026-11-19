@@ -23,74 +23,7 @@ export interface ToolComparison {
 }
 
 export const comparisons: ToolComparison[] = [
-  {
-    slug: "power-bi-vs-excel",
-    title: "Power BI vs. Microsoft Excel: ¿Cuál elegir en 2026?",
-    seoTitle: "Power BI vs. Excel: comparativa para datos",
-    seoDescription: "Descubre las diferencias entre Power BI y Microsoft Excel. Cuándo usar planillas tradicionales y cuándo migrar a dashboards interactivos automáticos.",
-    intro: "Tanto Microsoft Excel como Power BI son herramientas fundamentales del ecosistema de Microsoft, pero están diseñadas para propósitos diferentes. Mientras Excel es la navaja suiza de la manipulación de celdas individuales, Power BI es un motor robusto de Business Intelligence diseñado para consolidación masiva y análisis interactivo a escala.",
-    toolA: {
-      name: "Power BI",
-      desc: "Plataforma de Business Intelligence diseñada para modelado de datos empresariales, automatización de ETL y creación de dashboards compartibles."
-    },
-    toolB: {
-      name: "Microsoft Excel",
-      desc: "Hoja de cálculo tradicional ideal para análisis rápidos y ad-hoc, cálculos en cuadrículas independientes y manipulación manual de datos a pequeña escala."
-    },
-    features: [
-      {
-        feature: "Límite de Volumen de Datos",
-        toolAVal: "Virtualmente ilimitado (compresión columnar x10). Soporta millones de filas sin congelarse.",
-        toolBVal: "1,048,576 filas por hoja. Sufre lentitud crítica al superar las 200,000 filas.",
-        winner: "A"
-      },
-      {
-        feature: "Modelado e Inteligencia de Negocios",
-        toolAVal: "Modelo en Estrella nativo con relaciones avanzadas y fórmulas DAX de Inteligencia de Tiempo.",
-        toolBVal: "Fórmulas de celda (BUSCARV, SI). Soporta Power Pivot en versiones avanzadas pero no es nativo.",
-        winner: "A"
-      },
-      {
-        feature: "Automatización de Reportes",
-        toolAVal: "Actualización programada directa desde bases de datos en la nube. Cero clics manuales.",
-        toolBVal: "Requiere abrir el archivo, refrescar tablas dinámicas o ejecutar macros VBA manuales.",
-        winner: "A"
-      },
-      {
-        feature: "Seguridad y Gobernanza (RLS)",
-        toolAVal: "Seguridad a nivel de fila (Row-Level Security) nativa para filtrar qué visualiza cada usuario.",
-        toolBVal: "Protección de hojas básica con contraseñas que son fácilmente hackeables en internet.",
-        winner: "A"
-      },
-      {
-        feature: "Edición y Digitabilidad",
-        toolAVal: "Solo lectura. Diseñado para consumir y auditar datos limpios extraídos de bases de datos.",
-        toolBVal: "Edición instantánea. Ideal para crear tablas manuales, presupuestos iniciales y digitación.",
-        winner: "B"
-      }
-    ],
-    prosA: [
-      "Dashboards dinámicos e interactivos en vivo.",
-      "Excelente rendimiento con grandes volúmenes de datos.",
-      "Actualización de reportes 100% automatizable.",
-      "Compatible con seguridad de accesos móviles corporativos."
-    ],
-    consA: [
-      "Curva de aprendizaje inicial para dominar fórmulas DAX.",
-      "No permite la digitación o modificación manual directa de celdas."
-    ],
-    prosB: [
-      "Sintaxis familiar y adopción universal.",
-      "Excelente para modelos financieros rápidos de una sola vez.",
-      "Flexibilidad absoluta para formatear celdas independientes."
-    ],
-    consB: [
-      "Los reportes manuales son altamente propensos a errores de digitación.",
-      "No escala bien con bases de datos modernas."
-    ],
-    conclusion: "Si tu objetivo es digitar datos, presupuestos rápidos o análisis de una sola vez, Excel sigue siendo la mejor opción. Si buscas automatizar reportes recurrentes, consolidar bases de datos y compartir tableros interactivos con directivos, debes migrar a Power BI.",
-    ctaCourseSlug: "power-bi"
-  },
+  // `power-bi-vs-excel` fue consolidado en /guias/power-bi-vs-excel (301).
   {
     slug: "sql-server-vs-postgresql",
     title: "SQL Server vs. PostgreSQL: Comparativa de Motores de Bases de Datos",

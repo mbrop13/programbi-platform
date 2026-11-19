@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/cursos/analisis-de-datos
-title: "Curso de Análisis de datos en Chile: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Chile en vivo: SQL Server, Power BI y Python en 60 h. Cómo ser analista de datos, sueldos y ruta paso a paso."
-h1: "Curso de Análisis de datos en Chile: cómo ser analista de datos en 2026"
+title: "Cómo ser analista de datos en Chile: ruta 2026 | ProgramBI"
+meta: "Ruta paso a paso para ser analista de datos en Chile en 2026: qué herramientas aprender (SQL, Power BI y Python), sueldos locales y formación en vivo."
+h1: Cómo ser analista de datos en Chile en 2026 (ruta, herramientas y sueldos)
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/analisis-de-datos
@@ -30,7 +30,7 @@ nota_hermes: |
 
 # Curso de Análisis de datos en Chile: cómo ser analista de datos en 2026
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI](https://www.programbi.com/cursos/analisis-de-datos) es un programa en vivo por Zoom, pensado para Chile, que en su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son los **lunes y miércoles de 19:30 a 21:30, hora de Chile**, tiene **inicios todos los meses** (próxima fecha confirmada en la ficha) y el valor es de **$338.000 CLP**. Incluye grabaciones de por vida en el campus y certificado al completar.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI](https://www.programbi.com/cursos/analisis-de-datos) es un programa en vivo por Zoom, pensado para Chile, que en su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son los **lunes y miércoles de 19:30 a 21:30, hora de Chile**, tiene **inicios todos los meses** (próxima fecha confirmada en la ficha) y el valor es de **$338.000 CLP**. Incluye acceso al campus virtual con las clases grabadas y el material durante el curso y certificado al completar.
 
 **¿Cómo ser analista de datos en Chile?** Necesitas tres cosas: sacar datos de una base (SQL), convertirlos en un modelo y un tablero que la gerencia entienda (Power BI) y limpiar o analizar lo que Excel no aguanta (Python). Con eso más un proyecto propio que puedas mostrar, ya tienes lo que piden la mayoría de los avisos de analista. El resto de esta guía te explica el camino, cuánto se gana y cómo elegir curso.
 
@@ -107,7 +107,7 @@ Datos tomados de la [ficha del curso](https://www.programbi.com/cursos/analisis-
 - **Qué aprendes:** consultas SQL desde cero, modelado de datos y DAX, análisis exploratorio con Python y Pandas, dashboards y reportes automáticos, ETL con Power Query y conexiones a bases de datos, y un proyecto final con datos reales. Se usa IA en cada módulo como apoyo para generar código.
 - **Nivel avanzado:** otras 60 horas con automatización, inteligencia de tiempo y modelos. El programa completo suma 120 horas.
 - **Para quién:** perfiles administrativos, financieros, comerciales, ingenieros y analistas, sobre todo de finanzas, control de gestión y operaciones que hoy viven en Excel.
-- **Incluye:** grabaciones de por vida en el campus y certificado digital al completar.
+- **Incluye:** acceso al campus virtual con las clases grabadas y el material durante el curso y certificado digital al completar.
 - **Próximo inicio:** inicios mensuales; revisa la fecha vigente en la ficha del curso.
 - **Valor:** $338.000 CLP. Puedes pagar en 3 cuotas sin interés.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM y más de 5.000 profesionales formados en SQL, Power BI, Python e IA.
@@ -120,7 +120,7 @@ Datos tomados de la [ficha del curso](https://www.programbi.com/cursos/analisis-
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de análisis de datos en Chile?**
-El nivel básico-intermedio de ProgramBI cuesta $338.000 CLP e incluye 60 horas en vivo (SQL Server, Power BI y Python), grabaciones de por vida y certificado.
+El nivel básico-intermedio de ProgramBI cuesta $338.000 CLP e incluye 60 horas en vivo (SQL Server, Power BI y Python), acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cuánto dura y cuál es el horario?**
 60 horas por nivel, en clases en vivo por Zoom los lunes y miércoles de 19:30 a 21:30, hora de Chile. Abrimos nuevas cohortes cada mes; revisa la próxima fecha confirmada en la ficha del curso.
@@ -132,7 +132,7 @@ No en programación. El nivel básico-intermedio parte desde cero en SQL y Pytho
 El curso de Power BI se enfoca solo en tableros y DAX (20 horas por nivel). El de análisis de datos suma SQL Server y Python para cubrir el ciclo completo: extraer, modelar y analizar.
 
 **¿Qué pasa si no puedo asistir a una clase?**
-Todas las clases quedan grabadas y tienes acceso de por vida en el campus, así que puedes ponerte al día cuando quieras.
+Todas las clases quedan grabadas y tienes acceso al campus virtual con las clases grabadas y el material durante el curso, así que puedes ponerte al día cuando quieras.
 
 **¿Entregan certificado?**
 Sí. Al completar el curso recibes un certificado digital de ProgramBI.

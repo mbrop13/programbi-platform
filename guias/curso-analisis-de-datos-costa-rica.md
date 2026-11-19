@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta directa:** el [curso de Análisis de datos de ProgramBI para Costa Rica](https://www.programbi.com/cr/cursos/analisis-de-datos) es un programa **en vivo por Zoom de 60 horas por nivel**, dividido en **20 horas de SQL Server, 20 de Power BI y 20 de Python**, para quienes desean asumir funciones de analista: extraer información de bases de datos, construir modelos y tableros, y explorar datos con código. El nivel básico-intermedio tiene **inicios mensuales** (fecha confirmada en la ficha), con sesiones **lunes y miércoles de 16:30 a 18:30, hora de Costa Rica**. Precio: **{precio_local}**.
 
-La ficha ofrece dos niveles de 60 horas —básico-intermedio y avanzado—, grabaciones con acceso de por vida, certificado digital y un proyecto final con datos reales. En cada módulo se incorpora inteligencia artificial para generar y revisar consultas, medidas y scripts. Información verificada en la ficha el 4 de noviembre de 2026.
+La ficha ofrece dos niveles de 60 horas —básico-intermedio y avanzado—, acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y un proyecto final con datos reales. En cada módulo se incorpora inteligencia artificial para generar y revisar consultas, medidas y scripts. Información verificada en la ficha el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · 16:30 hora de Costa Rica · «Ver el curso».
 
@@ -119,7 +119,7 @@ Un buen proyecto incluye las tres piezas: la consulta SQL que prepara los datos,
 - **Inicio:** inscripciones abiertas cada mes; consulta la próxima fecha en la ficha.
 - **Días y horario:** lunes y miércoles, 16:30 a 18:30, hora de Costa Rica.
 - **Duración:** 60 horas por nivel (20 por herramienta).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI); según la ficha, ha liderado capacitaciones en AngloAmerican, CAP, Deloitte y SQM.
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -143,7 +143,7 @@ Se abren grupos todos los meses, lunes y miércoles de 16:30 a 18:30, hora de Co
 No. El nivel básico-intermedio parte de cero en cada herramienta.
 
 **¿Qué ocurre si no puedo asistir a una sesión?**
-Queda grabada en el campus con acceso de por vida, para que se ponga al día antes de la siguiente.
+Queda grabada en el campus virtual con el material durante el curso, para que se ponga al día antes de la siguiente.
 
 **¿Puedo llevar solo una herramienta?**
 Sí. Los cursos de SQL Server, Power BI y Python existen por separado; este programa los integra con un proyecto común.
@@ -152,4 +152,4 @@ Sí. Los cursos de SQL Server, Power BI y Python existen por separado; este prog
 Sí. SQL, Power BI y Python son herramientas comunes en equipos de finanzas, operaciones y reportería, y lo aprendido se aplica tanto en español como en entornos donde se trabaja en inglés.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

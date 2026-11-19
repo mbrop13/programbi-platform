@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta directa:** si quieres aprender Power BI desde Venezuela con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/ve/cursos/power-bi) tiene un **nivel básico-intermedio de 20 horas por Zoom** que cubre limpieza de datos con Power Query, relaciones, DAX inicial, dashboards y publicación con roles. Tiene **grupos nuevos cada mes** (próxima fecha confirmada en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de Venezuela**. Precio: **{precio_local}**.
 
-Todas las sesiones quedan grabadas con acceso de por vida, recibes certificado digital al terminar y, si después quieres ir más lejos, hay un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Información de la ficha del curso, consultada el 4 de noviembre de 2026.
+Todas las sesiones quedan grabadas con acceso al campus virtual y el material durante el curso, recibes certificado digital al terminar y, si después quieres ir más lejos, hay un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Información de la ficha del curso, consultada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Nuevas cohortes cada mes · 18:30 hora de Venezuela · «Ver el curso».
 
@@ -111,7 +111,7 @@ Las clases son en vivo por Zoom. Si en algún momento falla la conexión o la lu
 - **Inicio:** cohortes todos los meses; mira la próxima fecha en la ficha del curso.
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de Venezuela (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
-- **Modalidad:** en vivo por Zoom, grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -132,7 +132,7 @@ Lunes y miércoles de 18:30 a 20:30, hora de Venezuela, con nuevos inicios cada 
 No. Basta con manejar Excel a nivel básico; el nivel básico-intermedio parte desde cero y avanza paso a paso.
 
 **¿Y si se me va la luz o el internet durante una clase?**
-La clase queda grabada y puedes verla después, con acceso de por vida.
+La clase queda grabada y puedes verla después, con acceso al campus virtual y el material durante el curso.
 
 **¿Sirve para trabajar de forma remota?**
 Power BI es una habilidad que se aplica igual en empresas locales y extranjeras; el curso te da la base técnica, y el portafolio lo construyes con tus proyectos.
@@ -144,4 +144,4 @@ Puedes ver las clases desde el teléfono, pero para practicar necesitas una comp
 No. Este se enfoca solo en Power BI durante 20 horas; el de Análisis de datos suma SQL Server y Python, con 60 horas por nivel.
 
 **¿Qué recibo al finalizar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

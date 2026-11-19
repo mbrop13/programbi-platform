@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Lo que necesitas saber:** para aprender Power BI desde República Dominicana con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/do/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas por Zoom** que va desde conectar y limpiar datos con Power Query hasta relaciones, DAX inicial, dashboards y publicación con roles. Ofrece **inicios todos los meses** (consulta la próxima fecha en la ficha), con clases **lunes y miércoles de 18:30 a 20:30, hora de República Dominicana**. Precio: **{precio_local}**.
 
-Cada clase queda grabada con acceso de por vida, recibes certificado digital al terminar y, cuando quieras subir de nivel, hay un avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Datos tomados de la ficha del curso el 4 de noviembre de 2026.
+Cada clase queda grabada con acceso al campus virtual y el material durante el curso, recibes certificado digital al terminar y, cuando quieras subir de nivel, hay un avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Datos tomados de la ficha del curso el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · 18:30 hora RD · «Ver el curso».
 
@@ -118,7 +118,7 @@ Un tablero chévere no sirve de mucho si no se entiende la historia detrás. Al 
 - **Inicio:** fechas nuevas cada mes (verifica el próximo arranque en la ficha).
 - **Días y horario:** lunes y miércoles, 18:30 a 20:30, hora de República Dominicana (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
-- **Modalidad:** en vivo por Zoom, grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom, acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -139,7 +139,7 @@ Inicia una nueva edición cada mes, lunes y miércoles de 18:30 a 20:30, hora de
 No. Basta con un manejo básico de Excel: filtros, tablas y fórmulas sencillas. El nivel básico-intermedio parte desde cero.
 
 **¿Qué pasa si falto?**
-La clase queda grabada en el campus con acceso de por vida, así que puedes verla cuando te convenga y llegar al día a la sesión siguiente.
+La clase queda grabada en el campus virtual con el material durante el curso, así que puedes verla cuando te convenga y llegar al día a la sesión siguiente.
 
 **¿Puedo usar Mac?**
 Sí. Power BI Desktop se instala en Windows, según Microsoft; si usas Mac, trabajarás con Power BI web, directamente en el navegador.
@@ -151,4 +151,4 @@ Sí. En todos esos sectores hay reportes que se repiten cada semana o cada mes, 
 No. El curso es de ProgramBI y cubre fundamentos que la PL-300 evalúa, como preparar datos, modelar y visualizar; la certificación es un examen de Microsoft que se rinde por separado.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

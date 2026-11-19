@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Respuesta corta:** para aprender Power BI desde Ecuador con clases en vivo, el [curso de Power BI de ProgramBI](https://www.programbi.com/ec/cursos/power-bi) ofrece un **nivel básico-intermedio de 20 horas por Zoom** que cubre conexión y limpieza de datos con Power Query, relaciones, DAX inicial, dashboards y publicación con roles. Se abren **inscripciones todos los meses** (fecha vigente en la ficha), con clases **lunes y miércoles de 17:30 a 19:30, hora de Ecuador**. Precio: **{precio_local}**.
 
-Cada sesión queda grabada en el campus con acceso de por vida, recibes un certificado digital y, cuando quieras ir más allá, hay un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Información de la ficha del curso, revisada el 4 de noviembre de 2026.
+Cada sesión queda grabada en el campus virtual con el material durante el curso, recibes un certificado digital y, cuando quieras ir más allá, hay un nivel avanzado de 20 horas sobre publicación en Power BI Service y seguridad a nivel de fila. Información de la ficha del curso, revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Grupos cada mes · 17:30 hora de Ecuador · «Ver el curso».
 
@@ -106,7 +106,7 @@ Ten Power BI Desktop instalado antes de la primera sesión; según Microsoft, [P
 - **Inicio:** apertura mensual de cohortes; revisa la siguiente fecha en la ficha.
 - **Días y horario:** lunes y miércoles, 17:30 a 19:30, hora de Ecuador (19:30 a 21:30 en Chile).
 - **Duración:** 20 horas, nivel básico-intermedio.
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Certificado:** digital, al finalizar.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
@@ -127,7 +127,7 @@ Cada mes arranca una nueva edición; las clases son lunes y miércoles de 17:30 
 No. Con Excel básico es suficiente para empezar; el nivel básico-intermedio parte desde cero.
 
 **¿Qué pasa si no llego a una clase?**
-La sesión queda grabada en el campus con acceso de por vida, así que la ves cuando puedas.
+La sesión queda grabada en el campus virtual con el material durante el curso, así que la ves cuando puedas.
 
 **¿El curso es oficial de Microsoft?**
 No. Es un curso de ProgramBI que cubre fundamentos útiles para la PL-300; el temario oficial está en Microsoft Learn.
@@ -139,4 +139,4 @@ Sí, y es lo ideal; quita antes nombres, montos sensibles y datos personales.
 No. Este se concentra en Power BI durante 20 horas; el de Análisis de datos integra SQL Server, Power BI y Python en 60 horas por nivel, para quienes quieren el oficio completo de analista.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

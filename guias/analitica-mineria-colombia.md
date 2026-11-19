@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/co/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Minería en Colombia | ProgramBI"
-meta: "Análisis de datos para minería en Colombia: Power BI, SQL Server y Python para producción, flota, mantenimiento y sensores. 60 h por nivel en vivo."
-h1: "Curso de Análisis de Datos para la Minería en Colombia: Power BI, SQL y Python en vivo"
+title: Power BI y datos para minería en Colombia | ProgramBI
+meta: "Guía de análisis de datos para minería en Colombia: cómo llevar turnos, flota, OEE y mantención de Excel a Power BI, SQL y Python."
+h1: Cómo aplicar Power BI, SQL y Python en minería en Colombia
 updated: 2026-11-04
 sources:
   - https://www.programbi.com/co/cursos/analisis-de-datos
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **En resumen:** el [curso de Análisis de Datos de ProgramBI, con enfoque en minería, para Colombia](https://www.programbi.com/co/cursos/analisis-de-datos) es un programa de **60 horas por nivel** (20 h de SQL Server, 20 h de Power BI y 20 h de Python), en vivo por Zoom, que combina Power BI, SQL Server y Python para trabajar con información de operación minera e industrial: reportes de turno, flota, mantenimiento, combustible, inventarios y sensores, con apoyo de inteligencia artificial generativa para redactar consultas y scripts. El nivel básico-intermedio tiene un valor de **{precio_local}**; la ficha reporta **cupos abiertos · programación continua en vivo**.
 
-Incluye grabaciones de por vida en el campus, certificado al completar y proyectos con datos reales. En las preguntas frecuentes de la ficha, la clase se ubica a las 17:30, hora de Colombia. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia. Información consultada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado al completar y proyectos con datos reales. En las preguntas frecuentes de la ficha, la clase se ubica a las 17:30, hora de Colombia. Se paga en pesos colombianos con Mercado Pago Colombia, PSE, Nequi o transferencia. Información consultada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Cupos abiertos · {precio_local} · «Consultar próxima fecha».
 
@@ -109,7 +109,7 @@ La ficha incluye también un nivel avanzado, orientado a **dominar el ciclo comp
 ## Información general
 
 - **Niveles:** dos niveles de 60 horas cada uno (20 h SQL Server, 20 h Power BI, 20 h Python).
-- **Modalidad:** en vivo por Zoom; grabaciones de por vida.
+- **Modalidad:** en vivo por Zoom; acceso al campus virtual con las clases grabadas y el material durante el curso.
 - **Fecha:** cupos abiertos, por confirmar.
 - **Horario:** según la FAQ de la ficha, 17:30 a 19:30, hora de Colombia.
 - **Certificado:** al completar.
@@ -135,10 +135,10 @@ No. El nivel básico-intermedio parte desde los fundamentos de Power BI, SQL y P
 Sí. Los temas —turnos, flota, mantenimiento, consumos, sensores— son comunes a distintos tipos de operación.
 
 **¿Y si estoy en campo y no puedo conectarme?**
-Las sesiones quedan grabadas con acceso de por vida, de modo que puede verlas al volver de campo.
+Las sesiones quedan grabadas con acceso al campus virtual y el material durante el curso, de modo que puede verlas al volver de campo.
 
 **¿En qué se diferencia del curso de Power BI?**
 El curso de Power BI profundiza en una herramienta con ejemplos generales de negocio; este integra Power BI, SQL Server y Python con casos de producción, flota, mantenimiento y sensores.
 
 **¿Qué recibo al terminar?**
-Certificado digital de ProgramBI y acceso de por vida a las grabaciones.
+Certificado digital de ProgramBI y acceso al campus virtual con las clases grabadas y el material durante el curso.

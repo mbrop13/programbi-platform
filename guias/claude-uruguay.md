@@ -5,9 +5,9 @@ pais: uy
 hreflang: es-UY
 curso: claude
 url_curso: https://www.programbi.com/uy/cursos/claude
-title: "Curso de Claude en Uruguay online en vivo | ProgramBI"
-meta: "Curso de Claude en Uruguay en vivo por Zoom: 20 h para oficina, planillas y documentos. Clases 19:30 hora Uruguay; nuevas cohortes cada mes."
-h1: "Curso de Claude en Uruguay: IA de Anthropic para quien trabaja en administración"
+title: Cómo usar Claude AI en el trabajo en Uruguay | ProgramBI
+meta: "Guía práctica para usar Claude (Anthropic) en Uruguay: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+h1: Cómo usar Claude AI para trabajo administrativo en Uruguay
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/uy/cursos/claude
@@ -25,7 +25,7 @@ nota_hermes: |
 
 **Para ir al grano:** el [curso de Claude de ProgramBI en Uruguay](https://www.programbi.com/uy/cursos/claude) es una formación **en vivo por Zoom de 20 horas**, organizada en cinco módulos de cuatro horas, donde aprendés a trabajar con Claude —la inteligencia artificial de Anthropic— en lo administrativo: redacción, resúmenes, planillas, presentaciones y automatizaciones livianas, **sin programar**. Se abren **cohortes todos los meses** (próxima fecha en la ficha) y las clases son **lunes y miércoles de 19:30 a 21:30, hora de Uruguay**. Cuesta **{precio_local}**.
 
-Quedan las grabaciones de por vida, recibís certificado digital y terminás con un proyecto armado sobre una tarea real de tu oficina. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: la ficha del curso, consultada el 4 de noviembre de 2026.
+Quedan las clases grabadas y el material en el campus virtual durante el curso, recibís certificado digital y terminás con un proyecto armado sobre una tarea real de tu oficina. Se paga en pesos uruguayos con Mercado Pago Uruguay o transferencia. Fuente: la ficha del curso, consultada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Ediciones mensuales · lunes y miércoles 19:30 (Uruguay) · «Ver el curso».
 
@@ -107,7 +107,7 @@ La ficha lo enfoca en **trabajo administrativo**, con el mismo temario para part
 - **Arranque:** todos los meses comienza una edición nueva (consultá la fecha en la ficha).
 - **Clases:** lunes y miércoles, 19:30 a 21:30, hora de Uruguay.
 - **Carga horaria:** 20 horas, cinco módulos de cuatro.
-- **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
+- **Incluye:** acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final.
 - **Docente:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
 
@@ -135,7 +135,7 @@ Dentro de lo que permitan la Ley 18.331, tu política interna y el plan de Claud
 No. Aquel compara varias herramientas entre sí; este profundiza en Claude y sus funciones propias.
 
 **¿Si falto?**
-Queda la grabación, de por vida, y podés verla antes de la clase siguiente.
+Queda la grabación, en el campus virtual durante el curso, y podés verla antes de la clase siguiente.
 
 **¿Sirve si en mi oficina usamos Google Workspace o Microsoft 365?**
 Sí. Los resultados se exportan a Word, PowerPoint, PDF o Google Docs, y el módulo 4 muestra conectores con correo, Drive y calendario.

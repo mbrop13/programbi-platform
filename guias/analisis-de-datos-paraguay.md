@@ -5,9 +5,9 @@ pais: py
 hreflang: es-PY
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/py/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Paraguay: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Paraguay en vivo: SQL Server, Power BI y Python en 60 h, lunes y miércoles 19:30. Qué aprender para ser analista de datos."
-h1: "Curso de Análisis de Datos en Paraguay: cómo ser analista de datos"
+title: Cómo ser analista de datos en Paraguay 2026 | ProgramBI
+meta: "Ruta paso a paso para ser analista de datos en Paraguay en 2026: qué herramientas aprender (SQL, Power BI y Python), sueldos locales y formación en vivo."
+h1: "Cómo ser analista de datos en Paraguay en 2026: ruta, herramientas y sueldos"
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/py/cursos/analisis-de-datos
@@ -27,7 +27,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Paraguay: cómo ser analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**, inicia nuevos grupos cada mes (fecha disponible en la ficha) y el valor es **{precio_local}**. Tenés grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI para Paraguay](https://www.programbi.com/py/cursos/analisis-de-datos) es en vivo por Zoom y su nivel básico-intermedio enseña **SQL Server, Power BI y Python en 60 horas** (20 horas por herramienta). Las clases son **lunes y miércoles de 19:30 a 21:30, hora de Paraguay**, inicia nuevos grupos cada mes (fecha disponible en la ficha) y el valor es **{precio_local}**. Tenés acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Cómo ser analista de datos en Paraguay?** Aprendé a sacar información de una base con SQL, a ordenarla y mostrarla en Power BI y a limpiar con Python lo que en planilla se vuelve imposible. Después aplicalo a un caso conocido —cartera de una cooperativa, acopio de granos, ventas de una distribuidora— y tenés lo que piden bancos, financieras y empresas exportadoras.
 
@@ -135,7 +135,7 @@ Según la [ficha del curso para Paraguay](https://www.programbi.com/py/cursos/an
 - **60 horas** en el básico-intermedio: Power BI, SQL Server y Python, 20 horas cada uno.
 - Temario: SQL desde cero, modelado y DAX, análisis exploratorio con Pandas, dashboards y reportes automáticos, ETL con Power Query, proyecto final con datos reales e IA de apoyo en cada módulo.
 - **Nivel avanzado** de 60 horas más: automatización, inteligencia de tiempo y modelos.
-- **Grabaciones de por vida** y **certificado** al completar.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado** al completar.
 - Inicio: **cohortes mensuales** (confirmá la próxima fecha en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -158,7 +158,7 @@ No. SQL y Python se enseñan desde cero; alcanza con manejar planillas.
 Power BI si solo necesitás tableros. Análisis de datos si buscás el perfil completo: suma SQL Server y Python.
 
 **¿Las clases quedan grabadas?**
-Sí, con acceso de por vida en el campus.
+Sí, con acceso al campus virtual y el material durante el curso.
 
 **¿Dan certificado?**
 Sí, un certificado digital de ProgramBI al completar el curso.

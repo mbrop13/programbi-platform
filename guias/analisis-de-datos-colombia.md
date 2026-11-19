@@ -5,9 +5,9 @@ pais: co
 hreflang: es-CO
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/co/cursos/analisis-de-datos
-title: "Curso de Análisis de Datos Colombia: guía 2026 | ProgramBI"
-meta: "Curso de análisis de datos en Colombia en vivo: SQL Server, Power BI y Python en 60 h, lunes y miércoles 17:30. Cómo ser analista de datos y sueldos."
-h1: "Curso de Análisis de Datos en Colombia: cómo volverse analista de datos"
+title: Cómo ser analista de datos en Colombia 2026 | ProgramBI
+meta: "Ruta paso a paso para ser analista de datos en Colombia en 2026: qué herramientas aprender (SQL, Power BI y Python), sueldos locales y formación en vivo."
+h1: "Cómo ser analista de datos en Colombia en 2026: ruta, herramientas y sueldos"
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/co/cursos/analisis-de-datos
@@ -28,7 +28,7 @@ nota_hermes: |
 
 # Curso de Análisis de Datos en Colombia: cómo volverse analista de datos
 
-**Respuesta corta:** el [curso de análisis de datos de ProgramBI en Colombia](https://www.programbi.com/co/cursos/analisis-de-datos) se dicta en vivo por Zoom y, en su nivel básico-intermedio, reúne **SQL Server, Power BI y Python en 60 horas** (20 por herramienta). Las clases son **lunes y miércoles de 17:30 a 19:30, hora de Colombia**, cuenta con **grupos nuevos cada mes** (fecha vigente en la ficha) y su valor es **{precio_local}**. Trae grabaciones de por vida y certificado.
+**Respuesta corta:** el [curso de análisis de datos de ProgramBI en Colombia](https://www.programbi.com/co/cursos/analisis-de-datos) se dicta en vivo por Zoom y, en su nivel básico-intermedio, reúne **SQL Server, Power BI y Python en 60 horas** (20 por herramienta). Las clases son **lunes y miércoles de 17:30 a 19:30, hora de Colombia**, cuenta con **grupos nuevos cada mes** (fecha vigente en la ficha) y su valor es **{precio_local}**. Trae acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿Qué se necesita para ser analista de datos en Colombia?** Saber pedirle datos a una base con SQL, transformarlos en un tablero confiable con Power BI, apoyarte en Python cuando el volumen o el desorden superan a Excel y, sobre todo, poder explicarle el resultado a alguien del negocio. Eso, más un proyecto que puedas mostrar, es lo que filtran los reclutadores.
 
@@ -128,7 +128,7 @@ Según la [ficha del curso para Colombia](https://www.programbi.com/co/cursos/an
 - **60 horas** en el nivel básico-intermedio, en tres módulos de 20 horas: Power BI, SQL Server y Python.
 - Contenido: consultas SQL desde cero, modelado y DAX, análisis exploratorio con Pandas, dashboards y reportes automáticos, ETL con Power Query y conexión a bases de datos, proyecto final con datos reales, con IA como apoyo en cada módulo.
 - **Nivel avanzado** de 60 horas más (automatización, inteligencia de tiempo y modelos).
-- **Grabaciones de por vida** y **certificado** al completar.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado** al completar.
 - Inicio: **inicios mensuales** (revisa la fecha disponible en la ficha). Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
@@ -139,7 +139,7 @@ Según la [ficha del curso para Colombia](https://www.programbi.com/co/cursos/an
 ## Preguntas frecuentes
 
 **¿Cuánto vale el curso de análisis de datos en Colombia?**
-El nivel básico-intermedio de 60 horas tiene un valor de {precio_local}, con grabaciones de por vida y certificado.
+El nivel básico-intermedio de 60 horas tiene un valor de {precio_local}, con acceso al campus virtual con las clases grabadas y el material durante el curso y certificado.
 
 **¿En qué horario son las clases?**
 Lunes y miércoles de 17:30 a 19:30, hora de Colombia, en vivo por Zoom.
@@ -151,7 +151,7 @@ Sí. Está pensado para perfiles administrativos, financieros y comerciales; SQL
 El de Power BI cubre solo tableros y DAX. El de análisis de datos agrega SQL Server y Python para hacer el ciclo completo del dato.
 
 **¿Puedo ver las clases después?**
-Sí. Todas quedan grabadas en el campus con acceso de por vida.
+Sí. Todas quedan grabadas en el campus virtual con el material durante el curso.
 
 **¿Dan certificado?**
 Sí, un certificado digital de ProgramBI al finalizar.

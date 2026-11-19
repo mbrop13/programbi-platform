@@ -5,9 +5,9 @@ pais: mx
 hreflang: es-MX
 curso: claude
 url_curso: https://www.programbi.com/mx/cursos/claude
-title: "Curso de Claude en México online en vivo | ProgramBI"
-meta: "Curso de Claude en México en vivo: 20 h para usar la IA de Anthropic en oficina, Excel y documentos. Clases 16:30 CDMX con inicios mensuales."
-h1: "Curso de Claude en México: aprende a usar la IA de Anthropic en tu chamba diaria"
+title: Cómo usar Claude AI en el trabajo en México | ProgramBI
+meta: "Guía práctica para usar Claude (Anthropic) en México: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+h1: Cómo usar Claude AI para trabajo administrativo en México
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/mx/cursos/claude
@@ -24,7 +24,7 @@ nota_hermes: |
 
 **Respuesta corta:** el [curso de Claude de ProgramBI para México](https://www.programbi.com/mx/cursos/claude) son **20 horas en vivo por Zoom**, en 5 módulos de 4 horas, para usar Claude —el asistente de IA de Anthropic— en el trabajo administrativo: prompts efectivos, Projects, Docs y Slides, Excel y automatización ligera, **sin programar**. Cuenta con **inicios cada mes** (fecha actualizada en la ficha), con clases **lunes y miércoles de 16:30 a 18:30, hora del centro de México**. El precio es **{precio_local}**.
 
-Incluye grabaciones de por vida, certificado digital y un proyecto final con un proceso real de tu trabajo. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Datos según la ficha, revisada el 4 de noviembre de 2026.
+Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y un proyecto final con un proceso real de tu trabajo. El pago es en pesos mexicanos con Mercado Pago México: tarjeta, SPEI u OXXO. Datos según la ficha, revisada el 4 de noviembre de 2026.
 
 **[CTA-TOP]** — Grupos cada mes · lunes y miércoles 16:30 CDMX · «Ver el curso».
 
@@ -126,7 +126,7 @@ Claude no reemplaza a Power BI: ayuda a explorar, limpiar y redactar, mientras P
 - **Días:** lunes y miércoles.
 - **Horario:** 16:30 a 18:30, hora del centro de México. Confirma la hora exacta en la ficha de la cohorte antes de inscribirte.
 - **Duración:** 20 horas en 5 módulos de 4 horas.
-- **Incluye:** grabaciones de por vida, certificado digital y proyecto final.
+- **Incluye:** acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y proyecto final.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI).
 - **Precio:** {precio_local}. Puedes pagar en 3 cuotas sin interés.
 
@@ -150,7 +150,7 @@ Depende del plan y de la política de tu empresa; se revisa en el módulo 1.
 No. Se complementan: Claude explora y redacta; Power BI publica y actualiza reportes.
 
 **¿Qué pasa si falto a una clase?**
-Queda grabada, con acceso de por vida.
+Queda grabada, con acceso al campus virtual y el material durante el curso.
 
 **¿Sirve si mi empresa usa Microsoft 365?**
 Sí. Lo que haces con Claude se exporta a Word, PowerPoint o PDF, así que convive con las herramientas que ya usas en la oficina.

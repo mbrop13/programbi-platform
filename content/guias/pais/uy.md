@@ -120,7 +120,7 @@ Si tenés tiempo y disciplina, podés avanzar solo con la documentación de Micr
 - **20 horas, 8 módulos**, básico-intermedio. Cohortes todos los meses; confirmá el próximo arranque en la ficha del curso.
 - Consultá el arancel vigente en UYU al abrir el temario PDF en el [curso de Power BI para Uruguay](/uy/cursos/power-bi).
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX e iteradores, tabla de métricas con SWITCH (justo lo del selector de moneda) e IA en Power BI.
-- **Grabaciones de por vida** y **certificado**.
+- **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Podés reforzar medidas en el [manual de funciones DAX](/guias/funciones-dax-mas-importantes) o revisar el programa de [Análisis de datos completo](/uy/cursos/analisis-de-datos).
 

@@ -48,10 +48,10 @@ Referentes SaaS: https://www.brevo.com/mailchimp/ (tabla de costo por escenario 
 | Criterio | ProgramBI | IPS DATAX | Fuente |
 |---|---|---|---|
 | Formato | Clases en vivo, cohorte | Cursos grabados (Hotmart) + sesiones grupales mensuales en Premium | ipsdatax.com/cursos/ · ipsdatax.com/lab/ |
-| Power BI | $169.000 por 20 h en vivo | US$197 de por vida (grabado) | ipsdatax.com/cursos/ |
+| Power BI | $169.000 por 20 h en vivo | US$197 en el campus virtual durante el curso (grabado) | ipsdatax.com/cursos/ |
 | Entrada | — (proponer clase gratis / plantilla) | Curso ADD US$27 | ipsdatax.com/cursos/analisis-de-datos/ |
 | Membresía | — | US$59/mes | ipsdatax.com/lab/ |
-- Cuidado: el tono debe ser respetuoso (rival local, comunidad pequeña). Reconocer su catálogo amplio y el acceso de por vida.
+- Cuidado: el tono debe ser respetuoso (rival local, comunidad pequeña). Reconocer su catálogo amplio y el acceso al campus virtual con las clases grabadas y el material durante el curso.
 
 ## 4. Desafío Latam vs ProgramBI
 - URL: /versus/desafio-latam-vs-programbi
