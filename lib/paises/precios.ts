@@ -1,4 +1,11 @@
-import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO } from "@/config/paises";
+import {
+  aplicarPisoChile,
+  getPais,
+  ISO_CHILE,
+  normalizarPais,
+  SLUGS_CURSO,
+  type SlugCurso,
+} from "@/config/paises";
 import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { voseoTitular } from "@/config/textos";
 import { localizarHoras } from "@/lib/paises/horarios";
@@ -91,7 +98,9 @@ export function seleccionarPromocionCurso(
 ): PromocionAplicable | null {
   if (!promotions || promotions.length === 0 || baseAmount <= 0) return null;
   const paisIso = normalizarPais(iso);
-  const decimales = getPais(paisIso).decimales;
+  const pais = getPais(paisIso);
+  if (pais.sinDescuento) return null;
+  const decimales = pais.decimales;
 
   const vigentes = promotions.filter((p) => {
     if (p.is_active === false) return false;
@@ -180,6 +189,20 @@ export function resolverPrecioCursoPais(
       : baseSale;
   let source: OrigenPrecioPais = effectiveBase < baseSale ? "override" : "catalog";
 
+  if (pais.sinDescuento) {
+    return {
+      finalPrice: effectiveBase,
+      basePrice: effectiveBase,
+      listPrice: null,
+      discountPercentage: 0,
+      hasPromoDiscount: false,
+      promoName: null,
+      promoDiscountPercentage: 0,
+      promoId: null,
+      source,
+    };
+  }
+
   const promo = seleccionarPromocionCurso(
     promotions,
     slug,
@@ -191,13 +214,20 @@ export function resolverPrecioCursoPais(
   let finalPrice = effectiveBase;
   if (promo) {
     const candidato = promoPrecioParaPais(promo, effectiveBase, paisIso, pais.decimales);
-    if (candidato < effectiveBase) {
-      finalPrice = candidato;
+    const candidatoConPiso =
+      paisIso === ISO_CHILE
+        ? candidato
+        : aplicarPisoChile(candidato, slug as SlugCurso, paisIso, "vigente");
+    if (candidatoConPiso < effectiveBase) {
+      finalPrice = candidatoConPiso;
       source =
         paisIso === ISO_CHILE && typeof promo.promo_price === "number" && promo.promo_price > 0
           ? "promotion_fixed"
           : "promotion_percentage";
     }
+  }
+  if (paisIso !== ISO_CHILE) {
+    finalPrice = aplicarPisoChile(finalPrice, slug as SlugCurso, paisIso, "vigente");
   }
 
   const catalogList = precioListaPublico(paisIso, slug);

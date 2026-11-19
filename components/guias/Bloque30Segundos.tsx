@@ -14,9 +14,8 @@ import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
  * Bloque «En 30 segundos» que abre cada guía: porcentaje de descuento vigente
- * (salvo Paraguay, donde se consulta por WhatsApp), enlace al desbloqueo de
- * temario y precios, duración, horario local, modalidad y CTAs. Renderizado
- * 100% en servidor (GEO-ready).
+ * (cuando aplica), enlace al desbloqueo de temario y precios, duración,
+ * horario local, modalidad y CTAs. Renderizado 100% en servidor (GEO-ready).
  */
 export default function Bloque30Segundos({
   guia,
@@ -36,7 +35,7 @@ export default function Bloque30Segundos({
   const nombreCurso = esGeneral ? "Cursos de ProgramBI" : curso.nombre;
   const rutaCurso = esGeneral ? rutaLocal(iso, "/cursos") : rutaFichaCurso(iso, guia.course);
   const rutaTemario = esGeneral ? rutaCurso : "#temario-curso";
-  const etiquetaDescuento = esGeneral || iso === "py" ? null : etiquetaDescuentoCurso(iso, guia.course, promotions);
+  const etiquetaDescuento = esGeneral ? null : etiquetaDescuentoCurso(iso, guia.course, promotions);
 
   return (
     <section
@@ -75,7 +74,6 @@ export default function Bloque30Segundos({
               Ver temario y precios (PDF) →
             </Link>
             <span className="mt-0.5 block text-xs text-mute">
-              {iso === "py" && !esGeneral ? "Valor por WhatsApp · " : ""}
               {curso.porNivel ? "por nivel · " : ""}
               {textoCuotas(iso) || "pago único con tarjeta"}
             </span>

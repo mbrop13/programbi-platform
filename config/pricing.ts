@@ -1,4 +1,4 @@
-import { getPais, ISO_CHILE, normalizarPais, type SlugCurso } from "@/config/paises";
+import { aplicarPisoChile, getPais, ISO_CHILE, normalizarPais, type SlugCurso } from "@/config/paises";
 
 /**
  * Fuente única de verdad de precios de venta.
@@ -82,8 +82,8 @@ export function precioChile(slug: string): number | null {
 
 /**
  * Precio de venta en la moneda del país.
- * Chile: tabla CLP. Resto: tabla fija de `config/paises.ts`.
- * `null` significa «sin precio público aprobado» (hoy solo Paraguay):
+ * Chile: tabla CLP. Resto: tabla fija de `config/paises.ts` con piso comercial respecto de Chile.
+ * `null` significa «sin precio público aprobado»:
  * la página debe mostrar «Consulta el valor por WhatsApp» y el JSON-LD no
  * debe declarar `Offer`.
  */
@@ -93,7 +93,8 @@ export function precioPublico(iso: string | null | undefined, slug: string): num
   const pais = getPais(paisIso);
   if (pais.precios === "catalogo") return null;
   const valor = pais.precios[slug as SlugCurso];
-  return typeof valor === "number" && valor > 0 ? valor : null;
+  if (typeof valor !== "number" || valor <= 0) return null;
+  return aplicarPisoChile(valor, slug as SlugCurso, pais.iso, "vigente");
 }
 
 /** Precio de lista (tachado) en la moneda del país, si existe y es mayor. */
@@ -107,10 +108,11 @@ export function precioListaPublico(iso: string | null | undefined, slug: string)
     return Number.isFinite(lista) && lista > cobro ? lista : null;
   }
   const pais = getPais(paisIso);
-  if (pais.listas === "catalogo") return null;
-  const lista = pais.listas[slug as SlugCurso];
-  if (typeof lista !== "number" || lista <= cobro) return null;
-  return lista;
+  if (pais.sinDescuento || pais.listas === "catalogo") return null;
+  const listaBase = pais.listas[slug as SlugCurso];
+  if (typeof listaBase !== "number" || listaBase <= 0) return null;
+  const lista = aplicarPisoChile(listaBase, slug as SlugCurso, pais.iso, "lista");
+  return lista > cobro ? lista : null;
 }
 
 /** Moneda en que se publica el precio de ese mercado. */

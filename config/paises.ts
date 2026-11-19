@@ -24,6 +24,77 @@ export const SLUGS_CURSO = [
 
 export type SlugCurso = (typeof SLUGS_CURSO)[number];
 export type PreciosCurso = Record<SlugCurso, number | null>;
+export type TramoPrecio = 0.7 | 0.75 | 0.8 | 0.85;
+export type TipoCursoPiso = "20h" | "60h" | "mercado-financiero";
+
+/**
+ * Tabla única de pisos en USD por tramo respecto de la referencia de Chile
+ * a tipo de cambio piso 1 USD = 1.000 CLP:
+ * - 20h Chile: lista $249.000 (249 USD) / vigente $169.000 (169 USD)
+ * - 60h Chile: lista $747.000 (747 USD) / vigente $338.000 (338 USD)
+ * - Mercado Financiero Chile: lista $514.000 (514 USD) / vigente $349.000 (349 USD)
+ */
+export const PISOS_USD_POR_TRAMO: Record<
+  TramoPrecio,
+  Record<TipoCursoPiso, { lista: number; vigente: number }>
+> = {
+  0.7: {
+    "20h": { lista: 175, vigente: 119 },
+    "60h": { lista: 523, vigente: 237 },
+    "mercado-financiero": { lista: 360, vigente: 245 },
+  },
+  0.75: {
+    "20h": { lista: 187, vigente: 127 },
+    "60h": { lista: 561, vigente: 254 },
+    "mercado-financiero": { lista: 386, vigente: 262 },
+  },
+  0.8: {
+    "20h": { lista: 199, vigente: 135 },
+    "60h": { lista: 598, vigente: 270 },
+    "mercado-financiero": { lista: 412, vigente: 280 },
+  },
+  0.85: {
+    "20h": { lista: 212, vigente: 144 },
+    "60h": { lista: 635, vigente: 288 },
+    "mercado-financiero": { lista: 437, vigente: 297 },
+  },
+};
+
+/**
+ * Tasas de cambio fijas desde 1 USD a moneda local para calcular el piso
+ * comercial y el paso de redondeo hacia arriba (`Math.ceil`).
+ */
+export const TASAS_CAMBIO_PISO_USD: Record<string, { tasa: number; paso: number }> = {
+  USD: { tasa: 1, paso: 1 },
+  ARS: { tasa: 1560, paso: 1000 },
+  COP: { tasa: 3350, paso: 1000 },
+  MXN: { tasa: 19, paso: 10 },
+  PEN: { tasa: 3.45, paso: 1 },
+  UYU: { tasa: 41, paso: 1 },
+};
+
+export function tipoCursoDeSlug(slug: string): TipoCursoPiso {
+  if (slug === "60h" || slug === "analisis-de-datos" || slug === "analitica-mineria") {
+    return "60h";
+  }
+  if (slug === "mercado-financiero") {
+    return "mercado-financiero";
+  }
+  return "20h";
+}
+
+export function pisoEnMoneda(
+  tramo: TramoPrecio,
+  tipoCurso: SlugCurso | TipoCursoPiso,
+  moneda: string,
+  clase: "vigente" | "lista" = "vigente"
+): number {
+  const fx = TASAS_CAMBIO_PISO_USD[moneda.toUpperCase()];
+  if (!fx) return 0;
+  const tipo = tipoCursoDeSlug(tipoCurso);
+  const usd = PISOS_USD_POR_TRAMO[tramo][tipo][clase];
+  return Math.ceil((usd * fx.tasa) / fx.paso) * fx.paso;
+}
 
 function preciosVacios(): PreciosCurso {
   return Object.fromEntries(SLUGS_CURSO.map((slug) => [slug, null])) as PreciosCurso;
@@ -111,11 +182,10 @@ export const PRECIOS_ARS: PreciosCurso = {
 };
 
 /**
- * Dólares de Estados Unidos. PROVISIONAL hasta que Manu apruebe el monto.
- * Sale de la recomendación de `docs/benchmark-precios-eeuu-2026-11-16.md`:
- * USD 249 el curso estándar de 20 horas y USD 499 Análisis de datos (60 horas).
+ * Dólares de Estados Unidos. Sin descuento ni precio tachado (lista = vigente):
+ * USD 249 el curso estándar de 20 horas y USD 498 Análisis de datos (60 horas).
  */
-export const PRECIOS_USD_EEUU: PreciosCurso = precios(249, 499);
+export const PRECIOS_USD_EEUU: PreciosCurso = precios(249, 498);
 
 export type PagoPais = "catalogo" | "mp" | "usd-chile" | "clp-chile";
 
@@ -140,6 +210,10 @@ export type Pais = {
   precios: PreciosCurso | "catalogo";
   /** Precio de lista. Chile lo arma el catálogo; no es el precio comercial efectivo. */
   listas: PreciosCurso | "catalogo";
+  /** Tramo de piso comercial respecto de Chile (70%, 75%, 80% o 85% a 1 USD = 1.000 CLP). */
+  tramoPrecio?: TramoPrecio;
+  /** El mercado publica precio único sin tachado ni % de descuento (ej. EE.UU. / FTC). */
+  sinDescuento?: boolean;
   dispositivo: "computador" | "computadora";
   /** Voseo solo en titulares y botones. */
   voseo: boolean;
@@ -236,6 +310,7 @@ export const PAISES: Pais[] = [
     pago: "mp",
     precios: PRECIOS_ARS,
     listas: PRECIOS_LISTA_ARS,
+    tramoPrecio: 0.8,
     dispositivo: "computadora",
     voseo: true,
     indexable: true,
@@ -254,6 +329,7 @@ export const PAISES: Pais[] = [
     pago: "usd-chile",
     precios: precios(139, 279),
     listas: listas(205),
+    tramoPrecio: 0.7,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -272,6 +348,7 @@ export const PAISES: Pais[] = [
     pago: "mp",
     precios: precios(399900, 799900),
     listas: listas(590000),
+    tramoPrecio: 0.75,
     dispositivo: "computadora",
     voseo: false,
     indexable: true,
@@ -291,6 +368,7 @@ export const PAISES: Pais[] = [
     // Importes fijos para Costa Rica; no se derivan del precio chileno.
     precios: precios(169, 339),
     listas: listas(249),
+    tramoPrecio: 0.85,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -309,6 +387,7 @@ export const PAISES: Pais[] = [
     pago: "usd-chile",
     precios: precios(149, 299),
     listas: listas(220),
+    tramoPrecio: 0.75,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -327,6 +406,7 @@ export const PAISES: Pais[] = [
     pago: "usd-chile",
     precios: precios(149, 299),
     listas: listas(220),
+    tramoPrecio: 0.75,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -336,7 +416,7 @@ export const PAISES: Pais[] = [
   },
   {
     // Estados Unidos: hispanohablantes que viven y trabajan allá (Miami primero).
-    // Precio provisional (249/499) y cobro en CLP fallback: noindex hasta tener pasarela y copy propio.
+    // Precio sin descuento (249/498) y cobro en CLP fallback: noindex hasta tener pasarela y copy propio.
     iso: "us",
     nombre: "Estados Unidos",
     idioma: "es-US",
@@ -353,6 +433,7 @@ export const PAISES: Pais[] = [
     // Sin precio tachado: en EE.UU. el precio «normal» tiene que haberse
     // ofrecido de verdad (reglas de la FTC). Se publica solo el precio final.
     listas: preciosVacios(),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -374,6 +455,7 @@ export const PAISES: Pais[] = [
     pago: "usd-chile",
     precios: precios(149, 299),
     listas: listas(220),
+    tramoPrecio: 0.75,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -392,6 +474,7 @@ export const PAISES: Pais[] = [
     pago: "usd-chile",
     precios: precios(139, 279),
     listas: listas(205),
+    tramoPrecio: 0.7,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -410,6 +493,7 @@ export const PAISES: Pais[] = [
     pago: "mp",
     precios: precios(2490, 4990),
     listas: listas(3660),
+    tramoPrecio: 0.8,
     dispositivo: "computadora",
     voseo: false,
     indexable: true,
@@ -428,6 +512,7 @@ export const PAISES: Pais[] = [
     pago: "usd-chile",
     precios: precios(129, 259),
     listas: listas(190),
+    tramoPrecio: 0.7,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -447,6 +532,7 @@ export const PAISES: Pais[] = [
     // Mismo precio que Costa Rica: USD 149 y análisis 299.
     precios: precios(169, 339),
     listas: listas(249),
+    tramoPrecio: 0.85,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -463,10 +549,10 @@ export const PAISES: Pais[] = [
     locale: "es-PY",
     decimales: 2,
     pago: "usd-chile",
-    // Precio en USD pendiente de aprobación de Manu. Sin monto no se muestra
-    // precio, no se declara Offer y la ficha invita a consultar por WhatsApp.
-    precios: preciosVacios(),
-    listas: preciosVacios(),
+    // Tramo piso 75% de Chile en USD (187 / 127 en 20h, 561 / 254 en 60h).
+    precios: precios(127, 254),
+    listas: listas(187),
+    tramoPrecio: 0.75,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -485,6 +571,7 @@ export const PAISES: Pais[] = [
     pago: "mp",
     precios: precios(419, 839),
     listas: listas(620),
+    tramoPrecio: 0.75,
     dispositivo: "computadora",
     voseo: false,
     indexable: true,
@@ -503,6 +590,7 @@ export const PAISES: Pais[] = [
     pago: "usd-chile",
     precios: precios(159, 319),
     listas: listas(235),
+    tramoPrecio: 0.8,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -521,6 +609,7 @@ export const PAISES: Pais[] = [
     pago: "mp",
     precios: precios(5990, 11990),
     listas: listas(8790),
+    tramoPrecio: 0.85,
     dispositivo: "computadora",
     voseo: true,
     indexable: true,
@@ -539,6 +628,7 @@ export const PAISES: Pais[] = [
     pago: "usd-chile",
     precios: precios(129, 259),
     listas: listas(190),
+    tramoPrecio: 0.7,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -558,6 +648,34 @@ export function esIsoPais(iso: string | null | undefined): iso is string {
 
 export function getPais(iso: string | null | undefined): Pais {
   return POR_ISO.get(iso || "") || PAISES[0];
+}
+
+/**
+ * Aplica el piso comercial respecto de Chile (70%–85% a 1 USD = 1.000 CLP).
+ * Acepta el ISO del país (ej. "ar", "sv", "us", "cl") o un código de moneda
+ * junto con `tramoExplicito`. Si es Chile (`cl`), un mercado `sinDescuento`
+ * (`/us`) o no tiene `tramoPrecio`, devuelve `precio` sin cambios.
+ */
+export function aplicarPisoChile(
+  precio: number,
+  tipoCurso: SlugCurso | TipoCursoPiso,
+  monedaOrIso: string,
+  clase: "vigente" | "lista" = "vigente",
+  tramoExplicito?: TramoPrecio
+): number {
+  const isoCandidate = monedaOrIso.toLowerCase();
+  if (esIsoPais(isoCandidate)) {
+    const pais = getPais(isoCandidate);
+    if (pais.iso === ISO_CHILE || pais.sinDescuento) return precio;
+    const tramo = tramoExplicito ?? pais.tramoPrecio;
+    if (!tramo) return precio;
+    const piso = pisoEnMoneda(tramo, tipoCurso, pais.moneda, clase);
+    return piso > 0 ? Math.max(precio, piso) : precio;
+  }
+  const moneda = monedaOrIso.toUpperCase();
+  if (moneda === "CLP" || !tramoExplicito) return precio;
+  const piso = pisoEnMoneda(tramoExplicito, tipoCurso, moneda, clase);
+  return piso > 0 ? Math.max(precio, piso) : precio;
 }
 
 /** Países con carpeta. Chile no está. */

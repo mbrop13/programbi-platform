@@ -150,7 +150,7 @@ function tablaPrecios(iso: string): FaqContenido["precios"] {
       actual: pais.iso === iso,
     })),
     nota:
-      `El arancel vigente de cada curso${textoCuotas(iso) ? `, los descuentos y las ${textoCuotas(iso)}` : " y los descuentos"} se descargan en el PDF de temario y precios de la ficha del curso. En Paraguay el PDF se pide por WhatsApp porque todavía no hay un precio público aprobado.`,
+      `El arancel vigente de cada curso${textoCuotas(iso) ? `, los descuentos y las ${textoCuotas(iso)}` : " y los descuentos"} se descargan en el PDF de temario y precios de la ficha del curso.`,
   };
 }
 
@@ -187,10 +187,7 @@ function tablaPagos(): FaqContenido["pagos"] {
     filas: PAISES_TABLA.map((pais) => ({
       iso: pais.iso,
       pais: pais.nombre,
-      medios:
-        pais.iso === "py"
-          ? "Se confirman por WhatsApp"
-          : listaNatural(pais.mediosPago),
+      medios: listaNatural(pais.mediosPago),
     })),
     nota:
       `En todos los países el curso se puede pagar en ${CUOTAS}. Si pagas con tarjeta emitida en el exterior, el cargo final lo define tu banco.`,
@@ -396,7 +393,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "moneda-local",
           pregunta: "¿Los precios están en moneda local?",
           respuesta:
-            "Sí: cada país tiene su precio publicado en su moneda. La tabla de esta página muestra Chile en pesos chilenos (CLP), Argentina en pesos argentinos (ARS), México en pesos mexicanos (MXN), Colombia en pesos colombianos (COP), Perú en soles (PEN) y Uruguay en pesos uruguayos (UYU); Paraguay se consulta por WhatsApp.",
+            "Sí: cada país tiene su precio publicado en su moneda. La tabla de esta página muestra Chile en pesos chilenos (CLP), Argentina en pesos argentinos (ARS), México en pesos mexicanos (MXN), Colombia en pesos colombianos (COP), Perú en soles (PEN), Uruguay en pesos uruguayos (UYU) y los demás mercados (incluido Paraguay) en dólares (USD).",
         },
         {
           id: "precio-que-veo",
@@ -442,10 +439,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
         {
           id: "formas-de-pago",
           pregunta: "¿Qué medios de pago puedo usar?",
-          respuesta:
-            iso === "py"
-              ? `En Paraguay los medios de pago se confirman por WhatsApp, porque el precio todavía no está publicado. El curso se puede pagar en ${CUOTAS}.`
-              : `En ${nombre} puedes pagar con ${listaNatural(pais.mediosPago)}.`,
+          respuesta: `En ${nombre} puedes pagar con ${listaNatural(pais.mediosPago)}.`,
         },
         {
           id: "pagar-desde-otro-pais",

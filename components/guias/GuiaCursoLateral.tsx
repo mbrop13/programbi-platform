@@ -15,7 +15,7 @@ import { etiquetaDescuentoCurso, type PromocionAplicable } from "@/lib/paises/pr
  * ancho; `GuiaPage` la oculta bajo 1360 px).
  *
  * Gate PDF: nunca muestra montos. Solo el porcentaje de descuento vigente
- * (salvo Paraguay, donde el valor se consulta por WhatsApp).
+ * cuando el país y el curso lo tienen publicado.
  */
 export default function GuiaCursoLateral({
   iso,
@@ -36,7 +36,7 @@ export default function GuiaCursoLateral({
   const lugar = iso === ISO_CHILE ? "Chile" : getPais(iso).nombre;
   const horaLocal = `de ${horario.inicio} a ${horario.fin}, hora de ${lugar}`;
   const rutaCurso = rutaFichaCurso(iso, course);
-  const etiquetaDescuento = iso === "py" ? null : etiquetaDescuentoCurso(iso, course, promotions);
+  const etiquetaDescuento = etiquetaDescuentoCurso(iso, course, promotions);
 
   return (
     <aside

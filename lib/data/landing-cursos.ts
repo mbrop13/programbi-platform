@@ -198,7 +198,7 @@ const SEO_PAIS: Record<string, Record<string, LandingCursoSeo>> = {
       h1: "Curso SQL online en vivo en Paraguay",
       seoTitle: "Curso SQL online en vivo en Paraguay | ProgramBI",
       seoDescription:
-        "Curso SQL online en vivo para Paraguay: JOINs, GROUP BY, vistas y procedimientos sobre SQL Server. Fechas y valor se consultan por WhatsApp.",
+        "Curso SQL online en vivo para Paraguay: JOINs, GROUP BY, vistas y procedimientos sobre SQL Server, en horario local y con certificado.",
       kicker: "Curso SQL online · Paraguay",
     },
   },
@@ -242,7 +242,7 @@ const SEO_PAIS: Record<string, Record<string, LandingCursoSeo>> = {
       h1: "Curso Python para datos online en vivo en Paraguay",
       seoTitle: "Curso Python para datos online en Paraguay | ProgramBI",
       seoDescription:
-        "Curso Python para datos en vivo en Paraguay: fundamentos, Pandas, groupby, merge y visualización. Fechas y valor por WhatsApp.",
+        "Curso Python para datos en vivo en Paraguay: fundamentos, Pandas, groupby, merge y visualización, en horario local y con certificado.",
       kicker: "Curso Python para datos · Paraguay",
     },
   },
