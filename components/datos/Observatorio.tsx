@@ -9,7 +9,6 @@ import { breadcrumbs, dataset, faqSchema, metaObservatorio, MIGAS_DATOS } from "
 import { diferencia, lecturaRegional, movimiento, otrasTasas, resumenTerritorio } from "@/lib/datos/textos";
 import { DatosEstructurados, Descargas, Fuente, Metodologia, Migas, MiniSerie, Preguntas, preguntasObservatorio, TablaHistorica } from "./ElementosDatos";
 import { VistaDatos } from "./AccionesDatos";
-import { AlertasDesempleo } from "./AlertasDesempleo";
 import { DesglosesDesempleo } from "./DesglosesDesempleo";
 import { SeguroCesantia } from "./SeguroCesantia";
 import { ExploradorDesempleo } from "./ExploradorDesempleo";
@@ -167,7 +166,6 @@ export function Observatorio({ slug }: { slug: string }) {
       <DesglosesDesempleo territorio={slug} nombre={nombre} />
       {!region && <SeguroCesantia />}
       <Descargas slug={slug} nombre={nombre} />
-      {!region && <AlertasDesempleo />}
       <Metodologia nombre={nombre} slug={slug} actual={actual} />
       <Preguntas preguntas={preguntas} />
       <aside className={estilos.masDatos} aria-labelledby="titulo-mas-datos">

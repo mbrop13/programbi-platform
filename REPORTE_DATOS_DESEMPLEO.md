@@ -64,13 +64,7 @@ Fuentes oficiales [Ficha estadística del seguro](https://www.spensiones.cl/port
 
 ### Alertas por correo
 
-El formulario pide consentimiento, envía confirmación con enlace de 48 horas y permite darse de baja. La confirmación y la baja son acciones explícitas que hacen cambios solo al enviar su formulario. La base guarda los suscriptores y el estado de los envíos con acceso exclusivo al backend. El workflow de entrega comprueba primero la edición que está disponible públicamente en ProgramBI. La primera ejecución registra la edición de partida y los envíos se reservan por edición y suscripción para controlar duplicados.
-
-Un rechazo definitivo del destinatario queda registrado como descartado para esa edición. Los rechazos SMTP que admiten reintentos liberan la reserva. Si la respuesta es ambigua, la reserva se conserva para evitar duplicados. Cuando aparece una edición posterior, el job deja constancia de que reemplaza las ediciones anteriores que quedaron abiertas.
-
-Se aplicaron las migraciones en PostgreSQL en memoria. Se probaron los permisos de `anon` y `authenticated`, las acciones con Supabase JS y un endpoint HTTP local, la confirmación, el vencimiento, la baja, la eliminación en cascada y el límite de solicitudes. Los casos de despacho se comprobaron con dobles de almacenamiento y correo. [PGlite](https://pglite.dev/docs/).
-
-Para activar el envío se deben aplicar en orden las migraciones `20261119000100_datos_alertas_desempleo.sql` y `20261119000200_datos_alertas_resultados.sql`, habilitar las variables de Supabase y Amazon SES que declara el workflow y ejecutar la inicialización después del despliegue. La prueba con destinatarios reales queda para ese entorno.
+Desactivadas y retiradas por decisión de producto para esta primera entrega pública (se dejan únicamente las páginas de datos y descargas estáticas sin envíos por correo ni tablas/migraciones pendientes en Supabase).
 
 ### Revisiones del INE
 
@@ -90,7 +84,6 @@ Lint dirigido y TypeScript de producción aprobados. Se hizo un build después d
 | `/datos/desempleo/[region]` | ● SSG, 16 regiones |
 | `/datos/desempleo/embed/[territorio]` | ● SSG, 17 tarjetas |
 | `/datos/desempleo/og/[territorio]` | ● SSG, 35 PNG |
-| `/datos/desempleo/alertas/gestionar` | ○ Estática, noindex |
 
 `curl -I` devolvió `x-nextjs-cache: HIT` en la tarjeta comparativa. Las imágenes tienen `s-maxage=31536000, stale-while-revalidate=86400`. El proxy general de ProgramBI mantiene su comportamiento previo. Queda la medición de CDN sobre un Preview de Vercel.
 
@@ -182,7 +175,6 @@ La prueba diagnóstica de la página nacional sirvió el mismo HTML bajo tres va
 ### Cierre de publicación
 
 - Probar el caché de Vercel en Preview con una segunda solicitud y medir Core Web Vitals de campo después del despliegue.
-- Aplicar las dos migraciones de Supabase y configurar el flujo de Amazon SES para comprobar una alta, confirmación y baja en el entorno de despliegue.
 - Revisar el primer PR automático de cada fuente. El contraste BCCh y el archivo PBIX quedan como opcionales.
 
-VEREDICTO: AMARILLO. Las tres fases y el SEO están integrados y comprobados en local. El LCP de desempleo sigue sobre el objetivo de 1,8 s. Quedan la medición en Vercel y la activación de las alertas reales.
+VEREDICTO: AMARILLO. Todas las páginas estáticas de desempleo, capacitación y carreras están integradas y comprobadas en local (sin alertas de correo). El LCP de desempleo sigue sobre el objetivo de 1,8 s y queda la medición de campo en Vercel.
