@@ -38,109 +38,109 @@
     },
     {
       "source": "/curso_power_bi",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/power-bi",
       "statusCode": 301
     },
     {
       "source": "/curso_power_bi/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/power-bi",
       "statusCode": 301
     },
     {
       "source": "/curso-de-power-bi",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/power-bi",
       "statusCode": 301
     },
     {
       "source": "/curso-de-power-bi/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/power-bi",
       "statusCode": 301
     },
     {
       "source": "/curso-power-bi",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/power-bi",
       "statusCode": 301
     },
     {
       "source": "/curso-power-bi/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/power-bi",
       "statusCode": 301
     },
     {
       "source": "/PYTHON",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/python",
       "statusCode": 301
     },
     {
       "source": "/PYTHON/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/python",
       "statusCode": 301
     },
     {
       "source": "/python",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/python",
       "statusCode": 301
     },
     {
       "source": "/python/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/python",
       "statusCode": 301
     },
     {
       "source": "/SQL",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/sql-server",
       "statusCode": 301
     },
     {
       "source": "/SQL/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/sql-server",
       "statusCode": 301
     },
     {
       "source": "/sql",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/sql-server",
       "statusCode": 301
     },
     {
       "source": "/sql/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos/sql-server",
       "statusCode": 301
     },
     {
       "source": "/contacto",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/empresas#contacto",
       "statusCode": 301
     },
     {
       "source": "/contacto/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/empresas#contacto",
       "statusCode": 301
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/",
       "statusCode": 301
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "capacitaciones.programbi.cl" }],
+      "has": [{ "type": "host", "value": "(www\\.)?capacitaciones\\.programbi\\.cl" }],
       "destination": "https://www.programbi.com/cursos",
       "statusCode": 301
     },
