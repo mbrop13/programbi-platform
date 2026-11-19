@@ -1,0 +1,53 @@
+name: Actualizar datos de desempleo
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 13 27-31,1-3 * *'
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Descargar, validar y generar
+        id: datos
+        env:
+          BCCH_API_TOKEN: ${{ secrets.BCCH_API_TOKEN }}
+          DATOS_SUMMARY_PATH: datos-desempleo-resumen.md
+        run: |
+          set -o pipefail
+          node scripts/datos/update-desempleo.mjs 2>&1 | tee datos-desempleo-log.txt
+      - name: Obtener versión
+        if: success() && hashFiles('datos-desempleo-resumen.md') != ''
+        id: version
+        run: echo "version=$(node -p "require('./data/desempleo/meta.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Crear pull request para revisión
+        if: success() && hashFiles('datos-desempleo-resumen.md') != ''
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: datos/desempleo-${{ steps.version.outputs.version }}
+          delete-branch: true
+          title: 'Actualizar observatorio de desempleo INE'
+          commit-message: 'Actualizar datos de desempleo INE'
+          body-path: datos-desempleo-resumen.md
+          add-paths: |
+            data/desempleo/*.json
+            data/desempleo/regiones/*.json
+            public/datos/desempleo/**
+      - name: Informar fallo de validación
+        if: failure() && steps.datos.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { printf 'Falló la actualización automática. Revisar la ejecución: %s/%s/actions/runs/%s\n\n```\n' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"; tail -n 60 datos-desempleo-log.txt; printf '\n```\n'; } > /tmp/datos-issue.md
+          gh issue create --title 'Falló la actualización de datos de desempleo' --body-file /tmp/datos-issue.md

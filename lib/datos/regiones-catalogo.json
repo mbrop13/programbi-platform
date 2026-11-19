@@ -1,0 +1,130 @@
+[
+  {
+    "slug": "arica-y-parinacota",
+    "nombre": "Arica y Parinacota",
+    "nombreOficial": "Región de Arica y Parinacota",
+    "hoja": "AP",
+    "iso": "CL-AP",
+    "bcch": "25"
+  },
+  {
+    "slug": "tarapaca",
+    "nombre": "Tarapacá",
+    "nombreOficial": "Región de Tarapacá",
+    "hoja": "TA",
+    "iso": "CL-TA",
+    "bcch": "11"
+  },
+  {
+    "slug": "antofagasta",
+    "nombre": "Antofagasta",
+    "nombreOficial": "Región de Antofagasta",
+    "hoja": "AN",
+    "iso": "CL-AN",
+    "bcch": "12"
+  },
+  {
+    "slug": "atacama",
+    "nombre": "Atacama",
+    "nombreOficial": "Región de Atacama",
+    "hoja": "AT",
+    "iso": "CL-AT",
+    "bcch": "13"
+  },
+  {
+    "slug": "coquimbo",
+    "nombre": "Coquimbo",
+    "nombreOficial": "Región de Coquimbo",
+    "hoja": "CO",
+    "iso": "CL-CO",
+    "bcch": "14"
+  },
+  {
+    "slug": "valparaiso",
+    "nombre": "Valparaíso",
+    "nombreOficial": "Región de Valparaíso",
+    "hoja": "VA",
+    "iso": "CL-VA",
+    "bcch": "15"
+  },
+  {
+    "slug": "metropolitana",
+    "nombre": "Región Metropolitana",
+    "nombreOficial": "Región Metropolitana de Santiago",
+    "hoja": "RM",
+    "iso": "CL-RM",
+    "bcch": "23"
+  },
+  {
+    "slug": "ohiggins",
+    "nombre": "O’Higgins",
+    "nombreOficial": "Región del Libertador General Bernardo O’Higgins",
+    "hoja": "LI",
+    "iso": "CL-LI",
+    "bcch": "16"
+  },
+  {
+    "slug": "maule",
+    "nombre": "Maule",
+    "nombreOficial": "Región del Maule",
+    "hoja": "ML",
+    "iso": "CL-ML",
+    "bcch": "17"
+  },
+  {
+    "slug": "nuble",
+    "nombre": "Ñuble",
+    "nombreOficial": "Región de Ñuble",
+    "hoja": "NB",
+    "iso": "CL-NB",
+    "bcch": "26"
+  },
+  {
+    "slug": "biobio",
+    "nombre": "Biobío",
+    "nombreOficial": "Región del Biobío",
+    "hoja": "BI",
+    "iso": "CL-BI",
+    "bcch": "18N"
+  },
+  {
+    "slug": "araucania",
+    "nombre": "La Araucanía",
+    "nombreOficial": "Región de La Araucanía",
+    "hoja": "AR",
+    "iso": "CL-AR",
+    "bcch": "19"
+  },
+  {
+    "slug": "los-rios",
+    "nombre": "Los Ríos",
+    "nombreOficial": "Región de Los Ríos",
+    "hoja": "LR",
+    "iso": "CL-LR",
+    "bcch": "24"
+  },
+  {
+    "slug": "los-lagos",
+    "nombre": "Los Lagos",
+    "nombreOficial": "Región de Los Lagos",
+    "hoja": "LL",
+    "iso": "CL-LL",
+    "bcch": "20"
+  },
+  {
+    "slug": "aysen",
+    "nombre": "Aysén",
+    "nombreOficial": "Región de Aysén del General Carlos Ibáñez del Campo",
+    "hoja": "AI",
+    "iso": "CL-AI",
+    "bcch": "21"
+  },
+  {
+    "slug": "magallanes",
+    "nombre": "Magallanes",
+    "nombreOficial": "Región de Magallanes y de la Antártica Chilena",
+    "hoja": "MA",
+    "iso": "CL-MA",
+    "bcch": "22"
+  }
+]

@@ -1,0 +1,299 @@
+.contenedor {
+  border: 1px solid #dce7ee;
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+  color: #171716;
+}
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  border-bottom: 1px solid #e6eef3;
+}
+.encabezado p,
+.rankingHeader p {
+  margin: 0.35rem 0 0;
+  color: #5b6e7c;
+  font-size: 0.84rem;
+}
+.etiqueta {
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #1469ad;
+}
+.selector {
+  display: flex;
+  flex-shrink: 0;
+  padding: 3px;
+  border: 1px solid #d9e6ee;
+  border-radius: 999px;
+  background: #f5f9fb;
+}
+.selector button {
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #466277;
+  cursor: pointer;
+}
+.selector button[aria-pressed="true"] {
+  background: #1469ad;
+  color: #fff;
+}
+.columnas {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.8fr) minmax(0, 1.4fr);
+}
+.geografia {
+  background: #f4f9fc;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #e3edf3;
+}
+.mapa {
+  width: auto;
+  height: 580px;
+  max-width: 100%;
+  overflow: visible;
+}
+.mapa a {
+  cursor: pointer;
+}
+.mapa a:focus-visible {
+  outline: 3px solid #1469ad;
+  outline-offset: 3px;
+}
+.mapa a:hover path:first-of-type {
+  stroke: #112f48;
+  stroke-width: 4;
+}
+.leyenda {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.7rem;
+  color: #526b7d;
+  margin-top: 1rem;
+}
+.gradiente {
+  width: 90px;
+  height: 7px;
+  border-radius: 9px;
+  background: linear-gradient(90deg, #dcecf5, #174e83);
+}
+.nota {
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: #526b7d;
+  margin: 1rem 0 0;
+}
+.ranking {
+  padding: 1.5rem 1.75rem;
+}
+.rankingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.3rem;
+}
+.rankingHeader h3 {
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.rankingHeader label {
+  font-size: 0.7rem;
+  color: #526b7d;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.rankingHeader select {
+  max-width: 125px;
+  border: 1px solid #d6e4ec;
+  border-radius: 8px;
+  background: white;
+  padding: 0.45rem;
+  font: inherit;
+  color: #183e59;
+}
+.cabecera,
+.lista li a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 60px 75px;
+  gap: 0.4rem;
+  align-items: center;
+}
+.cabecera {
+  font-size: 0.67rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #526b7d;
+  padding: 0 0 0.55rem;
+  border-bottom: 1px solid #e6eef3;
+}
+.cabecera span:not(:first-child) {
+  text-align: right;
+}
+.lista,
+.tiles {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.lista li a {
+  color: inherit;
+  text-decoration: none;
+  padding: 0.66rem 0;
+  border-bottom: 1px solid #edf2f5;
+  font-size: 0.79rem;
+}
+.lista li a:hover .nombre {
+  color: #1469ad;
+}
+.lista li a:focus-visible,
+.tiles a:focus-visible,
+.selector button:focus-visible,
+.rankingHeader select:focus-visible {
+  outline: 3px solid #1469ad;
+  outline-offset: 2px;
+}
+.lista strong,
+.variacion {
+  text-align: right;
+  white-space: nowrap;
+}
+.variacion {
+  font-size: 0.73rem;
+  color: #5b6e7c;
+}
+.nombre {
+  display: flex;
+  gap: 0.65rem;
+  align-items: start;
+  font-weight: 650;
+}
+.nombre > span:last-child {
+  flex: 1;
+  min-width: 0;
+}
+.indice {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #526b7d;
+  font-variant-numeric: tabular-nums;
+}
+.barra {
+  display: block;
+  background: #edf3f7;
+  height: 4px;
+  border-radius: 4px;
+  margin-top: 0.4rem;
+  overflow: hidden;
+}
+.barra span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+}
+.tiles {
+  width: 100%;
+  display: grid;
+  gap: 3px;
+}
+.tiles a {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.3rem;
+  text-decoration: none;
+  color: #102e43;
+  padding: 0.42rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.69rem;
+}
+.tiles strong {
+  white-space: nowrap;
+}
+.tiles sup,
+.nombre sup {
+  margin-left: 2px;
+}
+@media (max-width: 640px) {
+  .encabezado {
+    padding: 1.2rem;
+    align-items: flex-start;
+  }
+  .encabezado p {
+    font-size: 0.75rem;
+  }
+  .columnas {
+    grid-template-columns: minmax(110px, 0.72fr) minmax(0, 1.28fr);
+  }
+  .geografia {
+    padding: 0.75rem 0.5rem;
+    justify-content: flex-start;
+  }
+  .mapa {
+    width: 100%;
+    height: auto;
+    max-height: 650px;
+  }
+  .ranking {
+    padding: 1rem 0.65rem;
+  }
+  .rankingHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .rankingHeader label {
+    flex-wrap: wrap;
+  }
+  .cabecera,
+  .lista li a {
+    grid-template-columns: minmax(0, 1fr) 48px;
+    gap: 0.25rem;
+  }
+  .cabecera span:last-child {
+    display: none;
+  }
+  .lista li a {
+    font-size: 0.76rem;
+  }
+  .variacion {
+    grid-column: 2;
+    font-size: 0.7rem;
+  }
+  .indice {
+    display: none;
+  }
+  .nombre {
+    gap: 0.2rem;
+  }
+  .leyenda {
+    font-size: 0.68rem;
+    gap: 0.25rem;
+  }
+  .gradiente {
+    width: 35px;
+  }
+  .nota {
+    font-size: 0.7rem;
+  }
+  .tiles a {
+    font-size: 0.72rem;
+    padding: 0.45rem 0.35rem;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+}

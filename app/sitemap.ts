@@ -24,6 +24,7 @@ import { guiasDePais, alternatesDeGuia } from "@/lib/guias";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
+import { METADATOS, rutasObservatorio } from "@/lib/datos/desempleo";
 
 /**
  * Sitemap único del sitio.
@@ -183,6 +184,11 @@ function prioridadPais(base: number, iso: string): number {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: EntradaPosible[] = [
     entrada("/", 1, "weekly"),
+    ...rutasObservatorio().map((path) => ({
+      url: `${SITE_URL}${path}`,
+      lastModified: METADATOS.fetched_at,
+      changeFrequency: "monthly" as const,
+    })),
     entrada("/empresas", 0.95, "weekly"),
     // Herramientas B2B de autoservicio (diagnóstico de madurez y calculadora de
     // ahorro): páginas propias e indexables, solo en Chile (sin carpeta de país).

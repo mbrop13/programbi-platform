@@ -69,6 +69,11 @@ const RECURSOS_LINKS = [
     label: "Guías prácticas",
     desc: "Roadmaps, comparativas y tutoriales paso a paso",
   },
+  {
+    href: "/datos",
+    label: "Datos de Chile",
+    desc: "Tasa de desempleo, regiones e histórico del INE",
+  },
 ] as const;
 
 const courseGroups = NAV_COURSE_GROUPS;
@@ -104,6 +109,7 @@ export default function Navbar() {
   const userMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const paisNav = paisDesdeRuta(pathname) ?? ISO_CHILE;
+  const recursosLinks = RECURSOS_LINKS.filter((item) => paisNav === ISO_CHILE || item.href !== "/datos");
   const hrefLocal = (href: string) => rutaLocal(paisNav, href);
   const hrefNav = (href: string) => {
     if (paisNav === ISO_CHILE) return href;
@@ -432,7 +438,7 @@ export default function Navbar() {
                       onMouseLeave={handleRecursosLeave}
                     >
                       <ul className="space-y-0.5">
-                        {RECURSOS_LINKS.map((item) => (
+                        {recursosLinks.map((item) => (
                           <li key={item.href}>
                             <Link
                               href={hrefNav(item.href)}
@@ -692,7 +698,7 @@ export default function Navbar() {
                     {isMobileRecursosOpen ? (
                       <div className="pb-3">
                         <ul className="space-y-1">
-                          {RECURSOS_LINKS.map((item) => (
+                          {recursosLinks.map((item) => (
                             <li key={item.href}>
                               <Link
                                 href={hrefNav(item.href)}
