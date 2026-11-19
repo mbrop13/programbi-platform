@@ -5,8 +5,8 @@ pais: cl
 hreflang: es-CL
 curso: claude
 url_curso: https://www.programbi.com/cursos/claude
-title: Cómo usar Claude AI en el trabajo en Chile | ProgramBI
-meta: "Guía práctica para usar Claude (Anthropic) en Chile: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+title: "Curso de Claude en Chile: guía práctica y clases en vivo"
+meta: "Aprende a usar Claude (Anthropic) en Chile: prompts, Projects, Artifacts y Excel sin programar. Guía práctica y curso en vivo de 20 h."
 h1: Cómo usar Claude AI para trabajo administrativo en Chile
 updated: 2026-11-14
 sources:

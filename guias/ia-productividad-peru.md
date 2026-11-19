@@ -117,7 +117,7 @@ Al cerrar el curso no tienes solo apuntes. Tienes cinco plantillas de prompts li
 
 ## Del informe al tablero
 
-Muchos informes recurrentes terminan convirtiéndose en tableros. Para ese paso, revisa el [curso de Power BI en Perú](https://www.programbi.com/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). El [curso de Excel](https://www.programbi.com/pe/cursos/excel) es buen complemento si trabajas con planillas.
+Muchos informes recurrentes terminan convirtiéndose en tableros. Para ese paso, revisa el [curso de Power BI en vivo en Perú](/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). El [curso de Excel](https://www.programbi.com/pe/cursos/excel) es buen complemento si trabajas con planillas.
 
 **[CTA-MID]** — Descarga gratis la plantilla de dashboard de ventas.
 

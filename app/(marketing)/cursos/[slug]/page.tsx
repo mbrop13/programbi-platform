@@ -12,6 +12,8 @@ import PlantillaVentasPowerBi from "@/components/marketing/PlantillaVentasPowerB
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
 import RecursosRelacionadosCurso from "@/components/marketing/RecursosRelacionadosCurso";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
+import CourseSummaryBox, { faqsResumenCurso } from "@/components/marketing/CourseSummaryBox";
+import PeruPowerBiSection from "@/components/paises/PeruPowerBiSection";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, jsonLdString, tituloLocal } from "@/lib/seo";
 import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
@@ -89,9 +91,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // Perú y México tienen title/meta escritos para su mercado; el resto sigue
   // localizando el título chileno.
   const seoLocal = esRutaSeoLocal(slug) ? getSeoBloque(pais, slug) : null;
-  const title = seoLocal
-    ? tituloLocal(seoLocal.title)
-    : tituloLocal(conPais(localizarMercado(titleBase, pais), pais));
+  const title =
+    pais === ISO_CHILE
+      ? titleBase
+      : seoLocal
+        ? tituloLocal(seoLocal.title)
+        : tituloLocal(conPais(localizarMercado(titleBase, pais), pais))
+            .replace(/,?\s+de\s+básico(\s+a)?$/i, "")
+            .replace(/\s+(y|e|o|u|de|del|en|para|con|a|la|el|los|las)(\s+con|\s+de|\s+en|\s+a)?$/i, "")
+            .replace(/[\s:;,.|\-–—]+$/, "");
   const dbDescription = await getMarketingDescription(slug);
   // Chile puede declarar el precio en la meta; los demás mercados usan la
   // versión sin monto porque su precio va en otra moneda.
@@ -197,17 +205,30 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
   // ya lo aporta `detalle.faqs`) más `detalle.faqs`, y `CourseLocalSeo` pinta
   // solo `detalle.faqs` en los cursos sin plantilla CRO.
   const tienePrecioEnDetalle = detalle.faqs.some((faq) => /^¿cuánto cuesta\b/i.test(faq.q));
-  const faqsCurso = FICHA_CON_FAQ_CURSO.has(slug)
+  const faqsCursoRaw = FICHA_CON_FAQ_CURSO.has(slug)
     ? (seo?.faqs ?? [])
         .filter((faq) => !faq.soloChile || pais === ISO_CHILE)
         .filter((faq) => !(tienePrecioEnDetalle && /^¿cuánto cuesta\b/i.test(faq.q)))
         .map((faq) => ({
-          "@type": "Question",
-          name: localizarMercado(faq.q, pais),
-          acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
+          q: localizarMercado(faq.q, pais),
+          a: localizarMercado(faq.a, pais),
         }))
     : [];
-  // Preguntas del mercado: horario local, certificado y precio vigente del curso.
+  const preguntasExistentes = new Set(
+    [...faqsCursoRaw, ...detalle.faqs].map((faq) => faq.q.toLowerCase())
+  );
+  const faqsResumen = faqsResumenCurso(course, pais, detalle.horario).filter(
+    (faq) => !preguntasExistentes.has(faq.q.toLowerCase())
+  );
+  detalle.faqs = [...detalle.faqs, ...faqsResumen];
+
+  const faqsCurso = faqsCursoRaw.map((faq) => ({
+    "@type": "Question",
+    name: faq.q,
+    acceptedAnswer: { "@type": "Answer", text: faq.a },
+  }));
+  // Preguntas del mercado y del resumen: horario local, certificado, duración,
+  // modalidad en vivo, requisitos previos y precio vigente del curso.
   const faqsMercado = detalle.faqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,
@@ -252,11 +273,21 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         initialSchedules={schedules}
         detalleLocal={detalle}
         promotions={promotions}
+        resumen={
+          <CourseSummaryBox
+            course={course}
+            pais={pais}
+            inicio={inicio}
+            fin={fin}
+            promotions={promotions}
+          />
+        }
         // Citas reales de alumnos de este curso (LinkedIn), justo después del
         // profesor: es prueba social y no puede quedar bajo los bloques SEO. Se
         // oculta sola si no hay testimonios o con NEXT_PUBLIC_TESTIMONIOS=0.
         testimonios={<TestimoniosDeCurso cursoSlug={course.slug} />}
       />
+      <PeruPowerBiSection pais={pais} slug={course.slug} />
       {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.
           Reemplaza a CountryContext, que repetía los mismos datos. */}
       <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} promotions={promotions} />

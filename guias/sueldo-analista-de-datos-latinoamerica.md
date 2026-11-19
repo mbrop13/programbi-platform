@@ -5,8 +5,8 @@ pais: latam
 hreflang: es
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/cursos/analisis-de-datos
-title: "Sueldo de analista de datos por país (2026) | ProgramBI"
-meta: "Cuánto gana un analista de datos en Chile, México, Colombia, Perú, Argentina, Guatemala y El Salvador con fuente y fecha de cada referencia."
+title: "Sueldo de analista de datos en Latinoamérica (2026)"
+meta: "Cuánto gana un analista de datos en Chile, México, Colombia, Perú, Argentina, Guatemala y El Salvador en 2026: rangos, fuentes y cómo subir de sueldo."
 h1: "Sueldo de analista de datos en Latinoamérica: cifras por país con fuente"
 updated: 2026-11-04
 sources:

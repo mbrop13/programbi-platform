@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Send, Building2, User, CheckCircle2 } from "lucide-react";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
+import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { captureAndReadAttribution } from "@/lib/utm";
@@ -36,7 +37,7 @@ export default function AsesoriasForm({ type }: AsesoriasFormProps) {
     setErrorMsg("");
 
     try {
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         name: name.trim(),
         email: email.trim(),
         whatsapp: whatsapp.trim(),
@@ -61,9 +62,17 @@ export default function AsesoriasForm({ type }: AsesoriasFormProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al enviar la solicitud");
 
+      const leadType = type === "empresas" ? "asesoria_b2b" : "asesoria_b2c";
+      const formName = type === "empresas" ? "asesorias_empresas" : "asesorias_particulares";
+      trackLeadSubmit(leadType, formName, undefined, {
+        form_name: formName,
+        country: pais,
+      });
       setIsSuccess(true);
-    } catch (err: any) {
-      setErrorMsg(err.message || "Ocurrió un error. Intenta de nuevo.");
+    } catch (err: unknown) {
+      setErrorMsg(
+        err instanceof Error ? err.message : "Ocurrió un error. Intenta de nuevo."
+      );
     } finally {
       setIsSubmitting(false);
     }

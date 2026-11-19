@@ -7,15 +7,16 @@ import { blogIcpScore } from "@/lib/seo/money";
 
 export const revalidate = 3600;
 
+const DESCRIPCION_BLOG =
+  "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python, Machine Learning y análisis de datos escritos por el equipo docente de ProgramBI.";
+
 export const metadata: Metadata = {
   title: { absolute: tituloSeo("Blog — Recursos de análisis de datos") },
-  description:
-    "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python, Machine Learning y análisis de datos. Contenido técnico y actualizado por expertos de ProgramBI.",
+  description: DESCRIPCION_BLOG,
   alternates: { canonical: absoluteUrl("/blog") },
   openGraph: {
     title: "Blog — Recursos de análisis de datos",
-    description:
-      "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python y análisis de datos por expertos de ProgramBI.",
+    description: DESCRIPCION_BLOG,
     url: "https://www.programbi.com/blog",
     type: "website",
     images: [
@@ -37,8 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Blog — Recursos de análisis de datos",
-    description:
-      "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python y análisis de datos.",
+    description: DESCRIPCION_BLOG,
     images: [
       ogImageUrl({
         kicker: "Blog",

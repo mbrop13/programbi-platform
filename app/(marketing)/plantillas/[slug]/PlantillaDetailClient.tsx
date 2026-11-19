@@ -97,7 +97,7 @@ export default function PlantillaDetailClient({
       const attribution = captureAndReadAttribution();
       const antiBot = getAntiBotFields(formLoadedAt, honeypot);
 
-      await fetch("/api/leads/create", {
+      const res = await fetch("/api/leads/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -119,7 +119,11 @@ export default function PlantillaDetailClient({
         /* ignore */
       }
 
-      trackLeadSubmit("plantilla", "plantillas_detail", relatedCourseSlug);
+      if (res?.ok) {
+        trackLeadSubmit("plantilla", "plantillas_detail", relatedCourseSlug, {
+          form_name: "plantillas_detail",
+        });
+      }
       setUnlocked(true);
 
       if (files[0]) {

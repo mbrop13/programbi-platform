@@ -12,7 +12,7 @@ import { absoluteUrl, jsonLdString, pageOg, tituloSeo } from "@/lib/seo";
 
 const TITULO = "Testimonios de alumnos de ProgramBI";
 const DESCRIPCION =
-  "Citas textuales y verificables de alumnos que terminaron los cursos de Power BI, SQL Server, Python y Análisis de Datos en ProgramBI, sin ediciones ni métricas inventadas.";
+  "Citas textuales y verificables de alumnos de los cursos de Power BI, SQL, Python y Análisis de Datos en ProgramBI, sin ediciones ni métricas inventadas.";
 
 const share = pageOg({
   title: `${TITULO} | ProgramBI`,

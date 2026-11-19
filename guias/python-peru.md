@@ -108,7 +108,7 @@ El script reemplaza una tarde de copiar y pegar. Conectado a Power BI, el avance
 1. **Excel con soltura**: si te falta base, el [curso de Excel](https://www.programbi.com/pe/cursos/excel).
 2. **SQL** para extraer datos: [curso de SQL Server](https://www.programbi.com/pe/cursos/sql-server).
 3. **Python con Pandas** para consolidar y automatizar (este curso).
-4. **Power BI** para presentar: [curso de Power BI](https://www.programbi.com/pe/cursos/power-bi) y [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
+4. **Power BI** para presentar: [curso de Power BI en Perú](/pe/cursos/power-bi) y [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
 
 Si quieres las tres herramientas técnicas en un programa, está el [curso de Análisis de datos](https://www.programbi.com/pe/cursos/analisis-de-datos).
 

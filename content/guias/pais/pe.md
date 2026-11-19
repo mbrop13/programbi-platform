@@ -16,7 +16,7 @@ sources:
 nota_hermes: |
   ELEMENTO VISUAL: ruta de aprendizaje de 8 semanas en Power BI aplicada a Perú.
 ---
-En Perú, la palabra que más se repite en los avisos de análisis es «reportes»: reportes comerciales, reportes de cobranza, reportes de campaña. Detrás de casi todos hay una persona que pasa horas en Excel. Las empresas que ya dieron el salto a Power BI —bancos, mineras, agroexportadoras, retail— buscan gente que sepa automatizar ese trabajo. Esta guía te da una ruta clara para aprender, lo que se paga hoy como referencia y los errores que conviene evitar desde el primer día.
+En Perú, la palabra que más se repite en los avisos de análisis es «reportes»: reportes comerciales, reportes de cobranza, reportes de campaña. Detrás de casi todos hay una persona que pasa horas en Excel. Las empresas que ya dieron el salto a Power BI —bancos, mineras, agroexportadoras, retail— buscan gente que sepa automatizar ese trabajo. Esta guía te da una ruta clara para aprender, lo que se paga hoy como referencia, los errores que conviene evitar desde el primer día y cómo avanzar con nuestro [curso de Power BI en vivo en Perú](/pe/cursos/power-bi).
 
 <!-- CTA-TOP -->
 
@@ -123,7 +123,7 @@ Solo es posible con constancia. Pero, como muestran los avisos, el diferencial e
 - Temario: Power Query y M, modelo estrella, CALCULATE y FILTER, Time Intelligence, RANKX, tabla de métricas con SWITCH e IA en Power BI.
 - **Acceso al campus virtual con las clases grabadas y el material durante el curso** y **certificado**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
-- Complementa tu avance con la [guía práctica de DAX](/guias/funciones-dax-mas-importantes) o el programa de [SQL Server en vivo](/pe/cursos/sql-server).
+- Complementa tu avance con la [guía práctica de DAX](/guias/funciones-dax-mas-importantes), el [curso de Excel en Perú](/pe/cursos/excel) o el programa de [SQL Server en vivo](/pe/cursos/sql-server), y consulta la próxima cohorte en la ficha del [curso Power BI en Perú](/pe/cursos/power-bi).
 
 <!-- CTA-END -->
 

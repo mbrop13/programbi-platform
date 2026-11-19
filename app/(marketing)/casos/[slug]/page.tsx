@@ -19,27 +19,44 @@ export async function generateStaticParams() {
   }));
 }
 
+function ajustarDescripcionCaso(texto: string): string {
+  const limpio = texto.replace(/\s+/g, " ").trim();
+  if (limpio.length >= 120 && limpio.length <= 155) return limpio;
+  if (limpio.length > 155) {
+    const corte = limpio.slice(0, 154);
+    const ultimoEspacio = corte.lastIndexOf(" ");
+    const base = (ultimoEspacio >= 120 ? corte.slice(0, ultimoEspacio) : corte).replace(
+      /[,;:\s]+$/,
+      ""
+    );
+    return base.endsWith(".") ? base : `${base}.`;
+  }
+  const sufijo = " Caso práctico aplicado en Chile y Latinoamérica con ProgramBI.";
+  return `${limpio.replace(/\.$/, "")}.${sufijo}`.slice(0, 155);
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const currentCase = casesOfUse.find((c) => c.slug === slug);
   if (!currentCase) return { title: "Caso no encontrado" };
 
+  const description = ajustarDescripcionCaso(currentCase.description);
   const ogUrl = ogImageUrl({
     kicker: "Caso de uso",
     title: currentCase.fullTitle,
-    description: currentCase.description,
+    description,
     path: `casos/${slug}`,
   });
   const ogTitle = `${currentCase.fullTitle} | ProgramBI`;
 
   return {
     title: { absolute: tituloSeo(currentCase.title) },
-    description: currentCase.description,
+    description,
     robots: { index: false, follow: true },
     alternates: { canonical: `/casos/${slug}` },
     openGraph: {
       title: ogTitle,
-      description: currentCase.description,
+      description,
       url: `https://www.programbi.com/casos/${slug}`,
       type: "article",
       images: [
@@ -51,7 +68,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
       ],
     },
-    twitter: twitterShare(ogTitle, currentCase.description, ogUrl),
+    twitter: twitterShare(ogTitle, description, ogUrl),
   };
 }
 

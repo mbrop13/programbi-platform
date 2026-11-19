@@ -217,9 +217,12 @@ function Resultado({
   cursos: readonly Course[];
   onReiniciar: () => void;
 }) {
+  const pais = usePaisRuta();
+  const pagePath = typeof window !== "undefined" ? window.location.pathname : "/empresas/diagnostico";
   const waHref = whatsappHref({
     page: "/empresas/diagnostico",
     intent: "empresas",
+    country: pais,
     extra: `Mi diagnóstico: ${resultado.nivel.nombre} (${resultado.puntos}/${DIAGNOSTICO_TOTAL})`,
   });
 
@@ -379,7 +382,15 @@ function Resultado({
           target="_blank"
           rel="noopener noreferrer"
           data-wa-tracked="1"
-          onClick={() => trackWhatsAppClick({ cta_position: "diagnostico_resultado" })}
+          onClick={() =>
+            trackWhatsAppClick({
+              country: pais,
+              page: pagePath,
+              page_path: pagePath,
+              cta_position: "diagnostico_resultado",
+              href: waHref,
+            })
+          }
           className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-canvas px-6 text-[14.5px] font-semibold text-ink no-underline transition-transform active:scale-[0.98] sm:w-auto"
         >
           Contar el resultado por WhatsApp <ArrowRight size={16} aria-hidden />
@@ -505,7 +516,10 @@ function FormularioPropuesta({
       }
       if (!res.ok) throw new Error(data.error || "Error al enviar");
 
-      trackLeadSubmit("asesoria_b2b", "empresas_diagnostico");
+      trackLeadSubmit("asesoria_b2b", "empresas_diagnostico", undefined, {
+        form_name: "empresas_diagnostico",
+        country: pais,
+      });
       setEstado("success");
     } catch (err) {
       setEstado("error");

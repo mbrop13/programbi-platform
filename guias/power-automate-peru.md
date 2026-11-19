@@ -116,7 +116,7 @@ Antes de automatizar, anota cuánto tiempo toma la tarea, cuántas veces se hace
 
 ## De la automatización al análisis
 
-Con los archivos llegando ordenados, armar un tablero es mucho más simple. Para esa parte puedes revisar el [curso de Power BI en Perú](https://www.programbi.com/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). Y si trabajas mucho con planillas, el [curso de Excel](https://www.programbi.com/pe/cursos/excel) complementa bien.
+Con los archivos llegando ordenados, armar un tablero es mucho más simple. Para esa parte puedes revisar el [curso Power BI en Perú](/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). Y si trabajas mucho con planillas, el [curso de Excel](https://www.programbi.com/pe/cursos/excel) complementa bien.
 
 **[CTA-MID]** — Descarga gratis la plantilla de dashboard de ventas.
 

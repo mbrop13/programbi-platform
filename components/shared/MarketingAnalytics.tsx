@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Script from "next/script";
 import {
+  GA_MEASUREMENT_ID,
   captureUtmFromUrl,
+  courseSlugFromLocation,
   initGa4,
   isAnalyticsDisabledPath,
   markGa4Loaded,
@@ -18,7 +20,7 @@ import {
 import { ISO_CHILE } from "@/config/paises";
 import { paisDesdeRuta } from "@/lib/paises/rutas";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
+const GA_ID = GA_MEASUREMENT_ID;
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "";
 const WA_HREF_RE = /(?:wa\.me|whatsapp\.com|api\.whatsapp\.com)/i;
 /** Marcador que ponen los componentes que ya reportan su propio click_whatsapp. */
@@ -27,6 +29,10 @@ const WA_TRACKED_ATTR = "data-wa-tracked";
 /**
  * Loads GA4 + Microsoft Clarity and tracks SPA page views + purchase success.
  * Safe when env IDs are missing (no scripts loaded).
+ *
+ * No usa `useSearchParams()` para no suspender en el árbol estático: lee
+ * `window.location.search` en el cliente, de modo que `initGa4()` y el primer
+ * `page_view` corren de inmediato al montar sin esperar un boundary Suspense.
  *
  * Rutas internas (`isAnalyticsDisabledPath`: /admin, /login, /auth/…) no cargan
  * GA4 ni Clarity ni emiten eventos: son sesiones de administración y ensuciaban
@@ -43,50 +49,44 @@ const WA_TRACKED_ATTR = "data-wa-tracked";
  */
 export default function MarketingAnalytics() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const analyticsDisabled = isAnalyticsDisabledPath(pathname);
 
   useEffect(() => {
     if (analyticsDisabled) return;
-    initGa4();
-  }, [analyticsDisabled]);
+    const search = typeof window !== "undefined" ? window.location.search : "";
+    const fullPath = pathname ? `${pathname}${search}` : undefined;
+    initGa4(fullPath);
+  }, [analyticsDisabled, pathname]);
 
   useEffect(() => {
-    if (analyticsDisabled) return;
+    if (analyticsDisabled || !pathname) return;
     captureUtmFromUrl();
-  }, [pathname, searchParams, analyticsDisabled]);
-
-  useEffect(() => {
-    if (analyticsDisabled || !pathname) return;
-    // Pass the rendered route explicitly: window.location can lag behind the
-    // router during a transition and would break the path+query dedupe key.
-    const qs = searchParams?.toString() || "";
-    trackPageView(qs ? `${pathname}?${qs}` : pathname);
-  }, [pathname, searchParams, analyticsDisabled]);
-
-  useEffect(() => {
-    if (analyticsDisabled || !pathname) return;
+    const search = typeof window !== "undefined" ? window.location.search : "";
+    trackPageView(search ? `${pathname}${search}` : pathname);
     // Entradas desde asistentes IA (ChatGPT, Perplexity, Gemini…). Va después
     // del page_view: reutiliza ese hit y deduplica por sesión dentro del helper.
     // También cubre landings internas que llegan con ?utm_source=chatgpt.
     trackAiReferral({ path: pathname });
-  }, [pathname, searchParams, analyticsDisabled]);
+  }, [pathname, analyticsDisabled]);
 
   useEffect(() => {
-    if (analyticsDisabled) return;
-    const payment = searchParams?.get("payment");
+    if (analyticsDisabled || typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get("payment");
     if (payment === "success") {
       trackPurchase({
-        transactionId: searchParams?.get("payment_id") || searchParams?.get("collection_id") || undefined,
-        pais: searchParams?.get("pais") || undefined,
-        currency: searchParams?.get("moneda") || undefined,
-        value: searchParams?.get("valor") ? Number(searchParams.get("valor")) : undefined,
+        transactionId: params.get("payment_id") || params.get("collection_id") || undefined,
+        pais: params.get("pais") || undefined,
+        currency: params.get("moneda") || undefined,
+        value: params.get("valor") ? Number(params.get("valor")) : undefined,
       });
     }
-  }, [searchParams, analyticsDisabled]);
+  }, [pathname, analyticsDisabled]);
 
   useEffect(() => {
-    if (searchParams?.get("reg_ok") !== "1") return;
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reg_ok") !== "1") return;
     // Remove the one-shot OAuth flag before sending the lead so page_location
     // is not split by reg_ok. The page_view effect above already strips it too.
     const url = new URL(window.location.href);
@@ -94,8 +94,8 @@ export default function MarketingAnalytics() {
     const next = url.pathname + url.search + url.hash;
     window.history.replaceState({}, "", next);
     // Google OAuth: new user only (callback sets reg_ok after session insert).
-    trackSubmitRegistro({ method: "oauth" });
-  }, [searchParams]);
+    trackSubmitRegistro({ method: "oauth", form_name: "registro_oauth" });
+  }, [pathname]);
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
@@ -111,13 +111,17 @@ export default function MarketingAnalytics() {
         const marker = anchor.getAttribute(WA_TRACKED_ATTR);
         const trackedByComponent = marker === "1" || marker === "true";
         if (!trackedByComponent) {
-          const pathname = window.location.pathname;
-          const courseMatch = pathname.match(/\/cursos\/([^/?#]+)/);
+          const currentPath = window.location.pathname;
+          const fullPage = currentPath + window.location.search;
+          const courseSlug = courseSlugFromLocation(fullPage);
           trackWhatsAppClick({
-            course: courseMatch?.[1],
-            country: paisDesdeRuta(pathname) ?? ISO_CHILE,
-            page: pathname + window.location.search,
+            course: courseSlug,
+            course_slug: courseSlug,
+            country: paisDesdeRuta(currentPath) ?? ISO_CHILE,
+            page: fullPage,
+            page_path: fullPage,
             cta_position: "global_link",
+            href: anchor.href,
           });
         }
       }

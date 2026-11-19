@@ -1,6 +1,6 @@
 ---
-title: Cómo usar Claude para análisis de datos: guía práctica
-description: Prompts probados para limpiar planillas, resumir ventas y detectar anomalías con Claude, más reglas de privacidad. Ejemplos prácticos en CLP.
+title: Cómo usar Claude para análisis de datos (guía 2026)
+description: Usa Claude para limpiar datos, analizar Excel y CSV y crear reportes sin programar. Prompts listos y ejemplos paso a paso.
 h1: Cómo usar Claude para analizar datos en tu trabajo (sin programar)
 country: cl
 lang: es-CL

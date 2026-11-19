@@ -348,7 +348,9 @@ function inferCourseSlug(explicit?: string | null): string | undefined {
   );
 }
 
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
+const DEFAULT_GA_MEASUREMENT_ID = "G-CSV91QJMMJ";
+export const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || DEFAULT_GA_MEASUREMENT_ID;
 
 /**
  * Debug eligibility for GA4 hits.
@@ -450,9 +452,13 @@ function gaSession(): { sid?: string; sct?: string } {
     const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
     if (!match) return {};
     const value = decodeURIComponent(match[1]);
-    const parsed = value.match(/^GS\d+\.\d+\.(\d{6,})\.(\d+)/);
-    if (parsed) return { sid: parsed[1], sct: parsed[2] };
-    const sid = (value.match(/(?:^|\$|\.)s(\d{6,})/) || value.match(/^GS\d+\.\d+\.(\d{6,})/))?.[1];
+    // GS2.1.s<sid>$o<sct>... (modern gtag cookie format)
+    const gs2 = value.match(/(?:^|\$|\.)s(\d{6,})(?:[^;]*?\$o(\d+))?/);
+    if (gs2) return { sid: gs2[1], ...(gs2[2] ? { sct: gs2[2] } : {}) };
+    // GS1.1.<sid>.<sct>... (legacy gtag cookie format)
+    const gs1 = value.match(/^GS\d+\.\d+\.(\d{6,})\.(\d+)/);
+    if (gs1) return { sid: gs1[1], sct: gs1[2] };
+    const sid = value.match(/^GS\d+\.\d+\.(\d{6,})/)?.[1];
     return sid ? { sid } : {};
   } catch {
     return {};
@@ -478,6 +484,7 @@ function gaSession(): { sid?: string; sct?: string } {
  */
 function sendGenerateLeadBeacon(opts: {
   method: GenerateLeadMethod;
+  form_name?: string;
   course_slug?: string;
   page_path?: string;
   lead_type?: string;
@@ -489,11 +496,17 @@ function sendGenerateLeadBeacon(opts: {
   if (!window.__pbGtagLoaded) return false;
   const cid = readGaClientId();
   if (!cid) return false;
+  const session = gaSession();
+  // Measurement Protocol requires both sid and sct to bind the hit to the active
+  // gtag session; if either is missing, fall back to gtag(transport_type: "beacon").
+  if (!session.sid || !session.sct) return false;
   const debug = analyticsDebugEnabled();
   const params = new URLSearchParams({
     v: "2",
     tid: GA_MEASUREMENT_ID,
     cid,
+    sid: session.sid,
+    sct: session.sct,
     en: GA_LEAD_EVENTS.GENERATE_LEAD,
     dl: buildPageViewTarget().page_location,
     dt: document.title,
@@ -505,11 +518,7 @@ function sendGenerateLeadBeacon(opts: {
   // `dr` (document.referrer): sin él el hit del beacon llega sin referrer y
   // GA4 lo agrupa como tráfico directo.
   if (document.referrer) params.set("dr", document.referrer);
-  // Mismo client + session id que gtag: el hit cae en la sesión ya abierta en
-  // vez de arrancar una nueva con landing_page "(not set)".
-  const session = gaSession();
-  if (session.sid) params.set("sid", session.sid);
-  if (session.sct) params.set("sct", session.sct);
+  if (opts.form_name) params.set("ep.form_name", opts.form_name);
   if (opts.course_slug) params.set("ep.course_slug", opts.course_slug);
   if (opts.lead_type) params.set("ep.lead_type", opts.lead_type);
   if (opts.lead_source) params.set("ep.lead_source", opts.lead_source);
@@ -530,6 +539,8 @@ function sendGenerateLeadBeacon(opts: {
  */
 export function trackGenerateLead(opts: {
   method: GenerateLeadMethod;
+  /** Identificador del formulario que originó el lead (brochure_gate, empresas_contact…). */
+  form_name?: string;
   course_slug?: string | null;
   page_path?: string;
   /** Tipo de lead, igual al de `lead_submit` (asesoria_b2b, temario…). */
@@ -549,10 +560,12 @@ export function trackGenerateLead(opts: {
   const course_slug = inferCourseSlug(opts.course_slug);
   const country = opts.country || analyticsContext().country;
   const landing_page = opts.landing_page || readLandingPath();
+  const form_name = opts.form_name || opts.lead_source || opts.lead_type || undefined;
   // (b) Never let a lead be the first hit: queue the page_view before it.
   ensurePageViewBeforeHit();
   const transport = sendGenerateLeadBeacon({
     method: opts.method,
+    form_name,
     course_slug,
     page_path: opts.page_path,
     lead_type: opts.lead_type,
@@ -571,6 +584,7 @@ export function trackGenerateLead(opts: {
     const debug = analyticsDebugEnabled();
     trackEvent(GA_LEAD_EVENTS.GENERATE_LEAD, {
       method: opts.method,
+      form_name,
       course_slug,
       page_path: opts.page_path,
       lead_type: opts.lead_type,
@@ -587,6 +601,7 @@ export function trackGenerateLead(opts: {
   gaDebug("generate_lead", {
     transport,
     method: opts.method,
+    form_name: form_name || null,
     course_slug: course_slug || null,
     lead_type: opts.lead_type || null,
     lead_source: opts.lead_source || null,
@@ -651,7 +666,7 @@ function sendPageViewHit(target: PageViewTarget): void {
   window.gtag("event", "page_view", {
     page_location: target.page_location,
     page_path: target.page_path,
-    page_title: document.title,
+    page_title: document.title || target.page_path,
     country,
     page_type,
     ...debugHitParams(),
@@ -660,26 +675,10 @@ function sendPageViewHit(target: PageViewTarget): void {
   window.__pbLastPageViewAt = Date.now();
 }
 
-/**
- * gtag stub + config + the FIRST page_view of the session, in that order.
- *
- * (b) Why landing_page was "(not set)" in ~68% of sessions:
- * config used send_page_view:false and the manual pageview was queued 50 ms
- * after mount, while mount-time events (view_curso, experiment_impression,
- * view_empresas) pushed immediately from child effects. Any of those could be
- * the first hit of a session, and GA4 only takes landing_page from the session's
- * first page_view. The SPA pageview also repeated `gtag('config', ...)` instead
- * of sending a page_view event, which can reorder/duplicate hits. Consent is not
- * the cause: this app has no consent gate in front of gtag.
- *
- * ensureGa4() is idempotent and every tracking entry point calls it, so
- * page_view is always the first command queued in dataLayer (and replayed first
- * by gtag.js), even if a component effect fires an event before this mount.
- */
-function ensureGa4(): boolean {
+function ensureGa4(rawPath?: string): boolean {
   if (!isBrowser() || !GA_MEASUREMENT_ID) return false;
   // Rutas internas: no se inicializa gtag (ni dataLayer) desde aquí.
-  if (isAnalyticsDisabledPath(window.location.pathname)) return false;
+  if (isAnalyticsDisabledPath(rawPath ?? window.location.pathname)) return false;
   window.dataLayer = window.dataLayer || [];
   if (typeof window.gtag !== "function") {
     window.gtag = function gtag() {
@@ -690,13 +689,18 @@ function ensureGa4(): boolean {
   }
   if (window.__pbGa4Init) return true;
   window.__pbGa4Init = true;
+  const target = buildPageViewTarget(rawPath);
+  rememberLandingPath(target.page_path);
   const debug = analyticsDebugEnabled();
   window.gtag("js", new Date());
   window.gtag("config", GA_MEASUREMENT_ID, {
     send_page_view: false,
+    page_location: target.page_location,
+    page_path: target.page_path,
+    page_title: document.title || target.page_path,
     ...(debug ? { debug_mode: true } : {}),
   });
-  sendPageViewHit(buildPageViewTarget());
+  sendPageViewHit(target);
   return true;
 }
 
@@ -706,21 +710,45 @@ function ensureGa4(): boolean {
  * - on client navigation the child page effects can fire before this component,
  *   so the event would otherwise be the first hit of the new route.
  */
-function ensurePageViewBeforeHit(): void {
-  if (!ensureGa4()) return;
-  const target = buildPageViewTarget();
+function ensurePageViewBeforeHit(rawPath?: string): void {
+  if (!ensureGa4(rawPath)) return;
+  const target = buildPageViewTarget(rawPath);
   const sessionExpired = Date.now() - (window.__pbLastPageViewAt ?? 0) > GA_SESSION_TIMEOUT_MS;
   if (sessionExpired || window.__pbLastPageViewKey !== target.key) {
     sendPageViewHit(target);
   }
 }
 
+/**
+ * Flush a page_view immediately when the tab returns from background after the
+ * 30-min GA4 session timeout, before any scroll/user_engagement/click hit can
+ * open the new session without a landing page.
+ */
+let visibilityListenerBound = false;
+function bindSessionResumePageView(): void {
+  if (!isBrowser() || visibilityListenerBound) return;
+  visibilityListenerBound = true;
+  const onResume = () => {
+    if (document.visibilityState === "hidden") return;
+    if (isAnalyticsDisabledPath(window.location.pathname)) return;
+    if (!window.__pbGa4Init) return;
+    const sessionExpired = Date.now() - (window.__pbLastPageViewAt ?? 0) > GA_SESSION_TIMEOUT_MS;
+    if (sessionExpired) {
+      sendPageViewHit(buildPageViewTarget());
+    }
+  };
+  document.addEventListener("visibilitychange", onResume);
+  window.addEventListener("focus", onResume);
+  window.addEventListener("pageshow", onResume);
+}
+
 /** Safe to call on every client mount. */
-export function initGa4(): void {
+export function initGa4(rawPath?: string): void {
   if (!isBrowser()) return;
   // No se carga GA4 en rutas internas (/admin, /login, /auth…).
-  if (isAnalyticsDisabledPath(window.location.pathname)) return;
-  ensureGa4();
+  if (isAnalyticsDisabledPath(rawPath ?? window.location.pathname)) return;
+  bindSessionResumePageView();
+  ensureGa4(rawPath);
 }
 
 /**
@@ -814,7 +842,6 @@ export function trackEvent(eventName: string, params?: AnalyticsParams): void {
 
   if (process.env.NODE_ENV === "development") {
     // Helpful when validating without real IDs
-    // eslint-disable-next-line no-console
     console.debug("[analytics]", eventName, payload);
   }
 }
@@ -995,11 +1022,13 @@ export function trackPageView(path?: string): void {
   if (!isBrowser()) return;
   // Rutas internas (/admin, /login, /auth…): no se envía page_view.
   if (isAnalyticsDisabledPath(path ?? window.location.pathname)) return;
-  if (!ensureGa4()) return;
+  bindSessionResumePageView();
+  if (!ensureGa4(path)) return;
   const target = buildPageViewTarget(path);
   // Landing de la sesión = primera page_view de la pestaña.
   rememberLandingPath(target.page_path);
-  if (window.__pbLastPageViewKey === target.key) return;
+  const sessionExpired = Date.now() - (window.__pbLastPageViewAt ?? 0) > GA_SESSION_TIMEOUT_MS;
+  if (!sessionExpired && window.__pbLastPageViewKey === target.key) return;
   sendPageViewHit(target);
 
   if (process.env.NODE_ENV === "development") {
@@ -1169,14 +1198,17 @@ let lastWhatsAppClick: { page: string; href: string; at: number } | null = null;
  */
 export function trackWhatsAppClick(opts?: {
   course?: string | null;
+  course_slug?: string | null;
   country?: string | null;
   page?: string;
+  page_path?: string;
   cta_position?: string;
   /** href del enlace wa.me; mejora el dedupe entre listener global y CTA. */
   href?: string | null;
 }): void {
   const page =
     opts?.page ||
+    opts?.page_path ||
     (isBrowser() ? window.location.pathname + window.location.search : undefined);
   const href = opts?.href?.trim() || "";
   const now = Date.now();
@@ -1190,15 +1222,21 @@ export function trackWhatsAppClick(opts?: {
     return;
   }
   lastWhatsAppClick = { page: page || "", href, at: now };
+  const ctx = analyticsContext(page);
+  const rawCourse = (opts?.course_slug || opts?.course || ctx.course || inferCourseSlug() || "").trim();
+  const courseSlug = rawCourse && rawCourse !== "general" ? rawCourse : "general";
+  const country = (opts?.country || ctx.country || "cl").trim();
+  const pagePath = page || (isBrowser() ? window.location.pathname : "/");
   trackEvent(GA_LEAD_EVENTS.CLICK_WHATSAPP, {
-    course: opts?.course || undefined,
-    country: opts?.country || undefined,
+    course: courseSlug,
+    course_slug: courseSlug,
+    country,
     cta_position: opts?.cta_position || undefined,
     wa_location: opts?.cta_position || undefined,
-    page,
+    page: pagePath,
     // Keep legacy params for existing GA4 reports/explorations.
-    page_path: page,
-    curso_slug: opts?.course || undefined,
+    page_path: pagePath,
+    curso_slug: courseSlug,
   });
 }
 
@@ -1247,11 +1285,24 @@ export function trackWebinarSignup(opts?: {
   pais?: string | null;
   source?: string;
   course?: string | null;
+  form_name?: string;
 }): void {
+  const country = opts?.pais || analyticsContext().country;
+  const leadSource = opts?.source || "webinar";
+  const courseSlug = opts?.course || undefined;
   trackEvent(GA_LEAD_EVENTS.WEBINAR_SIGNUP, {
-    country: opts?.pais || undefined,
-    lead_source: opts?.source || "webinar",
-    course: opts?.course || undefined,
+    country,
+    lead_source: leadSource,
+    course: courseSlug,
+    course_slug: courseSlug,
+  });
+  trackGenerateLead({
+    method: "form",
+    form_name: opts?.form_name || leadSource,
+    lead_type: leadSource,
+    lead_source: leadSource,
+    course_slug: courseSlug,
+    country,
   });
 }
 
@@ -1270,6 +1321,7 @@ let lastSubmitRegistroAt = 0;
 export function trackSubmitRegistro(opts?: {
   method?: GenerateLeadMethod;
   course_slug?: string | null;
+  form_name?: string;
 }): void {
   const now = Date.now();
   if (now - lastSubmitRegistroAt < 2000) {
@@ -1287,9 +1339,14 @@ export function trackSubmitRegistro(opts?: {
     gaDebug("trackSubmitRegistro skipped", { reason: "dedupe-60s" });
     return;
   }
-  gaDebug("trackSubmitRegistro", { method: opts?.method ?? "form", course_slug: opts?.course_slug || null });
+  const method = opts?.method ?? "form";
+  const formName = opts?.form_name || (method === "oauth" ? "registro_oauth" : "registro_form");
+  gaDebug("trackSubmitRegistro", { method, form_name: formName, course_slug: opts?.course_slug || null });
   trackGenerateLead({
-    method: opts?.method ?? "form",
+    method,
+    form_name: formName,
+    lead_type: "registro",
+    lead_source: formName,
     course_slug: opts?.course_slug,
   });
   markRegistroLeadFired();
@@ -1349,20 +1406,30 @@ export function trackNavRegistro(pathname?: string): void {
   }
 }
 
-export function trackLeadSubmit(leadType: string, source?: string, courseSlug?: string): void {
+export function trackLeadSubmit(
+  leadType: string,
+  source?: string,
+  courseSlug?: string,
+  opts?: { form_name?: string; country?: string },
+): void {
+  const country = opts?.country || analyticsContext().country;
+  const formName = opts?.form_name || source || leadType;
   // `lead_source`, no `source`: GA4 lee `source` como fuente de campaña manual
   // y la sesión quedaba atribuida a "empresas_contact" (95 sesiones).
   trackEvent("lead_submit", {
     lead_type: leadType,
     lead_source: source,
+    form_name: formName,
     course_slug: courseSlug,
+    country,
   });
   // Marcar generate_lead como evento clave en GA4 Admin
   trackGenerateLead({
     method: "form",
+    form_name: formName,
     course_slug: courseSlug,
     lead_type: leadType,
     lead_source: source,
-    country: analyticsContext().country,
+    country,
   });
 }

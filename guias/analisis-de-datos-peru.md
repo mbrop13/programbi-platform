@@ -49,7 +49,7 @@ La media mezcla puestos de reportería con cargos más técnicos. Los avisos que
 
 1. **Ordena tu base en Excel.** Tablas, tablas dinámicas y BUSCARX. Si te falta, empieza con el [curso de Excel](https://www.programbi.com/pe/cursos/excel).
 2. **SQL.** Aprende a filtrar, agrupar y unir tablas. Es la habilidad que más se repite en las convocatorias. Profundiza en el [curso de SQL Server](https://www.programbi.com/pe/cursos/sql-server).
-3. **Power BI.** Limpieza con Power Query, modelo estrella y medidas DAX. Más en el [curso de Power BI](https://www.programbi.com/pe/cursos/power-bi) y la [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
+3. **Power BI.** Limpieza con Power Query, modelo estrella y medidas DAX. Más en el [curso de Power BI en Perú](/pe/cursos/power-bi) y la [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
 4. **Python.** Pandas para consolidar archivos de varias agencias o fundos. Detalle en el [curso de Python](https://www.programbi.com/pe/cursos/python).
 5. **Proyecto y presentación.** Un tablero con datos anonimizados y tres conclusiones claras.
 

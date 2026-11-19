@@ -21,9 +21,23 @@ export const dynamicParams = false;
 const DESCRIPCION_ORG =
   "Institución líder de formación profesional y consultoría de Business Intelligence en Chile y Latinoamérica.";
 
-/** Descripción factual: rol y dos credenciales. Sin inventar trayectoria. */
+/** Descripción factual (120–155 caracteres): cargo, rol y credenciales reales del miembro. */
 function descripcionPerfil(miembro: MiembroEquipo): string {
-  return `${miembro.nombre}, ${miembro.rol}. ${miembro.credenciales.slice(0, 2).join(" ")}`;
+  const rolLabel = miembro.rol.includes("ProgramBI")
+    ? miembro.rol
+    : `${miembro.rol} en ProgramBI`;
+  let texto = `${miembro.nombre}, ${miembro.cargo} (${rolLabel}).`;
+  for (const credencial of miembro.credenciales) {
+    const limpia = credencial.trim();
+    if (!limpia) continue;
+    const candidato = `${texto} ${limpia}`;
+    if (candidato.length <= 155) {
+      texto = candidato;
+    } else {
+      break;
+    }
+  }
+  return texto;
 }
 
 export function generateStaticParams() {

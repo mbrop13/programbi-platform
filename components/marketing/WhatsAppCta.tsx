@@ -56,9 +56,12 @@ export default function WhatsAppCta({
       courseSlug || currentPath.match(/\/cursos\/([^/?#]+)/)?.[1] || undefined;
     trackWhatsAppClick({
       course: slug,
+      course_slug: slug,
       country: resolvedCountry,
       page: currentPath,
+      page_path: currentPath,
       cta_position: ctaPosition,
+      href,
     });
   };
 

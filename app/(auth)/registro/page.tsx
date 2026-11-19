@@ -270,6 +270,7 @@ export default function RegistroPage() {
 
       trackSubmitRegistro({
         method: "form",
+        form_name: "registro_page",
         course_slug: courseSlugFromLocation(fromParam || registrationSource),
       });
 

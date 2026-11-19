@@ -3,6 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
+import { trackWebinarSignup } from "@/lib/analytics/marketing";
 
 type Props = {
   pais: string;
@@ -42,6 +43,7 @@ export default function FormularioClase({ pais, fechaTexto }: Props) {
         }),
       });
       if (!respuesta.ok) throw new Error("sin respuesta");
+      trackWebinarSignup({ pais, source: "clase_gratis", form_name: "clase_gratis" });
       setEstado("ok");
     } catch {
       setEstado("error");

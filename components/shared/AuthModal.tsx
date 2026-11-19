@@ -241,6 +241,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       } else {
         trackSubmitRegistro({
           method: "form",
+          form_name: "auth_modal",
           course_slug: courseSlugFromLocation(registrationSource),
         });
         // signUp ya deja la sesión si el correo no exige confirmación.
@@ -499,7 +500,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                               data-wa-tracked="1"
                               onClick={() => {
                                 trackModalStep("whatsapp_alt");
-                                trackWhatsAppClick({ cta_position: "auth_modal_confirm" });
+                                trackWhatsAppClick({
+                                  cta_position: "auth_modal_confirm",
+                                  href: waHref,
+                                });
                               }}
                               className="mt-3 flex items-start gap-1.5 text-xs font-semibold leading-relaxed text-emerald-800 underline underline-offset-2"
                             >
@@ -685,7 +689,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                           data-wa-tracked="1"
                           onClick={() => {
                             trackModalStep("whatsapp_alt");
-                            trackWhatsAppClick({ cta_position: "auth_modal_form" });
+                            trackWhatsAppClick({
+                              cta_position: "auth_modal_form",
+                              href: waHref,
+                            });
                           }}
                           className="font-semibold text-slate-600 underline underline-offset-2"
                         >

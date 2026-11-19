@@ -951,7 +951,10 @@ function FormularioPlanEstudio({
       }
       if (!res.ok) throw new Error(data.error || "Error al enviar");
 
-      trackLeadSubmit("contact", "simulador_pl300", "power-bi");
+      trackLeadSubmit("contact", "simulador_pl300", "power-bi", {
+        form_name: "simulador_pl300",
+        country: pais,
+      });
       setEstado("success");
     } catch (err) {
       setEstado("error");

@@ -85,7 +85,7 @@ En una financiera, la tabla dinámica arma el reporte de colocaciones por agenci
 
 ## De Excel a Power BI: el paso siguiente
 
-Cuando el consolidado de agencias ya se arma con Power Query, Power BI lo convierte en un tablero que el jefe zonal revisa desde el celular, con filtros por agencia y producto. Revisa el [curso de Power BI](https://www.programbi.com/pe/cursos/power-bi) y la [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). Para extraer datos de la base, el [curso de SQL Server](https://www.programbi.com/pe/cursos/sql-server); y para el perfil completo, el [curso de Análisis de datos](https://www.programbi.com/pe/cursos/analisis-de-datos).
+Cuando el consolidado de agencias ya se arma con Power Query, Power BI lo convierte en un tablero que el jefe zonal revisa desde el celular, con filtros por agencia y producto. Revisa el [curso de Power BI en vivo en Perú](/pe/cursos/power-bi) y la [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). Para extraer datos de la base, el [curso de SQL Server](https://www.programbi.com/pe/cursos/sql-server); y para el perfil completo, el [curso de Análisis de datos](https://www.programbi.com/pe/cursos/analisis-de-datos).
 
 ## Un ejercicio para esta semana
 

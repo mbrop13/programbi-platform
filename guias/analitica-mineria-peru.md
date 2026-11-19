@@ -100,7 +100,7 @@ La ficha presenta además un nivel avanzado para **dominar el ciclo completo del
 
 ## Rutas complementarias
 
-- [Curso de Power BI](https://www.programbi.com/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
+- [Curso de Power BI en vivo en Perú](/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
 - [Curso de SQL Server](https://www.programbi.com/pe/cursos/sql-server).
 - [Curso de Machine Learning](https://www.programbi.com/pe/cursos/machine-learning).
 

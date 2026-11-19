@@ -695,7 +695,10 @@ export default function PagoClient({
         }),
       });
       if (!res.ok) throw new Error("lead_create_failed");
-      trackLeadSubmit("enterprise", "pago_page", initialSlug || undefined);
+      trackLeadSubmit("enterprise", "pago_page", initialSlug || undefined, {
+        form_name: "pago_enterprise",
+        country: paisPago,
+      });
       setEnterpriseSuccess(true);
     } catch (err) {
       alert("Error al enviar la solicitud.");

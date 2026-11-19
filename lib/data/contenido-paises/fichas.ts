@@ -58,6 +58,12 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
       "En Perú el reporte de gestión todavía se arma mucho a mano: se bajan los comprobantes de SUNAT, se cruzan con la planta y se pega todo en una planilla. El curso ordena ese flujo con SQL, un modelo en Power BI y, cuando hace falta, Python para lo que Excel no aguanta. Los casos de práctica vienen de minería, agroexportación, retail y consumo masivo, y banca y microfinanzas: producción y leyes por tajo, campaña y destino de exportación, venta por tienda, cartera por zona.",
       "El horario se publica en hora de Lima: Perú se mantiene en UTC-5 todo el año y Chile cambia con el verano, así que la clase de 19:30 en Chile se ve a las 17:30 o 18:30 en Perú según la fecha. Los casos incluyen además banca y microfinanzas, con cartera y cobranza por zona. Los datos de partida son comprobantes de SUNAT, reportes de planta y registros del sistema comercial.",
     ],
+    porCurso: {
+      "power-bi": [
+        "Este curso de Power BI en Perú se dicta en vivo por Zoom (20 horas en el nivel básico-intermedio y 20 horas en el nivel avanzado) para profesionales y equipos que hoy arman reportes a mano en Excel —bajando comprobantes electrónicos de SUNAT, cruzándolos con reportes de planta o planillas de campo— y necesitan automatizar la limpieza con Power Query (lenguaje M), estructurar un modelo estrella y escribir medidas DAX en soles y dólares.",
+        "Las clases se siguen en horario de Lima (America/Lima, UTC-5: de 17:30 a 19:30 cuando Chile está en horario de verano y de 18:30 a 20:30 en invierno chileno), con grabaciones y material de práctica en el campus virtual y certificado digital de ProgramBI al completar. Puedes empezar desde cero sin saber programar, y el precio en soles (PEN) con 3 cuotas sin interés se consulta en el PDF de temario y precios de esta ficha.",
+      ],
+    },
   },
   co: {
     parrafos: [

@@ -96,7 +96,7 @@ En Perú, el tratamiento de datos personales se rige por la [Ley 29733, Ley de P
 
 - **Claude:** si tu empresa usa o va a usar Claude y quieres dominar sus funciones.
 - **[IA en Productividad](https://www.programbi.com/pe/cursos/ia-productividad):** si quieres comparar ChatGPT, Claude, Gemini y Copilot antes de elegir.
-- **[Power BI](https://www.programbi.com/pe/cursos/power-bi):** si necesitas tableros que se actualicen y se compartan. Claude no reemplaza a Power BI: le ayuda a explorar y redactar. Para empezar con esa herramienta, revisa la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
+- **[Curso de Power BI en Perú](/pe/cursos/power-bi):** si necesitas tableros que se actualicen y se compartan. Claude no reemplaza a Power BI: le ayuda a explorar y redactar. Para empezar con esa herramienta, revisa la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
 
 ## ¿A quién está dirigido?
 

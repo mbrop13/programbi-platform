@@ -115,7 +115,7 @@ Te irá mejor si manejas Excel con soltura y conoces conceptos básicos de inver
 
 ## Cómo se conecta con otros cursos
 
-Si quieres reforzar una pieza antes de este programa, tienes el [curso de Python](https://www.programbi.com/pe/cursos/python), el [curso de SQL Server](https://www.programbi.com/pe/cursos/sql-server) y el [curso de Power BI](https://www.programbi.com/pe/cursos/power-bi), además de la [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
+Si quieres reforzar una pieza antes de este programa, tienes el [curso de Python](https://www.programbi.com/pe/cursos/python), el [curso de SQL Server](https://www.programbi.com/pe/cursos/sql-server) y el [curso de Power BI en Perú](/pe/cursos/power-bi), además de la [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
 
 ## El curso en vivo de ProgramBI (Perú)
 

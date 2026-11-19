@@ -176,7 +176,7 @@ export function ReferidosRegistro() {
         setError("Este correo ya está registrado. Inicia sesión.");
         return;
       }
-      trackSubmitRegistro({ method: "form" });
+      trackSubmitRegistro({ method: "form", form_name: "referidos_registro" });
       if (data.session) {
         const res = await fetch("/api/referrals/register", {
           method: "POST",

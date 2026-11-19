@@ -240,7 +240,10 @@ export function BrochureGateForm({
     })
       .then((res) => {
         if (!res.ok) return;
-        trackLeadSubmit("personal", source, slug);
+        trackLeadSubmit("personal", source, slug, {
+          form_name: "brochure_gate",
+          country: pais,
+        });
         // El PDF se abrió en otra pestaña; esto deja la vista del temario
         // atribuida al curso y al país del gate que la originó.
         trackTemario({ action: "view", course: slug, country: pais, location: source });

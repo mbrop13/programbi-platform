@@ -14,9 +14,9 @@ import { SITE_URL, absoluteUrl, breadcrumbJsonLd, jsonLdString, pageOg } from "@
 export const revalidate = 86400;
 
 const path = "/sueldos-analista-datos-chile";
-const title = "Sueldo analista de datos Chile 2026 y calculadora | ProgramBI";
+const title = "Sueldo analista de datos Chile 2026: calculadora | ProgramBI";
 const description =
-  "Referencias reales de sueldo de Analista de Datos y BI en Chile (Chiletrabajos, Indeed, GetOnBoard) + calculadora Bruto a Líquido en CLP y ruta de habilidades.";
+  "Referencias de sueldo de Analista de Datos y BI en Chile (Chiletrabajos, Indeed, GetOnBoard) + calculadora Bruto a Líquido en CLP y ruta de habilidades.";
 
 const share = pageOg({
   title,

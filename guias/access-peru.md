@@ -105,7 +105,7 @@ Según la ficha, al **personal administrativo que necesita almacenar, organizar,
 ## Rutas después de Access
 
 - **Bases más grandes:** [curso de SQL Server](https://www.programbi.com/pe/cursos/sql-server).
-- **Tableros que se actualizan:** [curso de Power BI](https://www.programbi.com/pe/cursos/power-bi), que puede leer datos de tu base de Access. Para dar el primer paso, revisa la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
+- **Tableros que se actualizan:** [curso de Power BI en vivo en Perú](/pe/cursos/power-bi), que puede leer datos de tu base de Access. Para dar el primer paso, revisa la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
 
 ## Errores que el curso te ayuda a evitar
 

@@ -1,6 +1,6 @@
 ---
 title: Power BI vs Excel: diferencias y cuándo usar cada uno
-description: Diferencias reales entre Power BI y Excel: volumen de datos, automatización, colaboración y licencias, con tabla de decisión práctica.
+description: Comparativa práctica de Power BI y Excel: qué hace cada uno, límites, costos y cuándo conviene pasar a Power BI. Con ejemplos.
 h1: Power BI vs Excel: qué los diferencia y cuándo conviene cada uno
 country: transversal
 lang: es

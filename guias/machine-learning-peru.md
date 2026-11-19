@@ -128,7 +128,7 @@ En LinkedIn, Computrabajo y Bumeran Perú, las ofertas de científico de datos, 
 
 ## Cuando el modelo tiene que llegar al gerente
 
-La última milla casi siempre es un tablero. Guardas las predicciones o las alertas en una tabla y las muestras en Power BI, filtrables por planta, tienda o zona. Para esa parte está el [curso de Power BI en Perú](https://www.programbi.com/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
+La última milla casi siempre es un tablero. Guardas las predicciones o las alertas en una tabla y las muestras en Power BI, filtrables por planta, tienda o zona. Para esa parte está el [curso de Power BI en Perú](/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru).
 
 **[CTA-MID]** — Descarga gratis la plantilla de dashboard de ventas.
 

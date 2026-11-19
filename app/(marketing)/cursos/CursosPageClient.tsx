@@ -35,15 +35,36 @@ const CATALOG_ORDER = [
 const NUEVOS = new Set(["access", "mercado-financiero"]);
 
 const SEARCH_PROMPTS = [
-  { line: "¿Te interesa aprender Power BI?", word: "Power BI" },
-  { line: "¿Sabes cómo podría ayudarte Claude?", word: "Claude" },
-  { line: "¿Quieres aprender Python?", word: "Python" },
-  { line: "¿Buscas SQL Server?", word: "SQL Server" },
   { line: "¿Te interesa el análisis de datos?", word: "Análisis de datos" },
+  { line: "¿Buscas SQL Server?", word: "SQL Server" },
+  { line: "¿Quieres aprender Python?", word: "Python" },
+  { line: "¿Sabes cómo podría ayudarte Claude?", word: "Claude" },
+  { line: "¿Te interesa aprender Power BI?", word: "Power BI" },
   { line: "¿Automatizas con Power Automate?", word: "Power Automate" },
   { line: "¿Quieres manejar Excel?", word: "Excel" },
   { line: "¿Te sirve Copilot en el trabajo?", word: "Copilot" },
 ] as const;
+
+function courseHeadingLabel(course: CourseCatalogItem, pais: string): string {
+  if (course.slug === "power-bi") {
+    if (pais === "pe") return "Curso de Power BI en Perú";
+    if (pais === "cl") return "Curso de Power BI en Chile";
+    return "Curso de Power BI";
+  }
+  if (course.slug === "power-automate") {
+    return "Curso Power Automate";
+  }
+  return course.title;
+}
+
+function courseDetailAnchor(course: CourseCatalogItem, pais: string): string {
+  if (course.slug === "power-bi") {
+    if (pais === "pe") return "Ver curso de Power BI en Perú →";
+    if (pais === "cl") return "Ver curso de Power BI en Chile →";
+    return "Ver curso de Power BI →";
+  }
+  return `Ver curso de ${course.title} →`;
+}
 
 const TYPE_LINE_MS = 92;
 const TYPE_WORD_MS = 135;
@@ -223,6 +244,11 @@ export default function CursosPageClient({
           <h1 className="text-center text-[1.7rem] font-bold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-[2.65rem]">
             Cursos de Power BI, SQL y análisis de datos en {paisNombre}
           </h1>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-mute sm:text-base">
+            Catálogo completo de cursos de datos en vivo por Zoom para {paisNombre}: programas de
+            análisis de datos, SQL Server, Python, Power BI, Excel, automatización e inteligencia
+            artificial, con horario local y certificado digital.
+          </p>
           <p
             aria-hidden="true"
             className="mt-3 min-h-[3rem] text-center text-base font-medium leading-snug tracking-tight text-mute sm:min-h-[1.75rem] sm:text-lg"
@@ -273,7 +299,13 @@ export default function CursosPageClient({
               <div className="min-w-0 p-3 pb-0 sm:p-4 sm:pb-0 lg:col-span-7 lg:p-5 lg:pb-0">
                 {featured.gallery && featured.gallery.length > 1 ? (
                   <FeaturedCourseStrip
-                    title="Curso de análisis de datos"
+                    title={
+                      pais === "pe"
+                        ? "Curso de análisis de datos en Perú"
+                        : pais === "cl"
+                          ? "Curso de análisis de datos en Chile"
+                          : "Curso de análisis de datos"
+                    }
                     images={featured.gallery}
                     href={hrefLocal(`/cursos/${featured.slug}`)}
                     onNavigate={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
@@ -323,7 +355,11 @@ export default function CursosPageClient({
                       onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
                       className="inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
                     >
-                      Ver ficha y fechas
+                      {pais === "pe"
+                        ? "Ver curso de Análisis de Datos en Perú →"
+                        : pais === "cl"
+                          ? "Ver curso de Análisis de Datos en Chile →"
+                          : "Ver curso de Análisis de Datos →"}
                     </Link>
                   ) : (
                     <>
@@ -340,7 +376,11 @@ export default function CursosPageClient({
                         onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
                         className="inline-flex text-sm font-medium text-mute no-underline hover:text-ink"
                       >
-                        Ver ficha y fechas
+                        {pais === "pe"
+                          ? "Ver curso de Análisis de Datos en Perú"
+                          : pais === "cl"
+                            ? "Ver curso de Análisis de Datos en Chile"
+                            : "Ver curso de Análisis de Datos"}
                       </Link>
                     </>
                   )}
@@ -405,11 +445,7 @@ export default function CursosPageClient({
                         onClick={() => trackCourseCardClick(course.slug, "cursos_catalog")}
                         className="text-ink no-underline hover:text-mute"
                       >
-                        {course.slug === "power-bi"
-                          ? "Curso Power BI"
-                          : course.slug === "power-automate"
-                            ? "Curso Power Automate"
-                            : course.title}
+                        {courseHeadingLabel(course, pais)}
                       </Link>
                     </h2>
                     <p className="mt-1 text-sm text-mute">{course.shortDescription}</p>
@@ -420,16 +456,25 @@ export default function CursosPageClient({
                     {precio != null ? (
                       <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
                     ) : null}
-                    {showPrices ? null : (
+                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
                       <Link
-                        href={courseBrochurePath(course.slug, pais)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-3 inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
+                        href={hrefLocal(`/cursos/${course.slug}`)}
+                        onClick={() => trackCourseCardClick(course.slug, "cursos_catalog")}
+                        className="inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
                       >
-                        Ver temario y precios (PDF) →
+                        {courseDetailAnchor(course, pais)}
                       </Link>
-                    )}
+                      {showPrices ? null : (
+                        <Link
+                          href={courseBrochurePath(course.slug, pais)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex text-sm font-medium text-mute no-underline hover:text-ink"
+                        >
+                          Ver temario y precios (PDF) →
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </article>
               );

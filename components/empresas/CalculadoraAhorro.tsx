@@ -295,8 +295,10 @@ export function CalculadoraAhorro() {
               onClick={() =>
                 trackWhatsAppClick({
                   page: PAGE_PATH,
+                  page_path: PAGE_PATH,
                   country: pais,
                   cta_position: "calculadora_resultado",
+                  href: waHref,
                 })
               }
               className="inline-flex h-12 flex-1 items-center justify-center rounded-full border border-line bg-paper px-6 text-[14.5px] font-medium text-ink no-underline transition-colors hover:bg-wash active:scale-[0.98]"

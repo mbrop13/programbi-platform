@@ -123,7 +123,10 @@ export default function LeadForm() {
       }
       if (!res.ok) throw new Error(data.error || "Error al enviar");
 
-      trackLeadSubmit("contact", "home_contact_section", destSlug);
+      trackLeadSubmit("contact", "home_contact_section", destSlug, {
+        form_name: "home_contact_section",
+        country: pais,
+      });
       setStatus("success");
     } catch (err) {
       setStatus("error");

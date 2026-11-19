@@ -30,12 +30,26 @@ type ArticlePoster = {
   cover_image?: string | null;
 };
 
+function recortarDescripcion(texto: string, max = 155): string {
+  const limpio = texto.replace(/\s+/g, " ").trim();
+  if (limpio.length <= max) return limpio;
+  const corte = limpio.slice(0, max - 1);
+  const ultimoEspacio = corte.lastIndexOf(" ");
+  const base = (ultimoEspacio >= 120 ? corte.slice(0, ultimoEspacio) : corte).replace(
+    /[,;:\s]+$/,
+    ""
+  );
+  return base.endsWith(".") ? base : `${base}.`;
+}
+
 function articleDescription(article: { title?: string; excerpt?: string | null }): string {
-  const excerpt = (article.excerpt || "").trim();
-  if (excerpt.length >= 70) return excerpt.slice(0, 155);
-  const base = excerpt || article.title || "Artículo de ProgramBI";
-  const suffix = " Análisis de datos, Power BI, SQL y Python en Chile — ProgramBI.";
-  return `${base.replace(/\.$/, "")}.${suffix}`.slice(0, 155);
+  const excerpt = (article.excerpt || "").replace(/\s+/g, " ").trim();
+  if (excerpt.length >= 120 && excerpt.length <= 155) return excerpt;
+  if (excerpt.length > 155) return recortarDescripcion(excerpt, 155);
+  const base = (excerpt || article.title || "Artículo técnico de ProgramBI").replace(/\.$/, "");
+  const suffix =
+    " Guía práctica de análisis de datos, Power BI, SQL y Python en Chile por el equipo docente de ProgramBI.";
+  return recortarDescripcion(`${base}.${suffix}`, 155);
 }
 
 function getArticlePoster(article: ArticlePoster | null): string {

@@ -30,7 +30,7 @@ import { localizarMercado } from "@/lib/paises/precios";
 export const metadata: Metadata = {
   title: { absolute: tituloSeo("Sobre nosotros — Academia de análisis de datos") },
   description:
-    "Conoce ProgramBI: la institución de capacitación profesional líder en Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva.",
+    "Conoce ProgramBI: academia de cursos en vivo de Power BI, SQL, Python y análisis de datos en Chile y Latinoamérica, fundada por Manuel Oliva.",
   alternates: {
     canonical: "/nosotros",
     languages: hreflangDe("/nosotros"),

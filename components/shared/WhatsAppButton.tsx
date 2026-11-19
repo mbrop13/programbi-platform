@@ -75,11 +75,18 @@ export default function WhatsAppButton() {
   }, [base]);
 
   const handleWhatsAppClick = () => {
+    const currentPath =
+      typeof window !== "undefined"
+        ? window.location.pathname + window.location.search
+        : pathname || "/";
     trackWhatsAppClick({
       course: courseMatch?.[1],
+      course_slug: courseMatch?.[1],
       country: countryParam,
-      page: pathname || undefined,
+      page: currentPath,
+      page_path: currentPath,
       cta_position: "floating",
+      href,
     });
   };
 

@@ -169,10 +169,10 @@ export function ExcelToDaxClient({ items, categories }: Props) {
       </div>
 
       <div className="mt-6 flex items-center justify-between text-xs text-mute">
-        <p>
+        <h2 className="text-xs font-normal text-mute">
           Mostrando <strong className="font-semibold text-ink">{matchedItems.length}</strong>{" "}
           {matchedItems.length === 1 ? "equivalencia" : "equivalencias"} Excel → DAX
-        </p>
+        </h2>
         {selectedCategory !== "Todas" && (
           <button
             type="button"
@@ -298,9 +298,9 @@ export function ExcelToDaxClient({ items, categories }: Props) {
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">
               Siguiente paso práctico
             </p>
-            <h3 className="mt-1.5 text-xl font-bold tracking-tight text-ink">
+            <h2 className="mt-1.5 text-xl font-bold tracking-tight text-ink">
               Domina DAX, modelo estrella y Power Query en vivo
-            </h3>
+            </h2>
             <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-mute">
               Dejar de copiar y pegar planillas requiere entender contexto de fila vs contexto de
               filtro. Practícalo con datos reales en nuestro curso o descarga ejercicios listos.

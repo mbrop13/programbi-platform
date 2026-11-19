@@ -115,7 +115,7 @@ Manejo práctico de Copilot en Excel, Outlook, PowerPoint y Word; un agente publ
 
 ## Complementos
 
-Copilot Studio comparte la Power Platform con Power Automate; si quieres automatizar procesos completos, revisa el [curso de Power Automate](https://www.programbi.com/pe/cursos/power-automate). Para reportería, el [curso de Power BI en Perú](https://www.programbi.com/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). Y para una visión amplia de IA en la oficina, el [curso de IA en Productividad](https://www.programbi.com/pe/cursos/ia-productividad).
+Copilot Studio comparte la Power Platform con Power Automate; si quieres automatizar procesos completos, revisa el [curso de Power Automate](https://www.programbi.com/pe/cursos/power-automate). Para reportería, el [curso de Power BI en Perú](/pe/cursos/power-bi) y la [guía para aprender Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). Y para una visión amplia de IA en la oficina, el [curso de IA en Productividad](https://www.programbi.com/pe/cursos/ia-productividad).
 
 **[CTA-MID]** — Descarga gratis la plantilla de dashboard de ventas.
 

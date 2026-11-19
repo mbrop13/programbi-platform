@@ -114,6 +114,7 @@ export default function FeaturedCourseStrip({
           <Link
             key={image.src}
             href={href}
+            aria-label={`${title}: ${image.alt}`}
             draggable={false}
             ref={(node) => {
               slideRefs.current[index] = node;

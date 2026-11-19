@@ -24,6 +24,21 @@ const TOPICS = [
   "Claude",
 ] as const;
 
+const TOPIC_SLUG_MAP: Record<string, string> = {
+  "Power BI": "power-bi",
+  "SQL Server": "sql-server",
+  Python: "python",
+  Excel: "excel",
+  "Power Automate": "power-automate",
+  "IA en Productividad": "ia-productividad",
+  Claude: "claude",
+};
+
+function topicToSlug(topic?: string): string | undefined {
+  if (!topic) return undefined;
+  return TOPIC_SLUG_MAP[topic] || getCourseBySlug(topic)?.slug || topic;
+}
+
 const WA = whatsappHref({
   page: "/empresas",
   intent: "empresas",
@@ -150,7 +165,10 @@ export function EmpresasContactForm({
       }
       if (!res.ok) throw new Error(data.error || "Error al enviar");
 
-      trackLeadSubmit("asesoria_b2b", "empresas_contact", selected[0]);
+      trackLeadSubmit("asesoria_b2b", "empresas_contact", topicToSlug(selected[0]), {
+        form_name: "empresas_contact",
+        country: pais,
+      });
       setStatus("success");
     } catch (err) {
       setStatus("error");

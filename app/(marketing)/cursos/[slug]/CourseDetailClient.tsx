@@ -82,6 +82,7 @@ import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { courseBrochureUrl } from "@/lib/pricing-gate";
 import { BrochureGateForm } from "@/components/marketing/BrochureGateForm";
 import { getIntroFichaAr } from "@/lib/paises/contenido-local/ar";
+import { getIntroFichaPe } from "@/lib/data/contenido-paises/pe";
 
 function phoneCodeFor(iso: string) {
   return COUNTRIES.find((country) => country.iso === iso)?.phoneCode || "+56";
@@ -153,7 +154,10 @@ async function submitCourseLead({
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error("Error submitting form");
-  trackLeadSubmit(leadType, source, course.slug);
+  trackLeadSubmit(leadType, source, course.slug, {
+    form_name: source,
+    country: pais,
+  });
 }
 
 function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
@@ -252,6 +256,7 @@ export default function CourseDetailClient({
   initialLevelName,
   detalleLocal,
   promotions = [],
+  resumen,
   testimonios,
 }: {
   course: Course;
@@ -266,6 +271,8 @@ export default function CourseDetailClient({
   initialLevelName?: string;
   detalleLocal?: DetalleCursoLocal;
   promotions?: readonly PromocionAplicable[];
+  /** Bloque «En resumen» renderizado en el servidor (100% SSR HTML). */
+  resumen?: ReactNode;
   /** Citas de alumnos, renderizadas en el servidor. Van tras el profesor. */
   testimonios?: ReactNode;
 }) {
@@ -480,9 +487,10 @@ export default function CourseDetailClient({
     pais
   );
   const introLocalAr = view === "publico" && pais === "ar" ? getIntroFichaAr(course.slug) : null;
+  const introLocalPe = view === "publico" && pais === "pe" ? getIntroFichaPe(course.slug) : null;
   const introParagraphs =
     view === "publico"
-      ? (introLocalAr ?? (localizarMercado(seo?.intro || "", pais).split("\n\n").filter(Boolean) ?? []))
+      ? (introLocalAr ?? introLocalPe ?? (localizarMercado(seo?.intro || "", pais).split("\n\n").filter(Boolean) ?? []))
       : [];
   const offerLead =
     view === "avanzado"
@@ -493,13 +501,15 @@ export default function CourseDetailClient({
           : course.slug === "analisis-de-datos"
             ? "Capacitación de Análisis de Datos para tu equipo. Dos niveles de 60 horas —básico-intermedio y avanzado— con SQL Server, Power BI y Python, y el tamaño de equipo que necesites."
             : `Capacitación de ${course.title} para equipos. ${course.shortDescription}`
-        : course.shortDescription?.trim() || introParagraphs[0] || "";
+        : introLocalPe?.[0] || course.shortDescription?.trim() || introParagraphs[0] || "";
   const offerMore =
-    view === "publico" && course.shortDescription?.trim()
-      ? introParagraphs
-      : view === "publico"
-        ? introParagraphs.slice(1)
-        : [];
+    view === "publico" && introLocalPe
+      ? introLocalPe.slice(1)
+      : view === "publico" && course.shortDescription?.trim()
+        ? introParagraphs
+        : view === "publico"
+          ? introParagraphs.slice(1)
+          : [];
   const quoteHref = rutaLocal(pais, empresaQuotePath(course.slug, activeLevel?.name));
   // Vista de cotización de empresas (sin nivel): es el destino de «Factura
   // disponible para empresas» del bloque de precio.
@@ -598,6 +608,46 @@ export default function CourseDetailClient({
                 {activeLevel ? <li>{activeLevel.name}</li> : null}
               </ul>
 
+              <div
+                data-testid="ficha-hero-cta-mobile"
+                className="mt-5 flex flex-col gap-2.5 sm:flex-row lg:hidden"
+              >
+                {isEmpresa ? (
+                  <Link
+                    href={quoteHref}
+                    className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+                  >
+                    Cotizar para mi empresa
+                    <ArrowRight size={16} aria-hidden />
+                  </Link>
+                ) : (
+                  <a
+                    href="#inscripcion"
+                    onClick={() =>
+                      trackCtaClick("Ver fechas y precio", "course_detail_hero_mobile", {
+                        course_slug: course.slug,
+                      })
+                    }
+                    className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+                  >
+                    Ver fechas y precio
+                    <ArrowRight size={16} aria-hidden />
+                  </a>
+                )}
+                <WhatsAppCta
+                  page={rutaLocal(pais, isEmpresa ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`)}
+                  intent={isEmpresa ? "empresas" : "curso"}
+                  course={`${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)})`}
+                  courseSlug={course.slug}
+                  country={pais}
+                  ctaPosition="ficha_hero_mobile"
+                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
+                >
+                  <MessageCircle size={16} aria-hidden />
+                  Hablar por WhatsApp
+                </WhatsAppCta>
+              </div>
+
               {hasGallery ? (
                 <CourseGallery
                   slug={course.slug}
@@ -630,6 +680,7 @@ export default function CourseDetailClient({
             </div>
 
             <div className="order-4 min-w-0 max-lg:-mt-12 lg:order-none">
+              {resumen}
               <CourseAudienceAndResults
                 course={course}
                 selectedLevel={syllabusIndex}
@@ -684,7 +735,11 @@ export default function CourseDetailClient({
                       trackWhatsAppClick({
                         cta_position: "ficha_avisame_fecha",
                         course: course.slug,
+                        course_slug: course.slug,
                         country: pais,
+                        page: typeof window !== "undefined" ? window.location.pathname : `/cursos/${course.slug}`,
+                        page_path: typeof window !== "undefined" ? window.location.pathname : `/cursos/${course.slug}`,
+                        href: avisameFechaHref,
                       })
                     }
                     className="flex w-full items-center justify-between gap-3 rounded-xl border border-line-strong bg-canvas px-3 py-3 text-left no-underline transition-colors hover:bg-wash"

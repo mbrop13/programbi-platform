@@ -96,7 +96,7 @@ Guardada como vista y conectada a Power BI, gerencia comercial ve la campaña al
 
 ## SQL y Power BI van de la mano
 
-Un tablero conectado a una vista de SQL Server se actualiza solo y es mucho más liviano que uno armado sobre Excel. Para seguir, revisa el [curso de Power BI](https://www.programbi.com/pe/cursos/power-bi) y la [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). Si quieres SQL, Power BI y Python en un solo programa, está el [curso de Análisis de datos](https://www.programbi.com/pe/cursos/analisis-de-datos).
+Un tablero conectado a una vista de SQL Server se actualiza solo y es mucho más liviano que uno armado sobre Excel. Para seguir, revisa el [curso Power BI en Perú](/pe/cursos/power-bi) y la [guía de Power BI en Perú](/pe/guias/como-aprender-power-bi-en-peru). Si quieres SQL, Power BI y Python en un solo programa, está el [curso de Análisis de datos](https://www.programbi.com/pe/cursos/analisis-de-datos).
 
 ## Cómo prepararte para una prueba técnica de SQL
 

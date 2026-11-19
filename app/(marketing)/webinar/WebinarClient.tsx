@@ -178,7 +178,7 @@ export default function WebinarClient() {
       });
       if (!res.ok) throw new Error();
       setSuccess(true);
-      trackWebinarSignup({ pais: country.iso, source: "webinar" });
+      trackWebinarSignup({ pais: country.iso, source: "webinar", form_name: "webinar" });
     } catch { 
       setError("Hubo un error. Intenta nuevamente."); 
     } finally { 

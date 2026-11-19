@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
-import { trackPlantillaDownload } from "@/lib/analytics/marketing";
+import { trackLeadSubmit, trackPlantillaDownload } from "@/lib/analytics/marketing";
 import {
   ARCHIVO_PLANTILLA_VENTAS,
   NOMBRE_PLANTILLA_VENTAS,
@@ -89,6 +89,10 @@ export default function PlantillaDescarga({
           recurso: RECURSO_PLANTILLA_VENTAS,
           pais,
           location,
+        });
+        trackLeadSubmit("plantilla", location, "power-bi", {
+          form_name: "plantilla_descarga",
+          country: pais,
         });
       } catch {
         // no-op

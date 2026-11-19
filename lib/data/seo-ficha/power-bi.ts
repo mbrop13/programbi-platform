@@ -51,4 +51,16 @@ export const BLOQUES_POWER_BI: BloqueSeoFicha[] = [
       },
     ],
   },
+  {
+    eyebrow: "Ruta de herramientas",
+    titulo: "Power BI con Excel y SQL",
+    parrafos: [
+      "En el trabajo diario, Power BI convive con las planillas de cálculo y las bases relacionales: Excel sigue siendo la fuente de presupuestos, cierres manuales y tablas auxiliares, mientras que SQL Server almacena el historial transaccional de ventas, inventario o contabilidad.",
+      "Conectar Power Query directamente a libros de Excel y a consultas o vistas de SQL Server evita copiar y pegar extractos cada semana y permite actualizar el dashboard con un clic. Si necesitas reforzar la preparación de planillas o aprender a extraer datos de bases relacionales desde cero, puedes combinar este programa con los cursos en vivo de Excel y SQL Server.",
+    ],
+    enlaces: [
+      { href: "/cursos/excel", label: "Curso de Excel en vivo" },
+      { href: "/cursos/sql-server", label: "Curso de SQL Server en vivo" },
+    ],
+  },
 ];

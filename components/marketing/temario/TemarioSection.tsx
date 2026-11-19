@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Award,
+  ArrowRight,
   BarChart3,
   Bot,
   Check,
@@ -14,6 +14,7 @@ import {
   Layers,
   ListChecks,
   Lock,
+  MessageCircle,
   Network,
   Play,
   Server,
@@ -25,6 +26,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Course } from "@/lib/data/courses";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
+import { trackCtaClick } from "@/lib/analytics/marketing";
+import { usePaisRuta } from "@/lib/paises/cliente";
+import { rutaLocal } from "@/lib/paises/rutas";
 import {
   getCourseSyllabus,
   getSyllabusLevel,
@@ -317,6 +322,8 @@ export default function TemarioSection({
   const accent = "#171716";
   const hours = levelHours(level) || course.levels?.[selectedLevel]?.durationHours || course.durationHours;
   const modules = level.modules;
+  const pais = usePaisRuta();
+  const localizedCoursePath = rutaLocal(pais, `/cursos/${course.slug}`);
 
   const benefits = level.benefits || syllabus.benefits;
 
@@ -364,6 +371,44 @@ export default function TemarioSection({
                   </div>
                 </motion.div>
               </AnimatePresence>
+            </div>
+
+            <div
+              data-testid="temario-bottom-cta"
+              className="rounded-[22px] border border-line bg-paper p-5 sm:p-6"
+            >
+              <p className="text-base font-bold tracking-tight text-ink sm:text-lg">
+                ¿Tienes dudas sobre el temario de {course.title}?
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-mute">
+                Revisa las próximas fechas, el horario de tu país y el PDF con temario y precios, o escríbenos por WhatsApp.
+              </p>
+              <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:items-center">
+                <a
+                  href="#inscripcion"
+                  onClick={() =>
+                    trackCtaClick("Ver fechas y precio", "course_detail_temario_bottom", {
+                      course_slug: course.slug,
+                    })
+                  }
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+                >
+                  Ver fechas y precio
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </a>
+                <WhatsAppCta
+                  page={localizedCoursePath}
+                  intent="curso"
+                  course={`${course.title} (${localizedCoursePath})`}
+                  courseSlug={course.slug}
+                  country={pais}
+                  ctaPosition="ficha_temario_final"
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
+                >
+                  <MessageCircle className="h-4 w-4" aria-hidden />
+                  Hablar por WhatsApp
+                </WhatsAppCta>
+              </div>
             </div>
         </div>
       </div>

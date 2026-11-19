@@ -11,7 +11,7 @@ import {
   Target,
   XCircle,
 } from "lucide-react";
-import { trackQuizComplete } from "@/lib/analytics/marketing";
+import { trackLeadSubmit, trackQuizComplete } from "@/lib/analytics/marketing";
 import { calcularResultado, type TestNivel } from "@/lib/data/test-nivel";
 
 type OtroTest = { tema: string; nombre: string; href: string };
@@ -113,6 +113,12 @@ export default function TestNivelClient({
           _t: Date.now(),
         }),
       });
+      if (respuesta.ok) {
+        trackLeadSubmit("test_nivel", `test_${test.tema}`, test.curso.slug, {
+          form_name: `test_nivel_${test.tema}`,
+          country: pais,
+        });
+      }
       setEstadoEmail(respuesta.ok ? "ok" : "error");
     } catch {
       setEstadoEmail("error");

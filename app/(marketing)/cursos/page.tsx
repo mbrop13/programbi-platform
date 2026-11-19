@@ -5,7 +5,6 @@ import { getCourseGallery } from "@/lib/data/course-gallery";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import CursosPageClient from "./CursosPageClient";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
-import CountryContext from "@/components/marketing/CountryContext";
 import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import { ObjetivosCursos, RecursosDatos } from "@/components/marketing/EnlacesPrioritarios";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
@@ -50,8 +49,8 @@ export const metadata: Metadata = {
           kicker: "Catálogo de cursos",
           title: "Aprende análisis de datos con expertos de la industria",
           description:
-            "Cursos online en vivo: Power BI, SQL Server, Python, Machine Learning y más.",
-          tags: ["Power BI", "SQL", "Python", "IA"],
+            "Catálogo de cursos online en vivo: análisis de datos, SQL Server, Python, Power BI, Excel e IA.",
+          tags: ["Datos", "SQL", "Python", "Power BI"],
           path: "cursos",
         }),
         width: 1200,
@@ -67,8 +66,8 @@ export const metadata: Metadata = {
       kicker: "Catálogo de cursos",
       title: "Aprende análisis de datos con expertos de la industria",
       description:
-        "Cursos online en vivo: Power BI, SQL Server, Python, Machine Learning y más.",
-      tags: ["Power BI", "SQL", "Python", "IA"],
+        "Catálogo de cursos online en vivo: análisis de datos, SQL Server, Python, Power BI, Excel e IA.",
+      tags: ["Datos", "SQL", "Python", "Power BI"],
       path: "cursos",
     })
   ),

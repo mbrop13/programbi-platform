@@ -159,7 +159,12 @@ export default function PreciosGateClient({
       body: JSON.stringify(payload),
     })
       .then((res) => {
-        if (res.ok) trackLeadSubmit("personal", "precios", curso.slug);
+        if (res.ok) {
+          trackLeadSubmit("personal", "precios", curso.slug, {
+            form_name: "precios_gate",
+            country: pais,
+          });
+        }
       })
       .catch(() => {
         // El PDF ya está abierto: un fallo de red no rompe la experiencia.

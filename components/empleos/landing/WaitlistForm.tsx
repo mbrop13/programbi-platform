@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { trackLeadSubmit } from "@/lib/analytics/marketing";
 
 /**
  * Captura de pre-inscripción al lanzamiento (usa el endpoint de leads
@@ -42,6 +43,9 @@ export default function WaitlistForm({ dark = false }: { dark?: boolean }) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? "No pudimos registrarte.");
+      trackLeadSubmit("bolsa_waitlist", "empleos_waitlist", undefined, {
+        form_name: "empleos_waitlist",
+      });
       setStatus("done");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Error de conexión. Intenta de nuevo.");

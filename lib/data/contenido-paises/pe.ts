@@ -11,9 +11,9 @@ const contenido: ContenidoPais = {
   },
   seoPaginas: {
     cursos: {
-      title: "Cursos Power BI, SQL y datos en Perú | ProgramBI",
+      title: "Cursos de datos en vivo en Perú: SQL, Python, Power BI y más",
       description:
-        "Catálogo en vivo para Perú: Power BI, SQL, Python y análisis de datos. Horario de Lima, precios en soles y proyecto final.",
+        "Catálogo de cursos de datos en vivo en Perú: análisis de datos, SQL Server, Python, Power BI, Excel e IA. Horario de Lima, precios en soles y certificado.",
     },
     faq: {
       title: "Preguntas frecuentes de cursos en Perú | ProgramBI",
@@ -165,7 +165,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
   iso: "pe",
   titulo: "Estudiar datos en vivo desde Perú",
   parrafos: [
-    "Perú combina operaciones mineras y agroindustriales con un retail y una banca que crecen rápido. En los tres mundos el reporte llega tarde, en formatos distintos y sin una definición común de cada indicador. El curso trabaja con la lógica de esos sectores: producción y costo por unidad, rendimiento por fundo, venta por tienda y cartera por zona.",
+    "Perú combina operaciones mineras y agroindustriales con un retail y una banca que crecen rápido. En esos sectores el reporte suele llegar tarde, en formatos distintos y sin una definición común de cada indicador. Tanto en el curso de Power BI en Perú como en los programas de SQL Server, Python y análisis de datos, la formación trabaja con la lógica de esas industrias: producción y costo por unidad, rendimiento por fundo, venta por tienda y cartera por zona.",
     "Las clases se siguen por Zoom en hora de Perú, sin viajar y sin instalar nada más que Power BI Desktop. El catálogo se publica en soles y el pago se hace con Mercado Pago Perú, Yape o Plin; si estás en otra región, la ficha de la cohorte muestra la equivalencia exacta.",
     "Cada cohorte combina la sesión en vivo con trabajo entre clases: los ejercicios se resuelven sobre archivos de práctica y el proyecto final se presenta al grupo. Las grabaciones quedan en el campus para quienes trabajan en turnos o viajan, y la ficha del curso indica duración, nivel y requisitos antes de inscribirse.",
   ],
@@ -218,14 +218,14 @@ export const bloqueLocal: DefinicionBloqueLocal = {
         "Cursos en vivo por Zoom para Perú: análisis de datos, Power BI, SQL y Python. Horario de Lima, precios en soles, 3 cuotas sin interés y certificado.",
     },
     cursos: {
-      title: "Cursos Power BI, SQL y Python en Perú | ProgramBI",
+      title: "Cursos de datos en vivo en Perú: SQL, Python, Power BI y más",
       description:
-        "Catálogo en vivo para Perú: Power BI, SQL, Python y análisis de datos. Horario de Lima, precios en soles y proyecto final con certificado.",
+        "Catálogo de cursos de datos en vivo en Perú: análisis de datos, SQL Server, Python, Power BI, Excel e IA. Horario de Lima, precios en soles y certificado.",
     },
     "power-bi": {
-      title: "Curso de Power BI en vivo para Perú | ProgramBI",
+      title: "Curso de Power BI en Perú: en vivo, con certificado",
       description:
-        "Curso Power BI en vivo por Zoom para Perú: Power Query, modelo y DAX en 20 horas. Horario de Lima, precio en soles y 3 cuotas sin interés.",
+        "Curso de Power BI en Perú en vivo por Zoom (20 h por nivel, básico-intermedio y avanzado): horario de Lima, certificado digital y precios en soles en PDF.",
     },
     "analisis-de-datos": {
       title: "Curso de análisis de datos en vivo Perú | ProgramBI",
@@ -249,3 +249,16 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     },
   },
 };
+
+const INTRO_FICHA_PE: Record<string, string[]> = {
+  "power-bi": [
+    "Este es un curso de Power BI en Perú, en vivo por Zoom, pensado para analistas, control de gestión, finanzas y operaciones que hoy consolidan reportes en Excel y necesitan construir tableros que se actualicen solos.",
+    "El programa abierto de nivel básico-intermedio dura 20 horas en horario de Lima (America/Lima, UTC-5), con grabaciones en el campus virtual: parte desde cero con Power Query (lenguaje M), sigue con el modelo estrella y profundiza en medidas DAX. El nivel avanzado suma otras 20 horas con inteligencia de tiempo, seguridad a nivel de fila (RLS) e integración de IA en Power BI.",
+    "Los precios para Perú se publican en soles (PEN) en el PDF de temario y precios de esta ficha, con pago por Mercado Pago Perú, Yape o Plin y 3 cuotas sin interés. Si prefieres reforzar fórmulas y tablas dinámicas antes, puedes revisar el curso de Excel en /pe/cursos/excel; para capacitar a un equipo con factura corporativa, cotiza en /pe/cursos/power-bi?para=empresas.",
+  ],
+};
+
+export function getIntroFichaPe(slug: string): string[] | null {
+  return INTRO_FICHA_PE[slug] ?? null;
+}
+

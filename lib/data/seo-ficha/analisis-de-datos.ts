@@ -36,4 +36,16 @@ export const BLOQUES_ANALISIS_DE_DATOS: BloqueSeoFicha[] = [
     ],
     enlaces: [{ href: "/empresas", label: "Cotizar para un equipo" }],
   },
+  {
+    eyebrow: "Rol profesional",
+    titulo: "¿Qué hace un analista de datos?",
+    parrafos: [
+      "En una empresa, quien ocupa el rol extrae información desde bases relacionales con SQL Server, limpia y cruza planillas o registros con Python y Pandas, y modela indicadores en Power BI para que gerencia y operaciones decidan con cifras actualizadas. Este curso analista de datos forma en ese flujo completo de trabajo: pasar del dato crudo a un tablero con reglas de negocio claras, sin depender de reportes manuales en Excel.",
+    ],
+    enlaces: [
+      { href: "/cursos/sql-server", label: "Curso de SQL Server en vivo" },
+      { href: "/cursos/power-bi", label: "Curso de Power BI en vivo" },
+      { href: "/cursos/python", label: "Curso de Python para datos en vivo" },
+    ],
+  },
 ];

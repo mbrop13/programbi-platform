@@ -34,9 +34,9 @@ export const PAGE_SEO = {
       "Capacitación Power BI in-company para empresas en Chile: en vivo, con los datos de tu equipo y factura corporativa. Pide una propuesta.",
   },
   cursos: {
-    title: "Cursos Power BI y análisis de datos en Chile | ProgramBI",
+    title: "Cursos de datos en vivo en Chile: Power BI, SQL, Python y Excel",
     description:
-      "Cursos en vivo en Chile de Power BI, SQL, Python, Excel e IA por Zoom. Formación práctica en análisis de datos con certificado y cuotas sin interés.",
+      "Catálogo de cursos de datos e IA en vivo en Chile: Análisis de Datos, Power BI, SQL, Python y Excel por Zoom. Con certificado y cuotas.",
   },
 } as const;
 
@@ -60,12 +60,12 @@ export const COURSE_SEO: Record<
   }
 > = {
   "power-bi": {
-    title: "Curso Power BI Chile: en vivo y con certificado | ProgramBI",
-    titleCl: "Curso de Power BI en Chile: en vivo y con certificado | ProgramBI",
+    title: "Curso de Power BI en Chile: en vivo y con certificado",
+    titleCl: "Curso de Power BI en Chile: en vivo y con certificado",
     description:
-      "Curso Power BI en Chile: deja Excel y arma dashboards con Power Query y DAX. Clases en vivo, certificado y cuotas sin interés.",
+      "Curso de Power BI en Chile con clases en vivo por Zoom: dashboards con Power Query y DAX, de básico a intermedio. Certificado y cuotas sin interés.",
     descriptionCl:
-      "Curso Power BI en Chile con clases en vivo: dashboards con Power Query y DAX. Certificado y cuotas sin interés; temario y precios en PDF.",
+      "Curso de Power BI en Chile con clases en vivo: dashboards con Power Query y DAX, básico e intermedio. Certificado y cuotas; temario y precios en PDF.",
     h1: "Curso Power BI en vivo en Chile",
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
@@ -109,6 +109,7 @@ export const COURSE_SEO: Record<
   },
   "analisis-de-datos": {
     title: "Curso de Análisis de Datos en Chile: SQL, Power BI y Python",
+    titleCl: "Curso de Análisis de Datos en Chile: SQL, Power BI y Python",
     description:
       `Curso de análisis de datos en vivo en Chile: SQL, Power BI y Python, ${courseDurationHours("analisis-de-datos")} h por nivel. Para ser analista de datos desde cero. Con certificado y cuotas.`,
     descriptionCl:
@@ -218,8 +219,8 @@ export const COURSE_SEO: Record<
     ],
   },
   python: {
-    title: "Curso Python datos Chile: en vivo y certificado | ProgramBI",
-    titleCl: "Curso de Python desde cero en Chile, en vivo | ProgramBI",
+    title: "Curso de Python para datos en Chile: desde cero y en vivo",
+    titleCl: "Curso de Python para datos en Chile: desde cero y en vivo",
     description:
       "Curso de Python para datos en Chile, en vivo: Pandas, visualización y automatización, desde fundamentos hasta análisis aplicado a negocios.",
     descriptionCl:
@@ -244,10 +245,12 @@ export const COURSE_SEO: Record<
     ],
   },
   "sql-server": {
-    title: "Curso SQL Server Chile: en vivo y certificado | ProgramBI",
-    titleCl: "Curso de SQL en Chile: SQL Server en vivo y certificado | ProgramBI",
+    title: "Curso de SQL en Chile: SQL Server en vivo, de básico a avanzado",
+    titleCl: "Curso de SQL en Chile: SQL Server en vivo, de básico a avanzado",
     description:
-      "Curso SQL Server en vivo en Chile: consultas, JOINs, procedimientos almacenados y diseño de esquemas. Para analistas que trabajan con datos.",
+      "Curso de SQL en Chile con SQL Server en vivo: consultas, JOINs, procedimientos almacenados y diseño de esquemas, de básico a avanzado. Con certificado.",
+    descriptionCl:
+      "Curso de SQL en Chile con SQL Server en vivo: consultas, JOINs, vistas y procedimientos de básico a avanzado. Certificado y cuotas; precios en PDF.",
     h1: "Curso SQL Server en vivo en Chile",
     audience:
       "Para analistas que salen de Excel y necesitan extraer datos de bases SQL Server con consultas propias.",
