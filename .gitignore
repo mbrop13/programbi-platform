@@ -44,6 +44,7 @@ next-env.d.ts
 # scratch files
 /scratch/
 /.lh-tmp/
+/data/carreras/raw/
 
 
 # INE source downloads (derived data is versioned)

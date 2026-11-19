@@ -116,7 +116,9 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
             </Link>
           ))}
           {pais === ISO_CHILE ? (
-            <Link href="/datos" className="no-underline hover:text-mute">Datos de Chile</Link>
+            <Link href="/datos" className="no-underline hover:text-mute">
+              Datos de Chile
+            </Link>
           ) : null}
           {GUIAS_POR_PAIS.has(pais) && esRutaIndexablePais(pais, "/guias") ? (
             <Link

@@ -191,7 +191,36 @@ const principal = await get(ruta);
 assert.equal(principal.headers.get("x-frame-options"), "DENY");
 assert.match(principal.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
 
-console.log(JSON.stringify({ complementarias, embeds: slugsEmbed.length, similitud, par, minPalabras: Math.min(...resultados.filter((r) => r.palabras).map((r) => r.palabras)),
+const carreras = entradas.map(({ loc }) => loc).filter((loc) =>
+  loc?.startsWith(`${host}/datos/carreras`) || loc === `${host}/datos/inflacion`,
+).map((loc) => new URL(loc).pathname);
+assert.ok(carreras.includes("/datos/carreras") && carreras.includes("/datos/inflacion"));
+assert.ok(carreras.includes("/datos/carreras/medicina") && carreras.includes("/datos/carreras/comparar"));
+assert.ok(carreras.every((path) => !path.includes("/compartir/")), "sitemap excluye las imágenes dinámicas");
+assert.ok(enlazadores.some((origen) => origen.enlaces.has("/datos/carreras")), "enlace de carreras en el hub");
+assert.ok(enlazadores.some((origen) => origen.enlaces.has("/datos/inflacion")), "enlace de inflación en el hub");
+for (let i = 0; i < carreras.length; i += 8) {
+  await Promise.all(carreras.slice(i, i + 8).map(async (path) => {
+    const response = await get(path);
+    assert.equal(response.status, 200, path);
+    const html = await response.text();
+    const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+    const robots = html.match(/<meta name="robots" content="([^"]+)"/)?.[1];
+    assert.equal(canonical, `${host}${path}`, path);
+    assert.ok(!/noindex/i.test(robots ?? ""), path);
+    assert.equal([...html.matchAll(/<h1(?:\s[^>]*)?>/g)].length, 1, path);
+  }));
+}
+const tarjeta = await get("/datos/carreras/compartir/medicina/ingenieria-comercial?formato=1200x630");
+assert.equal(tarjeta.status, 200);
+assert.match(tarjeta.headers.get("cache-control") ?? "", /s-maxage=31536000/);
+const pngCarrera = Buffer.from(await tarjeta.arrayBuffer());
+assert.deepEqual([pngCarrera.readUInt32BE(16), pngCarrera.readUInt32BE(20)], [1200, 630]);
+const tarjetaInvalida = await get("/datos/carreras/compartir/inexistente/medicina?formato=1200x630");
+assert.equal(tarjetaInvalida.status, 404);
+assert.match(tarjetaInvalida.headers.get("cache-control") ?? "", /s-maxage=86400/);
+
+console.log(JSON.stringify({ complementarias, carreras: carreras.length, embeds: slugsEmbed.length, similitud, par, minPalabras: Math.min(...resultados.filter((r) => r.palabras).map((r) => r.palabras)),
   paginas: resultados.map(({ enlaces: salientes, shingles: segmentos, ...datos }) => ({
     ...datos, entrantes: enlazadores.filter((origen) => origen.path !== datos.path && origen.enlaces.has(datos.path)).length,
     salientes: salientes.size, segmentos: segmentos.size,

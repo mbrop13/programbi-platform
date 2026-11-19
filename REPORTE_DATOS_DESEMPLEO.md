@@ -68,9 +68,9 @@ El formulario pide consentimiento, envía confirmación con enlace de 48 horas y
 
 Para activar el envío se requiere aplicar `supabase/migrations/20261119000100_datos_alertas_desempleo.sql`, habilitar las variables de Supabase y Amazon SES que declara el workflow y ejecutar la inicialización después del despliegue de la sección. Esta entrega conserva la migración, las acciones y el workflow en Git. La verificación local evita usar destinatarios reales.
 
-### Coordinación con el observatorio de carreras
+### Integración con carreras
 
-El equipo de carreras trabaja en `mejora/datos-carreras`, con checkout y build independientes. Esta rama contiene el observatorio de desempleo, jóvenes, seguro, alertas y capacitación. El formato específico de desempleo vive en `lib/datos/desempleo-formato.ts`, de modo que el otro observatorio puede tener su propio `formato.ts`. El hub, el sitemap y la navegación de Chile son puntos comunes de integración. El ranking de carreras se enlazará cuando la ruta de esa rama esté integrada para evitar enlaces rotos.
+El commit de carreras `83bee6b` se integró en el checkout de esta rama. El hub enlaza ahora a los rankings del SIES, la calculadora y el comparador, las páginas de empleo, el observatorio de capacitación y el IPC. Las ramas de origen y `main` se conservaron.
 
 ## Auditoría del build optimizado
 
@@ -119,6 +119,29 @@ La prueba de Chromium pasó sin errores de hidratación. Verificó HTML sin Java
 
 ### Alcance
 
-La rama se creó desde `1bc1254`. El diff de `config/paises.ts`, `vercel.json`, `app/robots.ts`, blog, precios, guías, fichas y carpetas de países permanece vacío. En la web previa se agregaron enlaces en menú, footer y sitemap. La configuración de Next solo extendió los encabezados de las tarjetas y el correo reutiliza el transporte existente. El aviso real, la CDN de Vercel, CrUX, el PBIX elaborado por Manu, el contraste opcional BCCh y la integración de la rama de carreras permanecen pendientes.
+La rama se creó desde `1bc1254`. El diff de `config/paises.ts`, `vercel.json`, `app/robots.ts`, blog, precios, guías, fichas y carpetas de países permanece vacío. En la web previa se agregaron enlaces en menú, footer y sitemap. La configuración de Next solo extendió los encabezados de las tarjetas y el correo reutiliza el transporte existente. El aviso real, la CDN de Vercel, CrUX, el PBIX elaborado por Manu, el contraste opcional BCCh permanecen pendientes.
 
-La medición Lighthouse móvil está en cola hasta que termine la recompilación paralela de carreras.
+
+## Candidato integrado
+
+El build produjo 1.561 páginas estáticas del sitio completo. La única función nueva bajo `/datos` es la tarjeta de carreras `/datos/carreras/compartir/[a]/[b]`, con lista de parámetros y slugs admitidos y caché de un año. Se comprobó el 200 PNG y el 404 cacheable desde `next start`. Las 198 páginas indexables del área (20 de empleo y capacitación más 178 de carreras e IPC) respondieron 200 con canonical propio y un H1. También pasaron las 10 pruebas específicas de datos y SEO de carreras, las 17 tarjetas insertables y las pruebas Playwright de la navegación móvil y los comparadores.
+
+El layout propio de `/datos` conserva la identidad de ProgramBI con una navegación ligera a cada tema. Analytics de la sección arranca tras la primera interacción o después de nueve segundos. El sitio compartido conserva su layout y sus dependencias originales. En local el peso inicial adicional de JavaScript de las páginas de desempleo quedó por debajo de 12 KB gzip respecto de la lista de scripts de la portada.
+
+### Lighthouse móvil del candidato integrado (Chrome local, modo simulado)
+
+| Ruta | Performance | Accesibilidad | SEO | LCP (ms) | CLS | TBT (ms) | JS transferido (bytes) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `/` | 62 | 97 | 100 | 3720 | 0,000 | 1689 | 723250 |
+| `/datos/desempleo` | 72 | 100 | 100 | 2859 | 0,000 | 933 | 262025 |
+| `/datos/desempleo/metropolitana` | 96 | 100 | 100 | 2522 | 0,000 | 70 | 264144 |
+| `/datos/desempleo/nuble` | 93 | 97 | 100 | 3019 | 0,000 | 82 | 264144 |
+| `/datos/desempleo/jovenes` | 95 | 100 | 100 | 2810 | 0,000 | 83 | 264926 |
+| `/datos` | 97 | 100 | 100 | 2213 | 0,000 | 146 | 262025 |
+| `/datos/carreras` | 63 | 97 | 100 | 4083 | 0,000 | 1091 | 538267 |
+| `/datos/carreras/medicina` | 73 | 97 | 100 | 2813 | 0,000 | 979 | 597473 |
+| `/datos/carreras/comparar` | 59 | 97 | 100 | 3800 | 0,000 | 2317 | 442059 |
+
+El presupuesto incremental de desempleo, los canonicals y la accesibilidad pasaron. El LCP y parte del bloqueo móvil siguen por encima de los objetivos de laboratorio. Se conserva la prueba base de la portada para distinguir el costo existente. Falta activar alertas y medir CDN/CrUX en Vercel con un despliegue autorizado.
+
+VEREDICTO: AMARILLO. Funciones y SEO integrados y comprobados en local. Queda el ajuste de rendimiento móvil y el cierre de publicación.

@@ -1,0 +1,49 @@
+{
+  "edicion": "2025-2026",
+  "pesos_de": "2025-09",
+  "fetched_at": "2026-11-19T10:05:50.480Z",
+  "fuentes": [
+    {
+      "nombre": "Estadísticas por Carrera (SIES)",
+      "url": "https://www.mifuturo.cl/wp-content/uploads/2025/12/Buscador_Estadi%CC%81sticasCarrera_2025_2026_SIES.xlsx",
+      "sha256": "4a5aee8546641725078790a5a2346583173e52cf325ce733f916f8309dfa288d"
+    },
+    {
+      "nombre": "Buscador de Empleabilidad e Ingresos (SIES)",
+      "url": "https://www.mifuturo.cl/wp-content/uploads/2026/11/Buscador_Empleabilidad_ingresos_2025_2026_SIES.xlsx",
+      "sha256": "ff3ce56da2d5aec990010b2ef21eba1bac5d3b3c65cbeffb5fc1cea015619bfb"
+    },
+    {
+      "nombre": "Buscador de Carreras (SIES)",
+      "url": "https://www.mifuturo.cl/wp-content/uploads/2026/11/Buscador_de_Carreras_2025_2026_SIES.xlsx",
+      "sha256": "509559c593856cc92fb86e2e13ef58e4adb94ea4f9c1378b857ee6ca1734fe1b"
+    },
+    {
+      "nombre": "Buscador de Instituciones (SIES)",
+      "url": "https://www.mifuturo.cl/wp-content/uploads/2026/03/Buscador_Instituciones_2025_2026_SIES-vf.xlsx",
+      "sha256": "e8c32306b0dff586d4b6771c312439bc8d3c9883a61ffab39fd421162b92fc78"
+    },
+    {
+      "nombre": "Estadísticas por Carrera 2024-2025 (SIES)",
+      "url": "https://www.mifuturo.cl/wp-content/uploads/2024/12/Buscador_Estadisticas_por_carrera_2024_2025_SIES.xlsx",
+      "sha256": "11d66201c94c3e93a00dbc4aa70ed4507707902b980f560f7d4a4769da2ae465"
+    }
+  ],
+  "ipc": {
+    "ultimo_mes": "2026-10",
+    "valor": 114.13,
+    "fuente": "committed-fallback (falta BCCH_API_TOKEN)"
+  },
+  "conteos": {
+    "filas_A": 252,
+    "genericas_unicas": 165,
+    "filas_B": 1690,
+    "filas_C": 9898,
+    "cruce_B_A_pct": 99.6,
+    "cruce_C_A_pct": 93.4
+  },
+  "avisos": [
+    "BCCH_API_TOKEN no configurado: se usó data/ipc/ipc.json commiteado.",
+    "Carreras en 2024-2025 ausentes en 2025-2026: tecnico-en-administracion-de-ventas, tecnico-en-procesos-industriales, tecnico-en-contabilidad-tributaria, tecnico-en-relaciones-publicas"
+  ]
+}

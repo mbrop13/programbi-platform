@@ -250,3 +250,10 @@
 @media (prefers-reduced-motion: reduce) {
   .datos *, .datos *::before, .datos *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+/* La geometría y las tablas están en el HTML. El navegador puede aplazar el
+   cálculo de estilo y layout mientras la sección permanece fuera de vista. */
+@supports (content-visibility: auto) {
+  .bloque, .descargas, .seccion { content-visibility: auto; contain-intrinsic-size: auto 450px; }
+  .bloque[id="regiones"] { contain-intrinsic-size: auto 980px; }
+}

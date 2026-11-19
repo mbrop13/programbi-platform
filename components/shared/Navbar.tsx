@@ -72,7 +72,7 @@ const RECURSOS_LINKS = [
   {
     href: "/datos",
     label: "Datos de Chile",
-    desc: "Tasa de desempleo, regiones e histórico del INE",
+    desc: "Desempleo, carreras, capacitación e IPC de Chile",
   },
 ] as const;
 

@@ -1,0 +1,255 @@
+﻿# Fuente: Elaboración propia a partir de base publicada en www.mifuturo.cl (Mineduc SIES), edición 2025-2026.
+# Ingresos brutos mensuales promedio en pesos de septiembre de 2025. Empleabilidad en % (0-100). ProgramBI no está afiliado al Mineduc.
+slug;carrera_generica;area;tipo_institucion;nivel;ingreso_1er_ano_clp_sep2025;ingreso_4to_ano_clp_sep2025;ingreso_5to_ano_clp_sep2025;p10_5to_ano;p50_5to_ano;p90_5to_ano;empleabilidad_1er_ano;empleabilidad_2do_ano;duracion_formal_sem;duracion_real_sem;titulados_2024;arancel_mediano_2026_clp;variacion_real_2020_2024
+medicina;Medicina;Salud;Universidades;Profesional;2758297;3719393;4280720;2126548;4121741;6701042;90,9;89,3;13,9;15,1;2430;10236008;-17,7
+ingenieria-civil-metalurgica;Ingeniería Civil Metalúrgica;Tecnología;Universidades;Profesional;1808252;3508658;3724054;1085342;2803434;7882793;80,5;91,6;11,5;17,1;219;6778500;9,9
+ingenieria-civil-en-minas;Ingeniería Civil en Minas;Tecnología;Universidades;Profesional;2274423;3432022;4230975;1305668;2816808;7605401;82;89,6;11,1;15,7;680;6176000;-21
+ingenieria-en-automatizacion-instrumentacion-y-control;Ingeniería en Automatización, Instrumentación y Control;Tecnología;Institutos Profesionales;Profesional;1932362;2951835;2563819;1133007;2635086;4864250;91,4;91,6;8;10,1;714;2710000;
+geologia;Geología;Ciencias Básicas;Universidades;Profesional;1713546;2919331;3182406;1185781;2592261;5965511;68,7;82,1;10,7;16,2;538;5882200;-8,4
+ingenieria-civil-electrica;Ingeniería Civil Eléctrica;Tecnología;Universidades;Profesional;1907850;2912849;3261044;1396015;2870420;6017550;92;95,3;11,6;15,4;579;6634000;0,9
+ingenieria-industrial;Ingeniería Industrial;Tecnología;Institutos Profesionales;Profesional;3119070;2847984;2388778;910324;2590734;6356985;95,4;95,1;8;9,6;893;2524600;91,3
+ingenieria-civil-mecanica;Ingeniería Civil Mecánica;Tecnología;Universidades;Profesional;1672484;2841820;3141787;1225843;2512975;6390294;86,8;92,9;11,7;16,2;768;6421500;15,7
+ingenieria-civil-industrial;Ingeniería Civil Industrial;Tecnología;Universidades;Profesional;2100771;2840993;3126885;1205626;2466538;4921345;89,4;93,4;11,1;14,1;6491;5670000;-2,3
+ingenieria-civil-en-computacion-e-informatica;Ingeniería Civil en Computación e Informática;Tecnología;Universidades;Profesional;1737657;2683432;2880941;1294660;2601025;4680338;88,5;93,9;11,1;14,1;1537;5662000;12,5
+ingenieria-civil-electronica;Ingeniería Civil Electrónica;Tecnología;Universidades;Profesional;1680291;2647456;2790310;1024660;2247305;4634446;83,5;93;11,8;15,7;263;6183000;22,5
+tecnico-en-metalurgia;Técnico en Metalurgia;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1937004;2602565;2367301;948141;1615867;4683389;86,9;88,6;4;7,3;92;2715000;
+ingenieria-en-minas;Ingeniería en Minas;Tecnología;Universidades;Profesional;2192731;2514687;2707171;1076955;2270126;6094274;83,6;85;8,3;12,9;298;3888874;6,6
+ingenieria-civil-quimica;Ingeniería Civil Química;Tecnología;Universidades;Profesional;1535618;2481356;2897831;1202718;2442337;5816633;81,9;91;11,7;15,6;390;6778500;-3
+ingenieria-marina-y-maritimo-portuaria;Ingeniería Marina y Marítimo Portuaria;Tecnología;Universidades;Profesional;1730390;2473744;2676463;1080585;2682979;4586226;79;90,4;8;12,4;79;4350000;12,8
+ingenieria-industrial;Ingeniería Industrial;Tecnología;Universidades;Profesional;2171851;2471355;2654834;902914;1955378;4686248;88,1;89,5;8,4;12,7;1855;4030000;-5,8
+ingenieria-en-matematica-y-estadistica;Ingeniería en Matemática y Estadística;Ciencias Básicas;Universidades;Profesional;1593843;2397935;2489711;936869;2358116;3276633;89,7;92,9;10,5;13,4;81;5923000;
+quimica-y-farmacia;Química y Farmacia;Salud;Universidades;Profesional;2011053;2368256;2463865;1588982;2351271;3270968;98,5;98,4;10,8;14,2;1048;5881000;4,5
+ingenieria-civil-plan-comun-y-licenciatura-en-ciencias-de-la-ingenieria;Ingeniería Civil, plan común y licenciatura en Ciencias de la Ingeniería;Tecnología;Universidades;Profesional;1492102;2260842;2522741;1176349;2235765;3672555;86,1;91,2;11,5;15,6;777;6222000;6,5
+ingenieria-en-automatizacion-instrumentacion-y-control;Ingeniería en Automatización, Instrumentación y Control;Tecnología;Universidades;Profesional;1559996;2237428;2337979;1036536;2019730;4557175;89,8;92,6;8;13,2;217;3810000;12,5
+tecnico-en-instrumentacion-automatizacion-y-control-industrial;Técnico en Instrumentación, Automatización y Control Industrial;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;2469310;2233589;1849629;739486;1714117;4433942;95,6;96,4;4,9;6,3;917;2560000;135,9
+derecho;Derecho;Derecho;Universidades;Profesional;1662615;2204826;2426582;936692;2057321;4261475;75,1;82,1;10,4;16,2;4923;5485000;-9,4
+ingenieria-comercial;Ingeniería Comercial;Administración y Comercio;Universidades;Profesional;1608643;2203057;2382233;881696;2008881;4049238;82,1;87,7;10;12,3;7786;5327000;-3
+ingenieria-en-metalurgia;Ingeniería en Metalurgia;Tecnología;Institutos Profesionales;Profesional;1694319;2190630;2262028;840629;1755675;3983503;82,2;86,9;8;10,6;104;3381000;
+ingenieria-en-computacion-e-informatica;Ingeniería en Computación e Informática;Tecnología;Universidades;Profesional;1574563;2151897;2308594;957954;2022362;3902253;82,9;89;8,4;12,3;1201;4337500;8,1
+administracion-publica;Administración Pública;Ciencias Sociales;Institutos Profesionales;Profesional;1856173;2136593;2170176;1295023;2053074;2853525;98,2;98,8;8,1;9,1;823;2350000;-1,1
+ingenieria-civil-ambiental;Ingeniería Civil Ambiental;Tecnología;Universidades;Profesional;1348586;2119848;2290470;1232925;2187968;3341859;84,2;90,1;11,4;15;140;5430000;
+ingenieria-en-metalurgia;Ingeniería en Metalurgia;Tecnología;Universidades;Profesional;1233086;2111699;2422238;795332;1905980;4506896;75;89;8,1;14,5;33;4957500;4,3
+ingenieria-civil-en-obras-civiles;Ingeniería Civil en Obras Civiles;Tecnología;Universidades;Profesional;1554959;2110462;2323638;988230;2066422;3240642;84,7;91;11,2;15,1;559;5700000;-0,5
+ingenieria-en-electricidad;Ingeniería en Electricidad;Tecnología;Universidades;Profesional;1872528;2107170;2334833;939724;1882080;3803652;87,1;90,5;8,5;14;433;5266000;-2,9
+ingenieria-mecanica;Ingeniería Mecánica;Tecnología;Universidades;Profesional;1467189;2064800;2303625;904851;1850190;3985054;82;86,4;8,6;15;273;4751000;-3,1
+ingenieria-en-control-de-gestion;Ingeniería en Control de Gestión;Administración y Comercio;Universidades;Profesional;1524646;2063777;2330321;1025982;1921256;3426254;87,3;90,6;9,9;11,9;661;5024000;-12,5
+ingenieria-en-seguridad-privada;Ingeniería en Seguridad Privada;Administración y Comercio;Institutos Profesionales;Profesional;1826793;2009189;2077960;1643523;1851403;2664054;99,3;99,1;8;8,5;751;1990000;
+ingenieria-en-geomensura-y-cartografia;Ingeniería en Geomensura y Cartografía;Ciencias Básicas;Universidades;Profesional;1329831;1999501;2033677;1057597;1899409;2728893;87,8;89,5;9,2;15,1;142;5240050;4,4
+ingenieria-en-computacion-e-informatica;Ingeniería en Computación e Informática;Tecnología;Institutos Profesionales;Profesional;1440030;1993042;2122851;914978;1888732;3535842;82,1;89,7;8;9,9;2225;3260000;5,6
+tecnico-en-mineria;Técnico en Minería;Tecnología;Universidades;Técnica de Nivel Superior;1458222;1987119;2130267;770562;1429847;4362403;68,8;72,4;4,4;6,9;196;2444000;0,8
+ingenieria-en-minas;Ingeniería en Minas;Tecnología;Institutos Profesionales;Profesional;1565689;1985714;2113151;817207;1755692;4223718;79;83,8;8;11,6;521;2710000;14,1
+tecnico-en-mecanica-industrial;Técnico en Mecánica Industrial;Tecnología;Universidades;Técnica de Nivel Superior;1621000;1974698;2040318;793694;1797745;4495917;77,1;82,7;4,2;5,9;157;2444000;3,8
+ingenieria-en-gestion-publica;Ingeniería en Gestión Pública;Ciencias Sociales;Universidades;Profesional;1580688;1947845;1976000;854200;1725198;2724129;92,1;97,7;8;10,9;92;1753000;6,8
+ingenieria-en-logistica;Ingeniería en Logística;Administración y Comercio;Universidades;Profesional;2067424;1941738;2107014;939644;1762115;2959427;96,1;94,5;;;343;3738801;-7,5
+tecnico-en-mantenimiento-industrial;Técnico en Mantenimiento Industrial;Tecnología;Universidades;Técnica de Nivel Superior;1524769;1907999;2171364;969417;1877042;4274820;79,6;89,5;4,2;6,8;192;3260000;-16,8
+construccion-civil;Construcción Civil;Tecnología;Universidades;Profesional;1362522;1886039;2098714;995240;1946268;3208411;83;85,2;9,4;14,1;422;3850000;-2,4
+ingenieria-civil-en-biomedica;Ingeniería Civil en Biomédica;Tecnología;Universidades;Profesional;1367867;1883451;1997817;906736;1747392;2499422;94,4;90,7;12;13,9;97;7080000;-8,5
+tecnico-en-mineria;Técnico en Minería;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1591180;1868826;2038466;730699;1510227;4413661;81;83,3;4,4;7,1;332;2392907;45,8
+ingenieria-mecanica;Ingeniería Mecánica;Tecnología;Institutos Profesionales;Profesional;1395757;1863351;1997064;828474;1664460;3627667;86,6;90,9;8;11,3;702;2593850;9,3
+ingenieria-en-electronica;Ingeniería en Electrónica;Tecnología;Universidades;Profesional;1317742;1852042;1924354;957047;1923965;4231433;82,3;87,2;8,8;14,8;63;5375500;1,5
+odontologia;Odontología;Salud;Universidades;Profesional;1311241;1848602;1998135;706178;1582600;3091391;62,7;74,1;11,9;15,1;1781;10176171;0,7
+enfermeria;Enfermería;Salud;Universidades;Profesional;1322775;1832131;1864807;1017889;1826430;2648021;78,6;87,9;10;12,1;5642;5795100;3,3
+ingenieria-en-electricidad;Ingeniería en Electricidad;Tecnología;Institutos Profesionales;Profesional;1412926;1816975;1972284;921704;1682097;3410880;86;89,3;8;10,6;1888;2820000;-3
+ingenieria-en-prevencion-de-riesgos;Ingeniería en Prevención de Riesgos;Tecnología;Universidades;Profesional;1656502;1812703;1911700;803084;1626070;2960401;86,5;88,4;8,6;13,7;379;3478500;3,7
+tecnico-en-metalurgia;Técnico en Metalurgia;Tecnología;Universidades;Técnica de Nivel Superior;1728942;1793507;2023460;842157;1634654;5823613;76,7;82,3;4,1;6;76;2444000;-14,9
+ingenieria-en-conectividad-y-redes;Ingeniería en Conectividad y Redes;Tecnología;Institutos Profesionales;Profesional;1320656;1787440;1942906;816617;1582229;2900725;86,2;91,4;8;9,8;705;2550000;-14
+administracion-publica;Administración Pública;Ciencias Sociales;Universidades;Profesional;1361765;1786637;1907871;1006044;1899910;2847769;77,7;88,1;10,1;11,3;1477;4550000;-4,8
+ingenieria-en-logistica;Ingeniería en Logística;Administración y Comercio;Institutos Profesionales;Profesional;1331774;1776995;1774257;862079;1610584;2969421;84,8;89,2;8;9,6;1304;2789000;6,1
+ingenieria-en-telecomunicaciones;Ingeniería en Telecomunicaciones;Tecnología;Institutos Profesionales;Profesional;1169595;1751537;1882081;928883;1661607;2838489;86;88,8;8;10,9;282;3372000;12,9
+tecnologia-medica;Tecnología Médica;Salud;Universidades;Profesional;1226007;1750943;1836411;982751;1720266;2577123;71,4;85,2;10;12,7;2210;5905000;-1,1
+agronomia;Agronomía;Agropecuaria;Universidades;Profesional;1236432;1729270;1933593;712799;1672313;3344150;68,2;76;10;14,2;938;5440000;-3
+ingenieria-en-gestion-publica;Ingeniería en Gestión Pública;Ciencias Sociales;Institutos Profesionales;Profesional;1505040;1722706;1789244;897341;1611284;2781496;92,1;92,6;8;9,4;243;1753000;1,4
+ingenieria-en-quimica;Ingeniería en Química;Tecnología;Universidades;Profesional;1233460;1696512;1698216;975044;1517667;2521335;83,5;91,3;8,9;13,5;100;5760000;24,7
+contador-auditor;Contador Auditor;Administración y Comercio;Universidades;Profesional;1206722;1687026;1825824;828142;1576091;2961186;85,3;89,6;9,2;11,8;2119;4391400;-6,9
+tecnico-en-electricidad-y-electricidad-industrial;Técnico en Electricidad y Electricidad Industrial;Tecnología;Universidades;Técnica de Nivel Superior;1275913;1678712;1872410;856853;1474971;3132660;75,4;81;4,3;5,8;284;2690000;16,7
+administracion-de-empresas-e-ing-asociadas;Administración de Empresas e Ing. Asociadas;Administración y Comercio;Universidades;Profesional;1381022;1675631;1738045;727578;1480515;2992524;78;82,3;8,1;12;2626;3816601;-0,7
+obstetricia-y-puericultura;Obstetricia y Puericultura;Salud;Universidades;Profesional;1164784;1672113;1784176;1052381;1715193;2409629;69,4;86,2;10;12,3;2072;5902000;-13,3
+ingenieria-en-construccion;Ingeniería en Construcción;Tecnología;Universidades;Profesional;1253853;1652961;1772525;780111;1547860;2650798;77,4;82,6;9,8;14,1;1304;5109000;-5,5
+ingenieria-en-geomensura-y-cartografia;Ingeniería en Geomensura y Cartografía;Ciencias Básicas;Institutos Profesionales;Profesional;1432925;1648680;1769714;788533;1578617;2551063;80,1;84,6;8;12,1;152;2465500;
+ingenieria-forestal;Ingeniería Forestal;Agropecuaria;Universidades;Profesional;1216331;1642012;1826235;937560;1453461;2364178;84,6;88,6;10;13,6;123;6922900;
+ingenieria-en-finanzas;Ingeniería en Finanzas;Administración y Comercio;Institutos Profesionales;Profesional;1296692;1634437;1706883;791250;1659672;2501316;78,3;82,6;8,2;9,8;1186;3080000;-8,9
+ingenieria-en-comercio-exterior;Ingeniería en Comercio Exterior;Administración y Comercio;Universidades;Profesional;1336513;1632797;2016372;707108;1515913;3266293;80,8;84,9;9,9;13,2;257;5024000;-23,3
+antropologia;Antropología;Ciencias Sociales;Universidades;Profesional;1324790;1623765;1679150;743070;1504463;3368937;61,4;77,2;9,9;14,6;274;5114661;21,5
+pedagogia-en-educacion-tecnico-profesional;Pedagogía en Educación Técnico Profesional;Educación;Universidades;Profesional;1556792;1623221;1769531;813749;1611469;2509774;93,4;89,6;;;102;3631500;
+ingenieria-en-medio-ambiente;Ingeniería en Medio Ambiente;Tecnología;Universidades;Profesional;1043451;1610625;1827089;951044;1701633;2553134;73,1;85,3;10;13,9;245;5760000;8,1
+tecnico-en-computacion-e-informatica;Técnico en Computación e Informática;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1279538;1596835;1678572;692923;1373916;3031824;73,9;80,9;4,9;6,4;1778;2530000;18,8
+tecnico-en-mecanica-industrial;Técnico en Mecánica Industrial;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1593346;1593798;1667794;696787;1401514;2520974;88;87;5;6,4;221;2373718;17,2
+tecnico-en-mineria;Técnico en Minería;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;2133018;1590809;1506958;699640;1316723;3812494;83,7;83,5;4,9;6,3;473;2741000;69,7
+tecnico-en-instrumentacion-automatizacion-y-control-industrial;Técnico en Instrumentación, Automatización y Control Industrial;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1283347;1589994;1724278;809539;1463897;2868622;80,1;84,1;4,2;7,3;751;2477827;13,3
+construccion-civil;Construcción Civil;Tecnología;Institutos Profesionales;Profesional;1249930;1576832;1657579;698392;1443468;2783484;74;77,8;8;11,4;1490;2598000;2,4
+ingenieria-civil-bioquimica;Ingeniería Civil Bioquímica;Tecnología;Universidades;Profesional;1042160;1568815;1917913;748156;1383271;2125524;82,7;82,8;12;14,5;39;6775000;
+ciencias-politicas;Ciencias Políticas;Ciencias Sociales;Universidades;Profesional;1111607;1564680;1702526;825935;1502837;2840612;58,2;75,7;9,2;11,4;333;4840000;-5,4
+tecnico-en-computacion-e-informatica;Técnico en Computación e Informática;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1070899;1560874;1676016;684419;1446515;3080814;66,5;77,1;4,5;7,1;1276;2362000;-1,4
+ingenieria-en-recursos-renovables;Ingeniería en Recursos Renovables;Tecnología;Universidades;Profesional;1158243;1552870;1739074;692938;1486445;2795957;68,5;77,9;10;14,3;229;6728000;-2,6
+administracion-de-empresas-e-ing-asociadas;Administración de Empresas e Ing. Asociadas;Administración y Comercio;Institutos Profesionales;Profesional;1328109;1547074;1602419;736592;1377977;2626144;81,1;84,1;8,1;10,2;4540;2591000;5,7
+quimica-licenciado-en-quimica;Química, Licenciado en Química;Ciencias Básicas;Universidades;Profesional;1052323;1545659;1488644;547414;1378155;2405001;61,4;66,4;10,1;14,7;115;5871000;
+ingenieria-en-comercio-exterior;Ingeniería en Comercio Exterior;Administración y Comercio;Institutos Profesionales;Profesional;1115462;1535666;1701102;768229;1382665;2633156;81,6;85,6;8;10;630;2634000;-7,9
+tecnico-en-computacion-e-informatica;Técnico en Computación e Informática;Tecnología;Universidades;Técnica de Nivel Superior;1026888;1530977;1559338;781105;1539282;2898013;51,4;65,1;4,5;6,2;169;2462500;-1,6
+tecnico-en-instrumentacion-automatizacion-y-control-industrial;Técnico en Instrumentación, Automatización y Control Industrial;Tecnología;Universidades;Técnica de Nivel Superior;1422718;1522832;1696209;717085;1326021;3097801;68,6;74,8;4,2;6,7;128;2444000;14,3
+ingenieria-en-refrigeracion-y-climatizacion;Ingeniería en Refrigeración y Climatización;Tecnología;Institutos Profesionales;Profesional;1141275;1513091;1554698;868030;1393318;1936592;79,6;86,4;8;11,4;66;3737000;5,3
+contador-auditor;Contador Auditor;Administración y Comercio;Institutos Profesionales;Profesional;1236725;1511981;1617556;761613;1432590;2638966;84;86,3;8,2;10,1;2092;2450000;-3,1
+ingenieria-en-mecanica-automotriz;Ingeniería en Mecánica Automotriz;Tecnología;Institutos Profesionales;Profesional;1133956;1499061;1584962;704121;1354409;2447795;79,7;83,8;8;10,6;2801;3340000;9
+arquitectura;Arquitectura;Arte y Arquitectura;Universidades;Profesional;1083856;1493345;1606588;790949;1446963;2422023;61,5;73,9;11,2;14,7;1716;5958000;-4
+publicidad;Publicidad;Ciencias Sociales;Universidades;Profesional;938258;1480918;1634165;817774;1402994;2510107;73;81,8;8,4;9,6;496;5463500;4,8
+ingenieria-en-alimentos;Ingeniería en Alimentos;Tecnología;Universidades;Profesional;1154875;1480333;1540421;855832;1483282;2609173;74;80,9;10,5;14,6;107;5403000;7,7
+tecnico-en-mantenimiento-industrial;Técnico en Mantenimiento Industrial;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1293137;1475778;1543825;729498;1331286;2490644;80,7;84,4;4,3;6,7;1224;2387004;7,1
+ingenieria-en-prevencion-de-riesgos;Ingeniería en Prevención de Riesgos;Tecnología;Institutos Profesionales;Profesional;1464546;1462915;1494788;703861;1339221;2489659;81,7;83,9;8;11,6;1631;2460000;18,6
+bioquimica;Bioquímica;Ciencias Básicas;Universidades;Profesional;1059559;1458953;1568533;650436;1363713;2645706;64,3;71,1;10,5;14,1;315;6468000;-19
+ingenieria-en-recursos-humanos;Ingeniería en Recursos Humanos;Administración y Comercio;Institutos Profesionales;Profesional;1166738;1456455;1507750;722278;1338432;2361296;78,8;83,1;8;9,7;1293;2730000;1,6
+diseno;Diseño;Arte y Arquitectura;Universidades;Profesional;1035131;1450393;1525896;705677;1309591;2609168;59,8;71,7;9,9;12,1;696;5887000;19,3
+ingenieria-en-construccion;Ingeniería en Construcción;Tecnología;Institutos Profesionales;Profesional;1077330;1445255;1547895;681365;1373917;2395827;68,2;74,3;8,1;10,4;1280;2241000;-2,6
+periodismo;Periodismo;Ciencias Sociales;Universidades;Profesional;1033450;1436817;1512510;790724;1375090;2279027;69,6;78,7;9,4;11,4;1386;5153500;0,8
+ingenieria-en-quimica;Ingeniería en Química;Tecnología;Institutos Profesionales;Profesional;1034074;1434782;1481366;860151;1433615;2163342;79,6;84,6;8;11,4;100;2954000;17
+tecnico-en-electronica-y-electronica-industrial;Técnico en Electrónica y Electrónica Industrial;Tecnología;Universidades;Técnica de Nivel Superior;1015005;1433438;1668405;702880;1465397;3283525;66;85,3;4,1;7,3;38;3260000;
+tecnico-en-acuicultura-y-pesca;Técnico en Acuicultura y Pesca;Agropecuaria;Centros de Formación Técnica;Técnica de Nivel Superior;1303716;1431509;1528200;781244;1399105;1940236;85,1;86,8;5;6,6;67;2247500;
+programas-de-formacion-pedagogica;Programas de Formación Pedagógica;Educación;Universidades;Profesional;1208865;1430797;1473719;767347;1315985;2059799;84,4;87;;;353;1840000;-0,6
+tecnico-en-electricidad-y-electricidad-industrial;Técnico en Electricidad y Electricidad Industrial;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1300869;1424112;1483160;737405;1274233;2596820;78,1;80,7;4,9;6,7;1381;2317480;20,5
+ingenieria-en-recursos-humanos;Ingeniería en Recursos Humanos;Administración y Comercio;Universidades;Profesional;845837;1423498;1549504;715636;1293236;2969066;69,4;73,4;;;24;2658301;
+sociologia;Sociología;Ciencias Sociales;Universidades;Profesional;1089621;1417500;1581982;727900;1365715;2472635;62,3;74,8;9,8;13;479;4874000;-7,3
+kinesiologia;Kinesiología;Salud;Universidades;Profesional;983275;1406891;1466798;697952;1396784;2235430;52,5;68,5;10;12,2;2714;5608000;-0,1
+ingenieria-en-marketing;Ingeniería en Marketing;Administración y Comercio;Institutos Profesionales;Profesional;995844;1401678;1570123;659810;1194609;2474366;62,2;73;8;9,4;575;3260000;-3,9
+geografia;Geografía;Ciencias Sociales;Universidades;Profesional;994744;1401673;1600847;813949;1547098;2297371;64,7;82,7;10;14;234;5200000;-9,6
+relaciones-publicas;Relaciones Públicas;Ciencias Sociales;Universidades;Profesional;1116547;1400349;1589757;635146;1120948;1911377;59;64,1;8;10;44;2990000;1,8
+biologia;Biología;Ciencias Básicas;Universidades;Profesional;1076664;1400218;1307996;773497;1331465;2107154;54,8;67,1;10;13,7;183;5783900;23
+tecnico-en-topografia;Técnico en Topografía;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1166017;1400113;1464811;688012;1271509;2321977;78,9;77,4;5;6,2;195;2440000;18,3
+tecnico-en-administracion-publica-o-municipal;Técnico en Administración Pública o Municipal;Ciencias Sociales;Institutos Profesionales;Técnica de Nivel Superior;1186688;1393303;1483963;833116;1314717;1995339;83;87,6;4,7;6,1;662;2350000;-14,5
+medicina-veterinaria;Medicina Veterinaria;Agropecuaria;Universidades;Profesional;1035456;1379385;1469493;729570;1271317;2393437;65,9;73,9;10,1;14,4;1485;6430481;-5,4
+tecnico-en-mantenimiento-industrial;Técnico en Mantenimiento Industrial;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1379475;1363912;1408361;655240;1218684;2660151;80,4;85,2;4,7;6,3;327;2900000;14,2
+tecnico-en-electricidad-y-electricidad-industrial;Técnico en Electricidad y Electricidad Industrial;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1223582;1353688;1422251;727675;1314402;2537631;78,5;82,4;4,9;6;1210;2820000;12,5
+tecnico-en-logistica;Técnico en Logística;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;1086249;1342105;1444886;688632;1237673;2526576;74,4;78;4,6;5,8;1099;2147884;-2,6
+bibliotecologia;Bibliotecología;Humanidades;Universidades;Profesional;1057931;1339844;1627930;797178;1335758;2184395;75;81,3;10;13,1;66;3610000;
+ingenieria-en-biotecnologia-y-bioingenieria;Ingeniería en Biotecnología y Bioingeniería;Tecnología;Universidades;Profesional;932699;1336460;1484242;801436;1247506;2345018;62,9;68;9,9;13,5;331;5805000;-7,9
+tecnico-en-administracion-financiera-y-finanzas;Técnico en Administración Financiera y Finanzas;Administración y Comercio;Institutos Profesionales;Técnica de Nivel Superior;1142852;1328102;1405635;690868;1235779;2418069;68,1;73,3;4,9;7,1;375;2440000;-0,2
+tecnico-en-logistica;Técnico en Logística;Administración y Comercio;Institutos Profesionales;Técnica de Nivel Superior;1280793;1323864;1437833;738857;1197355;2303201;84,1;85;4,8;5,9;1572;2580000;-9,9
+tecnico-en-contabilidad-general;Técnico en Contabilidad General;Administración y Comercio;Institutos Profesionales;Técnica de Nivel Superior;1170322;1321030;1397000;668523;1143800;2214721;71,1;78,4;4,9;6,5;1703;2410000;5,7
+biologia-marina-y-ecologia-marina;Biología Marina y Ecología Marina;Ciencias Básicas;Universidades;Profesional;1036298;1320336;1400644;691032;1429894;2218121;59,9;72,6;10;13,4;222;5369000;24,2
+tecnico-en-topografia;Técnico en Topografía;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1100915;1317909;1417890;658183;1277952;2268014;64;70,2;4,5;6,9;350;2301000;1,5
+tecnico-en-administracion-de-empresas;Técnico en Administración de Empresas;Administración y Comercio;Institutos Profesionales;Técnica de Nivel Superior;1253495;1311528;1317537;649597;1122752;2290099;76,3;76,8;4,8;6;3956;2580000;7,9
+pedagogia-en-educacion-media;Pedagogía en Educación Media;Educación;Universidades;Profesional;948526;1307876;1352941;742695;1284646;1733848;80,7;84,1;;;246;3074000;-2,4
+psicologia;Psicología;Ciencias Sociales;Universidades;Profesional;998896;1303331;1395488;754017;1220001;2066010;61,6;77,9;10,1;11,5;6775;5196000;-3,3
+tecnico-en-mecanica-automotriz;Técnico en Mecánica Automotriz;Tecnología;Universidades;Técnica de Nivel Superior;970558;1302224;1379239;580278;1175486;2632229;53,7;69,5;4,1;6,5;76;3260000;
+tecnico-en-administracion-publica-o-municipal;Técnico en Administración Pública o Municipal;Ciencias Sociales;Centros de Formación Técnica;Técnica de Nivel Superior;1061381;1298737;1366383;718208;1171554;2056503;74,3;78,4;5;5,6;452;2009015;5,1
+tecnico-en-electromecanica;Técnico en Electromecánica;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1077527;1298724;1341674;727973;1202458;2193884;80,6;82,6;4,8;6;134;2570000;7,9
+pedagogia-en-matematicas-y-computacion;Pedagogía en Matemáticas y Computación;Educación;Universidades;Profesional;1098076;1296180;1331942;950538;1331950;1772476;91,3;94,8;9,7;11,8;597;4031000;-2,4
+tecnico-en-mecanica-automotriz;Técnico en Mecánica Automotriz;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1138606;1293449;1388591;643229;1174129;2216445;72,4;75,3;4,1;6,9;2053;2800000;12,6
+ingenieria-en-medio-ambiente;Ingeniería en Medio Ambiente;Tecnología;Institutos Profesionales;Profesional;940683;1281373;1407831;696820;1244361;2165576;60;74,6;8;10;181;3359000;12,9
+pedagogia-en-ciencias;Pedagogía en Ciencias;Educación;Universidades;Profesional;1067554;1279797;1307293;879733;1328733;1749937;89,9;90,3;9,5;11,8;527;4522000;2,8
+tecnico-en-geomineria;Técnico en Geominería;Ciencias Básicas;Centros de Formación Técnica;Técnica de Nivel Superior;1150747;1271889;1374155;749819;1137215;2086258;70,8;73,5;;;21;2518620;
+tecnico-en-telecomunicaciones;Técnico en Telecomunicaciones;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1109263;1267322;1335674;713352;1166539;2306598;74,4;80,7;4;7,7;276;2100000;24,2
+terapia-ocupacional;Terapia Ocupacional;Salud;Universidades;Profesional;878860;1263707;1310769;701885;1283240;1933735;49,6;71,9;10;11,5;2121;5054000;-3,4
+tecnico-en-administracion-de-redes-y-soporte;Técnico en Administración de Redes y Soporte;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1428587;1256914;1275605;665776;1073078;1998440;87;85,5;4,6;5,9;226;2362500;19
+pedagogia-en-filosofia-y-religion;Pedagogía en Filosofía y Religión;Educación;Universidades;Profesional;1566876;1256069;1238268;994327;1217395;1608755;78,9;83;9,9;13,2;97;3914000;
+tecnico-en-comercio-exterior;Técnico en Comercio Exterior;Administración y Comercio;Universidades;Técnica de Nivel Superior;1018824;1239708;1379175;633019;1063962;2467167;60;71,6;;;23;2450000;
+tecnico-en-construccion-y-obras-civiles;Técnico en Construcción y Obras Civiles;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1141726;1237890;1348676;612192;1100178;2168328;64,4;66,9;4,5;6,7;1314;2300000;5,6
+tecnico-en-administracion-de-empresas;Técnico en Administración de Empresas;Administración y Comercio;Universidades;Técnica de Nivel Superior;1181470;1235089;1371053;628944;1061531;2140618;65,2;67,8;4,4;5,3;1089;2600500;-8,9
+tecnico-en-administracion-financiera-y-finanzas;Técnico en Administración Financiera y Finanzas;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;1295939;1233962;1327012;591189;1048509;1752210;80,9;79,7;4,6;6;86;2440000;
+tecnico-en-contabilidad-general;Técnico en Contabilidad General;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;969101;1232363;1310022;651168;1118239;2195138;67,9;73,2;4,6;6,3;809;2397000;-0,1
+pedagogia-en-educacion-diferencial;Pedagogía en Educación Diferencial;Educación;Universidades;Profesional;1025194;1231830;1280449;922700;1253616;1635321;91,2;92,5;9,5;10,4;1929;3864000;-6,9
+tecnico-en-traduccion-e-interpretariado;Técnico en Traducción e Interpretariado;Humanidades;Institutos Profesionales;Técnica de Nivel Superior;821240;1222878;1205313;591691;806984;1112160;34,7;54,1;5,7;7,4;68;1700000;55,4
+comunicacion-audiovisual-y-o-multimedia;Comunicación Audiovisual y/o Multimedia;Arte y Arquitectura;Universidades;Profesional;1065601;1222311;1290274;601560;1188620;2376733;46,7;56,4;9,1;11,5;171;4590000;-31,4
+tecnico-en-construccion-y-obras-civiles;Técnico en Construcción y Obras Civiles;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1153411;1219046;1266828;603211;1059423;2023092;68,2;69,7;4,9;6,4;1199;2700000;15,9
+kinesiologia;Kinesiología;Salud;Institutos Profesionales;Profesional;862539;1218596;1241087;593088;1105870;1828989;42,6;55;10;13;114;3382000;
+tecnico-en-electronica-y-electronica-industrial;Técnico en Electrónica y Electrónica Industrial;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;954301;1212598;1254984;666781;1176492;2092703;71,6;77;4;6,7;71;2991000;13,8
+tecnico-en-prevencion-de-riesgos;Técnico en Prevención de Riesgos;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1456261;1208885;1178903;601385;1039867;2195581;74,7;76,5;5;6,2;954;2530000;37,3
+trabajo-social;Trabajo Social;Ciencias Sociales;Universidades;Profesional;1019931;1206925;1268800;725235;1200360;1920029;66,9;78,5;9,8;11,3;3162;3680000;0
+tecnico-en-comercio-exterior;Técnico en Comercio Exterior;Administración y Comercio;Institutos Profesionales;Técnica de Nivel Superior;1087014;1206806;1279363;663182;1082405;1785443;78,3;82,6;4,7;6,2;376;2800000;-2,6
+pedagogia-en-lenguaje-comunicacion-y-o-castellano;Pedagogía en Lenguaje, Comunicación y/o Castellano;Educación;Universidades;Profesional;982285;1200218;1253572;806923;1255271;1574730;83,3;86,7;9,8;11,3;749;4091000;-4,2
+tecnico-en-refrigeracion-y-climatizacion;Técnico en Refrigeración y Climatización;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1051435;1196740;1239814;628621;1025732;2175439;73;83,5;4,2;7;94;2275586;25,5
+diseno-industrial;Diseño Industrial;Tecnología;Universidades;Profesional;907220;1194060;1320772;652689;1060363;2432645;57,7;63,2;8,9;13,6;82;4891000;14,8
+pedagogia-en-educacion-basica;Pedagogía en Educación Básica;Educación;Universidades;Profesional;1012768;1193292;1238656;865573;1221325;1587561;90,8;91,5;9,5;10,6;1521;4193500;0,7
+tecnico-en-administracion-de-empresas;Técnico en Administración de Empresas;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;971478;1191714;1266311;627221;1062350;2062576;61,8;68;4,5;6,3;3401;2277000;-7,8
+trabajo-social;Trabajo Social;Ciencias Sociales;Institutos Profesionales;Profesional;1099933;1190447;1255513;658528;1164513;2112053;67,6;75,3;8;9,8;3627;2437000;-4,7
+relaciones-publicas;Relaciones Públicas;Ciencias Sociales;Institutos Profesionales;Profesional;861085;1187901;1304326;681542;1075473;1783324;49,5;64,7;8;9,6;131;3065000;-5,1
+diseno-grafico;Diseño Gráfico;Arte y Arquitectura;Universidades;Profesional;899199;1179236;1243756;566377;1027279;2192294;43,6;53,4;9,2;11,6;232;4814000;-9,1
+tecnico-en-comercio-exterior;Técnico en Comercio Exterior;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;1024402;1176620;1274967;711504;1121893;1987481;74,6;76,3;4,5;6,9;334;2051000;-3,5
+nutricion-y-dietetica;Nutrición y Dietética;Salud;Universidades;Profesional;867391;1176047;1252894;641182;1166752;1972366;45,9;62,4;10;12,6;1798;5093000;0,4
+ingenieria-agricola;Ingeniería Agrícola;Agropecuaria;Institutos Profesionales;Profesional;953106;1175684;1244042;624186;1038667;1955950;59,9;68,4;8;10,3;863;3160000;-2,1
+realizador-de-cine-y-television;Realizador de Cine y Televisión;Arte y Arquitectura;Universidades;Profesional;1110015;1160556;1064589;675004;1107159;1784641;48,2;55,3;9,1;12,1;205;6781200;
+tecnico-en-administracion-de-recursos-humanos-y-personal;Técnico en Administración de Recursos Humanos y Personal;Administración y Comercio;Institutos Profesionales;Técnica de Nivel Superior;1072251;1160183;1215487;638983;1048343;1874312;71,7;76,5;4,9;6,5;663;2410000;0,3
+tecnico-en-administracion-de-recursos-humanos-y-personal;Técnico en Administración de Recursos Humanos y Personal;Administración y Comercio;Universidades;Técnica de Nivel Superior;915050;1159685;1336107;596688;1078498;2076565;62,7;72,2;4,5;5,9;48;2444000;-16,1
+tecnico-en-alimentos;Técnico en Alimentos;Tecnología;Universidades;Técnica de Nivel Superior;849287;1157821;1196365;762599;1074736;1798801;59,7;66;4,9;5,7;69;2528500;
+tecnico-en-prevencion-de-riesgos;Técnico en Prevención de Riesgos;Tecnología;Centros de Formación Técnica;Técnica de Nivel Superior;1223006;1154535;1204052;636921;1057909;2085532;70,9;68;4,5;8,4;160;2663521;17,3
+licenciatura-en-letras-y-literatura;Licenciatura en Letras y Literatura;Humanidades;Universidades;Profesional;803832;1152080;1209841;692968;1174799;1773583;34,8;58,8;8,2;10,2;352;5480000;-1,5
+tecnico-en-energia;Técnico en Energía;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;940791;1147534;1430417;601782;946800;2514674;66,8;69,7;5;6,9;125;2936000;
+secretariado-bilingue;Secretariado Bilingüe;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;1031118;1136314;1166458;642467;1000902;1979601;75,4;73,9;6;7,2;37;1870550;14,1
+pedagogia-en-historia-geografia-y-ciencias-sociales;Pedagogía en Historia, Geografía y Ciencias Sociales;Educación;Universidades;Profesional;920023;1129321;1192398;697023;1200492;1607508;73,8;82;9,8;11,8;532;3981500;0,7
+tecnico-en-quimica-analisis-e-industrial;Técnico en Química (Análisis e Industrial);Ciencias Básicas;Universidades;Técnica de Nivel Superior;881446;1128037;1250002;741178;1176096;1722796;73,4;79,4;5,2;8,1;49;3260000;-2,8
+tecnico-en-mecanica-automotriz;Técnico en Mecánica Automotriz;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;998176;1127360;1172699;625974;1037328;1783784;66,8;73,4;5;6,3;834;2960000;21,2
+tecnico-en-construccion-y-obras-civiles;Técnico en Construcción y Obras Civiles;Tecnología;Universidades;Técnica de Nivel Superior;1007196;1119073;1243546;591692;1114979;2045680;54,1;55,1;4,5;6;364;2570000;-4,3
+tecnico-en-quimica-analisis-e-industrial;Técnico en Química (Análisis e Industrial);Ciencias Básicas;Centros de Formación Técnica;Técnica de Nivel Superior;907318;1118996;1202043;679015;1031802;1536970;75,7;81,2;5,1;8,8;66;2842000;0,1
+musica-canto-o-danza;Música, Canto o Danza;Arte y Arquitectura;Universidades;Profesional;917052;1116140;1209958;664874;1186362;2293770;45;53,7;10;12,8;407;5294500;-12
+publicidad;Publicidad;Ciencias Sociales;Institutos Profesionales;Profesional;784603;1108484;1196171;600964;966248;1757944;56,8;67,4;8;9,5;335;3570000;-5,7
+fonoaudiologia;Fonoaudiología;Salud;Universidades;Profesional;844334;1108057;1135677;657129;1083626;1708107;41,8;60,4;10;12,2;1398;5500000;1,3
+administracion-turistica-y-hotelera;Administración Turística y Hotelera;Administración y Comercio;Universidades;Profesional;884018;1096398;1185029;621709;1003008;1970909;47,1;58,3;8,6;11,2;357;4895500;-0,3
+pedagogia-en-artes-y-musica;Pedagogía en Artes y Música;Educación;Universidades;Profesional;895086;1093630;1132305;681280;1123112;1456875;75,1;81,5;9,7;11,9;366;3950000;0,2
+pedagogia-en-educacion-fisica;Pedagogía en Educación Física;Educación;Universidades;Profesional;873690;1093220;1155398;651994;1124960;1738191;56,6;67;9,5;11,1;1305;4237000;3,8
+tecnico-juridico;Técnico Jurídico;Derecho;Institutos Profesionales;Técnica de Nivel Superior;1100374;1092588;1017217;591207;922155;1566079;67,5;69,2;4,9;5,9;561;2290000;15,2
+diseno-industrial;Diseño Industrial;Tecnología;Institutos Profesionales;Profesional;828271;1092149;1168453;651792;945842;1691242;50,2;62,4;8;9,5;109;3320000;9,6
+musica-canto-o-danza;Música, Canto o Danza;Arte y Arquitectura;Institutos Profesionales;Profesional;966115;1090633;1119417;568045;978592;1725481;29,9;38;8,9;10,7;243;5133851;-5,2
+tecnico-en-administracion-de-recursos-humanos-y-personal;Técnico en Administración de Recursos Humanos y Personal;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;974163;1075790;1161149;607446;957175;1728552;69,1;72,5;5;5,9;363;2403500;7,8
+pedagogia-en-idiomas;Pedagogía en Idiomas;Educación;Universidades;Profesional;882696;1074271;1122627;652886;1105102;1563402;63,1;74,5;9,7;11,6;989;4284500;0,2
+terapia-ocupacional;Terapia Ocupacional;Salud;Institutos Profesionales;Profesional;866335;1072180;1189174;646120;1107360;1804701;46,8;61,7;9,8;11,8;187;2714000;-22
+pedagogia-en-educacion-de-parvulos;Pedagogía en Educación de Párvulos;Educación;Universidades;Profesional;868042;1058550;1123067;692339;1123662;1468145;71,4;80,4;8,9;10,2;1434;4055500;-7,7
+comunicacion-audiovisual-y-o-multimedia;Comunicación Audiovisual y/o Multimedia;Arte y Arquitectura;Institutos Profesionales;Profesional;795410;1052418;1107773;621313;988307;1748469;47,1;57;8;9,4;463;3723000;1,8
+actuacion-y-teatro;Actuación y Teatro;Arte y Arquitectura;Universidades;Profesional;845806;1051852;1043078;566399;789403;1798025;26,7;33,5;8,7;11,5;214;5358200;
+tecnico-en-dibujo-arquitectonico;Técnico en Dibujo Arquitectónico;Arte y Arquitectura;Institutos Profesionales;Técnica de Nivel Superior;849612;1046251;1140109;619614;980246;2001322;59;70,4;5;6,5;225;2345000;6,4
+tecnico-agropecuario;Técnico Agropecuario;Agropecuaria;Universidades;Técnica de Nivel Superior;898001;1044643;1192596;601030;951407;1701865;50,2;56,6;4,8;5,5;127;2630000;
+ingenieria-en-sonido;Ingeniería en Sonido;Tecnología;Institutos Profesionales;Profesional;863549;1042136;1073751;676152;918246;1429163;44,3;55,6;8;10;171;3185000;12,1
+tecnico-en-podologia;Técnico en Podología;Salud;Institutos Profesionales;Técnica de Nivel Superior;1061732;1041393;1120498;647103;972688;1693266;65,5;66,7;5;5,5;801;2410000;-8,8
+artes-y-licenciatura-en-artes;Artes y Licenciatura en Artes;Arte y Arquitectura;Universidades;Profesional;1025271;1036737;1153071;582604;977491;1677753;31,6;43,9;8,4;10,9;576;5025677;0,8
+tecnico-en-telecomunicaciones;Técnico en Telecomunicaciones;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;1042679;1032837;1198735;626501;1065841;1835059;73,6;79,8;5;7,1;158;3118000;-13,7
+tecnico-en-farmacia;Técnico en Farmacia;Salud;Centros de Formación Técnica;Técnica de Nivel Superior;917186;1031249;1043844;689246;897369;1284613;79,3;80,4;4,9;6;703;2656500;4,8
+diseno-grafico;Diseño Gráfico;Arte y Arquitectura;Institutos Profesionales;Profesional;802959;1028446;1084982;566582;897878;1716205;43,1;54,3;8;10,2;857;3110000;-7
+tecnico-en-logistica;Técnico en Logística;Administración y Comercio;Universidades;Técnica de Nivel Superior;893643;1024596;1165585;587137;867822;1935531;52,4;58,5;4,1;4,8;166;2680000;-29,3
+animacion-digital;Animación Digital;Arte y Arquitectura;Institutos Profesionales;Profesional;852936;1017908;1099596;640353;912776;1848049;34,3;46;8;10,1;207;3875000;
+tecnico-agropecuario;Técnico Agropecuario;Agropecuaria;Institutos Profesionales;Técnica de Nivel Superior;871738;1014235;996364;626631;939090;1443771;55;65,1;5;6,7;250;2952000;15,6
+diseno-de-vestuario;Diseño de Vestuario;Arte y Arquitectura;Institutos Profesionales;Profesional;814958;1005739;1088024;659942;920683;1733643;36,9;48,1;8;10,2;218;2890000;12,2
+tecnico-en-farmacia;Técnico en Farmacia;Salud;Institutos Profesionales;Técnica de Nivel Superior;862995;1001559;1040903;657966;1054384;1705511;76,5;80,9;5;5,7;275;2809000;
+tecnico-agropecuario;Técnico Agropecuario;Agropecuaria;Centros de Formación Técnica;Técnica de Nivel Superior;847957;997009;1031961;578709;907311;1630050;48,3;55,2;4,6;6,7;1094;2347000;11
+fonoaudiologia;Fonoaudiología;Salud;Institutos Profesionales;Profesional;834538;996600;1047771;596541;906513;1501554;44,9;61;10;13,1;89;3139000;
+tecnico-en-alimentos;Técnico en Alimentos;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;813429;994952;1011435;555423;916700;1401017;63;73;;;26;2138100;
+administracion-turistica-y-hotelera;Administración Turística y Hotelera;Administración y Comercio;Institutos Profesionales;Profesional;754159;988995;1046500;567950;932000;1648120;47,9;56,6;8;10,1;936;3470000;13,1
+nutricion-y-dietetica;Nutrición y Dietética;Salud;Institutos Profesionales;Profesional;805379;982660;1060244;653065;952923;1732595;37,2;50,3;10;13,1;58;2067000;
+psicopedagogia;Psicopedagogía;Educación;Universidades;Profesional;804858;982331;1051360;624906;999965;1357999;58,8;68,9;8;10,7;134;4424000;-8,3
+traduccion-e-interpretacion;Traducción e Interpretación;Humanidades;Universidades;Profesional;803174;981268;985232;594495;872549;1494917;41,5;50,9;9;12,4;283;4730000;-1,9
+psicopedagogia;Psicopedagogía;Educación;Institutos Profesionales;Profesional;837138;978899;1012000;620621;1008580;1487565;59,4;65,3;8,1;9,5;1445;2352500;-2,2
+diseno-de-ambientes-e-interiores;Diseño de Ambientes e Interiores;Arte y Arquitectura;Institutos Profesionales;Profesional;796958;974895;1104677;575994;966880;1898692;44,9;52,4;8;9,7;143;3315000;-5,5
+tecnico-en-prevencion-y-rehabilitacion;Técnico en Prevención y Rehabilitación;Ciencias Sociales;Universidades;Técnica de Nivel Superior;1074218;951145;1179918;636121;884547;1628362;63,4;56,1;;;61;1902400;-18
+tecnico-en-geologia;Técnico en Geología;Ciencias Básicas;Institutos Profesionales;Técnica de Nivel Superior;860678;947952;1078712;614523;880335;1766938;58;62,3;5;7,1;46;3060000;
+administracion-gastronomica;Administración Gastronómica;Administración y Comercio;Institutos Profesionales;Profesional;732456;941593;954519;563981;806389;1542821;49,7;55,9;8;10,4;1073;4174000;3,9
+tecnico-juridico;Técnico Jurídico;Derecho;Centros de Formación Técnica;Técnica de Nivel Superior;844351;939243;1002807;581589;955618;1475472;50,3;58,8;5;6,3;261;2308000;-7,5
+tecnico-en-deporte-recreacion-y-preparacion-fisica;Técnico en Deporte, Recreación y Preparación Física;Educación;Institutos Profesionales;Técnica de Nivel Superior;907603;936553;965468;574031;823741;1538399;40,3;45,7;5;6,2;792;2460000;3,5
+tecnico-en-servicio-social;Técnico en Servicio Social;Ciencias Sociales;Institutos Profesionales;Técnica de Nivel Superior;887397;932910;956393;587853;890574;1468534;51,8;55,6;4,8;6;2030;2330000;-2,5
+tecnico-en-comunicacion-audiovisual;Técnico en Comunicación Audiovisual;Arte y Arquitectura;Institutos Profesionales;Técnica de Nivel Superior;840693;929648;923032;559693;805160;1261851;41,9;47,7;5;6,4;159;3300000;11,6
+tecnico-laboratorista-dental;Técnico Laboratorista Dental;Salud;Institutos Profesionales;Técnica de Nivel Superior;911790;908092;969570;571657;861144;1199493;51,9;66,5;5;6,1;125;2688125;
+tecnico-en-enfermeria;Técnico en Enfermería;Salud;Universidades;Técnica de Nivel Superior;857605;902883;912647;627145;892793;1187093;63,3;70,4;5;5,9;781;2664000;11,5
+tecnico-en-enfermeria;Técnico en Enfermería;Salud;Centros de Formación Técnica;Técnica de Nivel Superior;771933;900953;930596;624006;886788;1239402;62,1;70,5;5;6,1;4930;2538000;3,6
+tecnico-en-turismo-y-hoteleria;Técnico en Turismo y Hotelería;Administración y Comercio;Institutos Profesionales;Técnica de Nivel Superior;790741;897408;916673;583162;885075;1401388;44,8;52,9;4,9;6,5;480;2690000;14,8
+tecnico-en-podologia;Técnico en Podología;Salud;Centros de Formación Técnica;Técnica de Nivel Superior;901724;894943;921757;573631;833471;1646585;42,3;50,5;5;6,1;472;2319000;3,2
+tecnico-en-enfermeria;Técnico en Enfermería;Salud;Institutos Profesionales;Técnica de Nivel Superior;802205;888654;916826;615149;862325;1252412;65,8;70,8;5;5,8;6237;2870000;7
+tecnico-en-radiologia-y-radioterapia;Técnico en Radiología y Radioterapia;Salud;Institutos Profesionales;Técnica de Nivel Superior;719904;885566;941690;646691;866177;1283702;67,3;78,8;5;5,1;139;2990000;9,3
+tecnico-en-sonido;Técnico en Sonido;Tecnología;Institutos Profesionales;Técnica de Nivel Superior;749252;877300;881653;582158;837430;1218717;33;46,5;5;6,5;257;2850500;24
+tecnico-en-produccion-grafica-y-multimedia;Técnico en Producción Gráfica y Multimedia;Arte y Arquitectura;Centros de Formación Técnica;Técnica de Nivel Superior;805809;874814;835477;550218;722821;1166567;37,9;41,9;4;7,3;216;3080040;0,3
+tecnico-en-radiologia-y-radioterapia;Técnico en Radiología y Radioterapia;Salud;Centros de Formación Técnica;Técnica de Nivel Superior;762120;873354;906970;639148;918257;1215149;71,4;76,3;5;5,6;58;2529000;6,3
+tecnico-en-diseno-grafico;Técnico en Diseño Gráfico;Arte y Arquitectura;Institutos Profesionales;Técnica de Nivel Superior;914509;863094;934014;550825;839647;1277681;47,5;45,9;4,8;6,1;223;2921000;4,2
+tecnico-en-servicio-social;Técnico en Servicio Social;Ciencias Sociales;Centros de Formación Técnica;Técnica de Nivel Superior;816250;858348;899060;578297;806275;1400988;45,3;50,7;5;5,8;839;2205500;5,5
+tecnico-en-deporte-recreacion-y-preparacion-fisica;Técnico en Deporte, Recreación y Preparación Física;Educación;Centros de Formación Técnica;Técnica de Nivel Superior;800713;857458;934993;544797;841469;1361864;37,9;43,6;5;6,5;928;2535000;7,4
+actuacion-y-teatro;Actuación y Teatro;Arte y Arquitectura;Institutos Profesionales;Profesional;657984;849782;868900;601075;914795;1293080;21,4;29,5;8;9,5;66;3095000;
+tecnico-en-laboratorio-clinico;Técnico en Laboratorio Clínico;Salud;Centros de Formación Técnica;Técnica de Nivel Superior;717824;848897;883270;609751;837206;1182225;61,3;70,8;5;6;387;2693000;0,2
+tecnico-en-deporte-recreacion-y-preparacion-fisica;Técnico en Deporte, Recreación y Preparación Física;Educación;Universidades;Técnica de Nivel Superior;760202;845499;909422;564381;778300;1435079;32,1;40,1;4,9;6,2;192;2375500;6,9
+tecnico-en-peluqueria-y-estetica;Técnico en Peluquería y Estética;Arte y Arquitectura;Institutos Profesionales;Técnica de Nivel Superior;725179;838091;859607;553095;783666;1212101;27,9;34,9;5;5,7;1483;2730000;13,6
+tecnico-en-gastronomia-y-cocina;Técnico en Gastronomía y Cocina;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;736381;827987;861332;550266;766531;1283831;42,1;48,8;4,3;6,5;2843;2939000;8,5
+tecnico-en-masoterapia;Técnico en Masoterapia;Salud;Institutos Profesionales;Técnica de Nivel Superior;746456;822571;842201;556765;802491;1216247;31;41,5;4,9;5,6;293;2510000;34,2
+tecnico-veterinario;Técnico Veterinario;Agropecuaria;Centros de Formación Técnica;Técnica de Nivel Superior;710402;814305;839576;537058;771503;1165616;43,1;51,1;5;6,4;639;2557500;-9,9
+tecnico-en-laboratorio-clinico;Técnico en Laboratorio Clínico;Salud;Institutos Profesionales;Técnica de Nivel Superior;676165;814053;829584;583740;811868;1139327;51,9;64,9;5;5,5;212;2820000;3,3
+tecnico-en-turismo-y-hoteleria;Técnico en Turismo y Hotelería;Administración y Comercio;Centros de Formación Técnica;Técnica de Nivel Superior;740146;811174;874597;551174;786544;1276618;40,7;46,3;4,4;7,2;619;2462000;-5,7
+tecnico-en-gastronomia-y-cocina;Técnico en Gastronomía y Cocina;Administración y Comercio;Institutos Profesionales;Técnica de Nivel Superior;749994;806822;900569;559507;756784;1291631;45,7;49,6;4,9;6,1;489;3911000;10,5
+tecnico-laboratorista-dental;Técnico Laboratorista Dental;Salud;Centros de Formación Técnica;Técnica de Nivel Superior;703440;800264;859587;536938;757906;1223139;45,1;53,8;5;6,2;151;2698000;
+tecnico-veterinario;Técnico Veterinario;Agropecuaria;Institutos Profesionales;Técnica de Nivel Superior;685449;778522;784506;541247;746588;1077424;43,6;50,6;5;6,3;234;3060000;2,4
+tecnico-dental-y-asistente-de-odontologia;Técnico Dental y Asistente de Odontología;Salud;Centros de Formación Técnica;Técnica de Nivel Superior;657951;764440;801110;546147;740415;1027054;54;59;5;6,1;825;2658000;1,8
+tecnico-dental-y-asistente-de-odontologia;Técnico Dental y Asistente de Odontología;Salud;Institutos Profesionales;Técnica de Nivel Superior;670625;757885;779340;576800;764421;1069595;57,8;62,1;5;5,7;1061;2800000;11,9
+tecnico-asistente-del-educador-de-parvulos;Técnico Asistente del Educador de Párvulos;Educación;Institutos Profesionales;Técnica de Nivel Superior;678227;727928;747570;551809;736994;920757;47,3;53,5;4,7;5,6;2553;2246895;4,4
+tecnico-asistente-del-educador-de-parvulos;Técnico Asistente del Educador de Párvulos;Educación;Universidades;Técnica de Nivel Superior;665022;709798;830643;559265;709585;1014502;25,8;34,3;4,4;4,9;499;2334000;-15,8
+tecnico-asistente-del-educador-diferencial;Técnico Asistente del Educador Diferencial;Educación;Institutos Profesionales;Técnica de Nivel Superior;667473;696777;734139;547428;658498;1022523;44,8;51,1;4,7;5,7;1093;2245000;6,3
+tecnico-asistente-del-educador-de-parvulos;Técnico Asistente del Educador de Párvulos;Educación;Centros de Formación Técnica;Técnica de Nivel Superior;644644;688296;711830;536430;686243;929580;35;44,9;5;6,1;2501;2064000;1,8
+tecnico-asistente-del-educador-diferencial;Técnico Asistente del Educador Diferencial;Educación;Centros de Formación Técnica;Técnica de Nivel Superior;620473;655974;708506;535403;647272;955081;32;44;5;6,4;1105;2049644;-1,7

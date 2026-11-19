@@ -1,0 +1,28 @@
+.body { margin: 0; color: #102e43; background: #fff; font-family: Arial, Helvetica, sans-serif; }
+.skip { position: fixed; top: 8px; left: 8px; z-index: 100; padding: 10px 14px; background: #fff; color: #102e43; transform: translateY(-150%); }
+.skip:focus { transform: translateY(0); }
+.header { border-bottom: 1px solid #e2e8ed; background: #fff; }
+.headerInner { box-sizing: border-box; display: flex; align-items: center; gap: 24px; max-width: 1400px; min-height: 72px; margin: auto; padding: 0 32px; }
+.logo { display: flex; flex-shrink: 0; align-items: center; }
+.logo img { display: block; width: 150px; height: auto; }
+.desktopNav { display: flex; justify-content: center; align-items: center; gap: 23px; flex: 1; }
+.desktopNav a, .account, .mobileMenu a { color: #334e60; font-size: 14px; font-weight: 600; text-decoration: none; }
+.desktopNav a:hover, .mobileMenu a:hover, .footer a:hover { color: #006abf; text-decoration: underline; }
+.account { flex-shrink: 0; border: 1px solid #b8c9d4; border-radius: 7px; padding: 10px 15px; }
+.account:hover { color: #006abf; border-color: #006abf; }
+.mobileMenu { display: none; position: relative; margin-left: auto; }
+.mobileMenu summary { cursor: pointer; list-style: none; border: 1px solid #cbd8e0; border-radius: 7px; padding: 9px 12px; font-size: 14px; font-weight: 600; }
+.mobileMenu summary::-webkit-details-marker { display: none; }
+.mobileMenu summary span { margin-left: 5px; }
+.mobileMenu nav { position: absolute; z-index: 10; top: calc(100% + 10px); right: 0; display: flex; flex-direction: column; min-width: 210px; padding: 8px; border: 1px solid #dce5eb; border-radius: 9px; background: #fff; box-shadow: 0 8px 24px #102e4326; }
+.mobileMenu nav a { padding: 11px 12px; }
+.footer { margin-top: 64px; border-top: 1px solid #e2e8ed; background: #f8fafb; }
+.footerInner { box-sizing: border-box; display: flex; justify-content: space-between; gap: 40px; max-width: 1400px; margin: auto; padding: 48px 32px; }
+.footerBrand { max-width: 360px; }
+.footerBrand img { display: block; width: 148px; height: auto; }
+.footerBrand p { color: #526a79; font-size: 14px; line-height: 1.6; }
+.footer nav { display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
+.footer nav strong { margin-bottom: 3px; }
+.footer a { color: #334e60; text-decoration: none; }
+@media (max-width: 1000px) { .desktopNav, .account { display: none; } .mobileMenu { display: block; } }
+@media (max-width: 600px) { .headerInner { padding: 0 16px; } .footerInner { flex-wrap: wrap; padding: 36px 16px; gap: 32px; } .footerBrand { flex-basis: 100%; } }
