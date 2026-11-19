@@ -5,8 +5,8 @@ pais: mx
 hreflang: es-MX
 curso: claude
 url_curso: https://www.programbi.com/mx/cursos/claude
-title: Cómo usar Claude AI en el trabajo en México | ProgramBI
-meta: "Guía práctica para usar Claude (Anthropic) en México: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+title: Curso de Claude en México: guía práctica y clases en vivo
+meta: "Aprende a usar Claude (Anthropic) en tu trabajo en México: prompts, Projects, Artifacts y Excel sin programar. Guía práctica y curso en vivo de 20 h."
 h1: Cómo usar Claude AI para trabajo administrativo en México
 updated: 2026-11-14
 sources:

@@ -5,8 +5,8 @@ pais: mx
 hreflang: es-MX
 curso: copilot
 url_curso: https://www.programbi.com/mx/cursos/copilot
-title: Cómo usar Copilot y Copilot Studio en México | ProgramBI
-meta: Guía para dominar Microsoft Copilot en Excel, Word y Outlook y crear agentes propios en Copilot Studio en México.
+title: Curso de Copilot en México: guía y clases en vivo
+meta: "Aprende Microsoft Copilot en Excel, Word y Outlook y crea agentes en Copilot Studio. Guía práctica para México y curso en vivo de 20 h con certificado."
 h1: Cómo usar Microsoft Copilot y crear agentes en México
 updated: 2026-11-04
 sources:

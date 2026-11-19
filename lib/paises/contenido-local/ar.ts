@@ -1,9 +1,39 @@
 import type { DatosBloqueLocal } from "./tipos";
+import { textoCuotas } from "@/config/cuotas";
 import { etiquetaDescuentoCatalogo } from "@/lib/paises/precios";
 import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const descuentoCatalogo = etiquetaDescuentoCatalogo("ar");
 const resumenCatalogo = resumenPreciosCatalogo("ar");
+const cuotasAr = textoCuotas("ar");
+
+/**
+ * Resumen local para la tarjeta lateral de `CourseDetailClient.tsx` en Argentina.
+ * Evita mostrar `COURSE_SEO[slug].intro` de Chile con un simple reemplazo de
+ * «Chile» por «Argentina» en `/ar/cursos/power-bi`, `/ar/cursos/analisis-de-datos`
+ * y `/ar/cursos/python`.
+ */
+const INTRO_FICHA_AR: Record<string, string[]> = {
+  "power-bi": [
+    "Curso de Power BI en vivo por Zoom para analistas financieros, control de gestión y equipos de pymes, agro, fintech, retail e industria en Argentina que necesitan transformar extractos del ERP y comprobantes de ARCA (ex AFIP) en un tablero mantenible.",
+    `El nivel abierto es básico-intermedio (20 horas en 8 módulos) y se cursa en horario de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3): de 19:30 a 21:30 durante el verano chileno y de 20:30 a 22:30 en invierno chileno. Practicás Power Query, modelo estrella y DAX aplicando el IPC del INDEC y parámetros cambiarios del BCRA.`,
+    `El valor en pesos argentinos (ARS) se descarga en el PDF de temario y precios de esta ficha, con pago local mediante Mercado Pago Argentina en ${cuotasAr}. Para capacitar a un equipo en los niveles básico-intermedio y avanzado, podés cotizar en /ar/cursos/power-bi?para=empresas.`,
+  ],
+  "analisis-de-datos": [
+    "Programa de Análisis de Datos en vivo por Zoom para profesionales de finanzas, operaciones y comercial en Argentina que buscan dominar el flujo completo del analista: consultas en SQL Server, modelado en Power BI y automatización con Python.",
+    `Consta de dos niveles de 60 horas cada uno (20 horas por herramienta; 120 horas el recorrido completo) en horario de Buenos Aires (UTC-3): 19:30 a 21:30 en verano chileno y 20:30 a 22:30 en invierno chileno. Los proyectos integradores trabajan con bases de ARCA (ex AFIP), series del INDEC, indicadores del BCRA y datos abiertos de datos.gob.ar.`,
+    `El arancel por nivel en pesos argentinos (ARS) figura en el PDF de temario y precios y se abona con Mercado Pago Argentina en ${cuotasAr}. Incluye grabaciones en el campus virtual durante la cursada y certificado digital de ProgramBI.`,
+  ],
+  python: [
+    "Curso de Python para Datos en vivo por Zoom orientado a analistas financieros, administrativos de pymes y equipos de agro, fintech, retail e industria en Argentina que buscan automatizar reportes con Pandas y Matplotlib sin experiencia previa en programación.",
+    `Son 20 horas prácticas en horario de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3): de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. Se trabaja la limpieza de listas de precios con coma decimal, normalización de CUIT de ARCA (ex AFIP) y ajuste de series con datos del INDEC y del BCRA.`,
+    `Consultá el valor vigente en pesos argentinos (ARS) descargando el PDF de temario y precios de la ficha; el checkout procesa pagos con Mercado Pago Argentina en ${cuotasAr}.`,
+  ],
+};
+
+export function getIntroFichaAr(slug: string): string[] | null {
+  return INTRO_FICHA_AR[slug] ?? null;
+}
 
 /**
  * Bloque local de Argentina.
@@ -24,13 +54,13 @@ const datos: DatosBloqueLocal = {
   datos: {
     precioTitulo: "Precio en pesos argentinos",
     precioDetalle: descuentoCatalogo
-      ? `El catálogo de Argentina se publica en ARS (${descuentoCatalogo}). Descarga el PDF de temario y precios de cada curso para ver el desglose, combos y fechas.`
-      : "El catálogo de Argentina se publica en ARS. Consulta el valor vigente de cada curso en su PDF de temario y precios.",
+      ? `El catálogo de Argentina se publica en ARS (${descuentoCatalogo}) con {cuotas}. Descarga el PDF de temario y precios de cada curso para ver el desglose, combos y fechas.`
+      : "El catálogo de Argentina se publica en ARS con {cuotas}. Consulta el valor vigente de cada curso en su PDF de temario y precios.",
     horarioDetalle:
-      "Argentina usa UTC-3 todo el año. Cuando Chile está en horario de verano, la clase se ve a la misma hora; cuando Chile vuelve a UTC-4, se ve una hora más tarde. La ficha de la cohorte muestra la conversión exacta.",
+      "Argentina mantiene America/Argentina/Buenos_Aires (UTC-3) todo el año. La clase de 19:30 a 21:30 en Chile se cursa de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno.",
     pagoDetalle:
-      "El checkout procesa el pago con Mercado Pago Argentina. Si la cuenta local no está habilitada, muestra el equivalente en pesos chilenos antes de confirmar.",
-    cuotasDetalle: "Sin recargo por financiamiento. La pasarela confirma las cuotas disponibles al pagar.",
+      "El checkout procesa el pago en ARS con Mercado Pago Argentina y {cuotas}. Si la cuenta local no está habilitada, muestra el equivalente en pesos chilenos antes de confirmar.",
+    cuotasDetalle: "Sin recargo por financiamiento con Mercado Pago Argentina. La pasarela confirma las cuotas disponibles al pagar.",
     claseGratis:
       "Hay clase gratis para conocer la modalidad. La fecha se avisa cuando está confirmada; no se publican cupos que todavía no existen.",
     certificado:
@@ -41,17 +71,16 @@ const datos: DatosBloqueLocal = {
       kicker: "Argentina · datos del mercado",
       titulo: "Estudiar datos en vivo desde Argentina",
       intro:
-        "Las clases se dictan desde Chile y se siguen en hora de Buenos Aires. El programa, las grabaciones y el certificado son los mismos; cambian la moneda, el medio de pago y la conversión horaria.",
+        "Clases en vivo por Zoom seguidas en horario de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3), con valores en pesos argentinos (ARS).",
       parrafos: [
-        "Argentina tiene una particularidad que atraviesa casi todos los tableros: los precios cambian dentro del año. Por eso los ejercicios trabajan con moneda constante, actualización de precios y tipo de cambio, además de los reportes habituales de ventas, costos y cartera. El objetivo es que el número que llega a la reunión sea comparable, no solo que esté actualizado.",
-        "El catálogo reúne trece fichas: Power BI, análisis de datos, SQL Server, Python, Excel, Access, Copilot, Claude, IA en productividad, Power Automate, machine learning, mercado financiero y análisis para minería. Cada ficha declara duración, nivel y contenido, y su PDF de temario y precios en pesos argentinos concentra el valor y las fechas de la próxima cohorte.",
-        "Si trabajas en una pyme o en un área de finanzas, operaciones o comercial, el punto de partida suele ser el mismo: ordenar los datos que hoy viven en Excel, aprender a consultarlos y recién después armar el tablero. No se pide experiencia en programación para empezar; sí constancia para sostener dos clases por semana.",
-        "Las clases quedan grabadas en el campus. Eso importa en un país con husos y rutinas distintas: quien no llega a la hora puede recuperar la sesión y traer las dudas a la clase siguiente. El campus también guarda las plantillas y los datasets de práctica.",
+        "La franja de 19:30 a 21:30 en Chile se ve en Argentina de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno, ya que el país mantiene UTC-3 todo el año. Cada curso publica su arancel en ARS dentro del PDF de temario y precios y se abona con Mercado Pago Argentina en {cuotas}.",
+        "Los programas están orientados a analistas financieros, pymes, agro y exportación, fintech, retail e industria que consolidan comprobantes de ARCA (ex AFIP), datos del ERP y tesorería. En clase se trabaja con el IPC del INDEC y series del BCRA para expresar márgenes y ventas en moneda constante.",
+        "Las sesiones quedan grabadas en el campus virtual junto con los datasets de práctica y entregan certificado digital de ProgramBI. En las guías de Argentina para Power BI, Análisis de Datos y Python podés consultar el recorrido sugerido y las referencias salariales de Sysarmy.",
       ],
       faqs: [
         {
           q: "¿A qué hora son las clases en Argentina?",
-          a: "La clase base es de 19:30 a 21:30, hora de Chile. Argentina mantiene UTC-3 todo el año: cuando Chile está en horario de verano la clase se ve a la misma hora y, cuando Chile vuelve a UTC-4, se ve una hora más tarde (20:30 a 22:30). La ficha de la cohorte confirma la hora exacta.",
+          a: "La clase base es de 19:30 a 21:30, hora de Chile. Argentina mantiene America/Argentina/Buenos_Aires (UTC-3) todo el año: cuando Chile está en horario de verano la clase se ve de 19:30 a 21:30 y, cuando Chile vuelve a UTC-4 en invierno, se ve de 20:30 a 22:30. La ficha de la cohorte confirma la hora exacta.",
         },
         {
           q: "¿El precio está en pesos argentinos?",
@@ -59,11 +88,11 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Puedo pagar desde Argentina?",
-          a: "Sí: con Mercado Pago Argentina (tarjeta de crédito o débito), Mercado Pago Wallet o transferencia bancaria en pesos. Si pagas con una tarjeta emitida en el exterior, el cargo final lo define tu banco, incluidos los impuestos o comisiones que aplique.",
+          a: "Sí: con Mercado Pago Argentina (tarjeta de crédito o débito en {cuotas}), Mercado Pago Wallet o transferencia bancaria en pesos argentinos (ARS). Si pagas con una tarjeta emitida en el exterior, el cargo final lo define tu banco.",
         },
         {
           q: "¿Hay cuotas sin interés?",
-          a: "Sí: todos los cursos se pueden pagar en {cuotas}, sin recargo por financiamiento. La disponibilidad final de las cuotas la confirma la pasarela en el checkout.",
+          a: "Sí: todos los cursos se pueden pagar en {cuotas} con Mercado Pago Argentina, sin recargo por financiamiento. La disponibilidad final de las cuotas la confirma la pasarela en el checkout.",
         },
         {
           q: "¿El certificado sirve para LinkedIn?",
@@ -117,11 +146,11 @@ const datos: DatosBloqueLocal = {
       kicker: "Power BI · Argentina",
       titulo: "Power BI en vivo para analistas argentinos",
       intro:
-        "El curso abierto es básico-intermedio: veinte horas para pasar de Power Query a un tablero con DAX, con el valor en pesos y la hora de Buenos Aires.",
+        "Veinte horas en vivo por Zoom para pasar de Power Query a un tablero con DAX en horario de Buenos Aires (UTC-3).",
       parrafos: [
-        "El programa cubre Power Query y M para limpiar y combinar archivos, el modelo estrella, las medidas con CALCULATE y FILTER, inteligencia de tiempo, RANKX e iteradores como SUMX. Cierra con una introducción a IA en Power BI y un tablero propio que se puede mostrar en una entrevista o en la reunión de área.",
-        "En Argentina los ejercicios suman dos problemas que casi no aparecen en otros mercados: la actualización de precios dentro del año y la comparación en moneda constante. Se practica con el IPC del INDEC como tabla de índices y con el tipo de cambio como parámetro del modelo, para que el tablero muestre el resultado nominal y el real sin mezclarlos.",
-        "El curso avanzado, también de veinte horas, cubre publicación en Power BI Service y seguridad a nivel de fila. El curso abierto es el básico-intermedio; si tu empresa necesita los dos niveles (básico-intermedio y avanzado) para un equipo, se cotiza la vista in-company con los datos de la organización.",
+        "El curso básico-intermedio se dicta en la franja de 19:30 a 21:30 de Chile, que en Argentina (America/Argentina/Buenos_Aires, UTC-3) corresponde a 19:30 a 21:30 durante el verano chileno y a 20:30 a 22:30 en invierno chileno. El arancel en pesos argentinos (ARS) se descarga en el PDF de temario y precios de esta ficha y se paga mediante Mercado Pago Argentina en {cuotas}.",
+        "Está diseñado para analistas financieros, responsables de control de gestión y equipos de pymes, agro y exportación, fintech, retail e industria que hoy cruzan en Excel la facturación electrónica de ARCA (ex AFIP) con el ERP. El programa cubre Power Query, modelo estrella y medidas DAX como CALCULATE, FILTER, SUMX y RANKX.",
+        "Los ejercicios resuelven la comparación interanual con inflación vinculando el IPC mensual del INDEC al calendario y parametrizando el tipo de cambio del BCRA para separar variación nominal y real. Si tu empresa requiere básico-intermedio y avanzado para un equipo, se cotiza en modalidad in-company.",
       ],
       faqs: [
         {
@@ -134,15 +163,15 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Se trabaja la inflación en el tablero?",
-          a: "Sí. Los ejercicios usan el IPC mensual del INDEC como tabla relacionada con el calendario y calculan ventas en moneda constante con iteradores. También se practica dejar el tipo de cambio como parámetro del modelo.",
+          a: "Sí. Los ejercicios usan el IPC mensual del INDEC como tabla relacionada con el calendario y calculan ventas en moneda constante con iteradores. También se practica dejar el tipo de cambio del BCRA como parámetro del modelo.",
         },
         {
           q: "¿A qué hora se ve desde Argentina?",
-          a: "La clase base es de 19:30 a 21:30, hora de Chile. Argentina mantiene UTC-3: en verano chileno coincide y en invierno chileno se ve de 20:30 a 22:30. La ficha de la cohorte muestra la hora exacta.",
+          a: "La clase base es de 19:30 a 21:30, hora de Chile. Argentina mantiene America/Argentina/Buenos_Aires (UTC-3): en verano chileno se cursa de 19:30 a 21:30 y en invierno chileno de 20:30 a 22:30. La ficha de la cohorte muestra la hora exacta.",
         },
         {
           q: "¿Cuánto cuesta y cómo se paga?",
-          a: `${resumenPrecioCursoTexto("ar", "power-bi", "Power BI")} Se paga con Mercado Pago Argentina, Mercado Pago Wallet o transferencia bancaria en pesos.`,
+          a: `${resumenPrecioCursoTexto("ar", "power-bi", "Power BI")} Se paga con Mercado Pago Argentina en {cuotas}, Mercado Pago Wallet o transferencia bancaria en pesos argentinos (ARS).`,
         },
         {
           q: "¿Qué certificado recibo?",
@@ -152,13 +181,13 @@ const datos: DatosBloqueLocal = {
     },
     "curso:analisis-de-datos": {
       kicker: "Análisis de datos · Argentina",
-      titulo: "Análisis de datos: de Excel a SQL y Power BI",
+      titulo: "Análisis de datos: de Excel a SQL, Power BI y Python",
       intro:
-        "Dos niveles de 60 horas cada uno para cubrir el recorrido completo del analista: SQL Server, Power BI y Python, con un proyecto final aplicado.",
+        "Dos niveles de 60 horas cada uno (120 horas el programa completo) integrando SQL Server, Power BI y Python para profesionales de Argentina.",
       parrafos: [
-        "El nivel básico-intermedio junta las tres herramientas con 20 horas por cada una: SQL Server para extraer y consultar, Power BI para modelar y visualizar, y Python con Pandas para limpiar y automatizar. El nivel avanzado, también de 60 horas, profundiza automatización, inteligencia de tiempo y modelos. El programa completo suma 120 horas.",
-        "En Argentina el proyecto final puede armarse con datos públicos: series del INDEC, datos abiertos de datos.gob.ar o indicadores del BCRA. La consigna es que el tablero responda una pregunta de negocio concreta y que cada cifra se pueda rastrear hasta su fuente, algo que se vuelve crítico cuando hay que explicar el número en un comité.",
-        "Si ya trabajas en un área de datos y solo te falta el tablero, Power BI es el atajo. Si además necesitas extraer, modelar y automatizar, este programa evita aprender cada herramienta por separado y las conecta en un mismo flujo de trabajo.",
+        "Cada nivel combina 20 horas de SQL Server, 20 de Power BI y 20 de Python en vivo por Zoom. La clase de 19:30 a 21:30 en Chile se sigue en Argentina (America/Argentina/Buenos_Aires, UTC-3) de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. Consultá el valor en pesos argentinos (ARS) en el PDF de temario y precios; el checkout opera con Mercado Pago Argentina en {cuotas}.",
+        "Apunta a analistas financieros, profesionales de pymes, agro y exportación, fintech, retail e industria que buscan cubrir el flujo completo del dato sin depender de archivos sueltos: extraer comprobantes de ARCA (ex AFIP) y ventas con SQL, limpiar con Pandas y publicar el modelo en Power BI.",
+        "El proyecto integrador permite trabajar con series del INDEC, indicadores cambiarios y monetarios del BCRA o datasets abiertos de datos.gob.ar, armando un portafolio alineado con las búsquedas locales relevadas por Sysarmy.",
       ],
       faqs: [
         {
@@ -175,27 +204,27 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Es lo mismo que el curso de análisis para minería?",
-          a: "Es el mismo programa, con los ejemplos puestos en faena: turnos, flota, OEE y mantenimiento. El certificado y la carga horaria son los mismos; cambia el contexto de los ejercicios.",
+          a: "Es el mismo programa de 60 horas por nivel, con los ejemplos puestos en faena: turnos, flota, OEE y mantenimiento. El certificado y la carga horaria son los mismos; cambia el contexto de los ejercicios.",
         },
         {
           q: "¿A qué hora se dicta desde Argentina?",
-          a: "La referencia es 19:30 a 21:30, hora de Chile. Argentina mantiene UTC-3 todo el año, así que la clase coincide en verano chileno y se corre una hora en invierno chileno. La ficha de la cohorte confirma la hora local.",
+          a: "La referencia es 19:30 a 21:30, hora de Chile. Argentina mantiene America/Argentina/Buenos_Aires (UTC-3) todo el año, así que la clase se cursa de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. La ficha de la cohorte confirma la hora local.",
         },
         {
-          q: "¿Cómo se consulta el valor?",
-          a: `${resumenPrecioCursoTexto("ar", "analisis-de-datos", "Análisis de Datos")} El checkout confirma el monto antes de pagar.`,
+          q: "¿Cómo se consulta el valor y hay cuotas?",
+          a: `${resumenPrecioCursoTexto("ar", "analisis-de-datos", "Análisis de Datos")} El pago se procesa con Mercado Pago Argentina en {cuotas}.`,
         },
       ],
     },
     "curso:python": {
       kicker: "Python · Argentina",
-      titulo: "Python para datos: automatización y análisis",
+      titulo: "Python para datos: automatización y análisis con Pandas",
       intro:
-        "Pandas, visualización y automatización de reportes con casos de negocio, en vivo y en hora de Argentina. Sin convertirte en desarrollador de software.",
+        "Veinte horas en vivo desde cero para limpiar tablas, cruzar listas de precios y automatizar reportes con Pandas y Matplotlib.",
       parrafos: [
-        "Python para Datos está enfocado en el trabajo de análisis: leer archivos, limpiar tablas, calcular indicadores y automatizar reportes con Pandas. El recorrido va de los fundamentos del lenguaje a la visualización y a la automatización, con el criterio puesto en el dato y no en la ingeniería de software.",
-        "En Argentina se practica con extractos de ventas, archivos de campo y series de precios. La meta es que el script reemplace el copiar y pegar mensual y que el resultado se pueda revisar: qué archivo entró, qué se limpió y qué indicador salió. Ese orden es el que hace que un informe se pueda mantener.",
-        "Si vienes de Excel, el curso arranca desde cero y no exige programar antes. Si ya usas SQL, puedes combinar ambas herramientas en el proyecto final: extraer con consultas, transformar con Python y dejar el resultado listo para Power BI.",
+        "Las clases se dictan de 19:30 a 21:30 en hora de Chile y se siguen desde Argentina (America/Argentina/Buenos_Aires, UTC-3) de 19:30 a 21:30 durante el verano chileno o de 20:30 a 22:30 en el invierno chileno. El precio en pesos argentinos (ARS) está disponible en el PDF de temario y precios de la ficha, con pago por Mercado Pago Argentina y {cuotas}.",
+        "Está enfocado en analistas financieros, administrativos de pymes y equipos de agro y exportación, fintech, retail e industria que pierden horas consolidando listas de proveedores, normalizando números de CUIT de ARCA (ex AFIP) o corrigiendo separadores de miles y coma decimal antes de cada cierre.",
+        "En las prácticas se automatizan cruces con Pandas, se deflactan series nominales usando el IPC del INDEC y variables del BCRA, y se exportan bases listas para SQL Server o Power BI sin requerir experiencia previa en programación.",
       ],
       faqs: [
         {
@@ -204,11 +233,11 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuántas horas tiene el curso?",
-          a: "La ficha del curso declara la duración vigente: 20 horas en el catálogo. Antes de inscribirte, revisa esa ficha porque la carga horaria y el nivel son los que se muestran al momento de pagar.",
+          a: "El nivel básico-intermedio dura 20 horas en 8 módulos en vivo por Zoom. Antes de inscribirte puedes descargar el PDF de temario y precios con el detalle módulo por módulo.",
         },
         {
           q: "¿Se aplica a datos de una empresa argentina?",
-          a: "Sí. Los ejercicios usan archivos de ventas, costos y series de precios, y trabajan con separadores de miles y fechas locales. También se practica dejar el tipo de cambio como parámetro para no repetir la conversión en cada reporte.",
+          a: "Sí. Los ejercicios usan archivos de ventas, costos, normalización de CUIT de ARCA (ex AFIP) y series de precios del INDEC, trabajando con separadores de miles y fechas locales. También se practica dejar el tipo de cambio del BCRA como parámetro.",
         },
         {
           q: "¿Python reemplaza a Power BI o a Excel?",
@@ -216,11 +245,11 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿A qué hora se ve desde Argentina?",
-          a: "La clase se dicta de 19:30 a 21:30, hora de Chile. En Argentina se ve a la misma hora durante el verano chileno y una hora más tarde durante el invierno chileno. La ficha de la cohorte muestra la conversión.",
+          a: "La clase se dicta de 19:30 a 21:30, hora de Chile. En Argentina (America/Argentina/Buenos_Aires, UTC-3) se cursa de 19:30 a 21:30 durante el verano chileno y de 20:30 a 22:30 durante el invierno chileno. La ficha de la cohorte muestra la conversión.",
         },
         {
           q: "¿Cómo se paga el curso?",
-          a: `${resumenPrecioCursoTexto("ar", "python", "Python para Datos")} Se paga con Mercado Pago Argentina o transferencia bancaria en pesos.`,
+          a: `${resumenPrecioCursoTexto("ar", "python", "Python para Datos")} Se paga con Mercado Pago Argentina en {cuotas} o transferencia bancaria en pesos argentinos (ARS).`,
         },
       ],
     },

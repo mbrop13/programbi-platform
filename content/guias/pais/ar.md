@@ -1,6 +1,6 @@
 ---
-title: Cómo aprender Power BI en Argentina: guía 2026 | ProgramBI
-description: Sueldos de analista BI según Sysarmy, ruta de 8 semanas, DAX ajustado por inflación y dónde buscar laburo en Argentina. Guía práctica.
+title: Cómo aprender Power BI en Argentina (2026): ruta y curso
+description: "Ruta de 8 semanas, sueldos de analista BI según Sysarmy y DAX con inflación. Guía práctica y curso de Power BI en vivo en horario de Buenos Aires."
 h1: Cómo aprender Power BI en Argentina (y analizar datos con inflación)
 country: ar
 lang: es-AR

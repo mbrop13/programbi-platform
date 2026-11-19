@@ -81,7 +81,7 @@ function preguntasDeFicha(iso: string): { q: string; a: string }[] {
 export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }: Props) {
   const iso = normalizarPais(pais);
   const info = getPais(iso);
-  const ficha = getFichaPais(iso);
+  const ficha = getFichaPais(iso, curso.slug);
   const contenido = getContenidoPais(iso);
   if (!ficha && !contenido) return null;
 
@@ -89,7 +89,16 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
   const horaLocal = etiquetaHoraLocal(iso);
   const guia = guiaLocalDeCurso(iso, curso.slug);
   const hrefGuia = guia ? guia.path : hubGuiasDe(iso);
-  const caso = contenido?.casos[0];
+  const casos = contenido?.casos ?? [];
+  const indiceCaso =
+    curso.slug === "power-bi"
+      ? 2
+      : curso.slug === "analisis-de-datos"
+        ? 1
+        : curso.slug === "python"
+          ? 0
+          : 0;
+  const caso = casos[indiceCaso] ?? casos[0];
   const preguntas = preguntasDeFicha(iso);
   const nombreCurso = nombreEnProsa(curso);
 
@@ -150,6 +159,19 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
             {contenido ? (
               <p>
                 {contenido.moneda.resumen} {contenido.mercado.facturacion}
+              </p>
+            ) : null}
+
+            {guia ? (
+              <p className="text-sm leading-relaxed text-mute">
+                Guía práctica del mercado:{" "}
+                <Link
+                  href={guia.path}
+                  className="font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
+                >
+                  {guia.h1}
+                </Link>
+                .
               </p>
             ) : null}
 

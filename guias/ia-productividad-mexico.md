@@ -5,8 +5,8 @@ pais: mx
 hreflang: es-MX
 curso: ia-productividad
 url_curso: https://www.programbi.com/mx/cursos/ia-productividad
-title: Cómo usar IA para productividad en México | ProgramBI
-meta: "Guía para aplicar ChatGPT, Claude, Gemini y Copilot en México: automatiza reportes, Excel, documentos y correos sin programar."
+title: Curso de IA para productividad en México: guía práctica
+meta: "Usa ChatGPT, Claude, Gemini y Copilot para automatizar reportes, Excel y correos en México, sin programar. Guía práctica y curso en vivo de 20 h."
 h1: Cómo automatizar informes de oficina con IA en México
 updated: 2026-11-04
 sources:

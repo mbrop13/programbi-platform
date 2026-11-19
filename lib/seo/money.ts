@@ -108,11 +108,11 @@ export const COURSE_SEO: Record<
     ],
   },
   "analisis-de-datos": {
-    title: "Curso de análisis de datos en vivo | Chile | ProgramBI",
+    title: "Curso de Análisis de Datos en Chile: SQL, Power BI y Python",
     description:
-      `Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python en dos niveles de ${courseDurationHours("analisis-de-datos")} horas. Certificado y cuotas sin interés.`,
+      `Curso de análisis de datos en vivo en Chile: SQL, Power BI y Python, ${courseDurationHours("analisis-de-datos")} h por nivel. Para ser analista de datos desde cero. Con certificado y cuotas.`,
     descriptionCl:
-      `Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python, ${courseDurationHours("analisis-de-datos")} h por nivel. Arancel, descuentos y cuotas en el PDF de temario y precios.`,
+      `Curso de análisis de datos en vivo en Chile: SQL, Power BI y Python, ${courseDurationHours("analisis-de-datos")} h por nivel. Para ser analista de datos desde cero. Con certificado y cuotas.`,
     h1: "Curso de análisis de datos en vivo en Chile",
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",

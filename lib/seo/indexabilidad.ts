@@ -1,10 +1,67 @@
-import { esIndexable, esIsoPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import { esIndexable, esIsoPais, getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { RUTAS_PROFESORES_INDEXABLES } from "@/lib/data/equipo";
 import { esRutaNoindexPais as esVarianteThinPais } from "@/lib/paises/indexabilidad";
 
 // Fuente única (WS9) de las variantes thin por país. Se re-exportan con los
 // mismos nombres para no romper a quien ya las importaba desde este archivo.
 export { PAISES_SECUNDARIOS, RUTAS_NOINDEX_PAIS } from "@/lib/paises/indexabilidad";
+
+/**
+ * Países secundarios habilitados por whitelist para indexar únicamente sus
+ * 6 rutas comerciales principales cuando tienen precios locales cargados.
+ * Quedan excluidos `py` (sin precios publicados) y `us` (fuera por regla).
+ */
+export const PAISES_SECUNDARIOS_WHITELIST = [
+  "sv",
+  "ve",
+  "bo",
+  "ec",
+  "cr",
+  "gt",
+  "pa",
+  "do",
+  "ni",
+  "hn",
+] as const;
+
+const SET_PAISES_SECUNDARIOS_WHITELIST = new Set<string>(PAISES_SECUNDARIOS_WHITELIST);
+
+/**
+ * Únicas 6 rutas (normalizadas sin prefijo de país) que pueden indexarse,
+ * entrar al sitemap y emitir/recibir hreflang en `PAISES_SECUNDARIOS_WHITELIST`.
+ */
+export const INDEXABLE_SECONDARY_ROUTES: readonly string[] = [
+  "/",
+  "/cursos",
+  "/cursos/claude",
+  "/cursos/analisis-de-datos",
+  "/cursos/power-bi",
+  "/cursos/excel",
+];
+
+/** ¿El país tiene tabla de precios locales cargada (no vacía)? */
+export function hasLocalPrices(iso: string | null | undefined): boolean {
+  if (!esIsoPais(iso)) return false;
+  const p = getPais(iso);
+  return (
+    typeof p.precios === "object" &&
+    p.precios !== null &&
+    p.precios["power-bi"] != null
+  );
+}
+
+/**
+ * ¿La ruta pertenece a la whitelist de 6 páginas indexables de un país
+ * secundario con precios locales cargados?
+ */
+export function esRutaSecundariaIndexable(
+  iso: string | null | undefined,
+  path: string
+): boolean {
+  if (!esIsoPais(iso) || !SET_PAISES_SECUNDARIOS_WHITELIST.has(iso)) return false;
+  if (!hasLocalPrices(iso)) return false;
+  return INDEXABLE_SECONDARY_ROUTES.includes(normalizarRutaIndexabilidad(path));
+}
 
 /**
  * Fuente única (lado SEO) de qué rutas pueden anunciarse en el sitemap y
@@ -100,8 +157,9 @@ export function esRutaIndexablePais(
   iso: string | null | undefined,
   path: string
 ): boolean {
-  if (!esIsoPais(iso) || !esIndexable(iso)) return false;
-  return !esRutaNoindexPais(iso, path);
+  if (!esIsoPais(iso)) return false;
+  if (esIndexable(iso) && !esRutaNoindexPais(iso, path)) return true;
+  return esRutaSecundariaIndexable(iso, path);
 }
 
 /**

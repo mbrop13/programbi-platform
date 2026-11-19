@@ -1,6 +1,8 @@
 import Link from "next/link";
 import {
+  ArrowRight,
   BadgeCheck,
+  BookOpen,
   CalendarClock,
   CreditCard,
   Gift,
@@ -12,6 +14,7 @@ import { textoCuotas } from "@/config/cuotas";
 import { courses } from "@/lib/data/courses";
 import { guiasDePais } from "@/lib/guias";
 import { esGuiaPublicada } from "@/lib/guias/relacionadas";
+import { guiaLocalDeCurso } from "@/components/paises/enlaces";
 import { getBloqueLocalPais, getPaginaBloqueLocal, type RutaBloqueLocal } from "@/lib/paises/contenido-local";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -90,6 +93,10 @@ export default function BloqueLocalContenido({
   const hrefPrecio = slugCurso
     ? courseBrochurePath(slugCurso, iso)
     : rutaLocal(iso, "/precios");
+  const guiaCurso = slugCurso ? guiaLocalDeCurso(iso, slugCurso) : undefined;
+  const guiasDestacadas = (["power-bi", "analisis-de-datos", "python"] as const)
+    .map((slug) => guiaLocalDeCurso(iso, slug))
+    .filter((item): item is NonNullable<typeof item> => item != null);
 
   // Los textos de `contenido-local` usan el marcador `{cuotas}` para no
   // duplicar el número que manda `config/cuotas.ts` (fuente única del dato).
@@ -210,6 +217,40 @@ export default function BloqueLocalContenido({
             {pagina.parrafos.map((parrafo) => (
               <p key={parrafo}>{t(parrafo)}</p>
             ))}
+
+            {guiaCurso ? (
+              <div className="mt-5 rounded-2xl border border-line bg-paper p-5">
+                <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-mute">
+                  <BookOpen size={13} aria-hidden /> Guía local recomendada · {pais.nombre}
+                </p>
+                <Link
+                  href={guiaCurso.path}
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold leading-snug text-ink no-underline underline-offset-4 hover:underline sm:text-base"
+                >
+                  {guiaCurso.h1}
+                  <ArrowRight size={15} className="shrink-0" aria-hidden />
+                </Link>
+              </div>
+            ) : guiasDestacadas.length > 0 ? (
+              <div className="mt-5 rounded-2xl border border-line bg-paper p-5">
+                <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-mute">
+                  <BookOpen size={13} aria-hidden /> Guías de referencia para {pais.nombre}
+                </p>
+                <ul className="mt-3 space-y-2">
+                  {guiasDestacadas.map((item) => (
+                    <li key={item.path}>
+                      <Link
+                        href={item.path}
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold leading-snug text-ink no-underline underline-offset-4 hover:underline"
+                      >
+                        {item.h1}
+                        <ArrowRight size={14} className="shrink-0" aria-hidden />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
 
             <div className="mt-8">
               <h3 className="text-lg font-bold tracking-tight text-ink">

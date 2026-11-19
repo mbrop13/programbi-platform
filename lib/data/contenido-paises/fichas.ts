@@ -15,6 +15,8 @@
 export type FichaPais = {
   /** Párrafos únicos del mercado, en orden de lectura. */
   parrafos: string[];
+  /** Párrafos propios por curso para evitar repetir el mismo texto entre fichas del país. */
+  porCurso?: Record<string, string[]>;
 };
 
 export const FICHA_PAIS: Record<string, FichaPais> = {
@@ -27,9 +29,23 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
   },
   ar: {
     parrafos: [
-      "En Argentina el número casi nunca está en un solo sistema: se reparte entre la facturación electrónica de ARCA (ex AFIP), el ERP, las planillas de campo y el archivo que finanzas arma a mano. El curso parte de ese desorden real y muestra cómo dejar un modelo que se actualiza con los precios del mes, sin rehacer la planilla cada vez. Los ejercicios recorren agro y exportación, fintech, retail e industria, y tratan la inflación, el cierre de mes y el tipo de cambio como variables del modelo, no como una regla contable.",
-      "La clase se dicta desde Chile y se ve en hora de Buenos Aires: Argentina mantiene UTC-3 todo el año, así que la equivalencia depende del horario de verano chileno y la ficha de la cohorte muestra la hora exacta. Los casos de práctica cubren también cartera y mora en fintech y venta por canal en retail. Los datos de partida son los que ya existen en la empresa: comprobantes de ARCA, registros del ERP y planillas de tesorería.",
+      "En Argentina el número casi nunca está en un solo sistema: se reparte entre la facturación electrónica de ARCA (ex AFIP), el ERP, las planillas de campo y el archivo que finanzas arma a mano. El curso parte de ese desorden real para analistas financieros, pymes y equipos de agro y exportación, fintech, retail e industria, y muestra cómo construir un modelo que contemple inflación con el IPC del INDEC y tipo de cambio del BCRA sin rehacer la planilla cada mes.",
+      "La clase base de 19:30 a 21:30 en Chile se sigue en vivo por Zoom en horario de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3): de 19:30 a 21:30 durante el verano chileno y de 20:30 a 22:30 en invierno chileno. El arancel en pesos argentinos (ARS) se consulta en el PDF de temario y precios de la ficha y se abona con Mercado Pago Argentina en 3 cuotas sin interés.",
     ],
+    porCurso: {
+      "power-bi": [
+        "En las empresas argentinas los reportes de gestión suelen depender de cruzar comprobantes de ARCA (ex AFIP), ventas del ERP y listas de precios que cambian varias veces en el año. Este curso de Power BI (20 horas en vivo por Zoom) está pensado para analistas financieros, control de gestión y equipos de pymes, agro y exportación, fintech, retail e industria que necesitan armar un modelo estrella con Power Query y medidas DAX ajustadas por el IPC del INDEC y el tipo de cambio del BCRA.",
+        "La cohorte se dicta en la franja de 19:30 a 21:30 de Chile, que en hora de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) equivale a 19:30 a 21:30 en verano chileno y a 20:30 a 22:30 en invierno chileno. El valor en pesos argentinos (ARS) se descarga en el PDF de temario y precios y se paga con Mercado Pago Argentina en 3 cuotas sin interés.",
+      ],
+      "analisis-de-datos": [
+        "El programa de Análisis de Datos reúne en 60 horas por nivel (20 de SQL Server, 20 de Power BI y 20 de Python; 120 horas el recorrido completo) las tres herramientas que más piden las búsquedas de analista en Argentina relevadas por la encuesta de Sysarmy. Está orientado a profesionales de finanzas, pymes, agro y exportación, fintech, retail e industria que quieren consultar bases transaccionales y comprobantes de ARCA (ex AFIP), limpiar tablas con Pandas y publicar tableros deflactados con series del INDEC y del BCRA.",
+        "Las sesiones en vivo de 19:30 a 21:30 (hora de Chile) se cursan desde Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. Cada nivel publica su precio en pesos argentinos (ARS) en el PDF de temario y precios y admite pago por Mercado Pago Argentina en 3 cuotas sin interés.",
+      ],
+      python: [
+        "Cuando las listas de proveedores, costos de reposición y cotizaciones cambiarias se actualizan cada semana, consolidar planillas a mano deja de escalar. El curso de Python para Datos (20 horas en vivo por Zoom) entrena a analistas financieros, administrativos de pymes y equipos de agro y exportación, fintech, retail e industria en Argentina para automatizar la lectura de archivos con Pandas, limpiar montos con punto de miles y coma decimal, normalizar el CUIT de ARCA (ex AFIP) y cruzar series del INDEC y del BCRA.",
+        "El horario base de 19:30 a 21:30 en Chile corresponde en Argentina (America/Argentina/Buenos_Aires, UTC-3) a 19:30 a 21:30 durante el verano chileno y a 20:30 a 22:30 en el invierno chileno. Descargá el PDF de temario y precios para ver el arancel en pesos argentinos (ARS) y abonar con Mercado Pago Argentina en 3 cuotas sin interés.",
+      ],
+    },
   },
   mx: {
     parrafos: [
@@ -106,7 +122,13 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
 };
 
 /** Texto de ficha del mercado. `null` para países sin ficha propia. */
-export function getFichaPais(iso: string | null | undefined): FichaPais | null {
+export function getFichaPais(
+  iso: string | null | undefined,
+  cursoSlug?: string
+): FichaPais | null {
   if (!iso) return null;
-  return FICHA_PAIS[iso] ?? null;
+  const ficha = FICHA_PAIS[iso];
+  if (!ficha) return null;
+  const especificos = cursoSlug ? ficha.porCurso?.[cursoSlug] : undefined;
+  return especificos ? { ...ficha, parrafos: especificos } : ficha;
 }

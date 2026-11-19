@@ -5,8 +5,8 @@ pais: pe
 hreflang: es-PE
 curso: claude
 url_curso: https://www.programbi.com/pe/cursos/claude
-title: Cómo usar Claude AI en el trabajo en Perú | ProgramBI
-meta: "Guía práctica para usar Claude (Anthropic) en Perú: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+title: Curso de Claude en Perú: guía práctica y clases en vivo
+meta: "Aprende a usar Claude (Anthropic) en tu trabajo en Perú: prompts, Projects, Artifacts y Excel sin programar. Guía práctica y curso en vivo de 20 h."
 h1: Cómo usar Claude AI para trabajo administrativo en Perú
 updated: 2026-11-14
 sources:

@@ -1,6 +1,6 @@
 ---
-title: Cómo aprender Power BI en Perú: guía 2026 | ProgramBI
-description: Sueldo de analista de datos en Perú según Computrabajo, dónde buscar chamba, ruta de 8 semanas y DAX con ejemplos en soles de Lima, Arequipa y Trujillo.
+title: Cómo aprender Power BI en Perú (2026): ruta y curso
+description: "Ruta de 8 semanas, sueldo de analista de datos en Perú y DAX con ejemplos en soles. Guía práctica y curso de Power BI en vivo en horario de Lima."
 h1: Cómo aprender Power BI en Perú: guía práctica para analistas
 country: pe
 lang: es-PE

@@ -35,7 +35,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     "curso:analisis-de-datos": {
       title: "Curso de análisis de datos en Argentina | ProgramBI",
       description:
-        `Análisis de datos en vivo para Argentina: SQL Server, Power BI y Python en dos niveles de ${courseDurationHours("analisis-de-datos")} horas. Horario local, valor en ARS y certificado.`,
+        `Análisis de datos en vivo para Argentina: SQL Server, Power BI y Python (${courseDurationHours("analisis-de-datos")} h por nivel). Horario de Buenos Aires, valor en ARS y {cuotas}.`,
     },
     "curso:python": {
       title: "Curso de Python para datos en Argentina | ProgramBI",

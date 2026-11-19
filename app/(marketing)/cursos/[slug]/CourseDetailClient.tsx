@@ -81,6 +81,7 @@ import { COUNTRIES } from "@/lib/context/CountryContext";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { courseBrochureUrl } from "@/lib/pricing-gate";
 import { BrochureGateForm } from "@/components/marketing/BrochureGateForm";
+import { getIntroFichaAr } from "@/lib/paises/contenido-local/ar";
 
 function phoneCodeFor(iso: string) {
   return COUNTRIES.find((country) => country.iso === iso)?.phoneCode || "+56";
@@ -478,9 +479,10 @@ export default function CourseDetailClient({
         : h1Base,
     pais
   );
+  const introLocalAr = view === "publico" && pais === "ar" ? getIntroFichaAr(course.slug) : null;
   const introParagraphs =
     view === "publico"
-      ? (localizarMercado(seo?.intro || "", pais).split("\n\n").filter(Boolean) ?? [])
+      ? (introLocalAr ?? (localizarMercado(seo?.intro || "", pais).split("\n\n").filter(Boolean) ?? []))
       : [];
   const offerLead =
     view === "avanzado"

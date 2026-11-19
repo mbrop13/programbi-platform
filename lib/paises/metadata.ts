@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { getPais, normalizarPais } from "@/config/paises";
+import { esIndexable, getPais, normalizarPais } from "@/config/paises";
 import { absoluteUrl, pageOg, tituloLocal } from "@/lib/seo";
 import { esRutaIndexablePais } from "@/lib/seo/indexabilidad";
+import { ROBOTS_INDEX_FOLLOW } from "@/lib/seo/metadata-base";
 import { hreflangDe, localeOg, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 import { esRutaNoindexPais } from "@/lib/paises/indexabilidad";
@@ -108,8 +109,15 @@ export function metadataLocal(opts: {
       // omitirlo con `sinHreflang`.
       ...(indexable && !opts.sinHreflang ? { languages: hreflangDe(opts.path) } : {}),
     },
-    // Sin `robots` se hereda el del layout raíz (index, follow).
-    ...(indexable ? {} : { robots: robotsLocal(iso) }),
+    // Sin `robots` se hereda el del layout raíz (index, follow). En países
+    // cuyo layout `[pais]/layout.tsx` fija `noindex, follow` por defecto
+    // (`!esIndexable(iso)`), las rutas habilitadas por whitelist declaran
+    // `ROBOTS_INDEX_FOLLOW` explícitamente para pisar el layout.
+    ...(indexable
+      ? esIndexable(iso)
+        ? {}
+        : { robots: ROBOTS_INDEX_FOLLOW }
+      : { robots: robotsLocal(iso) }),
     openGraph: {
       title,
       description,

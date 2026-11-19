@@ -280,9 +280,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  // Chile (raíz) ya está en staticPages. Aquí solo las carpetas indexables.
+  // Chile (raíz) ya está en staticPages. Aquí entran las carpetas indexables y
+  // las rutas en whitelist de países secundarios con precios locales.
   const countryPages: EntradaPosible[] = PAISES_CARPETA.filter(
-    (pais) => pais.indexable
+    (pais) => esIndexable(pais.iso) || esRutaIndexablePais(pais.iso, "/")
   ).flatMap((pais) =>
     localizedPaths
       // Filtro por helper: país no indexable, ruta noindex en ese país o

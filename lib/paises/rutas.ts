@@ -1,4 +1,4 @@
-import { esIsoPais, getPais, ISO_CHILE, normalizarPais, PAISES_CARPETA, PAISES_INDEXABLES } from "@/config/paises";
+import { esIsoPais, getPais, ISO_CHILE, normalizarPais, PAISES_CARPETA } from "@/config/paises";
 import { absoluteUrl } from "@/lib/seo";
 import { esRutaNoindexPais } from "@/lib/paises/indexabilidad";
 import { esRutaIndexablePais, esRutaNoindexGlobal } from "@/lib/seo/indexabilidad";
@@ -108,7 +108,7 @@ export function hreflangDe(path: string): Record<string, string> {
   const ruta = quitarPais(path);
   if (esRutaNoindexGlobal(ruta) || !esRutaLocalizable(ruta)) return {};
 
-  const paises = PAISES_INDEXABLES.filter(
+  const paises = PAISES_CARPETA.filter(
     (pais) =>
       pais.iso !== ISO_CHILE &&
       esRutaIndexablePais(pais.iso, ruta) &&

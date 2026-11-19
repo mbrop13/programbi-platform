@@ -16,6 +16,8 @@ import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, jsonLdString, tituloLocal } from "@/lib/seo";
 import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { COURSE_SEO } from "@/lib/seo/money";
+import { esRutaIndexablePais } from "@/lib/seo/indexabilidad";
+import { ROBOTS_INDEX_FOLLOW } from "@/lib/seo/metadata-base";
 import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
@@ -112,17 +114,24 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     path: `cursos/${slug}`,
   });
 
-  // Solo los países indexables entran en el juego de hreflang.
-  const indexable = esIndexable(pais);
+  // Solo las rutas indexables del país entran en el juego de hreflang. En
+  // países secundarios con whitelist, se pisa el `noindex` del `[pais]/layout.tsx`
+  // con `ROBOTS_INDEX_FOLLOW`.
+  const ruta = `/cursos/${slug}`;
+  const indexable = esRutaIndexablePais(pais, ruta);
 
   const metadata: Metadata = {
     title: pais === "cl" ? (titleCl ?? seo?.title ? { absolute: titleCl ?? seo!.title } : titleBase) : { absolute: title },
     description,
     alternates: {
       canonical: canon,
-      ...(indexable ? { languages: hreflangDe(`/cursos/${slug}`) } : {}),
+      ...(indexable ? { languages: hreflangDe(ruta) } : {}),
     },
-    ...(indexable ? {} : { robots: robotsLocal(pais) }),
+    ...(indexable
+      ? esIndexable(pais)
+        ? {}
+        : { robots: ROBOTS_INDEX_FOLLOW }
+      : { robots: robotsLocal(pais) }),
     openGraph: {
       title,
       description,

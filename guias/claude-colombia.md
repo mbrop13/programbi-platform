@@ -5,8 +5,8 @@ pais: co
 hreflang: es-CO
 curso: claude
 url_curso: https://www.programbi.com/co/cursos/claude
-title: Cómo usar Claude AI en el trabajo en Colombia | ProgramBI
-meta: "Guía práctica para usar Claude (Anthropic) en Colombia: prompts, Projects, Artifacts, Excel y flujos administrativos sin programar."
+title: Curso de Claude en Colombia: guía práctica y clases en vivo
+meta: "Aprende a usar Claude (Anthropic) en tu trabajo en Colombia: prompts, Projects, Artifacts y Excel sin programar. Guía práctica y curso en vivo de 20 h."
 h1: Cómo usar Claude AI para trabajo administrativo en Colombia
 updated: 2026-11-14
 sources:

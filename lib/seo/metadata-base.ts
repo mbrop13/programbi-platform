@@ -78,3 +78,17 @@ export const ROBOTS_NOINDEX_FOLLOW: Metadata["robots"] = {
     follow: true,
   },
 };
+
+/**
+ * Override explícito `index, follow` para rutas en whitelist de países
+ * secundarios cuyo layout `[pais]/layout.tsx` declara `noindex, follow`
+ * por defecto cuando `!esIndexable(pais)`.
+ */
+export const ROBOTS_INDEX_FOLLOW: Metadata["robots"] = {
+  index: true,
+  follow: true,
+  googleBot: {
+    index: true,
+    follow: true,
+  },
+};

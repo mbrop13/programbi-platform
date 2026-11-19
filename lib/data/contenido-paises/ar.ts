@@ -1,5 +1,8 @@
 import type { ContenidoPais } from "./tipos";
+import { textoCuotas } from "@/config/cuotas";
 import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+
+const cuotasAr = textoCuotas("ar");
 
 const contenido: ContenidoPais = {
   iso: "ar",
@@ -50,8 +53,8 @@ const contenido: ContenidoPais = {
     kicker: "Datos para la economía argentina",
     titulo: "Del Excel de todos los días al tablero que se usa en la reunión",
     parrafos: [
-      "En Argentina el dato suele estar repartido entre la facturación electrónica, el ERP, las planillas de campo y algún archivo que finanzas arma a mano. El problema no es la falta de información: es que cada área llega a la reunión con una versión distinta del mismo número.",
-      "El recorrido arranca en Excel, sigue en SQL y termina en Power BI. Los ejercicios usan escenarios de agro, fintech, retail e industria, y contemplan lo que mueve el número en el mercado local: inflación, actualización de precios, cierre de mes y tipo de cambio. No se pide experiencia en programación.",
+      "En Argentina el dato suele estar repartido entre la facturación electrónica de ARCA (ex AFIP), el ERP, las planillas de campo y algún archivo que finanzas arma a mano. Los programas están pensados para analistas financieros, pymes y equipos de agro y exportación, fintech, retail e industria que necesitan llegar al comité con una única versión del número.",
+      `El recorrido arranca en Excel, sigue en SQL Server y termina en Power BI y Python, trabajando inflación con el IPC del INDEC y tipo de cambio con series del BCRA. La clase de 19:30 a 21:30 en Chile se cursa en horario de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno, con valores en pesos argentinos (ARS) en el PDF de temario y precios y pago por Mercado Pago Argentina en ${cuotasAr}.`,
     ],
   },
   casos: [
@@ -105,16 +108,16 @@ const contenido: ContenidoPais = {
   moneda: {
     titulo: "Pesos argentinos y pago con Mercado Pago",
     resumen:
-      "El catálogo de Argentina se publica en pesos argentinos (ARS): cada ficha muestra el valor de lista y el precio vigente del curso.",
-    nota: "El checkout procesa el pago con Mercado Pago. Si la cuenta local no está habilitada, antes de confirmar muestra el equivalente en pesos chilenos (CLP).",
+      `El catálogo de Argentina se publica en pesos argentinos (ARS) dentro del PDF de temario y precios de cada curso, con pago habilitado en ${cuotasAr}.`,
+    nota: "El checkout procesa el pago con Mercado Pago Argentina. Si la cuenta local no está habilitada, antes de confirmar muestra el equivalente en pesos chilenos (CLP).",
   },
   mercado: {
     ejemplo:
-      "Una empresa argentina típica llega con las ventas en el ERP, los comprobantes de ARCA y una planilla de tesorería para seguir el tipo de cambio. El primer tablero útil cruza ventas y margen por canal y se actualiza sin depender de un cierre manual.",
+      "Una empresa argentina típica llega con las ventas en el ERP, los comprobantes de ARCA (ex AFIP) y una planilla de tesorería para seguir el tipo de cambio. El primer tablero útil cruza ventas y margen por canal y se actualiza sin depender de un cierre manual.",
     horario:
-      "Argentina usa UTC-3 todo el año. Chile pasa a UTC-3 en verano y UTC-4 en invierno, así que la clase de 19:30 en Chile se ve a las 19:30 o a las 20:30 en Buenos Aires. La ficha de la cohorte muestra la conversión exacta.",
+      "Argentina mantiene America/Argentina/Buenos_Aires (UTC-3) todo el año. Chile pasa a UTC-3 en verano y UTC-4 en invierno, así que la clase de 19:30 a 21:30 en Chile se ve de 19:30 a 21:30 o de 20:30 a 22:30 en Buenos Aires. La ficha de la cohorte muestra la conversión exacta.",
     facturacion:
-      "Los cursos se pagan en pesos argentinos por Mercado Pago. Los proyectos in-company se cotizan aparte; la propuesta indica alcance, moneda y condiciones de facturación.",
+      `Los cursos abiertos se abonan en pesos argentinos (ARS) por Mercado Pago Argentina en ${cuotasAr}. Los proyectos in-company se cotizan aparte; la propuesta indica alcance, moneda y condiciones de facturación.`,
   },
   nosotros: {
     parrafo:
@@ -128,17 +131,17 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿Cómo se sigue la clase desde Buenos Aires?",
-      a: "La clase se dicta desde Chile por Zoom y se muestra convertida a la hora de Buenos Aires. Argentina mantiene UTC-3 todo el año; Chile cambia en verano, por eso la equivalencia puede variar una hora según la fecha. La ficha de la cohorte indica el horario exacto.",
+      a: "La clase base de 19:30 a 21:30 en Chile se dicta en vivo por Zoom y se muestra convertida a la hora de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3): 19:30 a 21:30 en verano chileno y 20:30 a 22:30 en invierno chileno. La ficha de la cohorte indica el horario exacto.",
       categoria: "cursos",
     },
     {
       q: "¿Los ejemplos contemplan inflación y tipo de cambio?",
-      a: "Sí. Los escenarios de práctica incluyen actualización de precios y conversión de moneda, para que el tablero no quede atado a un único valor del dólar. Se practica cómo dejar esas variables como parámetros del modelo, no una regla contable.",
+      a: "Sí. Los escenarios de práctica incluyen actualización de precios con el IPC del INDEC y conversión cambiaria con series del BCRA, dejando esas variables como parámetros del modelo para comparar cifras nominales y reales.",
       categoria: "cursos",
     },
     {
       q: "¿Puedo pagar en cuotas?",
-      a: "Sí. Mercado Pago permite pagar con tarjeta de crédito en las cuotas que habilite tu banco. También puedes coordinar una transferencia escribiendo al equipo de admisiones.",
+      a: `Sí: todos los cursos en Argentina se pueden pagar en ${cuotasAr} con Mercado Pago Argentina, sin recargo por financiamiento. También puedes abonar con Mercado Pago Wallet o transferencia bancaria en pesos argentinos (ARS).`,
       categoria: "pagos",
     },
     {
