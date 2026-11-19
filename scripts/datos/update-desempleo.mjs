@@ -1,3 +1,4 @@
+import { updatePhase2 } from "./update-desempleo-fase2.mjs";
 import ExcelJS from "exceljs";
 import { z } from "zod";
 import { createHash } from "node:crypto";
@@ -104,7 +105,8 @@ if (
   previous?.ine_fecha_actualizacion === update &&
   !process.argv.includes("--force")
 ) {
-  console.log(`Sin cambios: INE ${update}`);
+  await updatePhase2();
+  console.log(`Sin cambios en serie principal: INE ${update}`);
   process.exit(0);
 }
 const series = {};
@@ -436,6 +438,8 @@ files.set(
   "public/datos/desempleo/desempleo-chile.xlsx",
   Buffer.from(await out.xlsx.writeBuffer()),
 );
+// Refresh and validate all supplemental sources before publishing principal outputs.
+await updatePhase2();
 // All validation precedes publication; stage each file before replacing outputs.
 for (const [p, content] of files) {
   await mkdir(path.dirname(p), { recursive: true });

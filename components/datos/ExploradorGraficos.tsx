@@ -16,6 +16,10 @@ import { trackEvent } from "@/lib/analytics/marketing";
 import styles from "./ExploradorDesempleo.module.css";
 
 type Periodo = { codigo: string; label: string };
+type AjusteINE = {
+  fuente: { fecha_actualizacion: string; url: string };
+  series: { nacional: Array<{ p: string; valores: { tasa: number }; notas: { tasa?: "a" | "b" } }> };
+};
 type Territorio = {
   slug: string;
   nombre: string;
@@ -135,6 +139,26 @@ export default function ExploradorGraficos({
   } | null>(null);
   const [errorDiferencias, setErrorDiferencias] = useState("");
   const [rango, setRango] = useState("5");
+  const [tipoSerie, setTipoSerie] = useState<"original" | "ajustada">("original");
+  const [ajuste, setAjuste] = useState<{ estado: "cargando" | "error" } | { estado: "listo"; archivo: AjusteINE } | null>(null);
+
+  async function seleccionarSerie(tipo: typeof tipoSerie) {
+    if (tipo === tipoSerie && ajuste?.estado !== "error") return;
+    setTipoSerie(tipo);
+    evento("serie", tipo);
+    if (tipo !== "ajustada" || ajuste?.estado === "cargando" || ajuste?.estado === "listo") return;
+    setAjuste({ estado: "cargando" });
+    try {
+      const respuesta = await fetch(`/datos/desempleo/estacional.json?v=${encodeURIComponent(version)}`, {
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!respuesta.ok) throw new Error("Serie ajustada no disponible");
+      const archivo: AjusteINE = await respuesta.json();
+      setAjuste({ estado: "listo", archivo });
+    } catch {
+      setAjuste({ estado: "error" });
+    }
+  }
   const [vista, setVista] = useState("historico");
   const [anos, setAnos] = useState<number[]>([]);
   const [regiones, setRegiones] = useState<string[]>([]);
@@ -238,10 +262,13 @@ export default function ExploradorGraficos({
   const disponibles = territorios.filter((t) => t.slug !== "nacional");
   const desde =
     rango === "todo" ? 0 : Math.max(0, periodos.length - Number(rango) * 12);
+  const ajustada = tipoSerie === "ajustada";
+  const archivoAjuste = ajuste?.estado === "listo" ? ajuste.archivo : null;
+  const tasasAjustadas = new Map(archivoAjuste?.series.nacional.map((fila) => [fila.p, fila]));
   const history = periodos.slice(desde).map((p, i) => ({
     label: p.label,
     codigo: p.codigo,
-    [nombre]: actual.tasas[desde + i],
+    [nombre]: ajustada ? tasasAjustadas.get(p.codigo)?.valores.tasa ?? null : actual.tasas[desde + i],
     ...(territorio !== "nacional" ? { Chile: chile.tasas[desde + i] } : {}),
   }));
   const years = [...new Set(periodos.map((p) => Number(p.codigo.slice(0, 4))))];
@@ -365,7 +392,19 @@ export default function ExploradorGraficos({
                 </button>
               ))}
             </div>
-            <Grafico
+            {territorio === "nacional" && (
+              <div className={styles.controls} role="group" aria-label="Tipo de serie">
+                <button type="button" aria-pressed={!ajustada} onClick={() => seleccionarSerie("original")}>Original</button>
+                <button type="button" aria-pressed={ajustada} onClick={() => seleccionarSerie("ajustada")}>Desestacionalizada</button>
+              </div>
+            )}
+            {ajustada && !archivoAjuste ? (
+              <div className={styles.chart} role="status">
+                {ajuste?.estado === "error"
+                  ? "No se pudo cargar la serie ajustada. Presiona Desestacionalizada para reintentar."
+                  : "Cargando la serie desestacionalizada…"}
+              </div>
+            ) : <Grafico
               data={history}
               series={[
                 { key: nombre, color: "#1890ff" },
@@ -373,9 +412,35 @@ export default function ExploradorGraficos({
                   ? [{ key: "Chile", color: "#888" }]
                   : []),
               ]}
-              label={`Evolución de la tasa de desocupación de ${nombre}`}
+              label={`Evolución de la tasa de desocupación ${ajustada ? "desestacionalizada " : ""}de ${nombre}`}
               pandemia
-            />
+            />}
+            {ajustada && archivoAjuste && (
+              <>
+                <p className={styles.subtle}>
+                  El INE aplica un ajuste estadístico para facilitar la comparación entre trimestres móviles consecutivos.
+                  {" "}<a href={archivoAjuste.fuente.url}>Serie oficial del INE</a> · {archivoAjuste.fuente.fecha_actualizacion}
+                </p>
+                <details className={styles.tableDetails}>
+                  <summary>Ver tabla de la tasa desestacionalizada</summary>
+                  <div className={styles.tableWrap} tabIndex={0} role="region" aria-label="Tasa nacional desestacionalizada">
+                    <table className={styles.table}>
+                      <caption>Desocupación desestacionalizada en Chile</caption>
+                      <thead><tr><th scope="col">Trimestre móvil</th><th scope="col">Tasa (%)</th></tr></thead>
+                      <tbody>{[...history].reverse().map((fila) => {
+                        const punto = tasasAjustadas.get(fila.codigo);
+                        return (
+                          <tr key={fila.codigo}>
+                            <th scope="row">{fila.label}</th>
+                            <td>{fmt(punto?.valores.tasa)} {punto?.notas.tasa && <sup>{punto.notas.tasa}</sup>}</td>
+                          </tr>
+                        );
+                      })}</tbody>
+                    </table>
+                  </div>
+                </details>
+              </>
+            )}
           </>
         ) : (
           <>

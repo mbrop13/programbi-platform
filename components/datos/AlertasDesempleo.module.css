@@ -1,0 +1,65 @@
+.alerta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  align-items: center;
+  gap: 1.25rem 2rem;
+  border: 1px solid #c9dce9;
+  border-radius: .75rem;
+  background: #eaf4fc;
+  padding: clamp(1rem, 3vw, 2rem);
+  margin: 0 0 2.65rem;
+  color: #19374f;
+}
+
+.alerta h2 { margin: .48rem 0; }
+.alerta p { margin: .38rem 0; }
+
+.icono {
+  display: inline-grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: .5rem;
+  color: #125891;
+  background: #daeafb;
+}
+
+.formulario > label { display: block; font-weight: 700; margin-bottom: .3rem; }
+.fila { display: flex; flex-wrap: wrap; gap: .45rem; }
+.fila input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: .45rem .75rem;
+  border: 1px solid #a1b5c4;
+  border-radius: .5rem;
+  background: #fff;
+}
+.boton {
+  padding: .45rem .85rem;
+  border: 1px solid #1264a7;
+  border-radius: .5rem;
+  background: #1264a7;
+  color: #fff;
+  min-height: 2.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.boton:hover:enabled { background: #0d4d81; }
+.boton:disabled { opacity: .65; cursor: default; }
+
+.consentimiento { display: flex; flex-wrap: wrap; gap: .2rem .65rem; margin-top: .55rem; font-size: .875rem; }
+.consentimiento input { accent-color: #1264a7; margin-inline-end: .25rem; }
+.formulario .resultado { font-size: .9rem; font-weight: 650; min-height: 1.5em; }
+
+.gestion {
+  width: min(100% - 2rem, 32rem);
+  margin: 0 auto;
+  padding: clamp(1rem, 5vw, 3rem);
+  border: 1px solid #c9dce9;
+  border-radius: .75rem;
+  background: white;
+}
+.gestion h1 { margin: .6rem 0 0; font-size: clamp(1.55rem, 5vw, 2.3rem); line-height: 1.1; }
+.gestion form { margin: 1.3rem 0; }
+.gestion button { margin-top: .25rem; }

@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
+import regionesDatos from "./lib/datos/regiones-catalogo.json";
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -706,13 +707,8 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "Content-Security-Policy",
-            value: [
+    const embeds = ["nacional", ...regionesDatos.map(({ slug }) => slug)].join("|");
+    const csp = [
               "default-src 'self';",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://scripts.clarity.ms https://s3.tradingview.com https://*.tradingview.com;",
               "style-src 'self' 'unsafe-inline';",
@@ -724,8 +720,14 @@ const nextConfig: NextConfig = {
               "object-src 'none';",
               "base-uri 'self';",
               "form-action 'self';",
-              "frame-ancestors 'none';",
-            ].join(" "),
+    ].join(" ");
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: `${csp} frame-ancestors 'none';`,
           },
           {
             key: "X-Content-Type-Options",
@@ -736,10 +738,6 @@ const nextConfig: NextConfig = {
             value: "origin-when-cross-origin",
           },
           {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
@@ -748,6 +746,15 @@ const nextConfig: NextConfig = {
             value: "max-age=31536000; includeSubDomains; preload",
           },
         ],
+      },
+      {
+        // Solo la tarjeta puede insertarse en otros sitios.
+        source: `/datos/desempleo/embed/:territorio(${embeds})`,
+        headers: [{ key: "Content-Security-Policy", value: `${csp} frame-ancestors *;` }],
+      },
+      {
+        source: `/:path((?!datos/desempleo/embed/(?:${embeds})(?:/)?$).*)`,
+        headers: [{ key: "X-Frame-Options", value: "DENY" }],
       },
       {
         source: "/images/:path*",

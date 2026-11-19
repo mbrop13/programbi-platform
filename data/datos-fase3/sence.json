@@ -1,0 +1,94 @@
+{
+  "year": 2025,
+  "source": "https://cdn-site.sence.gob.cl/sites/default/files/a.01_numero_de_participantes_totales_y_aprobados_distribuidos_segun_regiones_2025.xlsx",
+  "index": "https://sence.gob.cl/sence/anuarios-2004-2026",
+  "sha256": "9285c2834508f42515f3a5fbd17326e2009d350cbbee14b91858278e0d9d97fc",
+  "national": {
+    "region": "TOTAL",
+    "total": 1055691,
+    "aprobados": 1021222
+  },
+  "regions": [
+    {
+      "region": "ARICA Y PARINACOTA",
+      "total": 4362,
+      "aprobados": 4290
+    },
+    {
+      "region": "TARAPACÁ",
+      "total": 14157,
+      "aprobados": 13828
+    },
+    {
+      "region": "ANTOFAGASTA",
+      "total": 58043,
+      "aprobados": 56328
+    },
+    {
+      "region": "ATACAMA",
+      "total": 13910,
+      "aprobados": 13505
+    },
+    {
+      "region": "COQUIMBO",
+      "total": 18015,
+      "aprobados": 17569
+    },
+    {
+      "region": "VALPARAÍSO",
+      "total": 56518,
+      "aprobados": 54224
+    },
+    {
+      "region": "METROPOLITANA",
+      "total": 630503,
+      "aprobados": 607567
+    },
+    {
+      "region": "O'HIGGINS",
+      "total": 46027,
+      "aprobados": 45050
+    },
+    {
+      "region": "MAULE",
+      "total": 35413,
+      "aprobados": 34266
+    },
+    {
+      "region": "ÑUBLE",
+      "total": 11599,
+      "aprobados": 11369
+    },
+    {
+      "region": "BIOBÍO",
+      "total": 67738,
+      "aprobados": 65906
+    },
+    {
+      "region": "ARAUCANÍA",
+      "total": 23667,
+      "aprobados": 22980
+    },
+    {
+      "region": "LOS RÍOS",
+      "total": 12600,
+      "aprobados": 12374
+    },
+    {
+      "region": "LOS LAGOS",
+      "total": 52229,
+      "aprobados": 51279
+    },
+    {
+      "region": "AYSÉN",
+      "total": 3298,
+      "aprobados": 3229
+    },
+    {
+      "region": "MAGALLANES",
+      "total": 7612,
+      "aprobados": 7458
+    }
+  ],
+  "methodology": "Acciones liquidadas de capacitación por franquicia tributaria. Una persona se cuenta tantas veces como participa en un curso; no son personas únicas. Aprobados: al menos 75% de asistencia según el cuadro."
+}

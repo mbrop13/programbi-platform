@@ -1,0 +1,21 @@
+{
+  "periodo": "2026-05",
+  "periodo_label": "mayo 2026",
+  "ficha": "junio 2026",
+  "edicion": 106,
+  "source": "https://www.spensiones.cl/portal/institucional/594/articles-17107_recurso_1.pdf",
+  "index": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10102.html",
+  "sha256": "01228443e40ec68f7218317e9f03587e740cb5c965d5b7e0d90a2df20a2f03d0",
+  "total": 261946,
+  "cic": 122341,
+  "fcs": 139605,
+  "sexo": {
+    "hombres": 155646,
+    "mujeres": 106300
+  },
+  "contrato": {
+    "indefinido": 168680,
+    "plazo_fijo": 88754,
+    "casa_particular": 4512
+  }
+}

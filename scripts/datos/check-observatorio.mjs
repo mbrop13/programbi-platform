@@ -27,7 +27,9 @@ const entradas = [...sitemap.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(([, entrad
   lastmod: entrada.match(/<lastmod>(.*?)<\/lastmod>/)?.[1],
 }));
 const entradasDatos = entradas.filter(({ loc }) => loc === `${host}/datos` || loc?.startsWith(`${host}${ruta}`));
-assert.equal(entradasDatos.length, paginas.length, "sitemap: conjunto de URLs del observatorio");
+assert.equal(entradasDatos.length, paginas.length + 1, "sitemap: conjunto de URLs del observatorio");
+assert.ok(entradas.some(({ loc }) => loc === `${host}/datos/capacitacion`));
+assert.ok(entradasDatos.some(({ loc }) => loc === `${host}${ruta}/jovenes`));
 
 function enlaces(html) {
   return new Set([...html.matchAll(/href="([^"]+)"/g)].map(([, href]) => {
@@ -140,7 +142,56 @@ assert.ok((await variante.text()).includes(`rel="canonical" href="${host}${ruta}
 assert.equal((await get(`${ruta}/no-existe`)).status, 404);
 assert.equal((await get(`${ruta}/og/no-existe`)).status, 404);
 
-console.log(JSON.stringify({ similitud, par, minPalabras: Math.min(...resultados.filter((r) => r.palabras).map((r) => r.palabras)),
+const complementarias = await Promise.all([`${ruta}/jovenes`, "/datos/capacitacion"].map(async (path) => {
+  const respuesta = await get(path);
+  assert.equal(respuesta.status, 200, path);
+  const html = await respuesta.text();
+  const title = limpiar(html.match(/<title>(.*?)<\/title>/)?.[1] ?? "");
+  const descripcion = limpiar(html.match(/<meta name="description" content="([^"]+)"/)?.[1] ?? "");
+  const h1 = [...html.matchAll(/<h1(?:\s[^>]*)?>(.*?)<\/h1>/gs)].map(([, contenido]) => limpiar(contenido));
+  const schema = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(([, json]) => {
+    const valor = JSON.parse(json);
+    return valor["@graph"] ?? (Array.isArray(valor) ? valor : [valor]);
+  });
+  assert.ok(html.includes(`rel="canonical" href="${host}${path}"`), path);
+  assert.ok(html.includes('name="robots" content="index, follow"'), path);
+  assert.ok(html.includes("En resumen"), path);
+  assert.equal(h1.length, 1, path);
+  assert.ok(title.length > 0 && title.length <= 60, path);
+  assert.ok(descripcion.length >= 140 && descripcion.length <= 155, path);
+  assert.ok(schema.some((nodo) => nodo["@type"] === "Dataset"), path);
+  assert.ok(schema.some((nodo) => nodo["@type"] === "BreadcrumbList"), path);
+  assert.ok(enlazadores.some((origen) => origen.enlaces.has(path)), `Página huérfana: ${path}`);
+  return { path, title, description: descripcion.length, h1: h1[0], htmlBytes: Buffer.byteLength(html) };
+}));
+
+const datosJuveniles = await cargar("../../data/desempleo/edad.json");
+const juvenil = datosJuveniles.series["15-24"].at(-1);
+const jovenes = await get(`${ruta}/jovenes`);
+assert.ok((await jovenes.text()).includes(formato.format(juvenil.valores.tasa)));
+const socialJovenes = await get(`${ruta}/og/jovenes?v=${meta.version}`);
+assert.match(socialJovenes.headers.get("content-type") ?? "", /^image\/png/);
+const juvenilPng = Buffer.from(await socialJovenes.arrayBuffer());
+assert.deepEqual([juvenilPng.readUInt32BE(16), juvenilPng.readUInt32BE(20)], [1200, 630]);
+
+const slugsEmbed = ["nacional", ...catalogo.map(({ slug }) => slug)];
+await Promise.all(slugsEmbed.map(async (slug) => {
+  const path = `${ruta}/embed/${slug}`;
+  const embed = await get(path);
+  assert.equal(embed.status, 200, path);
+  assert.equal(embed.headers.get("x-frame-options"), null, path);
+  assert.match(embed.headers.get("content-security-policy") ?? "", /frame-ancestors \*/);
+  assert.ok(!entradasDatos.some(({ loc }) => loc === `${host}${path}`), path);
+  const html = await embed.text();
+  assert.ok(html.includes('name="robots" content="noindex, follow"'), path);
+  const canonical = slug === "nacional" ? ruta : `${ruta}/${slug}`;
+  assert.ok(enlaces(html).has(canonical), path);
+}));
+const principal = await get(ruta);
+assert.equal(principal.headers.get("x-frame-options"), "DENY");
+assert.match(principal.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
+
+console.log(JSON.stringify({ complementarias, embeds: slugsEmbed.length, similitud, par, minPalabras: Math.min(...resultados.filter((r) => r.palabras).map((r) => r.palabras)),
   paginas: resultados.map(({ enlaces: salientes, shingles: segmentos, ...datos }) => ({
     ...datos, entrantes: enlazadores.filter((origen) => origen.path !== datos.path && origen.enlaces.has(datos.path)).length,
     salientes: salientes.size, segmentos: segmentos.size,

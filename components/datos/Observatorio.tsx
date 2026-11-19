@@ -3,12 +3,15 @@ import { Activity, CalendarDays, ChartNoAxesCombined, ChevronRight, CircleHelp, 
 import { notFound } from "next/navigation";
 import { SITE_URL } from "@/lib/seo";
 import { datosTerritorio, METADATOS, RANKING } from "@/lib/datos/desempleo";
-import { cifra, periodo, personas, puntos, tasa } from "@/lib/datos/formato";
+import { cifra, periodo, personas, puntos, tasa } from "@/lib/datos/desempleo-formato";
 import { buscarRegion, NACIONAL, REGIONES, RUTA_DESEMPLEO, rutaTerritorio } from "@/lib/datos/regiones";
 import { breadcrumbs, dataset, faqSchema, metaObservatorio, MIGAS_DATOS } from "@/lib/datos/seo";
 import { diferencia, lecturaRegional, movimiento, otrasTasas, resumenTerritorio } from "@/lib/datos/textos";
 import { DatosEstructurados, Descargas, Fuente, Metodologia, Migas, MiniSerie, Preguntas, preguntasObservatorio, TablaHistorica } from "./ElementosDatos";
 import { VistaDatos } from "./AccionesDatos";
+import { AlertasDesempleo } from "./AlertasDesempleo";
+import { DesglosesDesempleo } from "./DesglosesDesempleo";
+import { SeguroCesantia } from "./SeguroCesantia";
 import { ExploradorDesempleo } from "./ExploradorDesempleo";
 import { MapaRanking, type FilaMapa } from "./MapaRanking";
 import estilos from "./Observatorio.module.css";
@@ -107,6 +110,7 @@ export function Observatorio({ slug }: { slug: string }) {
       <nav className={estilos.indice} aria-label="En esta página">
         <a href={region ? "#lectura-regional" : "#regiones"}><MapPin size={16} aria-hidden="true" /> {region ? "Panorama regional" : "Mapa y ranking"}</a>
         <a href="#historico"><ChartNoAxesCombined size={16} aria-hidden="true" /> Histórico y comparadores</a>
+        <a href="#desgloses"><Activity size={16} aria-hidden="true" /> Desglose laboral</a>
         <a href="#descargas"><Download size={16} aria-hidden="true" /> Descargas</a>
         <a href="#metodologia"><CircleHelp size={16} aria-hidden="true" /> Metodología</a>
       </nav>
@@ -160,7 +164,10 @@ export function Observatorio({ slug }: { slug: string }) {
         <Fuente />
       </section>
 
+      <DesglosesDesempleo territorio={slug} nombre={nombre} />
+      {!region && <SeguroCesantia />}
       <Descargas slug={slug} nombre={nombre} />
+      {!region && <AlertasDesempleo />}
       <Metodologia nombre={nombre} slug={slug} actual={actual} />
       <Preguntas preguntas={preguntas} />
       <aside className={estilos.masDatos} aria-labelledby="titulo-mas-datos">

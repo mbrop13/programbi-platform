@@ -1,6 +1,6 @@
 # Observatorio de Desempleo de Chile
 
-Primera entrega de ProgramBI en la rama `mejora/datos-desempleo`, creada desde `main` actualizado en `1bc1254`.
+Implementación de ProgramBI en la rama `mejora/datos-desempleo`, creada desde `main` actualizado en `1bc1254`.
 
 ## Entrega
 
@@ -13,7 +13,7 @@ Primera entrega de ProgramBI en la rama `mejora/datos-desempleo`, creada desde `
 
 Los paneles editoriales y controles accesibles combinan React, HTML nativo y CSS acotado a la sección. El histórico usa Recharts.
 
-En el alcance posterior quedan las series por sexo y edad, sectores, informalidad, ajuste estacional, jóvenes, embeds, seguro de cesantía, alertas por correo y otros observatorios. Se adelantaron las imágenes sociales estáticas para cumplir la lista SEO. Se habilitará el enlace PBIX cuando exista el archivo real. La fecha de la próxima publicación se ha omitido porque no forma parte de la edición validada.
+El historial inicial de Fase 1 se conserva en este reporte. La continuación incorpora las fuentes complementarias, las tarjetas para insertar y los módulos de Fase 3 descritos más abajo.
 
 ## Datos oficiales
 
@@ -38,54 +38,87 @@ SHA-256 del XLSX oficial `63bbe64b2174ae04ecb76eacd2d188db0d1e6e8429b5b770131d84
 
 Cartografía referencial de las 16 regiones. El insumo incluye una entidad «Zona sin demarcar» y se excluyó del coloreado territorial. También se excluyeron Rapa Nui y Juan Fernández del recorte. [Mapas vectoriales de la BCN](https://www.bcn.cl/siit/mapas_vectoriales).
 
-## Validaciones realizadas antes de la pausa
+## Corrección de hidratación
 
-Lint dirigido con cero errores y una advertencia previa en `Footer.tsx`. TypeScript dirigido y TypeScript de producción aprobados. Una ejecución de `npm run build` exitosa con Next.js 16.2.10. El sitio completo prerenderizó 1.167 rutas:
+La prueba inicial detectó errores React #418 en la ruta nacional. React emitía títulos SVG vacíos cuando el nodo <title> recibía varios hijos JSX. Se corrigió para generar una única cadena y el mapa pasó a ser un componente de servidor con controles de cliente.
+
+## Fases 2 y 3
+
+### Empleo juvenil y desgloses de la ENE
+
+Las siete fuentes complementarias del INE se validaron por separado, con cobertura, fecha, enlace, licencia y SHA-256 en cada JSON. Todas llegaron a jul–sep 2026 con la edición del 29-10-2026. Sexo, edad, duración y desestacionalización empiezan en 2010-02. Las ramas comienzan en 2013-02, la informalidad en 2017-08 y la población joven que no estudia ni está ocupada en 2020-02.
+
+- La página `/datos/desempleo/jovenes` muestra 24,4 % de desocupación entre los 15 y 24 años, 308.851 jóvenes que no estudiaban ni estaban ocupados y 5,1 meses de búsqueda en promedio. Cada indicador mantiene su denominador y su período. El CSV juvenil distribuye la serie de población que no estudia ni está ocupada. Los JSON cubren también tasas por edad y duración.
+- La vista nacional y las 16 regiones incorporan sexo, informalidad y ramas de actividad. La comparación de ramas usa estimaciones de ocupación del mismo trimestre un año antes. El cálculo queda versionado en archivos JSON. El ranking de variaciones excluye estimaciones marcadas como no fiables y la categoría sin rama declarada.
+- El histórico nacional permite elegir la serie desestacionalizada del INE, cuya tasa de cierre fue 9,6 %. La vista original sigue mostrando 9,8 %. Las dos series tienen tablas equivalentes.
+- Hay 17 tarjetas insertables con cifra, tendencia y enlace a su página en ProgramBI. La excepción de CSP y `X-Frame-Options` se limita a los slugs admitidos. Las tarjetas quedan fuera del sitemap. Se sumaron una imagen social juvenil y 16 comparativas descargables de cada región con Chile.
+- Si cambia una fuente complementaria y el indicador principal del INE conserva su edición, la actualización igualmente propone un PR con los nuevos datos.
+
+### Seguro de cesantía y capacitación
+
+La ficha mensual N.º 106 de la Superintendencia de Pensiones reporta 261.946 beneficiarios del seguro en mayo de 2026. La publicación es de junio. El proceso validó 122.341 prestaciones de la cuenta individual y 139.605 del fondo solidario, además de los cortes por sexo y contrato. El cuadro descargable C25 devolvió HTTP 404 y la ficha usada no desglosa beneficiarios por edad. La visualización señala el quiebre de comparabilidad por la Ley 21.628.
+
+El anuario SENCE 2025 registra 1.055.691 participaciones y 1.021.222 aprobaciones en cursos con franquicia tributaria. Los 16 registros regionales cuadran con ambos totales. Cada participación corresponde a un curso, por lo que una persona puede aparecer varias veces. El panel enlaza al XLSX oficial de SENCE y muestra el año observado. Un workflow de revisión actualiza ambas fuentes sin publicación directa.
+
+Fuentes oficiales [Ficha estadística del seguro](https://www.spensiones.cl/portal/institucional/594/articles-17107_recurso_1.pdf) y [Anuarios estadísticos SENCE](https://sence.gob.cl/sence/anuarios-2004-2026).
+
+### Alertas por correo
+
+El formulario pide consentimiento, envía confirmación con enlace de 48 horas y permite darse de baja. La confirmación y la baja son acciones explícitas que hacen cambios solo al enviar su formulario. La base guarda los suscriptores y el estado de los envíos con acceso exclusivo al backend. El workflow de entrega comprueba primero la edición que está disponible públicamente en ProgramBI. La primera ejecución registra la edición de partida y los envíos se reservan por edición y suscripción para controlar duplicados.
+
+Para activar el envío se requiere aplicar `supabase/migrations/20261119000100_datos_alertas_desempleo.sql`, habilitar las variables de Supabase y Amazon SES que declara el workflow y ejecutar la inicialización después del despliegue de la sección. Esta entrega conserva la migración, las acciones y el workflow en Git. La verificación local evita usar destinatarios reales.
+
+### Coordinación con el observatorio de carreras
+
+El equipo de carreras trabaja en `mejora/datos-carreras`, con checkout y build independientes. Esta rama contiene el observatorio de desempleo, jóvenes, seguro, alertas y capacitación. El formato específico de desempleo vive en `lib/datos/desempleo-formato.ts`, de modo que el otro observatorio puede tener su propio `formato.ts`. El hub, el sitemap y la navegación de Chile son puntos comunes de integración. El ranking de carreras se enlazará cuando la ruta de esa rama esté integrada para evitar enlaces rotos.
+
+## Auditoría del build optimizado
+
+Lint dirigido y TypeScript de producción aprobados. Se hizo un build después de integrar las tres fases y una recompilación correctiva después de detectar 181.757 bytes gzip incrementales al cargar el explorador. La recompilación terminó con 1.204 páginas estáticas en el sitio completo y conservó las advertencias existentes del módulo Pyodide. El observatorio prepara toda su lectura en build. Las acciones de suscripción solo ejecutan código al enviar el formulario.
 
 | Ruta | Resultado |
 |---|---|
-| `/datos` | ○ Estática |
-| `/datos/desempleo` | ○ Estática |
-| `/datos/desempleo/[region]` | ● SSG, dieciséis regiones |
-| `/datos/desempleo/og/[territorio]` | ● SSG, dieciocho imágenes |
+| `/datos`, `/datos/desempleo`, `/datos/desempleo/jovenes`, `/datos/capacitacion` | ○ Estáticas |
+| `/datos/desempleo/[region]` | ● SSG, 16 regiones |
+| `/datos/desempleo/embed/[territorio]` | ● SSG, 17 tarjetas |
+| `/datos/desempleo/og/[territorio]` | ● SSG, 35 PNG |
+| `/datos/desempleo/alertas/gestionar` | ○ Estática, noindex |
 
-La sección no agrega handlers dinámicos. `curl -I` devolvió `x-nextjs-cache: HIT` y `s-maxage=31536000` en local. La imagen nacional también devolvió `stale-while-revalidate=86400`. El proxy general de ProgramBI sigue aplicando a las rutas públicas de marketing conforme a su configuración existente. Falta medir la CDN en un Preview de Vercel.
+`curl -I` devolvió `x-nextjs-cache: HIT` en la tarjeta comparativa. Las imágenes tienen `s-maxage=31536000, stale-while-revalidate=86400`. El proxy general de ProgramBI mantiene su comportamiento previo. Queda la medición de CDN sobre un Preview de Vercel.
 
-### Auditoría HTTP y SEO de las 18 páginas
+### Auditoría HTTP y SEO de 20 páginas
 
-Medición sobre `next start` mediante `node scripts/datos/check-observatorio.mjs http://localhost:3093`. «Propio» indica el canonical absoluto formado por `https://www.programbi.com` y la ruta de la fila. El bloque «En resumen», la fecha visible, el `dateModified` y la fecha del sitemap coincidieron en las 18 URLs. Se verificaron el JSON-LD y sus propiedades principales, las 18 imágenes PNG, los canonicals de filtros y los slugs inválidos.
+Medición sobre `next start` mediante `node scripts/datos/check-observatorio.mjs http://localhost:3098`. «Propio» indica el canonical absoluto de `https://www.programbi.com` y su ruta. Pasaron las 20 URLs indexables, los canonicals con filtros, los slugs inválidos, los datos estructurados y los enlaces entrantes. Los diecisiete embeds quedan fuera del índice y del sitemap. La restricción del iframe se probó también cargando un embed desde otro origen HTTP.
 
 | Ruta | HTTP | Title (caracteres) | Description (caracteres) | H1 | Canonical | Robots | JSON-LD | Hero y YoY = JSON | Bytes HTML |
 |---|---|---|---|---|---|---|---|---|---:|
-| `/datos` | 200 | Datos de Chile: observatorio de desempleo del INE (49) | 153 | Datos de Chile, explicados en simple | Propio | index, follow | BreadcrumbList, Dataset | Sí | 54.095 |
-| `/datos/desempleo` | 200 | Desempleo en Chile: tasa actual por región (INE) (48) | 153 | Desempleo en Chile | Propio | index, follow | BreadcrumbList, Dataset, FAQPage, ItemList | Sí | 236.029 |
-| `/datos/desempleo/arica-y-parinacota` | 200 | Desempleo en Arica y Parinacota: tasa actual e histórico (56) | 150 | Desempleo en Arica y Parinacota | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 172.580 |
-| `/datos/desempleo/tarapaca` | 200 | Desempleo en Tarapacá: tasa actual e histórico (46) | 154 | Desempleo en Tarapacá | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 174.729 |
-| `/datos/desempleo/antofagasta` | 200 | Desempleo en Antofagasta: tasa actual e histórico (49) | 143 | Desempleo en Antofagasta | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 168.834 |
-| `/datos/desempleo/atacama` | 200 | Desempleo en Atacama: tasa actual e histórico (45) | 153 | Desempleo en Atacama | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 171.944 |
-| `/datos/desempleo/coquimbo` | 200 | Desempleo en Coquimbo: tasa actual e histórico (46) | 154 | Desempleo en Coquimbo | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 166.209 |
-| `/datos/desempleo/valparaiso` | 200 | Desempleo en Valparaíso: tasa actual e histórico (48) | 142 | Desempleo en Valparaíso | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 166.385 |
-| `/datos/desempleo/metropolitana` | 200 | Desempleo en Región Metropolitana: tasa actual e histórico (58) | 153 | Desempleo en Región Metropolitana | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 167.547 |
-| `/datos/desempleo/ohiggins` | 200 | Desempleo en O’Higgins: tasa actual e histórico (47) | 142 | Desempleo en O’Higgins | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 167.734 |
-| `/datos/desempleo/maule` | 200 | Desempleo en Maule: tasa actual e histórico (43) | 151 | Desempleo en Maule | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 165.677 |
-| `/datos/desempleo/nuble` | 200 | Desempleo en Ñuble: tasa actual e histórico (43) | 152 | Desempleo en Ñuble | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 172.072 |
-| `/datos/desempleo/biobio` | 200 | Desempleo en Biobío: tasa actual e histórico (44) | 153 | Desempleo en Biobío | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 165.816 |
-| `/datos/desempleo/araucania` | 200 | Desempleo en La Araucanía: tasa actual e histórico (50) | 144 | Desempleo en La Araucanía | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 167.415 |
-| `/datos/desempleo/los-rios` | 200 | Desempleo en Los Ríos: tasa actual e histórico (46) | 154 | Desempleo en Los Ríos | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 173.617 |
-| `/datos/desempleo/los-lagos` | 200 | Desempleo en Los Lagos: tasa actual e histórico (47) | 155 | Desempleo en Los Lagos | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 174.567 |
-| `/datos/desempleo/aysen` | 200 | Desempleo en Aysén: tasa actual e histórico (43) | 151 | Desempleo en Aysén | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 186.484 |
-| `/datos/desempleo/magallanes` | 200 | Desempleo en Magallanes: tasa actual e histórico (48) | 142 | Desempleo en Magallanes | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 187.032 |
+| `/datos` | 200 | Datos de Chile: observatorio de desempleo del INE (49) | 153 | Datos de Chile, explicados en simple | Propio | index, follow | BreadcrumbList, Dataset | Sí | 57.644 |
+| `/datos/desempleo` | 200 | Desempleo en Chile: tasa actual por región (INE) (48) | 153 | Desempleo en Chile | Propio | index, follow | BreadcrumbList, Dataset, FAQPage, ItemList | Sí | 361.114 |
+| `/datos/desempleo/arica-y-parinacota` | 200 | Desempleo en Arica y Parinacota: tasa actual e histórico (56) | 150 | Desempleo en Arica y Parinacota | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 206.948 |
+| `/datos/desempleo/tarapaca` | 200 | Desempleo en Tarapacá: tasa actual e histórico (46) | 154 | Desempleo en Tarapacá | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 209.368 |
+| `/datos/desempleo/antofagasta` | 200 | Desempleo en Antofagasta: tasa actual e histórico (49) | 143 | Desempleo en Antofagasta | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 202.831 |
+| `/datos/desempleo/atacama` | 200 | Desempleo en Atacama: tasa actual e histórico (45) | 153 | Desempleo en Atacama | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 205.623 |
+| `/datos/desempleo/coquimbo` | 200 | Desempleo en Coquimbo: tasa actual e histórico (46) | 154 | Desempleo en Coquimbo | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 199.839 |
+| `/datos/desempleo/valparaiso` | 200 | Desempleo en Valparaíso: tasa actual e histórico (48) | 142 | Desempleo en Valparaíso | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 197.884 |
+| `/datos/desempleo/metropolitana` | 200 | Desempleo en Región Metropolitana: tasa actual e histórico (58) | 153 | Desempleo en Región Metropolitana | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 199.156 |
+| `/datos/desempleo/ohiggins` | 200 | Desempleo en O’Higgins: tasa actual e histórico (47) | 142 | Desempleo en O’Higgins | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 200.963 |
+| `/datos/desempleo/maule` | 200 | Desempleo en Maule: tasa actual e histórico (43) | 151 | Desempleo en Maule | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 198.678 |
+| `/datos/desempleo/nuble` | 200 | Desempleo en Ñuble: tasa actual e histórico (43) | 152 | Desempleo en Ñuble | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 205.362 |
+| `/datos/desempleo/biobio` | 200 | Desempleo en Biobío: tasa actual e histórico (44) | 153 | Desempleo en Biobío | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 198.082 |
+| `/datos/desempleo/araucania` | 200 | Desempleo en La Araucanía: tasa actual e histórico (50) | 144 | Desempleo en La Araucanía | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 200.843 |
+| `/datos/desempleo/los-rios` | 200 | Desempleo en Los Ríos: tasa actual e histórico (46) | 154 | Desempleo en Los Ríos | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 206.622 |
+| `/datos/desempleo/los-lagos` | 200 | Desempleo en Los Lagos: tasa actual e histórico (47) | 155 | Desempleo en Los Lagos | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 208.116 |
+| `/datos/desempleo/aysen` | 200 | Desempleo en Aysén: tasa actual e histórico (43) | 151 | Desempleo en Aysén | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 220.826 |
+| `/datos/desempleo/magallanes` | 200 | Desempleo en Magallanes: tasa actual e histórico (48) | 142 | Desempleo en Magallanes | Propio | index, follow | BreadcrumbList, Dataset, FAQPage | Sí | 221.061 |
+| `/datos/desempleo/jovenes` | 200 | Desempleo juvenil en Chile: datos del INE (41) | 146 | Desempleo juvenil en Chile | Propio | index, follow | Dataset, BreadcrumbList | Cifra de fuente propia | 171.193 |
+| `/datos/capacitacion` | 200 | Capacitación en Chile: cifras SENCE por región (46) | 152 | Capacitación en Chile: franquicia tributaria | Propio | index, follow | Dataset, BreadcrumbList | Cifra de fuente propia | 56.739 |
 
-El texto regional tiene al menos 351 palabras y un máximo de 46,1 % de similitud Jaccard con secuencias de cinco palabras. El hub y todas las regiones recibieron enlaces internos. Las etiquetas de script iniciales añadieron hasta 23.371 bytes gzip frente a la lista de scripts de la portada, sin incluir los módulos diferidos. `/mx` se revisó por HTTP y no contiene el enlace `/datos`.
+Las regiones tienen por lo menos 351 palabras propias. La similitud máxima entre dos textos regionales es 46,1 % con Jaccard de secuencias de cinco palabras. El mapa SVG base mide 53.599 bytes. El máximo de scripts iniciales añadidos en las páginas de desempleo quedó en 8.103 bytes gzip. El nacional y Metropolitana cargan 127.150 bytes gzip adicionales sobre la portada incluyendo los tres módulos diferidos del explorador.
 
-### Verificación en navegador y rendimiento
+La prueba de Chromium pasó sin errores de hidratación. Verificó HTML sin JavaScript, tabla estática, mapa/tiles, navegación por teclado, ajuste estacional, comparadores y selección de períodos, código Power Query, copia del iframe, gestión visual de alertas, juventud y SENCE. Cinco pantallas se inspeccionaron a 390 px sin desborde de página. La prueba de alertas no ejecutó envíos ni inserciones de suscriptores.
 
-La pasada automatizada llegó a probar mapa y Tiles, histórico, tendencias, períodos, comparador prellenado y copia de Power Query. Al comprobar la consola registró dos errores de hidratación React `#418` en la página nacional. Queda pendiente aislar la causa y repetir la pasada. Lighthouse móvil, LCP, CLS, TBT y medición de toda la ruta con módulos diferidos quedaron aplazados a petición de Manu para coordinar el otro trabajo del sitio. También quedan pendientes los datos de campo de CrUX.
+### Alcance
 
-### Alcance Git y próximos pasos
+La rama se creó desde `1bc1254`. El diff de `config/paises.ts`, `vercel.json`, `app/robots.ts`, blog, precios, guías, fichas y carpetas de países permanece vacío. En la web previa se agregaron enlaces en menú, footer y sitemap. La configuración de Next solo extendió los encabezados de las tarjetas y el correo reutiliza el transporte existente. El aviso real, la CDN de Vercel, CrUX, el PBIX elaborado por Manu, el contraste opcional BCCh y la integración de la rama de carreras permanecen pendientes.
 
-El diff preparado antes de agregar este reporte incluye 289 archivos, 79.954 inserciones y 21 eliminaciones. La mayor parte son series y archivos de diferencias por período. El diff de configuración de países, redirects, robots, precios, blog, guías existentes, fichas y carpetas país está vacío. Las integraciones en archivos de la web existente se limitan al sitemap, el menú y el footer.
-
-El observatorio queda guardado en un commit local en `mejora/datos-desempleo`. Existe un checkout independiente para `mejora/datos-carreras`. Si el otro trabajo agrega enlaces o entradas de sitemap, la integración debe conservar ambas incorporaciones. Quedan por cerrar la auditoría de navegador, Lighthouse y el Preview. El token opcional `BCCH_API_TOKEN`, el PBIX real y la revisión del primer PR automático quedan a cargo de Manu.
-
-VEREDICTO: AMARILLO. Las rutas estáticas, los datos oficiales y el SEO local pasaron. Quedan por cerrar el error de hidratación, las métricas móviles y el Preview.
+La medición Lighthouse móvil está en cola hasta que termine la recompilación paralela de carreras.

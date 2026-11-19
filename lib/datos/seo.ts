@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ORG_ID, SITE_URL } from "@/lib/seo";
 import { datosTerritorio, FECHA_EDICION, FUENTE_ENE, LICENCIA, METADATOS, PERIODO_ACTUAL, type Observacion } from "./desempleo";
-import { periodo, tasa } from "./formato";
+import { periodo, tasa } from "./desempleo-formato";
 import { NACIONAL, rutaTerritorio } from "./regiones";
 
 export type Migaja = { label: string; path: string };

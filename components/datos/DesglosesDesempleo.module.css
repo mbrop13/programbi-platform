@@ -1,0 +1,69 @@
+.bloque {
+  display: grid;
+  gap: .8rem;
+  margin-bottom: 2.65rem;
+}
+
+.bloque > p { margin: 0; color: #465969; }
+.columnas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: .8rem;
+}
+
+.tarjeta {
+  min-width: 0;
+  padding: clamp(1.15rem, 3vw, 1.7rem);
+  border: 1px solid #d4e0e8;
+  border-radius: .75rem;
+  background: #fff;
+}
+.tarjeta h3 {
+  margin: 0 0 .45rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: clamp(1.05rem, 2.3vw, 1.3rem);
+  letter-spacing: -.025em;
+}
+.tarjeta h3 svg, .enlace svg { flex: none; color: #1264a7; }
+.tarjeta h4 { margin: .62rem 0 .2rem; font-weight: 750; }
+.tarjeta p { margin: .5rem 0; color: #465969; }
+.tarjeta .fuente, .fuente { color: #465969; font-size: .8125rem; }
+.fuente a { text-decoration: underline; text-underline-offset: .16em; }
+.enlace { display: inline-flex; align-items: center; gap: .35rem; font-weight: 680; margin-top: .55rem; }
+
+.barras, .listas {
+  margin: .6rem 0 .85rem;
+  display: grid;
+  gap: .5rem;
+}
+.barras > div, .listas > div {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: .55rem;
+  align-items: baseline;
+}
+.barras > div { padding-bottom: .48rem; }
+.barras dt, .listas dt { font-weight: 610; color: #263d50; }
+.barras dd, .listas dd { margin: 0; color: #153d60; font-weight: 740; }
+.canal {
+  position: absolute;
+  inset: auto 0 0;
+  border-radius: 4px;
+  height: .25rem;
+  background: #e7eff5;
+  overflow: hidden;
+}
+.canal > span { display: block; height: 100%; border-radius: 4px; background: #267eb8; }
+
+.detalle { border-top: 1px solid #d4e0e8; padding-top: .65rem; }
+.detalle summary { cursor: pointer; font-weight: 720; min-height: 2rem; }
+.tablaScroll { overflow: auto; max-height: 26rem; }
+.tabla { width: 100%; border-collapse: collapse; min-width: 34rem; font-size: .9rem; text-align: right; }
+.tabla caption { text-align: left; color: #465969; padding: .25rem 0; }
+.tabla thead { position: sticky; top: 0; background: #eaf4fc; color: #163957; }
+.tabla :is(th, td) { padding: .5rem; border-bottom: 1px solid #dce6ee; }
+.tabla :is(th, td):first-child { text-align: left; }
+.tabla tbody th { font-weight: 530; }

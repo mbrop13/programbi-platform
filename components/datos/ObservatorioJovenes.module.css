@@ -1,0 +1,32 @@
+.page { max-width: 1152px; margin: auto; padding: 24px 24px 72px; color: #172b3a; font-variant-numeric: tabular-nums; }
+.header { padding: 32px 0 24px; max-width: 70ch; }
+.header h1 { margin: 8px 0; color: #102c43; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -.03em; }
+.header p { margin: 8px 0; line-height: 1.6; }
+.kicker { color: #1264a7; font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+.hero { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; background: #eaf4fc; border: 1px solid #c5dce9; border-radius: 16px; padding: 32px; }
+.hero h2 { margin: 0; font-size: 1.05rem; }
+.label { font-weight: 700; font-size: .85rem; color: #315674; }
+.big { color: #105d9d; font-size: clamp(3.2rem, 8vw, 5.5rem); font-weight: 800; letter-spacing: -.05em; line-height: 1; margin: 16px 0; }
+.big sup { font-size: 1rem; letter-spacing: normal; }
+.trend { display: flex; flex-direction: column; justify-content: center; color: #1264a7; }
+.trend p { font-size: .85rem; font-weight: 700; }
+.trend svg { width: 100%; height: 100px; }
+.page a { color: #075d9f; text-decoration: underline; text-underline-offset: 3px; }
+.page a:focus-visible, .page summary:focus-visible, .scroll:focus-visible { outline: 3px solid #1890ff; outline-offset: 3px; }
+.summary, .card { border: 1px solid #d8e2e9; border-radius: 14px; background: white; padding: 24px; margin-top: 24px; }
+.summary { background: #f7f9fa; }
+.page h2 { color: #102c43; font-size: 1.4rem; line-height: 1.3; }
+.summary h2, .card h2 { margin: 0 0 12px; }
+.summary li, .card p, .card li { line-height: 1.6; max-width: 70ch; }
+.summary li + li { margin-top: 8px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.metric { color: #1264a7; font-size: 2.1rem; font-weight: 750; margin: 8px 0; }
+.metric sup { font-size: .85rem; }
+.scroll { overflow-x: auto; max-width: 100%; }
+.scroll table { border-collapse: collapse; width: 100%; min-width: 650px; text-align: left; font-size: .9rem; }
+.scroll caption { text-align: left; padding: 12px 0; font-weight: 600; }
+.scroll th, .scroll td { border-bottom: 1px solid #dde5eb; padding: 10px 12px; }
+.scroll thead th { color: #344c5e; background: #f5f8fa; }
+.card summary { cursor: pointer; color: #075d9f; font-weight: 700; padding: 12px 0; }
+.links { padding-left: 20px; }
+@media (max-width: 700px) { .page { padding: 16px 16px 56px; } .hero, .grid { grid-template-columns: 1fr; } .hero { padding: 24px; } .trend svg { height: 70px; } .grid { gap: 0; } }

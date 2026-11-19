@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ImageDown } from "lucide-react";
 import { SITE_URL } from "@/lib/seo";
 import { CARTOGRAFIA, FECHA_EDICION, FUENTE_ENE, LICENCIA, METADATOS, TERMINOS_INE, hayPbix, type Observacion } from "@/lib/datos/desempleo";
-import { fechaCorta, periodo, tasa } from "@/lib/datos/formato";
+import { fechaCorta, periodo, tasa } from "@/lib/datos/desempleo-formato";
 import type { Migaja, Pregunta } from "@/lib/datos/seo";
 import { CopiarDatos, EnlaceDatos } from "./AccionesDatos";
+import { EmbedDialog } from "./EmbedDialog";
 import estilos from "./Observatorio.module.css";
 
 export function Migas({ elementos }: { elementos: readonly Migaja[] }) {
@@ -97,7 +98,7 @@ export function TablaHistorica({ serie, nombre, nacional }: {
 export function Descargas({ slug, nombre }: { slug: string; nombre: string }) {
   const csv = `/datos/desempleo/csv/${slug}.csv`;
   const powerQuery = `let
-    Origen = Csv.Document(Web.Contents("${SITE_URL}${csv}"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+    Origen = Csv.Document(Web.Contents("${SITE_URL}${csv}"), [Delimiter=";", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
     Filas = Table.Skip(Origen, 3),
     Encabezados = Table.PromoteHeaders(Filas, [PromoteAllScalars=true]),
     Tipos = Table.TransformColumnTypes(Encabezados, {{"p", type text}, {"tasa", type number}, {"tasa_ocup", type number}, {"tasa_part", type number}, {"ft", type number}, {"ocu", type number}, {"des", type number}}, "es-CL")
@@ -113,6 +114,12 @@ in
         <div className={estilos.acciones}>
           <EnlaceDatos texto="Descargar CSV" href={csv} formato="csv" territorio={slug} />
           <EnlaceDatos texto="Descargar Excel" href="/datos/desempleo/desempleo-chile.xlsx" formato="xlsx" territorio={slug} />
+          <EmbedDialog territorio={slug} nombre={nombre} />
+          {slug !== "nacional" && (
+            <a className={estilos.botonClaro} href={`/datos/desempleo/og/comparar-${slug}?v=${METADATOS.version}`} download={`${slug}-vs-chile.png`}>
+              <ImageDown size={16} aria-hidden="true" /> Guardar tarjeta comparativa
+            </a>
+          )}
           {hayPbix() && <EnlaceDatos texto="Descargar Power BI" href="/datos/desempleo/observatorio-desempleo.pbix" formato="pbix" territorio={slug} />}
         </div>
         <details className={estilos.detalle}>

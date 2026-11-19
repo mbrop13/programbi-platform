@@ -25,6 +25,7 @@ import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
 import { METADATOS, rutasObservatorio } from "@/lib/datos/desempleo";
+import { datosJovenes, EDAD, fechaIsoDesglose } from "@/lib/datos/desempleo-desgloses";
 
 /**
  * Sitemap único del sitio.
@@ -189,6 +190,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: METADATOS.fetched_at,
       changeFrequency: "monthly" as const,
     })),
+    ...(datosJovenes() ? [{
+      url: `${SITE_URL}/datos/desempleo/jovenes`,
+      lastModified: fechaIsoDesglose(EDAD.fuente.fecha_actualizacion),
+      changeFrequency: "monthly" as const,
+    }] : []),
+    { url: `${SITE_URL}/datos/capacitacion`, changeFrequency: "yearly" },
     entrada("/empresas", 0.95, "weekly"),
     // Herramientas B2B de autoservicio (diagnóstico de madurez y calculadora de
     // ahorro): páginas propias e indexables, solo en Chile (sin carpeta de país).

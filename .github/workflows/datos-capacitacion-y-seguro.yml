@@ -1,0 +1,46 @@
+name: Actualizar capacitación y seguro de cesantía
+on:
+  schedule:
+    - cron: '05 14 3 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci --no-audit --no-fund
+      - run: python -m pip install 'pypdf>=6,<7'
+      - name: Actualizar fuente SENCE
+        id: sence
+        continue-on-error: true
+        run: node scripts/datos/update-sence.mjs
+      - name: Actualizar seguro de cesantía
+        id: seguro
+        continue-on-error: true
+        run: python scripts/datos/update-seguro.py
+      - name: Proponer actualizaciones
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: datos/capacitacion-y-seguro
+          delete-branch: true
+          title: Actualizar datos de capacitación y seguro de cesantía
+          commit-message: 'Actualizar fuentes de capacitación y seguro de cesantía'
+          body: |
+            Revisión de las nuevas ediciones publicadas por SENCE y la Superintendencia de Pensiones.
+            SENCE: ${{ steps.sence.outcome }}. Seguro: ${{ steps.seguro.outcome }}.
+          add-paths: data/datos-fase3/*.json
+      - name: Reportar fallo de una fuente
+        if: steps.sence.outcome == 'failure' || steps.seguro.outcome == 'failure'
+        run: exit 1

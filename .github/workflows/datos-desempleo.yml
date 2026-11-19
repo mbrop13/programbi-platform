@@ -27,6 +27,13 @@ jobs:
         run: |
           set -o pipefail
           node scripts/datos/update-desempleo.mjs 2>&1 | tee datos-desempleo-log.txt
+          if [ ! -s "$DATOS_SUMMARY_PATH" ] && [ -n "$(git status --porcelain -- data/desempleo public/datos/desempleo)" ]; then
+            {
+              printf '## Actualización de cuadros complementarios del INE\n\n'
+              printf 'Se validaron las series oficiales y se regeneraron sus archivos.\n\n'
+              sed -n '/^Fase 2:/p' datos-desempleo-log.txt
+            } > "$DATOS_SUMMARY_PATH"
+          fi
       - name: Obtener versión
         if: success() && hashFiles('datos-desempleo-resumen.md') != ''
         id: version

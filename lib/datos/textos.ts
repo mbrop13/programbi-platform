@@ -1,5 +1,5 @@
 import type { Indicadores, Observacion } from "./desempleo";
-import { cifra, periodo, personas, puntos, tasa } from "./formato";
+import { cifra, periodo, personas, puntos, tasa } from "./desempleo-formato";
 
 export function movimiento(delta: number, referencia: string) {
   if (cifra(Math.abs(delta)) === "0,0") return `se mantuvo al mismo nivel ${referencia} a un decimal`;

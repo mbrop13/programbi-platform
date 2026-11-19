@@ -1197,3 +1197,25 @@ export async function sendTalentContactEmail(params: {
     text: `La empresa ${companyName} vio tu perfil en el directorio de talento de ProgramBI y quiere contactarte.`,
   });
 }
+
+/** Envía el vínculo de confirmación para un aviso mensual del INE. */
+export async function sendDatosConfirmation({ email, confirmar }: {
+  email: string;
+  confirmar: string;
+}) {
+  const subject = "Confirma tu alerta de desempleo en Chile";
+  const text = [
+    "Confirma tu correo para recibir un aviso con cada nueva cifra de desempleo.",
+    confirmar,
+    "El enlace vence en 48 horas. Si no solicitaste el aviso, puedes ignorar este correo.",
+  ].join("\n\n");
+  await sendEmail({
+    to: email,
+    subject,
+    text,
+    html: wrapHtml(subject, `<h1>${escapeHtml(subject)}</h1>
+      <p>Confirma tu correo para recibir un aviso al publicarse una nueva cifra.</p>
+      <p><a href="${escapeHtml(confirmar)}">Confirmar suscripción</a></p>
+      <p>El enlace vence en 48 horas.</p>`),
+  });
+}

@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Activity, ArrowUpRight, ChartNoAxesCombined, Download, MapPin } from "lucide-react";
+import { Activity, ArrowUpRight, BookOpen, ChartNoAxesCombined, Download, GraduationCap, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { DatosEstructurados, Fuente, Migas, MiniSerie } from "@/components/datos/ElementosDatos";
 import estilos from "@/components/datos/Observatorio.module.css";
 import { datosTerritorio, RANKING } from "@/lib/datos/desempleo";
-import { cifra, periodo, puntos } from "@/lib/datos/formato";
+import { cifra, periodo, puntos } from "@/lib/datos/desempleo-formato";
 import { NACIONAL, RUTA_DESEMPLEO } from "@/lib/datos/regiones";
 import { breadcrumbs, dataset, metaObservatorio, MIGAS_DATOS } from "@/lib/datos/seo";
 import { resumenTerritorio } from "@/lib/datos/textos";
@@ -42,6 +42,21 @@ export default function DatosPage() {
         <Link href={`${RUTA_DESEMPLEO}#historico`}><ChartNoAxesCombined aria-hidden="true" /><strong>Histórico desde 2010</strong><span>Compara regiones y trimestres móviles.</span></Link>
         <Link href={`${RUTA_DESEMPLEO}#descargas`}><Download aria-hidden="true" /><strong>Descargas en CSV y Excel</strong><span>Reutiliza las series en tus propios proyectos.</span></Link>
       </div>
+      <section className={estilos.seccion} aria-labelledby="hub-otros-observatorios">
+        <h2 id="hub-otros-observatorios">Explora el empleo y la capacitación</h2>
+        <div className={estilos.hubAccesos}>
+          <Link href={`${RUTA_DESEMPLEO}/jovenes`}>
+            <GraduationCap aria-hidden="true" />
+            <strong>Empleo juvenil</strong>
+            <span>Desocupación, estudios y duración de la búsqueda de empleo entre los 15 y 24 años.</span>
+          </Link>
+          <Link href="/datos/capacitacion">
+            <BookOpen aria-hidden="true" />
+            <strong>Capacitación en Chile</strong>
+            <span>Participaciones por región en cursos con franquicia tributaria, según SENCE.</span>
+          </Link>
+        </div>
+      </section>
       <section className={estilos.seccion} aria-labelledby="hub-resumen">
         <h2 id="hub-resumen">En resumen</h2>
         {resumen.map((texto) => <p key={texto}>{texto}</p>)}
