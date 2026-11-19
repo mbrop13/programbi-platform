@@ -469,12 +469,13 @@ export default function CourseDetailClient({
   const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleZone, pais) : null;
   const isCroTemplate = isCourseCroSlug(course.slug) && view === "publico";
   const seo = COURSE_SEO[course.slug];
+  const h1Base = (pais === ISO_CHILE && seo?.h1Cl) || seo?.h1 || course.title;
   const heading = localizarMercado(
     view === "empresas"
       ? empresaHeading(course)
       : view === "avanzado"
-        ? advancedHeading(seo?.h1 || course.title)
-        : seo?.h1 || course.title,
+        ? advancedHeading(h1Base)
+        : h1Base,
     pais
   );
   const introParagraphs =

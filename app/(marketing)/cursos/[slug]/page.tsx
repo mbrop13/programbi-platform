@@ -82,7 +82,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!course) return { title: "Curso no encontrado" };
 
   const seo = COURSE_SEO[slug];
-  const titleBase = seo?.title ?? `${course.title} — Curso en vivo Chile`;
+  const titleCl = pais === ISO_CHILE ? seo?.titleCl : undefined;
+  const titleBase = titleCl ?? seo?.title ?? `${course.title} — Curso en vivo Chile`;
   // Perú y México tienen title/meta escritos para su mercado; el resto sigue
   // localizando el título chileno.
   const seoLocal = esRutaSeoLocal(slug) ? getSeoBloque(pais, slug) : null;
@@ -101,9 +102,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   // Tarjeta OG de marca (tipográfica, papel-monócromo) — reemplaza las
   // portadas remotas de estilo antiguo.
+  const h1Base = (pais === ISO_CHILE && seo?.h1Cl) || seo?.h1 || course.title;
   const shareImage = ogImageUrl({
     kicker: localizarMercado("Curso en vivo Chile", pais),
-    title: localizarMercado(seo?.h1 || course.title, pais),
+    title: localizarMercado(h1Base, pais),
     description,
     tags: course.techStack,
     accent: course.accentColor,
@@ -114,7 +116,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const indexable = esIndexable(pais);
 
   const metadata: Metadata = {
-    title: pais === "cl" ? (seo?.title ? { absolute: seo.title } : titleBase) : { absolute: title },
+    title: pais === "cl" ? (titleCl ?? seo?.title ? { absolute: titleCl ?? seo!.title } : titleBase) : { absolute: title },
     description,
     alternates: {
       canonical: canon,
@@ -161,7 +163,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
   if (dbDescription && !seo) {
     course.description = dbDescription;
   } else if (seo) {
-    course.description = seo.description;
+    course.description = pais === ISO_CHILE && seo.descriptionCl ? seo.descriptionCl : seo.description;
   }
 
   const schedules = schedulesData as CourseSchedule[];
@@ -214,7 +216,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
           {
             "@type": "ListItem",
             position: 3,
-            name: localizarMercado(seo?.h1 || course.title, pais),
+            name: localizarMercado((pais === ISO_CHILE && seo?.h1Cl) || seo?.h1 || course.title, pais),
             item: absoluteUrl(rutaLocal(pais, `/cursos/${slug}`)),
           },
         ],

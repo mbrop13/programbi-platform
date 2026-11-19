@@ -432,17 +432,27 @@ const nextConfig: NextConfig = {
 
       // ── Slugs de curso renombrados ──────────────────────────────────────
       {
-        source: "/cursos/copilot-studio",
-        destination: "/cursos/copilot",
-        statusCode: 301,
-      },
-      {
         source: "/cursos/copilot-studio/brochure",
         destination: "/cursos/copilot/brochure",
         statusCode: 301,
       },
       {
+        source: "/cursos/copilot-studio",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
         source: "/cursos/copilot-studio/:rest*",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/copilot-studio/brochure",
+        destination: "/cursos/copilot/brochure",
+        statusCode: 301,
+      },
+      {
+        source: "/copilot-studio",
         destination: "/cursos/copilot",
         statusCode: 301,
       },
@@ -466,12 +476,32 @@ const nextConfig: NextConfig = {
         destination: "/cursos/mercado-financiero",
         statusCode: 301,
       },
+      {
+        source: "/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/guias/curso-online-vs-presencial",
+        destination: "/guias/curso-online-vs-presencial-power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/curso-online-vs-presencial",
+        destination: "/guias/curso-online-vs-presencial-power-bi",
+        statusCode: 301,
+      },
 
       // ── 301 directos (espejo de vercel.json): van ANTES de los genéricos
       // `/:pais/...` para evitar cadenas de 2 saltos y ahorro de Fluid CPU.
       {
         source: "/cl/curso-power-bi",
         destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/cl/cursos/copilot-studio/brochure",
+        destination: "/cursos/copilot/brochure",
         statusCode: 301,
       },
       {
@@ -485,7 +515,22 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
+        source: "/cl/copilot-studio/brochure",
+        destination: "/cursos/copilot/brochure",
+        statusCode: 301,
+      },
+      {
+        source: "/cl/copilot-studio",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
         source: "/cl/cursos/sql",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/cl/sql",
         destination: "/cursos/sql-server",
         statusCode: 301,
       },
@@ -500,8 +545,18 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
+        source: "/cl/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
         source: "/es/curso-power-bi",
         destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/es/cursos/copilot-studio/brochure",
+        destination: "/cursos/copilot/brochure",
         statusCode: 301,
       },
       {
@@ -515,7 +570,22 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
+        source: "/es/copilot-studio/brochure",
+        destination: "/cursos/copilot/brochure",
+        statusCode: 301,
+      },
+      {
+        source: "/es/copilot-studio",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
         source: "/es/cursos/sql",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/es/sql",
         destination: "/cursos/sql-server",
         statusCode: 301,
       },
@@ -530,8 +600,18 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
+        source: "/es/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
         source: "/en/curso-power-bi",
         destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/en/cursos/copilot-studio/brochure",
+        destination: "/cursos/copilot/brochure",
         statusCode: 301,
       },
       {
@@ -545,7 +625,22 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
+        source: "/en/copilot-studio/brochure",
+        destination: "/cursos/copilot/brochure",
+        statusCode: 301,
+      },
+      {
+        source: "/en/copilot-studio",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
         source: "/en/cursos/sql",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/en/sql",
         destination: "/cursos/sql-server",
         statusCode: 301,
       },
@@ -559,8 +654,18 @@ const nextConfig: NextConfig = {
         destination: "/cursos/mercado-financiero",
         statusCode: 301,
       },
+      {
+        source: "/en/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
 
       // ── Slugs de curso renombrados por país ─────────────────────────────
+      {
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/cursos/copilot-studio/brochure",
+        destination: "/:pais/cursos/copilot/brochure",
+        statusCode: 301,
+      },
       {
         source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/cursos/copilot-studio",
         destination: "/:pais/cursos/copilot",

@@ -100,7 +100,8 @@ export function getCourseJsonLd(
 ) {
   const pais = normalizarPais(iso);
   const seo = COURSE_SEO[course.slug];
-  const baseName = localizarMercado(seo?.h1 || course.title, pais);
+  const h1Base = (pais === ISO_CHILE && seo?.h1Cl) || seo?.h1 || course.title;
+  const baseName = localizarMercado(h1Base, pais);
   const name = view === "avanzado" ? advancedHeading(baseName) : baseName;
   const hours = offerHours(course, view);
   const path = rutaLocal(pais, coursePath(course.slug, view));
@@ -114,14 +115,15 @@ export function getCourseJsonLd(
     view === "empresas" ? null : precioVenta(pais, course.slug, options?.promotions);
   const startDate = view === "empresas" ? undefined : resolveCourseStartDate(course.slug, options);
 
+  const seoDescription =
+    (pais === ISO_CHILE ? seo?.descriptionCl : undefined) || seo?.description || course.description;
+
   return {
     "@type": "Course",
     "@id": `${courseUrl}#course`,
     name,
     description: localizarMercado(
-      view === "avanzado"
-        ? levelIntro(course, "Avanzado") || seo?.description || course.description
-        : seo?.description || course.description,
+      view === "avanzado" ? levelIntro(course, "Avanzado") || seoDescription : seoDescription,
       pais
     ),
     url: courseUrl,

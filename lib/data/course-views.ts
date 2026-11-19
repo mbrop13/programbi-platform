@@ -33,7 +33,7 @@ export function openCourseLevel(course: Course): CourseLevel | null {
     name: OPEN_LEVEL_NAME,
     price: basico.price,
     originalPrice: basico.originalPrice,
-    durationHours: PARTICULAR_COURSE_HOURS,
+    durationHours: course.durationHours,
     whatYouLearn: learn.filter((item, index) => learn.indexOf(item) === index),
   };
 }
@@ -49,10 +49,13 @@ function particularModule(mod: SyllabusModule): SyllabusModule {
 }
 
 /** Particular pages state one course length. Per-module hour chips stay on the empresas temario. */
-function asParticularLevel(level: SyllabusLevelContent): SyllabusLevelContent {
+function asParticularLevel(
+  level: SyllabusLevelContent,
+  hours = PARTICULAR_COURSE_HOURS
+): SyllabusLevelContent {
   return {
     ...level,
-    shortLabel: `${PARTICULAR_COURSE_HOURS}h`,
+    shortLabel: `${hours}h`,
     modules: level.modules.map(particularModule),
   };
 }
@@ -81,15 +84,18 @@ export function combinedOpenSyllabus(course: Course): SyllabusLevelContent | nul
   const benefits = parts.flatMap((part) => part.benefits ?? []);
   const intros = parts.map((part) => part.intro).filter((intro): intro is string => Boolean(intro));
 
-  return asParticularLevel({
-    id: "basico-intermedio",
-    label: OPEN_LEVEL_NAME,
-    audience: parts.find((part) => part.audience)?.audience,
-    benefits: benefits.filter((item, index) => benefits.indexOf(item) === index),
-    intro: intros.join(" "),
-    modules,
-    theme: parts[0].theme,
-  });
+  return asParticularLevel(
+    {
+      id: "basico-intermedio",
+      label: OPEN_LEVEL_NAME,
+      audience: parts.find((part) => part.audience)?.audience,
+      benefits: benefits.filter((item, index) => benefits.indexOf(item) === index),
+      intro: intros.join(" "),
+      modules,
+      theme: parts[0].theme,
+    },
+    course.durationHours
+  );
 }
 
 /** Temario shown on a particular page. Empresas keeps each level's own hours. */
@@ -97,7 +103,7 @@ export function offerSyllabusLevel(course: Course, view: CourseOfferView): Sylla
   if (!isTieredCourse(course) || view === "empresas") return null;
   if (view === "publico") return combinedOpenSyllabus(course);
   const part = getCourseSyllabus(course).levels[syllabusIndexForLevel(course, "Avanzado")];
-  return part ? asParticularLevel(part) : null;
+  return part ? asParticularLevel(part, course.durationHours) : null;
 }
 
 export function levelsForView(course: Course, view: CourseOfferView): CourseLevel[] {
@@ -106,12 +112,12 @@ export function levelsForView(course: Course, view: CourseOfferView): CourseLeve
   if (view === "avanzado") {
     return levels
       .filter((level) => level.name === "Avanzado")
-      .map((level) => ({ ...level, durationHours: PARTICULAR_COURSE_HOURS }));
+      .map((level) => ({ ...level, durationHours: course.durationHours }));
   }
   const open = openCourseLevel(course);
   const advanced = levelByName(course, "Avanzado");
   if (open && advanced) {
-    return [open, { ...advanced, durationHours: PARTICULAR_COURSE_HOURS }];
+    return [open, { ...advanced, durationHours: course.durationHours }];
   }
   return open ? [open] : levels.filter((level) => level.name === "Básico" || level.name === "Intermedio");
 }
@@ -152,14 +158,14 @@ export function publicLevelCount(course: Course): number {
   return count > 0 ? count : 1;
 }
 
-/** Hours on the public catalog: 20 for each particular course, the stored length otherwise. */
+/** Hours on the public catalog: read from the single source of truth in courses.ts. */
 export function catalogHours(course: Course): number {
   if (!isTieredCourse(course)) return course.durationHours;
   return openCourseLevel(course)?.durationHours || course.durationHours;
 }
 
 export function offerHours(course: Course, view: CourseOfferView): number {
-  if (isTieredCourse(course) && view !== "empresas") return PARTICULAR_COURSE_HOURS;
+  if (isTieredCourse(course) && view !== "empresas") return course.durationHours;
   const levels = levelsForView(course, view);
   // En el catálogo público cada nivel se vende por separado: la oferta es un nivel.
   if (view !== "empresas" && levels.length > 0) {

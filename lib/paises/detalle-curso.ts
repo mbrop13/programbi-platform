@@ -5,7 +5,7 @@
 
 import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO, type Pais } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
-import { getCourseBySlug } from "@/lib/data/courses";
+import { courseDurationHours, getCourseBySlug } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import { etiquetaHoraLocal, horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
 import {
@@ -64,7 +64,7 @@ export function resumenPrecioCursoTexto(
   const lista = precioListaVenta(pais.iso, slug, promotions);
   const descuento = lista != null ? porcentajeDescuento(lista, precio) : 0;
   const niveles = course ? publicLevelCount(course) : 2;
-  const horas = course ? catalogHours(course) : 20;
+  const horas = course ? catalogHours(course) : courseDurationHours(slug);
   const cuotas = textoCuotas(pais.iso);
 
   const montoBase = montoConMoneda(pais, precio);
@@ -112,17 +112,22 @@ export function resumenPreciosCatalogo(
       : null;
   const cuotas = textoCuotas(pais.iso);
 
+  const hEstandar = courseDurationHours("power-bi");
+  const hAnalisis = courseDurationHours("analisis-de-datos");
+  const hMineria = courseDurationHours("analitica-mineria");
+  const hFinanciero = courseDurationHours("mercado-financiero");
+
   const partes = [
-    `En ${pais.nombre}, los cursos en vivo de 20 horas por nivel (Power BI, Excel, SQL Server, Python y Machine Learning, con 2 niveles: Básico-Intermedio y Avanzado) y los programas de nivel único de 20 horas (Copilot, Claude, Power Automate, IA en Productividad y Access) tienen un valor vigente de ${estandarTexto}.`,
+    `En ${pais.nombre}, los cursos en vivo de ${hEstandar} horas por nivel (Power BI, Excel, SQL Server, Python y Machine Learning, con 2 niveles: Básico-Intermedio y Avanzado) y los programas de nivel único de ${hEstandar} horas (Copilot, Claude, Power Automate, IA en Productividad y Access) tienen un valor vigente de ${estandarTexto}.`,
   ];
   if (analisisTexto) {
     partes.push(
-      `Análisis de Datos (60 horas por nivel, 2 niveles) y Análisis de Datos para la Minería (20 horas por nivel, 2 niveles) valen ${analisisTexto} por nivel.`,
+      `Análisis de Datos (${hAnalisis} horas por nivel, 2 niveles) y Análisis de Datos para la Minería (${hMineria} horas por nivel, 2 niveles) valen ${analisisTexto} por nivel.`,
     );
   }
   if (financieroTexto) {
     partes.push(
-      `El programa Mercado Financiero con Python, Power BI y SQL (nivel único de 30 horas) vale ${financieroTexto}.`,
+      `El programa Mercado Financiero con Python, Power BI y SQL (nivel único de ${hFinanciero} horas) vale ${financieroTexto}.`,
     );
   }
   partes.push(

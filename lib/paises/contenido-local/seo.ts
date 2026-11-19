@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { textoCuotas } from "@/config/cuotas";
+import { courseDurationHours } from "@/lib/data/courses";
 import type { RutaBloqueLocal } from "./tipos";
 
 /**
@@ -29,17 +30,17 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     "curso:power-bi": {
       title: "Curso Power BI en vivo en Argentina | ProgramBI",
       description:
-        "Curso Power BI en vivo para Argentina: Power Query, modelo estrella y DAX en 20 horas. Horario de Buenos Aires, valor en ARS y {cuotas}.",
+        `Curso Power BI en vivo para Argentina: Power Query, modelo estrella y DAX en ${courseDurationHours("power-bi")} horas. Horario de Buenos Aires, valor en ARS y {cuotas}.`,
     },
     "curso:analisis-de-datos": {
       title: "Curso de análisis de datos en Argentina | ProgramBI",
       description:
-        "Análisis de datos en vivo para Argentina: SQL Server, Power BI y Python en dos niveles de 60 horas. Horario local, valor en ARS y certificado.",
+        `Análisis de datos en vivo para Argentina: SQL Server, Power BI y Python en dos niveles de ${courseDurationHours("analisis-de-datos")} horas. Horario local, valor en ARS y certificado.`,
     },
     "curso:python": {
       title: "Curso de Python para datos en Argentina | ProgramBI",
       description:
-        "Python para datos en vivo para Argentina: Pandas, visualización y automatización de reportes. Horario de Buenos Aires, valor en ARS y {cuotas}.",
+        `Python para datos en vivo para Argentina (${courseDurationHours("python")} h): Pandas, visualización y automatización. Horario de Buenos Aires, valor en ARS y {cuotas}.`,
     },
     empresas: {
       title: "Capacitación in-company en Argentina | ProgramBI",
@@ -66,17 +67,17 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     "curso:power-bi": {
       title: "Curso Power BI en vivo en Colombia | ProgramBI",
       description:
-        "Curso Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en 20 horas. Horario de Bogotá, valor en COP y {cuotas}.",
+        `Curso Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en ${courseDurationHours("power-bi")} horas. Horario de Bogotá, valor en COP y {cuotas}.`,
     },
     "curso:analisis-de-datos": {
       title: "Curso de análisis de datos en Colombia | ProgramBI",
       description:
-        "Análisis de datos en vivo para Colombia: SQL Server, Power BI y Python en dos niveles de 60 horas. Horario de Bogotá, valor en COP y certificado.",
+        `Análisis de datos en vivo para Colombia: SQL Server, Power BI y Python en dos niveles de ${courseDurationHours("analisis-de-datos")} horas. Horario de Bogotá, valor en COP y certificado.`,
     },
     "curso:python": {
       title: "Curso de Python para datos en Colombia | ProgramBI",
       description:
-        "Python para datos en vivo para Colombia: Pandas, visualización y automatización de reportes. Horario de Bogotá, valor en COP y {cuotas}.",
+        `Python para datos en vivo para Colombia (${courseDurationHours("python")} h): Pandas, visualización y automatización. Horario de Bogotá, valor en COP y {cuotas}.`,
     },
     empresas: {
       title: "Capacitación in-company en Colombia | ProgramBI",

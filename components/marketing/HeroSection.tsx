@@ -243,7 +243,7 @@ export default function HeroSection({
                     src={profesor.imageUrl}
                     alt={`${profesor.name}, profesor de ProgramBI`}
                     fill
-                    sizes="140px"
+                    sizes="(max-width: 640px) 104px, 140px"
                     className="object-cover object-[center_18%]"
                   />
                   <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-full bg-black/65 px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-white">

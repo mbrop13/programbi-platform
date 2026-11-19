@@ -23,8 +23,8 @@ export default function LogoSlider({ className }: { className?: string }) {
                 alt={logo.name}
                 width={160}
                 height={48}
+                sizes="(max-width: 1024px) 128px, 160px"
                 fetchPriority="low"
-                unoptimized
                 style={logo.zoom ? { scale: String(logo.zoom) } : undefined}
                 className="max-h-8 w-auto object-contain lg:max-h-10"
               />

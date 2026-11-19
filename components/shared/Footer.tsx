@@ -95,7 +95,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               alt="ProgramBI"
               width={148}
               height={32}
-              unoptimized
+              sizes="148px"
               className="h-8 w-[148px] object-contain object-left"
             />
           </Link>

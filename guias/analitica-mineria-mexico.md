@@ -15,7 +15,7 @@ nota_hermes: |
   ELEMENTO VISUAL: temario agrupado por herramienta (Power BI / SQL Server / Python, nivel básico e intermedio) + bloque de código SQL de detenciones.
   Intención: "curso análisis de datos minería méxico", "curso power bi minería" (transaccional) → click_registro en /mx/cursos/analisis-de-datos. country=mx, course=analisis-de-datos.
   - PRECIO: {precio_local} = placeholder de config/pricing.ts (WS1), clave analisis-de-datos × mx. Manu aún no define el monto: NO escribas cifras. Sin valor → "Consulta el valor por WhatsApp".
-  - CURSO: Manu confirmó (4 nov 2026) que «Análisis de datos para la Minería» es el MISMO curso que Análisis de datos; esta guía es su versión con enfoque minero y enlaza a /mx/cursos/analisis-de-datos. IGNORA el price 498000 (y durationHours 16) del JSON de la ficha analitica-mineria: no usar en guía, Offer ni checkout.
+  - CURSO: Manu confirmó (4 nov 2026) que «Análisis de datos para la Minería» es el MISMO programa de 60 horas (3 niveles de 20 h = 60 h) que Análisis de datos; esta guía es su versión con enfoque minero y enlaza a /mx/cursos/analisis-de-datos.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Análisis de Datos para la Minería para México en programbi.com y quiero info del curso en vivo".
 ---

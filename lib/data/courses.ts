@@ -379,15 +379,15 @@ export const courses: Course[] = [
     slug: "analitica-mineria",
     title: "Análisis de Datos para la Minería",
     shortDescription:
-      "Optimización de procesos y decisiones en minería. Básico-intermedio y avanzado, 20 horas cada uno, en la misma página.",
+      "Optimización de procesos y decisiones en minería. Básico-intermedio y avanzado, 60 horas cada uno, en la misma página.",
     description:
-      "Especialización para profesionales mineros e industriales. Dos niveles de 20 horas cada uno: básico-intermedio y avanzado.",
+      "Especialización para profesionales mineros e industriales. Dos niveles de 60 horas cada uno: básico-intermedio y avanzado.",
     category: "especializacion",
     categoryLabel: "ESPECIALIZACIÓN",
     badgeLabel: "ESPECIALIZACIÓN",
     badgeColor: "#B45309",
     techStack: ["Excel", "Power BI", "SQL", "Python"],
-    durationHours: 20,
+    durationHours: 60,
     modality: "online",
     level: "básico a avanzado",
     imageUrl: "/images/courses/analitica-mineria-card.webp",
@@ -1133,6 +1133,10 @@ export function getGroupedCourses() {
 export function getCourseBySlug(slug: string): Course | undefined {
   const resolved = slug === "copilot-studio" ? "copilot" : slug;
   return courses.find((c) => c.slug === resolved);
+}
+
+export function courseDurationHours(slug: string): number {
+  return getCourseBySlug(slug)?.durationHours ?? 20;
 }
 
 export function getFeaturedCourses(): Course[] {

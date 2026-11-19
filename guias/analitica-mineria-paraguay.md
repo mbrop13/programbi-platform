@@ -15,7 +15,7 @@ nota_hermes: |
   ELEMENTO VISUAL: tabla «Así se reparten los contenidos» (módulo, nivel, lo que vas a hacer) + gráfico de ejemplo de vibración (código Python).
   Intención: "curso análisis de datos minería paraguay", "curso power bi industria asunción" (transaccional) → click_registro en /py/cursos/analisis-de-datos. country=py, course=analisis-de-datos.
   - PRECIO: {precio_local} = placeholder de config/pricing.ts (WS1), clave analisis-de-datos × py. Manu aún no define el monto: NO escribas cifras. Sin valor → "Consulta el valor por WhatsApp". La ficha /py/ puede publicar un Offer en USD no aprobado: WS1 debe quitarlo o alinearlo.
-  - CURSO: Manu confirmó (4 nov 2026) que «Análisis de datos para la Minería» es el MISMO curso que Análisis de datos; esta guía es su versión con enfoque minero y enlaza a /py/cursos/analisis-de-datos. IGNORA el price 498000 (y durationHours 16) del JSON de la ficha analitica-mineria: no usar en guía, Offer ni checkout.
+  - CURSO: Manu confirmó (4 nov 2026) que «Análisis de datos para la Minería» es el MISMO programa de 60 horas (3 niveles de 20 h = 60 h) que Análisis de datos; esta guía es su versión con enfoque minero y enlaza a /py/cursos/analisis-de-datos.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Análisis de Datos para la Minería para Paraguay en programbi.com y quiero info del curso en vivo".
 ---

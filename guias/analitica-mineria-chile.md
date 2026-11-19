@@ -15,7 +15,7 @@ nota_hermes: |
   ELEMENTO VISUAL: tabla «Tres herramientas, una sola cadena del dato» (herramienta → uso en la mina → módulos).
   Intención: "curso análisis de datos minería", "curso power bi minería chile" (transaccional) → click_registro en /cursos/analisis-de-datos. country=cl, course=analisis-de-datos.
   - PRECIO: 338.000 CLP confirmado por Manu (4 nov 2026), mismo precio que Análisis de datos. Léelo como {precio_local} desde config/pricing.ts (clave analisis-de-datos × cl). 3 cuotas sin interés.
-  - CURSO: Manu confirmó (4 nov 2026) que «Análisis de datos para la Minería» es el MISMO curso que Análisis de datos; esta guía es su versión con enfoque minero y enlaza a /cursos/analisis-de-datos. IGNORA el price 498000 (y durationHours 16) del JSON de la ficha analitica-mineria: no usar en guía, Offer ni checkout.
+  - CURSO: Manu confirmó (4 nov 2026) que «Análisis de datos para la Minería» es el MISMO programa de 60 horas (3 niveles de 20 h = 60 h) que Análisis de datos; esta guía es su versión con enfoque minero y enlaza a /cursos/analisis-de-datos.
   - Primeros dos párrafos = respuesta citable (GEO). Schema Article + FAQPage + BreadcrumbList, sin Course/Offer.
   - WhatsApp: "Hola, vengo de la guía de Análisis de Datos para la Minería para Chile en programbi.com y quiero info del curso en vivo".
 ---

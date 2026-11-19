@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
+import { courseDurationHours } from "@/lib/data/courses";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 import { GUIDE_SEO } from "@/lib/seo/money";
 
 const copy = GUIDE_SEO["power-bi-mineria-chile"];
+const mineriaHours = courseDurationHours("analitica-mineria");
 
 const share = pageOg({
   title: copy.title,
@@ -30,11 +32,11 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "¿Hay un curso Power BI para minería en Chile?",
-    a: "Sí: Análisis de datos para la minería, básico-intermedio de 20 horas y avanzado de 20 horas, con Power BI, SQL y Python aplicados a faena. Es cupo individual.",
+    a: `Sí: el programa Análisis de Datos para la Minería cuenta con nivel básico-intermedio de ${mineriaHours} horas y nivel avanzado de ${mineriaHours} horas en vivo, integrando Power BI, SQL Server y Python aplicados a gestión de turnos, flota, OEE y mantenimiento en faena.`,
   },
   {
-    q: "¿Y si la minera necesita el tablero en producción?",
-    a: "Eso es el Pack Adopción BI: 1–3 dashboards con los datos del área + adopción 4–6 semanas. No es el curso abierto.",
+    q: "¿Y si la operación minera necesita implementar tableros en producción?",
+    a: "Para equipos corporativos ofrecemos el Pack Adopción BI: desarrollamos de 1 a 3 dashboards conectados a los datos del área y acompañamos la adopción técnica del equipo durante 4 a 6 semanas.",
   },
 ];
 
@@ -75,7 +77,7 @@ export default function Page() {
       <SeoGuide
         kicker="Power BI · Minería Chile"
         h1={copy.h1}
-        lead="Turnos, flota, combustible y mantenimiento siguen en planillas que no se hablan. Power BI sirve en minería cuando el tablero es el de la faena — no un demo — y alguien del área lo puede mantener."
+        lead="Integra reportes de turno, disponibilidad de flota, consumo de combustible y mantenimiento en un modelo único de datos. Power BI genera impacto en faena cuando se conecta a tus fuentes operativas y el equipo del área domina su actualización."
         pagePath={copy.path}
         crumbs={[
           { href: "/", label: "Inicio" },
@@ -84,17 +86,17 @@ export default function Page() {
         ]}
         sections={[
           {
-            h2: "Qué duele en faena",
+            h2: "Desafíos operativos en faena",
             paragraphs: [
-              "Reportes de turno que se arman a mano. OEE en un Excel que nadie audita. Cruce de flota, combustible y personal en tres archivos. El jefe de área pide “el número de ayer” y llega pasado mañana.",
-              "En faena el patrón se repite: dato nativo (SQL, PI, SCADA o extractos), modelo consistente y hábito de uso semanal.",
+              "Partes de turno consolidados manualmente, indicadores de disponibilidad y OEE dispersos en planillas independientes, y cruces de flota, combustible y dotación que tardan días en llegar a jefatura.",
+              "Una reportería minera confiable conecta las fuentes de la operación (SQL Server, PI System, SCADA o extractos de gestión), estructura un modelo estrella auditable y estandariza el seguimiento semanal por área.",
             ],
           },
           {
-            h2: "Dos caminos",
+            h2: "Dos modalidades según tu objetivo",
             paragraphs: [
-              "Persona / analista de mina: curso Análisis de datos para la minería (Power BI, SQL y Python). Básico-intermedio y avanzado, 20 horas cada uno. Temario de turnos, OEE y predictivo a nivel de formación.",
-              "Empresa minera / área: Pack Adopción. Construimos 1–3 dashboards con tus datos y capacitamos al equipo 4–6 semanas, junto a mentores con experiencia en faenas y empresas como CAP, AngloAmerican, Pucobre y SQM.",
+              `Profesionales y analistas de faena: curso Análisis de Datos para la Minería en vivo (Power BI, SQL Server y Python), con niveles básico-intermedio y avanzado de ${mineriaHours} horas cada uno, enfocados en reportería de turnos, cálculo de OEE y mantenimiento predictivo.`,
+              "Empresas mineras y contratistas: Pack Adopción BI. Construimos de 1 a 3 dashboards productivos con los datos de tu operación y capacitamos al equipo durante 4 a 6 semanas, junto a especialistas con experiencia formando equipos en compañías como CAP, Anglo American, Pucobre y SQM.",
             ],
           },
         ]}

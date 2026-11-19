@@ -1,3 +1,5 @@
+import { courseDurationHours } from "@/lib/data/courses";
+
 export const WA_URL =
   "https://wa.me/56935409699?text=Hola!%20Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20ProgramBI.";
 
@@ -25,7 +27,7 @@ export const programs = [
   {
     slug: "analisis-de-datos",
     name: "Análisis de Datos",
-    hours: "60 h",
+    hours: `${courseDurationHours("analisis-de-datos")} h`,
     line: "Programa integral de SQL Server, Power BI y Python.",
     image: "/images/courses/analisis-de-datos-card.webp",
     href: "/cursos/analisis-de-datos",
@@ -33,7 +35,7 @@ export const programs = [
   {
     slug: "power-bi",
     name: "Power BI",
-    hours: "20 h",
+    hours: `${courseDurationHours("power-bi")} h`,
     line: "Dashboards, DAX y modelado para decisiones.",
     image: "/images/courses/power-bi-card.webp",
     href: "/cursos/power-bi",
@@ -41,7 +43,7 @@ export const programs = [
   {
     slug: "sql-server",
     name: "SQL Server",
-    hours: "20 h",
+    hours: `${courseDurationHours("sql-server")} h`,
     line: "Consultas, procedimientos y arquitectura de datos.",
     image: "/images/courses/sql-server-card.webp",
     href: "/cursos/sql-server",
@@ -49,7 +51,7 @@ export const programs = [
   {
     slug: "python",
     name: "Python para Datos",
-    hours: "20 h",
+    hours: `${courseDurationHours("python")} h`,
     line: "Pandas y análisis aplicado a negocios reales.",
     image: "/images/courses/python-card.webp",
     href: "/cursos/python",

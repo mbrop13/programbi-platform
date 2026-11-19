@@ -1,14 +1,14 @@
-import { courses } from "@/lib/data/courses";
+import { courseDurationHours, courses } from "@/lib/data/courses";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
  * Datos de la ficha del curso que usan las guías (duración, nombre, imagen,
  * próximo inicio).
  *
- * Las duraciones publicadas en `HORAS_PUBLICADAS` (20 h por nivel para Power BI,
- * Python, SQL Server, Excel, Machine Learning y Analítica Minería; 60 h para
- * Análisis de datos; 30 h para Mercado financiero) coinciden con
- * `lib/data/courses.ts`.
+ * Las duraciones provienen directamente de `lib/data/courses.ts` (20 h por
+ * nivel para Power BI, Python, SQL Server, Excel y Machine Learning; 20 h para
+ * Copilot, Claude, IA en Productividad, Power Automate y Access; 60 h para
+ * Análisis de datos y Analítica Minería; 30 h para Mercado financiero).
  */
 export type FichaCursoGuia = {
   slug: string;
@@ -26,19 +26,19 @@ export type FichaCursoGuia = {
 };
 
 const HORAS_PUBLICADAS: Record<string, { horas: number; inicio: string | null }> = {
-  "power-bi": { horas: 20, inicio: null },
-  python: { horas: 20, inicio: null },
-  "sql-server": { horas: 20, inicio: null },
-  excel: { horas: 20, inicio: null },
-  claude: { horas: 20, inicio: null },
-  copilot: { horas: 20, inicio: null },
-  "ia-productividad": { horas: 20, inicio: null },
-  "power-automate": { horas: 20, inicio: null },
-  access: { horas: 20, inicio: null },
-  "machine-learning": { horas: 20, inicio: null },
-  "analitica-mineria": { horas: 20, inicio: null },
-  "analisis-de-datos": { horas: 60, inicio: null },
-  "mercado-financiero": { horas: 30, inicio: null },
+  "power-bi": { horas: courseDurationHours("power-bi"), inicio: null },
+  python: { horas: courseDurationHours("python"), inicio: null },
+  "sql-server": { horas: courseDurationHours("sql-server"), inicio: null },
+  excel: { horas: courseDurationHours("excel"), inicio: null },
+  claude: { horas: courseDurationHours("claude"), inicio: null },
+  copilot: { horas: courseDurationHours("copilot"), inicio: null },
+  "ia-productividad": { horas: courseDurationHours("ia-productividad"), inicio: null },
+  "power-automate": { horas: courseDurationHours("power-automate"), inicio: null },
+  access: { horas: courseDurationHours("access"), inicio: null },
+  "machine-learning": { horas: courseDurationHours("machine-learning"), inicio: null },
+  "analitica-mineria": { horas: courseDurationHours("analitica-mineria"), inicio: null },
+  "analisis-de-datos": { horas: courseDurationHours("analisis-de-datos"), inicio: null },
+  "mercado-financiero": { horas: courseDurationHours("mercado-financiero"), inicio: null },
 };
 
 export function fichaCurso(slug: string): FichaCursoGuia {

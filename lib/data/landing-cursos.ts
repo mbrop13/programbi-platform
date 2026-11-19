@@ -13,6 +13,7 @@
 
 import { normalizarPais } from "@/config/paises";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
+import { courseDurationHours } from "@/lib/data/courses";
 import { localizarMercado } from "@/lib/paises/precios";
 
 export type UsoLanding = {
@@ -44,11 +45,11 @@ export const LANDING_CURSOS = {
     slug: "sql-server",
     seoTitle: "Curso SQL online en vivo en Chile | ProgramBI",
     seoDescription:
-      "Curso SQL online en vivo en Chile: SELECT, JOINs, GROUP BY, vistas y procedimientos almacenados. 20 horas por nivel, con grabaciones.",
+      `Curso SQL online en vivo en Chile: SELECT, JOINs, GROUP BY, vistas y procedimientos almacenados. ${courseDurationHours("sql-server")} horas por nivel, con grabaciones.`,
     kicker: "Curso SQL online · Chile",
     h1: "Curso SQL online en vivo en Chile",
     lead:
-      "Aprende a consultar bases SQL Server con tus propias consultas: SELECT, WHERE, JOINs, GROUP BY, vistas y procedimientos almacenados. Clases en vivo por Zoom, 20 horas por nivel.",
+      `Aprende a consultar bases SQL Server con tus propias consultas: SELECT, WHERE, JOINs, GROUP BY, vistas y procedimientos almacenados. Clases en vivo por Zoom, ${courseDurationHours("sql-server")} horas por nivel.`,
     audience:
       "Para analistas que salen de Excel y necesitan extraer datos de bases SQL Server con consultas propias, sin depender de TI para cada reporte.",
     intro:
@@ -94,11 +95,11 @@ export const LANDING_CURSOS = {
     slug: "python",
     seoTitle: "Curso Python para datos online en Chile | ProgramBI",
     seoDescription:
-      "Curso Python para datos online en vivo en Chile: fundamentos, Pandas, Matplotlib, Seaborn y Plotly. 20 horas por nivel, con grabaciones.",
+      `Curso Python para datos online en vivo en Chile: fundamentos, Pandas, Matplotlib, Seaborn y Plotly. ${courseDurationHours("python")} horas por nivel, con grabaciones.`,
     kicker: "Curso Python para datos · Chile",
     h1: "Curso Python para datos online en vivo en Chile",
     lead:
-      "Aprende Python aplicado al análisis de datos: fundamentos, Pandas, visualización con Matplotlib y Seaborn, y automatización de reportes. Clases en vivo por Zoom, 20 horas por nivel.",
+      `Aprende Python aplicado al análisis de datos: fundamentos, Pandas, visualización con Matplotlib y Seaborn, y automatización de reportes. Clases en vivo por Zoom, ${courseDurationHours("python")} horas por nivel.`,
     audience:
       "Para profesionales que quieren analizar datos con Python y Pandas, sin un programa de ciencia de datos de meses.",
     intro:

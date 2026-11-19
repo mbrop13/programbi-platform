@@ -131,7 +131,7 @@ export default function MentorsSection() {
                           src={mentor.imageUrl}
                           alt={mentor.name}
                           fill
-                          sizes={isCardExpanded ? "500px" : "200px"}
+                          sizes={isCardExpanded ? "(max-width: 640px) 290px, (max-width: 1024px) 320px, 420px" : "(max-width: 1024px) 320px, 180px"}
                           className={`object-cover transition-all duration-700 ease-in-out ${
                             isCardExpanded ? "grayscale-0 scale-[1.02] opacity-100" : "grayscale opacity-75 group-hover:opacity-90"
                           } pointer-events-none`}

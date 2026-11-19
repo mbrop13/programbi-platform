@@ -343,8 +343,8 @@ export default function Navbar() {
               alt="ProgramBI"
               width={150}
               height={32}
+              sizes="150px"
               className="h-8 w-[150px] object-contain object-left"
-              unoptimized
             />
           </Link>
 
