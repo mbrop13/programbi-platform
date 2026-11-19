@@ -1,4 +1,4 @@
-import Link from "@/components/datos/EnlaceNavegacionDatos";
+/* eslint-disable @next/next/no-html-link-for-pages -- Enlaces estáticos para que el observatorio pueda navegar antes de cargar React. */
 import { ArrowUpRight, BriefcaseBusiness, Users } from "lucide-react";
 import { EDAD, INFORMALIDAD, SEXO, seriesSectores, type FuenteDesglose } from "@/lib/datos/desempleo-desgloses";
 import { personas, periodo, tasa } from "@/lib/datos/desempleo-formato";
@@ -144,9 +144,9 @@ export function DesglosesDesempleo({ territorio, nombre }: { territorio: string;
         <section className={estilo.tarjeta} aria-labelledby="edad-titulo">
           <h3 id="edad-titulo">Desocupación por tramo de edad</h3>
           <Barras escala={Math.max(30, ...edades.map((edad) => edad.valor ?? 0))} medidas={edades} />
-          <Link className={estilo.enlace} href="/datos/desempleo/jovenes">
+          <a className={estilo.enlace} href="/datos/desempleo/jovenes">
             Ver empleo juvenil en Chile <ArrowUpRight size={16} aria-hidden="true" />
-          </Link>
+          </a>
           <FuenteDesgloses fuente={EDAD.fuente} periodoCodigo={EDAD.series["15-24"]?.at(-1)?.p} />
         </section>
       )}

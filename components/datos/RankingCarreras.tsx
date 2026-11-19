@@ -466,22 +466,22 @@ export function RankingCarreras({
             </div>
           ) : (
             <>
-              {/* Desktop Table */}
-              <div className="hidden overflow-x-auto rounded-xl border border-[#e2e2dc] bg-white md:block">
-                <table className="w-full border-collapse text-left text-sm">
-                  <thead>
+              {/* Una sola tabla adaptable para escritorio y móvil */}
+              <div className="md:overflow-x-auto md:rounded-xl md:border md:border-[#e2e2dc] md:bg-white">
+                <table role="table" aria-label="Ranking de carreras" className="block w-full border-collapse text-left text-sm md:table">
+                  <thead role="rowgroup" className="sr-only md:not-sr-only md:table-header-group">
                     <tr className="border-b border-[#e2e2dc] bg-[#f7f7f4] text-xs font-semibold text-[#5c5c58]">
-                      <th className="px-3 py-3 text-center">#</th>
-                      <th className="px-3 py-3">Carrera</th>
-                      <th className="px-3 py-3 text-right">Sueldo 4.º año</th>
-                      <th className="px-3 py-3 text-right">Empleab. 1.º</th>
-                      <th className="px-3 py-3">Rango P10–P90 (5.º)</th>
-                      <th className="px-3 py-3 text-right">Arancel med.</th>
-                      <th className="px-3 py-3 text-right">Dur. real</th>
-                      <th className="px-3 py-3 text-right">Acción</th>
+                      <th scope="col" className="px-3 py-3 text-center">#</th>
+                      <th scope="col" className="px-3 py-3">Carrera</th>
+                      <th scope="col" className="px-3 py-3 text-right">Sueldo 4.º año</th>
+                      <th scope="col" className="px-3 py-3 text-right">Empleab. 1.º</th>
+                      <th scope="col" className="px-3 py-3">Rango P10–P90 (5.º)</th>
+                      <th scope="col" className="px-3 py-3 text-right">Arancel med.</th>
+                      <th scope="col" className="px-3 py-3 text-right">Dur. real</th>
+                      <th scope="col" className="px-3 py-3 text-right">Acción</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e2e2dc]">
+                  <tbody role="rowgroup" className="block space-y-3 md:table-row-group md:space-y-0 md:divide-y md:divide-[#e2e2dc]">
                     {visibleRows.map((row, idx) => {
                       const inCompare = compareSlugs.includes(row.slug);
                       const ing4Adj =
@@ -489,17 +489,18 @@ export function RankingCarreras({
                       return (
                         <tr
                           key={`${row.slug}-${row.tipo}`}
+                          role="row"
                           onMouseEnter={() => setSelectedScatterSlug(row.slug)}
-                          className="transition-colors hover:bg-[#f7f7f4]/80"
+                          className="grid grid-cols-3 gap-x-2 gap-y-3 rounded-xl border border-[#e2e2dc] bg-white p-4 transition-colors hover:bg-[#f7f7f4]/80 md:table-row md:rounded-none md:border-0 md:p-0"
                         >
-                          <td className="px-3 py-3 text-center text-xs font-semibold text-[#5c5c58] tabular-nums">
-                            {idx + 1}
+                          <td role="cell" className="col-span-3 text-xs font-semibold text-[#5c5c58] tabular-nums md:table-cell md:px-3 md:py-3 md:text-center">
+                            <span aria-hidden="true" className="md:hidden">#</span>{idx + 1}
                           </td>
-                          <td className="px-3 py-3">
+                          <th role="rowheader" scope="row" className="col-span-2 text-left font-normal md:table-cell md:px-3 md:py-3">
                             <Link
                               href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
                               prefetch={false}
-                              className="font-semibold text-[#171716] hover:text-[#1063b8] hover:underline"
+                              className="text-base font-bold text-[#171716] hover:text-[#1063b8] hover:underline md:text-sm md:font-semibold"
                             >
                               {row.nombre}
                             </Link>
@@ -517,14 +518,15 @@ export function RankingCarreras({
                                 </span>
                               ) : null}
                             </div>
+                          </th>
+                          <td role="cell" className="text-xs font-bold text-[#171716] tabular-nums md:table-cell md:px-3 md:py-3 md:text-right md:text-sm">
+                            <span aria-hidden="true" className="block font-normal text-[#5c5c58] md:hidden">Sueldo 4.º año: </span>{pesos(ing4Adj)}
                           </td>
-                          <td className="px-3 py-3 text-right font-bold text-[#171716] tabular-nums">
-                            {pesos(ing4Adj)}
+                          <td role="cell" className="text-xs font-medium text-[#171716] tabular-nums md:table-cell md:px-3 md:py-3 md:text-right md:text-sm">
+                            <span aria-hidden="true" className="block font-normal text-[#5c5c58] md:hidden">Empleab. 1.º: </span>{porcentaje(row.emp1)}
                           </td>
-                          <td className="px-3 py-3 text-right font-medium text-[#171716] tabular-nums">
-                            {porcentaje(row.emp1)}
-                          </td>
-                          <td className="px-3 py-3">
+                          <td role="cell" className="col-span-3 flex items-center justify-between border-t border-[#e2e2dc] pt-2.5 md:table-cell md:border-0 md:px-3 md:py-3">
+                            <span aria-hidden="true" className="text-[11px] text-[#5c5c58] md:hidden">Rango P10–P90 (5.º): </span>
                             <MiniRangoBar
                               p10={row.p10_5}
                               p50={row.p50_5}
@@ -533,16 +535,18 @@ export function RankingCarreras({
                               factor={ipcInfo.factor}
                             />
                           </td>
-                          <td className="px-3 py-3 text-right text-xs text-[#171716] tabular-nums">
-                            {pesos(row.arancel_med)}
+                          <td role="cell" className="text-xs text-[#171716] tabular-nums md:table-cell md:px-3 md:py-3 md:text-right">
+                            <span aria-hidden="true" className="block text-[#5c5c58] md:hidden">Arancel med.: </span>{pesos(row.arancel_med)}
                           </td>
-                          <td className="px-3 py-3 text-right text-xs text-[#5c5c58] tabular-nums">
-                            {row.dur_real ? `${row.dur_real.toFixed(1).replace(".", ",")} sem.` : "s/i"}
+                          <td role="cell" className="text-xs text-[#5c5c58] tabular-nums md:table-cell md:px-3 md:py-3 md:text-right">
+                            <span aria-hidden="true" className="block md:hidden">Duración real: </span>{semestres(row.dur_real)}
                           </td>
-                          <td className="px-3 py-3 text-right">
+                          <td role="cell" className="col-start-3 row-start-2 text-right md:table-cell md:px-3 md:py-3">
                             <button
                               type="button"
                               onClick={() => toggleCompare(row.slug)}
+                              aria-pressed={inCompare}
+                              aria-label={`${inCompare ? "Quitar de comparación" : "Comparar"}: ${row.nombre}`}
                               className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors ${
                                 inCompare
                                   ? "border-[#1063b8] bg-[#e9f4ff] text-[#1063b8]"
@@ -567,81 +571,6 @@ export function RankingCarreras({
                     })}
                   </tbody>
                 </table>
-              </div>
-
-              {/* Mobile Cards */}
-              <div className="space-y-3 md:hidden">
-                {visibleRows.map((row, idx) => {
-                  const inCompare = compareSlugs.includes(row.slug);
-                  const ing4Adj =
-                    row.ing4 !== null ? Math.round(row.ing4 * ipcInfo.factor) : null;
-                  return (
-                    <div
-                      key={`${row.slug}-${row.tipo}`}
-                      className="rounded-xl border border-[#e2e2dc] bg-white p-4"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <span className="text-xs font-semibold text-[#5c5c58] tabular-nums">
-                            #{idx + 1} · {row.area}
-                          </span>
-                          <h3 className="text-base font-bold text-[#171716]">
-                            <Link
-                              href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
-                              prefetch={false}
-                              className="hover:text-[#1063b8] hover:underline"
-                            >
-                              {row.nombre}
-                            </Link>
-                          </h3>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => toggleCompare(row.slug)}
-                          className={`shrink-0 rounded-lg border px-2 py-1 text-xs font-medium ${
-                            inCompare
-                              ? "border-[#1063b8] bg-[#e9f4ff] text-[#1063b8]"
-                              : "border-[#e2e2dc] bg-white text-[#171716]"
-                          }`}
-                        >
-                          {inCompare ? "En lista" : "+ Comparar"}
-                        </button>
-                      </div>
-
-                      <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-                        <div>
-                          <div className="text-[#5c5c58]">Sueldo 4.º</div>
-                          <div className="font-bold text-[#171716] tabular-nums">
-                            {pesos(ing4Adj)}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-[#5c5c58]">Empleab. 1.º</div>
-                          <div className="font-semibold text-[#171716] tabular-nums">
-                            {porcentaje(row.emp1)}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-[#5c5c58]">Duración real</div>
-                          <div className="font-medium text-[#171716] tabular-nums">
-                            {semestres(row.dur_real)}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-3 flex items-center justify-between border-t border-[#e2e2dc] pt-2.5">
-                        <span className="text-[11px] text-[#5c5c58]">P10–P90 (5.º)</span>
-                        <MiniRangoBar
-                          p10={row.p10_5}
-                          p50={row.p50_5}
-                          p90={row.p90_5}
-                          maxGlobal={maxP90}
-                          factor={ipcInfo.factor}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
 
               {visibleCount < filteredRows.length ? (

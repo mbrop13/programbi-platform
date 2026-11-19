@@ -1,4 +1,4 @@
-import Link from "@/components/datos/EnlaceNavegacionDatos";
+/* eslint-disable @next/next/no-html-link-for-pages -- Enlaces estáticos para que el observatorio pueda navegar antes de cargar React. */
 import { ChevronRight, ImageDown } from "lucide-react";
 import { SITE_URL } from "@/lib/seo";
 import { CARTOGRAFIA, FECHA_EDICION, FUENTE_ENE, LICENCIA, METADATOS, TERMINOS_INE, hayPbix, type Observacion } from "@/lib/datos/desempleo";
@@ -15,7 +15,7 @@ export function Migas({ elementos }: { elementos: readonly Migaja[] }) {
         {elementos.map(({ label, path }, index) => (
           <li key={path}>
             {index > 0 && <ChevronRight aria-hidden="true" size={13} />}
-            {index === elementos.length - 1 ? <span aria-current="page">{label}</span> : <Link href={path}>{label}</Link>}
+            {index === elementos.length - 1 ? <span aria-current="page">{label}</span> : <a href={path}>{label}</a>}
           </li>
         ))}
       </ol>
@@ -136,8 +136,8 @@ in
       <aside className={estilos.cardCurso}>
         <h2>Aprende a construir este dashboard</h2>
         <p>Practica con series públicas. Aprende a importar los datos, modelar períodos y crear visualizaciones en Power BI.</p>
-        <Link href="/cursos/power-bi">Curso de Power BI</Link>
-        <Link href="/cursos/analisis-de-datos">Curso de análisis de datos</Link>
+        <a href="/cursos/power-bi">Curso de Power BI</a>
+        <a href="/cursos/analisis-de-datos">Curso de análisis de datos</a>
       </aside>
     </section>
   );

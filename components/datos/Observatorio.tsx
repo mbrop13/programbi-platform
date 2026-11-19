@@ -1,4 +1,4 @@
-import Link from "@/components/datos/EnlaceNavegacionDatos";
+/* eslint-disable @next/next/no-html-link-for-pages -- Enlaces estáticos para que el observatorio pueda navegar antes de cargar React. */
 import { Activity, CalendarDays, ChartNoAxesCombined, ChevronRight, CircleHelp, Database, Download, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { SITE_URL } from "@/lib/seo";
@@ -136,16 +136,16 @@ export function Observatorio({ slug }: { slug: string }) {
           <div className={estilos.regionesRelacionadas}>
             <div>
               <h3>Regiones vecinas en el mapa</h3>
-              {vecinas.map((item) => <Link key={item.slug} href={rutaTerritorio(item.slug)}>Desempleo en {item.nombre}</Link>)}
+              {vecinas.map((item) => <a key={item.slug} href={rutaTerritorio(item.slug)}>Desempleo en {item.nombre}</a>)}
             </div>
             <div>
               <h3>Tasas regionales más cercanas</h3>
-              {cercanas.map((item) => <Link key={item.slug} href={rutaTerritorio(item.slug)}>{item.nombre} · {tasa(item.tasa)}</Link>)}
+              {cercanas.map((item) => <a key={item.slug} href={rutaTerritorio(item.slug)}>{item.nombre} · {tasa(item.tasa)}</a>)}
             </div>
             <div>
               <h3>Panorama nacional</h3>
-              <Link href={RUTA_DESEMPLEO}>Desempleo en Chile</Link>
-              <Link href={`${RUTA_DESEMPLEO}?comparar=${pares}#comparar-regiones`}>Comparar {nombre} con Chile y otras regiones</Link>
+              <a href={RUTA_DESEMPLEO}>Desempleo en Chile</a>
+              <a href={`${RUTA_DESEMPLEO}?comparar=${pares}#comparar-regiones`}>Comparar {nombre} con Chile y otras regiones</a>
             </div>
           </div>
         </section>
@@ -172,9 +172,9 @@ export function Observatorio({ slug }: { slug: string }) {
       <Preguntas preguntas={preguntas} />
       <aside className={estilos.masDatos} aria-labelledby="titulo-mas-datos">
         <h2 id="titulo-mas-datos"><Database size={19} aria-hidden="true" /> Datos y guías de ProgramBI</h2>
-        <Link href="/datos">Datos de Chile <ChevronRight aria-hidden="true" size={16} /></Link>
-        <Link href="/sueldos-analista-datos-chile">Sueldos de analistas de datos en Chile <ChevronRight aria-hidden="true" size={16} /></Link>
-        <Link href="/guias/sueldo-analista-de-datos-latinoamerica">Guía de sueldos de analistas en Latinoamérica <ChevronRight aria-hidden="true" size={16} /></Link>
+        <a href="/datos">Datos de Chile <ChevronRight aria-hidden="true" size={16} /></a>
+        <a href="/sueldos-analista-datos-chile">Sueldos de analistas de datos en Chile <ChevronRight aria-hidden="true" size={16} /></a>
+        <a href="/guias/sueldo-analista-de-datos-latinoamerica">Guía de sueldos de analistas en Latinoamérica <ChevronRight aria-hidden="true" size={16} /></a>
       </aside>
     </article>
   );

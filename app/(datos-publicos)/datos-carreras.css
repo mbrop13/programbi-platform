@@ -1,0 +1,8 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "./datos-theme.css";
+
+@source "./datos/carreras";
+@source "./datos/inflacion";
+@source "../../components/datos";
+@source "../../components/ui";
