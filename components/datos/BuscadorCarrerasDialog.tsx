@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import {
   Command,
   CommandDialog,
@@ -28,7 +28,15 @@ interface BuscadorCarrerasDialogProps {
 }
 
 export function BuscadorCarrerasDialog({
-  open, onOpenChange, query, onQueryChange, exactos, sugeridos, loading, hasItems, onSelect,
+  open,
+  onOpenChange,
+  query,
+  onQueryChange,
+  exactos,
+  sugeridos,
+  loading,
+  hasItems,
+  onSelect,
 }: BuscadorCarrerasDialogProps) {
   const renderEntry = (entry: BuscadorEntry) => {
     const mejorIngreso = entry.tipos.reduce<number | null>((max, t) => {
@@ -41,37 +49,37 @@ export function BuscadorCarrerasDialog({
         key={entry.slug}
         value={`${entry.nombre} ${entry.slug}`}
         onSelect={() => onSelect(entry)}
-        className="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2.5 aria-selected:bg-[#f3f3f0]"
+        className="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2.5 aria-selected:bg-muted"
       >
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="truncate font-medium text-[#171716]">{entry.nombre}</span>
-            <span className="text-xs text-[#5c5c58]">{entry.area}</span>
+            <span className="truncate font-medium text-foreground">{entry.nombre}</span>
+            <span className="text-xs text-muted-foreground">{entry.area}</span>
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             {entry.tipos.map((t) => (
               <Badge
                 key={t.tipo}
-                variant="outline"
-                className="border-[#e2e2dc] bg-[#f7f7f4] px-1.5 py-0 text-[11px] font-semibold text-[#171716]"
+                variant="secondary"
+                className="h-auto rounded px-1.5 py-0 text-[11px] font-medium"
               >
                 {TIPO_ETIQUETAS[t.tipo].corto}
               </Badge>
             ))}
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2 text-right">
+        <div className="flex shrink-0 items-center gap-2.5 text-right">
           {mejorIngreso !== null ? (
             <div>
-              <div className="text-xs font-semibold text-[#171716] tabular-nums">
+              <div className="text-xs font-semibold text-foreground tabular-nums">
                 {millonesCorto(mejorIngreso)}
               </div>
-              <div className="text-[11px] text-[#5c5c58]">4.º año</div>
+              <div className="text-[11px] text-muted-foreground">4.º año</div>
             </div>
           ) : (
-            <span className="text-xs text-[#5c5c58]">s/i</span>
+            <span className="text-xs text-muted-foreground">Sin dato</span>
           )}
-          <ArrowRight className="size-4 text-[#5c5c58]" />
+          <ArrowRight className="size-4 text-muted-foreground" aria-hidden="true" />
         </div>
       </CommandItem>
     );
@@ -83,22 +91,24 @@ export function BuscadorCarrerasDialog({
       onOpenChange={onOpenChange}
       title="Buscar carrera en Chile"
       description="Busca por nombre oficial, abreviatura o sinónimo (ej. tens, ing comercial, kine)."
-      className="max-w-2xl border border-[#e2e2dc] bg-white"
+      className="max-w-2xl border border-border bg-card shadow-xl"
     >
-      <Command shouldFilter={false} className="bg-white">
+      <Command shouldFilter={false} className="bg-card">
         <CommandInput
           value={query}
           onValueChange={onQueryChange}
-          placeholder="Escribe una carrera o sinónimo (ej. informática, tens, derecho)..."
-          className="text-sm text-[#171716]"
+          placeholder="Escribe una carrera o apodo (ej. informática, tens, derecho, kine)..."
+          className="text-sm text-foreground"
         />
-        <CommandList className="max-h-[380px] p-1">
+        <CommandList className="max-h-[400px] p-1.5">
           {loading && !hasItems ? (
-            <div className="py-8 text-center text-sm text-[#5c5c58]">Cargando carreras...</div>
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              Cargando carreras...
+            </div>
           ) : (
             <>
               {exactos.length > 0 ? (
-                <CommandGroup heading={query.trim() ? "Coincidencias" : "Carreras populares"}>
+                <CommandGroup heading={query.trim() ? "Coincidencias" : "Carreras más buscadas"}>
                   {exactos.map(renderEntry)}
                 </CommandGroup>
               ) : null}
@@ -106,9 +116,9 @@ export function BuscadorCarrerasDialog({
               {exactos.length === 0 && sugeridos.length > 0 ? (
                 <CommandGroup
                   heading={
-                    <span className="inline-flex items-center gap-1.5 text-[#f99c00]">
-                      <Sparkles className="size-3.5" />
-                      Sin coincidencia exacta · 3 sugerencias cercanas
+                    <span className="inline-flex items-center gap-1.5 text-amber-700">
+                      <Search className="size-3.5" aria-hidden="true" />
+                      Sin coincidencia exacta · Sugerencias cercanas
                     </span>
                   }
                 >
@@ -117,7 +127,7 @@ export function BuscadorCarrerasDialog({
               ) : null}
 
               {exactos.length === 0 && sugeridos.length === 0 && !loading ? (
-                <CommandEmpty className="py-8 text-center text-sm text-[#5c5c58]">
+                <CommandEmpty className="py-8 text-center text-sm text-muted-foreground">
                   No encontramos carreras con «{query}». Prueba con otro término o revisa el área.
                 </CommandEmpty>
               ) : null}

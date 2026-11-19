@@ -53,13 +53,13 @@ function Slider({
       className={cn("relative flex w-full touch-none select-none items-center py-2", className)}
     >
       <SliderPrimitive.Control className="relative flex w-full items-center">
-        <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-[#e2e2dc]">
-          <SliderPrimitive.Indicator className="h-full bg-[#1890ff]" />
+        <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-secondary">
+          <SliderPrimitive.Indicator className="h-full bg-primary" />
         </SliderPrimitive.Track>
         <SliderPrimitive.Thumb
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledBy}
-          className="block size-5 rounded-full border-2 border-[#1890ff] bg-white shadow-sm transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1890ff] disabled:pointer-events-none disabled:opacity-50"
+          className="block size-4.5 rounded-full border-2 border-primary bg-background shadow-sm transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
         />
       </SliderPrimitive.Control>
     </SliderPrimitive.Root>

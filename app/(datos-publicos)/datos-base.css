@@ -2,37 +2,53 @@
 @import "../../components/datos/datos.css";
 @import "./datos-theme.css";
 
+@source "./datos/page.tsx";
 @source "./datos/capacitacion";
 @source "../../components/datos/SeguroCesantia.tsx";
 @source "../../components/datos/SenceObservatorio.tsx";
+@source "../../components/datos/DatosRootShell.tsx";
+@source "../../components/datos/DatosMobileSheet.tsx";
+@source "../../components/datos/DatosNavLinks.tsx";
+@source "../../components/datos/MigasDatos.tsx";
+@source "../../components/datos/InstitucionAvatar.tsx";
+@source "../../components/datos/AreaVisualCard.tsx";
+@source "../../components/ui/card.tsx";
+@source "../../components/ui/badge.tsx";
+@source "../../components/ui/button.tsx";
+@source "../../components/ui/button-variants.ts";
+@source "../../components/ui/sheet.tsx";
+@source "../../components/ui/separator.tsx";
 @source inline("min-h-screen");
 
 :root {
   color-scheme: light;
-  --background: #f7f7f4;
-  --foreground: #171716;
-  --card: #fff;
-  --card-foreground: #171716;
-  --popover: #fff;
-  --popover-foreground: #171716;
-  --primary: #1264a7;
-  --primary-foreground: #fff;
-  --secondary: #edf2f6;
-  --secondary-foreground: #192c3f;
-  --muted: #edf2f6;
-  --muted-foreground: #465969;
-  --accent: #e9f4ff;
-  --accent-foreground: #0d426e;
-  --destructive: #b42318;
-  --destructive-foreground: #fff;
-  --border: #d4e0e8;
-  --input: #a1b5c4;
-  --ring: #1269af;
-  --chart-1: #1890ff;
-  --chart-2: #f99c00;
-  --chart-3: #8997a3;
-  --chart-4: #2c5e86;
-  --chart-5: #b6c4d1;
+  --radius: 0.625rem;
+  --background: #f8f9fb;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0f172a;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #2563eb;
+  --chart-1: #2563eb;
+  --chart-2: #0ea5e9;
+  --chart-3: #d97706;
+  --chart-4: #10b981;
+  --chart-5: #64748b;
 }
 
-:focus-visible { outline-color: var(--ring); }
+:focus-visible {
+  outline-color: var(--ring);
+}

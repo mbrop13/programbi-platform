@@ -1,14 +1,19 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import {
   ArrowUpRight,
-  BarChart3,
+  Building2,
   Calculator,
   Compass,
   GitCompare,
-  Percent,
+  GraduationCap,
   Target,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   areasUnicas,
   esFichaIndexable,
@@ -19,7 +24,16 @@ import {
   TIPO_ETIQUETAS,
   type RankingItem,
 } from "@/lib/datos/carreras";
-import { entero, fechaCorta, mesCorto, pesos, porcentaje, semestres, variacionPorcentual } from "@/lib/datos/formato";
+import {
+  anosDesdeSemestres,
+  entero,
+  fechaCorta,
+  mesCorto,
+  pesos,
+  porcentaje,
+  variacionPorcentual,
+} from "@/lib/datos/formato";
+import { getInstitucionVisual } from "@/lib/datos/instituciones-visual";
 import { getIpcSeries } from "@/lib/datos/ipc";
 import { PRESETS_MAP, PRESET_SLUGS } from "@/lib/datos/presets";
 import {
@@ -41,6 +55,16 @@ import {
   CsvDownloadButtons,
   DatosViewTracker,
 } from "@/components/datos/HubCarrerasExtras";
+import {
+  HubDirectorioAreas,
+  HubRankingsRapidos,
+  type GrupoDirectorioArea,
+  type GrupoMiniRanking,
+} from "@/components/datos/HubRankingsRapidos";
+import {
+  InstitucionesDestacadas,
+  type InstitucionResumenItem,
+} from "@/components/datos/InstitucionesDestacadas";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { RankingCarrerasProgresivo } from "@/components/datos/RankingCarrerasProgresivo";
 import { TablaRankingCarreras } from "@/components/datos/TablaRankingCarreras";
@@ -51,60 +75,70 @@ export function generateMetadata(): Metadata {
   return metadataHubCarreras();
 }
 
-function MiniTablaDestacada({
-  titulo,
-  subtitulo,
-  filas,
-  metrica,
-  hrefVerMas,
-}: {
-  titulo: string;
-  subtitulo: string;
-  filas: RankingItem[];
-  metrica: (r: RankingItem) => string;
-  hrefVerMas: string;
-}) {
-  return (
-    <section className="rounded-xl border border-[#e2e2dc] bg-white p-5">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <h2 className="text-lg font-bold text-[#171716]">{titulo}</h2>
-          <p className="mt-0.5 text-xs text-[#5c5c58]">{subtitulo}</p>
-        </div>
-        <Link
-          href={hrefVerMas}
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#1063b8] hover:underline"
-        >
-          Ver ranking
-          <ArrowUpRight className="size-3.5" />
-        </Link>
-      </div>
-      <ol className="mt-4 divide-y divide-[#e2e2dc] text-sm">
-        {filas.map((r, i) => (
-          <li key={`${r.slug}-${r.tipo}`} className="flex items-center justify-between gap-3 py-2">
-            <div className="min-w-0 flex-1">
-              <span className="mr-2 text-xs font-semibold text-[#5c5c58] tabular-nums">
-                {i + 1}.
-              </span>
-              <Link
-                href={`/datos/carreras/${r.slug}?tipo=${r.tipo}`}
-                prefetch={false}
-                className="font-medium text-[#171716] hover:text-[#1063b8] hover:underline"
-              >
-                {r.nombre}
-              </Link>
-              <span className="ml-2 text-xs text-[#5c5c58]">
-                ({TIPO_ETIQUETAS[r.tipo].corto})
-              </span>
-            </div>
-            <span className="shrink-0 font-bold text-[#171716] tabular-nums">
-              {metrica(r)}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
+const CARRERAS_POPULARES = [
+  { slug: "medicina", label: "Medicina" },
+  { slug: "ingenieria-comercial", label: "Ing. Comercial" },
+  { slug: "ingenieria-civil-en-computacion-e-informatica", label: "Informática" },
+  { slug: "enfermeria", label: "Enfermería" },
+] as const;
+
+const HERRAMIENTAS = [
+  {
+    href: "/datos/carreras/comparar",
+    icon: GitCompare,
+    titulo: "Comparador",
+    desc: "Compara hasta 3 carreras lado a lado.",
+  },
+  {
+    href: "/datos/carreras/retorno",
+    icon: Calculator,
+    titulo: "Calculadora de Retorno",
+    desc: "Costo total vs. meses de sueldo al egresar.",
+  },
+  {
+    href: "/datos/carreras/puntaje-ponderado",
+    icon: Target,
+    titulo: "Puntaje Ponderado PAES",
+    desc: "Simula tu ponderación oficial 2025–2026.",
+  },
+  {
+    href: "/datos/carreras/test",
+    icon: Compass,
+    titulo: "Test Vocacional",
+    desc: "Ordena opciones según área y presupuesto.",
+  },
+] as const;
+
+function toMiniFilas(filas: RankingItem[], metrica: (r: RankingItem) => string) {
+  return filas.map((r) => ({
+    slug: r.slug,
+    tipo: r.tipo,
+    tipoCorto: TIPO_ETIQUETAS[r.tipo].corto,
+    nombre: r.nombre,
+    area: r.area,
+    metricaTexto: metrica(r),
+  }));
+}
+
+function getStatsPorInstitucion(): Record<string, InstitucionResumenItem> {
+  const counts: Record<string, { programas: number; slugs: Set<string> }> = {};
+  for (const tipo of ["u", "ip", "cft"] as const) {
+    const file = join(process.cwd(), "public", "datos", "carreras", `programas-${tipo}.json`);
+    if (!existsSync(file)) continue;
+    const rows = JSON.parse(readFileSync(file, "utf8")) as { i: string; s: string }[];
+    for (const row of rows) {
+      const vis = getInstitucionVisual(row.i, tipo.toUpperCase());
+      const entry = counts[vis.key] ?? { programas: 0, slugs: new Set<string>() };
+      entry.programas += 1;
+      entry.slugs.add(row.s);
+      counts[vis.key] = entry;
+    }
+  }
+  const result: Record<string, InstitucionResumenItem> = {};
+  for (const [key, val] of Object.entries(counts)) {
+    result[key] = { key, programas: val.programas, carreras: val.slugs.size };
+  }
+  return result;
 }
 
 export default function CarrerasHubPage() {
@@ -115,6 +149,7 @@ export default function CarrerasHubPage() {
   const ipcSeries = [...getIpcSeries()];
   const resumen = resumenHubCarreras();
   const faqs = faqsHubCarreras();
+  const statsPorInstitucion = getStatsPorInstitucion();
 
   const arancelesOrdenados = ranking
     .map((r) => r.arancel_med)
@@ -151,6 +186,68 @@ export default function CarrerasHubPage() {
     .sort((a, b) => (b.ing4 ?? 0) - (a.ing4 ?? 0))
     .slice(0, 10);
 
+  const gruposMiniRanking: GrupoMiniRanking[] = [
+    {
+      id: "top-u",
+      tabLabel: "Universidades",
+      titulo: "Top 10 en Universidades",
+      subtitulo: "Ingreso bruto mensual promedio al 4.º año (pesos de sep-2025)",
+      hrefVerMas: "/datos/carreras/mejor-pagadas",
+      filas: toMiniFilas(top10U, (r) => pesos(r.ing4)),
+    },
+    {
+      id: "top-ip",
+      tabLabel: "Institutos (IP)",
+      titulo: "Top 10 en Institutos Profesionales",
+      subtitulo: "Ingreso bruto mensual promedio al 4.º año (pesos de sep-2025)",
+      hrefVerMas: "/datos/carreras/mejor-pagadas",
+      filas: toMiniFilas(top10Ip, (r) => pesos(r.ing4)),
+    },
+    {
+      id: "top-cft",
+      tabLabel: "Técnicos (CFT)",
+      titulo: "Top 10 en Centros de Formación Técnica",
+      subtitulo: "Ingreso bruto mensual promedio al 4.º año (pesos de sep-2025)",
+      hrefVerMas: "/datos/carreras/mejor-pagadas",
+      filas: toMiniFilas(top10Cft, (r) => pesos(r.ing4)),
+    },
+    {
+      id: "top-emp",
+      tabLabel: "Mayor empleabilidad",
+      titulo: "Mayor empleabilidad al 1.er año",
+      subtitulo: "Carreras con al menos 100 titulados en 2024",
+      hrefVerMas: "/datos/carreras/mas-empleabilidad",
+      filas: toMiniFilas(top10Emp, (r) => porcentaje(r.emp1)),
+    },
+    {
+      id: "top-crec",
+      tabLabel: "Más crecieron",
+      titulo: "Las que más crecieron en sueldo real (2020–2024)",
+      subtitulo: "Variación real al 4.º año con al menos 100 titulados",
+      hrefVerMas: "/datos/carreras/crecieron-en-sueldo-real",
+      filas: toMiniFilas(top10Crec, (r) => variacionPorcentual(r.yoy_real_4)),
+    },
+    {
+      id: "top-cortas",
+      tabLabel: "Carreras cortas",
+      titulo: "Carreras cortas mejor pagadas (≤ 4 años reales)",
+      subtitulo: "Duración real promedio hasta 8 semestres, ordenadas por ingreso 4.º año",
+      hrefVerMas: "/datos/carreras?duracion_max=8&orden=ing4",
+      filas: toMiniFilas(top10Cortas, (r) => `${pesos(r.ing4)} · ${anosDesdeSemestres(r.dur_real)}`),
+    },
+  ];
+
+  const todasIndexables = getCarreras().filter((c) => esFichaIndexable(c));
+  const gruposDirectorio: GrupoDirectorioArea[] = areas
+    .map((areaNombre) => ({
+      area: areaNombre,
+      carreras: todasIndexables
+        .filter((c) => c.area === areaNombre)
+        .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"))
+        .map((c) => ({ slug: c.slug, nombre: c.nombre })),
+    }))
+    .filter((g) => g.carreras.length > 0);
+
   const cita = `ProgramBI (${meta.fetched_at.slice(0, 4)}). Observatorio de Carreras en Chile: sueldos, empleabilidad y oferta académica (Edición ${meta.edicion}). Elaboración propia a partir de datos de mifuturo.cl (SIES, Mineduc). Disponible en https://programbi.com/datos/carreras`;
 
   const jsonLd = {
@@ -171,46 +268,126 @@ export default function CarrerasHubPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:px-6 lg:py-12">
+    <div className="mx-auto min-w-0 max-w-6xl space-y-10 overflow-x-clip px-4 py-8 sm:px-6 lg:py-10">
       <DatosViewTracker params={{ pagina: "hub" }} />
-      <div className="space-y-4">
-        <MigasDatos migas={MIGAS_BASE} />
-
-        <header className="max-w-3xl space-y-3">
-          <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-[#e2e2dc] bg-white px-3 py-1 text-xs font-semibold text-[#1063b8]">
-            <span>Edición {meta.edicion}</span>
-            <span aria-hidden="true" className="text-[#d4d4ce]">·</span>
-            <span className="text-[#5c5c58] font-medium">
-              Actualizado el {fechaCorta(meta.fetched_at)}
-            </span>
-          </div>
-          <h1 className="h1-datos text-[#171716]">
-            Ranking de carreras en Chile: sueldos y empleabilidad
-          </h1>
-          <p className="text-base leading-relaxed text-[#5c5c58]">
-            Explora {meta.conteos.genericas_unicas} carreras genéricas y{" "}
-            {entero(meta.conteos.filas_C)} programas con oferta 2026 en universidades, IP y CFT.
-            Ingresos brutos mensuales en pesos de septiembre de 2025 (o ajustados por IPC a hoy).
-          </p>
-        </header>
-      </div>
-
-      <EnResumen
-        frases={resumen}
-        fuente={`Fuente: www.mifuturo.cl (SIES, Mineduc), edición ${meta.edicion}.`}
-      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      {/* Buscador rápido */}
-      <section aria-label="Buscador de carreras" className="space-y-2">
-        <BuscadorCarreras />
+      {/* Hero editorial 2 columnas */}
+      <div className="min-w-0 space-y-5">
+        <MigasDatos migas={MIGAS_BASE} />
+
+        <header className="grid min-w-0 gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <div className="min-w-0 space-y-5">
+            <div className="space-y-3">
+              <Badge
+                variant="secondary"
+                className="h-auto rounded-md border border-blue-200/80 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-800"
+              >
+                Datos oficiales Mineduc · 2026 · Act. {fechaCorta(meta.fetched_at)}
+              </Badge>
+              <h1 className="h1-datos text-foreground">
+                Ranking de carreras en Chile: sueldos y empleabilidad
+              </h1>
+              <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
+                Compara cuánto ganan los titulados, qué tan rápido encuentran trabajo y cuánto
+                cuesta estudiar en universidades, IP y CFT.
+              </p>
+            </div>
+
+            <div className="max-w-xl space-y-2.5">
+              <BuscadorCarreras />
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-muted-foreground">Populares:</span>
+                {CARRERAS_POPULARES.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/datos/carreras/${c.slug}`}
+                    className="rounded-md border border-border bg-card px-2.5 py-1 font-medium text-foreground transition-colors hover:border-slate-300 hover:bg-muted"
+                  >
+                    {c.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Marco visual editorial */}
+          <div className="relative min-w-0">
+            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border bg-slate-100 shadow-sm">
+              <img
+                src="/images/datos/hero-carreras.jpg"
+                alt="Campus universitario moderno en Chile"
+                className="h-full w-full object-cover"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent"
+              />
+              <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/95 px-3 py-1.5 text-xs shadow-sm backdrop-blur-xs">
+                  <GraduationCap className="size-3.5 text-blue-600" aria-hidden="true" />
+                  <span className="font-semibold text-slate-900 tabular-nums">
+                    {meta.conteos.genericas_unicas} carreras
+                  </span>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/95 px-3 py-1.5 text-xs shadow-sm backdrop-blur-xs">
+                  <Building2 className="size-3.5 text-blue-600" aria-hidden="true" />
+                  <span className="font-semibold text-slate-900 tabular-nums">
+                    {entero(meta.conteos.filas_C)}+ programas
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      {/* Tira compacta de 4 herramientas rápidas */}
+      <section aria-labelledby="herramientas-titulo" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 id="herramientas-titulo" className="sr-only">
+          Herramientas interactivas
+        </h2>
+        {HERRAMIENTAS.map((tool) => {
+          const Icon = tool.icon;
+          return (
+            <Link
+              key={tool.href}
+              href={tool.href}
+              className="group flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm"
+            >
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-blue-700 transition-colors group-hover:bg-blue-50">
+                <Icon className="size-4" aria-hidden="true" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-1">
+                  <h3 className="truncate text-sm font-semibold text-foreground group-hover:text-blue-700">
+                    {tool.titulo}
+                  </h3>
+                  <ArrowUpRight
+                    className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-700"
+                    aria-hidden="true"
+                  />
+                </div>
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">{tool.desc}</p>
+              </div>
+            </Link>
+          );
+        })}
       </section>
 
-      {/* Tabla + Filtros + Scatter */}
-      <section aria-label="Ranking interactivo de carreras">
+      {/* Explorador interactivo principal (Áreas visuales + TanStack DataTable / Tarjetas + Scatter) */}
+      <section id="explorar-carreras" aria-label="Ranking interactivo de carreras" className="space-y-4">
+        <div>
+          <h2 className="h2-datos text-foreground">Explora y compara las carreras</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Filtra por área, tipo de institución, región, arancel o duración. Haz clic en cualquier
+            carrera para ver su ficha completa.
+          </p>
+        </div>
+
         <RankingCarrerasProgresivo
           initialRows={initialTop25U}
           areas={areas}
@@ -220,36 +397,64 @@ export default function CarrerasHubPage() {
           ultimoMesIpc={meta.ipc.ultimo_mes}
           ipcSeries={ipcSeries}
         >
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-            <aside aria-label="Vistas de carreras" className="hidden w-72 shrink-0 space-y-3 rounded-xl border border-[#e2e2dc] bg-white p-5 lg:block">
-              <h2 className="text-base font-bold">Vistas de carreras</h2>
-              <ul className="space-y-2 text-sm">
-                <li><Link className="text-[#1063b8] hover:underline" href="/datos/carreras/mejor-pagadas">Mejor pagadas</Link></li>
-                <li><Link className="text-[#1063b8] hover:underline" href="/datos/carreras/mas-empleabilidad">Más empleabilidad</Link></li>
-              </ul>
-            </aside>
-            <div className="min-w-0 flex-1 space-y-4">
-              <p className="flex min-h-[9rem] items-center rounded-xl border border-[#e2e2dc] bg-white p-3.5 text-sm text-[#5c5c58] sm:min-h-16">
-                Universidades · Mayor sueldo 4.º año · Pesos de {mesCorto(meta.pesos_de)}
-              </p>
-              <TablaRankingCarreras rows={initialTop25U} />
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-xs">
+              <span>
+                Universidades · Mejor sueldo (4.º año) · Pesos de {mesCorto(meta.pesos_de)}
+              </span>
+              <div className="flex gap-3">
+                <Link
+                  className="font-medium text-blue-700 hover:underline"
+                  href="/datos/carreras/mejor-pagadas"
+                >
+                  Mejor pagadas
+                </Link>
+                <Link
+                  className="font-medium text-blue-700 hover:underline"
+                  href="/datos/carreras/mas-empleabilidad"
+                >
+                  Más empleabilidad
+                </Link>
+              </div>
             </div>
+            <TablaRankingCarreras rows={initialTop25U} />
           </div>
           <section aria-labelledby="heading-scatter-inicial" className="mt-8 space-y-3">
             <div>
-              <h2 id="heading-scatter-inicial" className="h2-datos text-[#171716]">Sueldo al 4.º año vs. empleabilidad al 1.er año</h2>
-              <p className="mt-1 text-sm text-[#5c5c58]">Cada punto representa una carrera en universidades según los filtros activos. Haz clic en un punto para ver su ficha.</p>
+              <h2 id="heading-scatter-inicial" className="h2-datos text-foreground">
+                Mapa sueldo vs. empleabilidad
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Cada punto es una carrera en universidades según los filtros activos.
+              </p>
             </div>
-            <div aria-hidden="true" className="h-[420px] w-full rounded-xl border border-[#e2e2dc] bg-[#f3f3f0]" />
+            <div
+              aria-hidden="true"
+              className="h-[380px] w-full rounded-xl border border-border bg-muted/40"
+            />
           </section>
         </RankingCarrerasProgresivo>
       </section>
 
-      {/* Vistas prefiltradas y herramientas */}
-      <section aria-labelledby="vistas-herramientas-titulo" className="space-y-4">
-        <h2 id="vistas-herramientas-titulo" className="h2-datos text-[#171716]">
-          Vistas especializadas y herramientas
-        </h2>
+      {/* Instituciones destacadas U / IP / CFT */}
+      <InstitucionesDestacadas statsPorInstitucion={statsPorInstitucion} />
+
+      {/* Rankings rápidos consolidados con Tabs (SSR keepMounted) */}
+      <section aria-label="Rankings rápidos destacados">
+        <HubRankingsRapidos grupos={gruposMiniRanking} />
+      </section>
+
+      {/* Búsquedas curadas (Presets SEO) */}
+      <section aria-labelledby="vistas-curadas-titulo" className="space-y-3">
+        <div>
+          <h2 id="vistas-curadas-titulo" className="h2-datos text-foreground">
+            Listas listas para revisar
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Cruces preparados con las preguntas más comunes de postulantes y familias.
+          </p>
+        </div>
+
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {PRESET_SLUGS.map((slug) => {
             const p = PRESETS_MAP[slug];
@@ -257,213 +462,104 @@ export default function CarrerasHubPage() {
               <Link
                 key={slug}
                 href={`/datos/carreras/${slug}`}
-                className="group flex flex-col justify-between rounded-xl border border-[#e2e2dc] bg-white p-4 transition-colors hover:border-[#1063b8]"
+                className="group flex flex-col justify-between rounded-xl border border-border bg-card p-4 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm"
               >
                 <div>
-                  <span className="text-xs font-semibold text-[#1063b8]">Vista prefiltrada</span>
-                  <h3 className="mt-1 text-base font-bold text-[#171716] group-hover:text-[#1063b8]">
+                  <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-700">
                     {p.tituloCorto}
                   </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-[#5c5c58]">
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                     {p.descriptionSeo}
                   </p>
                 </div>
-                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#1063b8]">
-                  Explorar
-                  <ArrowUpRight className="size-3.5" />
+                <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-700">
+                  Ver ranking
+                  <ArrowUpRight className="size-3.5" aria-hidden="true" />
                 </span>
               </Link>
             );
           })}
         </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            {
-              href: "/datos/carreras/comparar",
-              icon: GitCompare,
-              titulo: "Comparador de carreras",
-              desc: "Compara hasta 3 carreras lado a lado: trayectoria 1.º a 5.º año, empleabilidad y arancel.",
-            },
-            {
-              href: "/datos/carreras/retorno",
-              icon: Calculator,
-              titulo: "Calculadora de retorno",
-              desc: "Estima el costo total de estudiar según duración real y cuántos meses de sueldo bruto equivale.",
-            },
-            {
-              href: "/datos/carreras/test",
-              icon: Compass,
-              titulo: "Explorador por prioridades",
-              desc: "Ordena carreras según tus áreas, presupuesto, puntaje PAES, región y jornada.",
-            },
-            {
-              href: "/datos/carreras/puntaje-ponderado",
-              icon: Target,
-              titulo: "Calculadora de puntaje ponderado",
-              desc: "Calcula tu puntaje ponderado con las ponderaciones oficiales 2025–2026.",
-            },
-            {
-              href: "/datos/carreras/tecnologia-y-datos",
-              icon: BarChart3,
-              titulo: "Carreras de tecnología y datos",
-              desc: "Foco en informática, redes, telecomunicaciones, matemática y estadística.",
-            },
-            {
-              href: "/datos/inflacion",
-              icon: Percent,
-              titulo: "Calculadora de IPC",
-              desc: "Convierte pesos de años anteriores a poder de compra actual con el IPC oficial.",
-            },
-          ].map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <Link
-                key={tool.href}
-                href={tool.href}
-                className="group flex items-start gap-3 rounded-xl border border-[#e2e2dc] bg-white p-4 transition-colors hover:border-[#1063b8]"
-              >
-                <div className="rounded-lg bg-[#e9f4ff] p-2 text-[#1063b8]">
-                  <Icon className="size-4" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-sm font-bold text-[#171716] group-hover:text-[#1063b8]">
-                    {tool.titulo}
-                  </h3>
-                  <p className="mt-0.5 text-xs leading-relaxed text-[#5c5c58]">{tool.desc}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
       </section>
 
-      {/* Secciones H2 destacadas en HTML SSR */}
-      <section aria-label="Rankings destacados" className="grid gap-5 lg:grid-cols-2">
-        <MiniTablaDestacada
-          titulo="Top 10 en Universidades"
-          subtitulo="Ingreso bruto promedio al 4.º año (pesos sep-2025)"
-          filas={top10U}
-          metrica={(r) => pesos(r.ing4)}
-          hrefVerMas="/datos/carreras/mejor-pagadas"
-        />
-        <MiniTablaDestacada
-          titulo="Top 10 en Institutos Profesionales"
-          subtitulo="Ingreso bruto promedio al 4.º año (pesos sep-2025)"
-          filas={top10Ip}
-          metrica={(r) => pesos(r.ing4)}
-          hrefVerMas="/datos/carreras/mejor-pagadas"
-        />
-        <MiniTablaDestacada
-          titulo="Top 10 en Centros de Formación Técnica"
-          subtitulo="Ingreso bruto promedio al 4.º año (pesos sep-2025)"
-          filas={top10Cft}
-          metrica={(r) => pesos(r.ing4)}
-          hrefVerMas="/datos/carreras/mejor-pagadas"
-        />
-        <MiniTablaDestacada
-          titulo="Mayor empleabilidad al 1.er año"
-          subtitulo="Carreras con al menos 100 titulados en 2024"
-          filas={top10Emp}
-          metrica={(r) => porcentaje(r.emp1)}
-          hrefVerMas="/datos/carreras/mas-empleabilidad"
-        />
-        <MiniTablaDestacada
-          titulo="Las que más crecieron en sueldo real (2020–2024)"
-          subtitulo="Variación real al 4.º año con al menos 100 titulados"
-          filas={top10Crec}
-          metrica={(r) => variacionPorcentual(r.yoy_real_4)}
-          hrefVerMas="/datos/carreras/crecieron-en-sueldo-real"
-        />
-        <MiniTablaDestacada
-          titulo="Más cortas con mejor sueldo"
-          subtitulo="Duración real promedio ≤ 8 semestres, ordenadas por ingreso 4.º año"
-          filas={top10Cortas}
-          metrica={(r) => `${pesos(r.ing4)} · ${semestres(r.dur_real)}`}
-          hrefVerMas="/datos/carreras?duracion_max=8&orden=ing4"
-        />
-      </section>
-
-      {/* Descarga CSV + Cómo citar */}
-      <section aria-labelledby="datos-abiertos-titulo" className="space-y-4">
-        <div className="rounded-xl border border-[#e2e2dc] bg-white p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 id="datos-abiertos-titulo" className="text-lg font-bold text-[#171716]">
-                Descarga los datos abiertos (CSV)
-              </h2>
-              <p className="mt-1 text-xs text-[#5c5c58]">
-                Archivos limpios y listos para analizar en Excel, Power BI, SQL o Python.
-              </p>
-            </div>
-            <CsvDownloadButtons />
+      {/* Bloque de conocimiento agrupado (SSR keepMounted para 0 links huérfanos y SEO) */}
+      <section aria-label="Información, directorio completo y metodología">
+        <Tabs defaultValue="resumen" className="flex flex-col gap-4">
+          <div className="-mx-1 overflow-x-auto px-1 pb-1">
+            <TabsList className="inline-flex h-10 w-max flex-nowrap gap-1 bg-muted p-1">
+              <TabsTrigger value="resumen" className="px-3.5 text-xs font-medium sm:text-sm">
+                Resumen ejecutivo
+              </TabsTrigger>
+              <TabsTrigger value="directorio" className="px-3.5 text-xs font-medium sm:text-sm">
+                Directorio completo ({meta.conteos.genericas_unicas})
+              </TabsTrigger>
+              <TabsTrigger value="metodologia" className="px-3.5 text-xs font-medium sm:text-sm">
+                Metodología y cita
+              </TabsTrigger>
+            </TabsList>
           </div>
-        </div>
 
-        <ComoCitarBox cita={cita} />
-      </section>
+          <TabsContent value="resumen" keepMounted className="mt-0 data-[hidden]:hidden">
+            <EnResumen
+              frases={resumen}
+              fuente={`Fuente: www.mifuturo.cl (SIES, Mineduc), edición ${meta.edicion}.`}
+            />
+          </TabsContent>
 
-      {/* Metodología breve */}
-      <section
-        aria-labelledby="metodologia-breve-titulo"
-        className="prose-datos rounded-xl border border-[#e2e2dc] bg-white p-6 text-sm leading-relaxed text-[#3c3c39]"
-      >
-        <h2 id="metodologia-breve-titulo" className="h2-datos text-[#171716]">
-          Nota metodológica
-        </h2>
-        <p className="mt-3">
-          Los ingresos y tasas de empleabilidad provienen de{" "}
-          <strong>Estadísticas por Carrera</strong> del Servicio de Información de Educación
-          Superior (SIES, www.mifuturo.cl), edición {meta.edicion}, elaborados mediante cruces con
-          el Servicio de Impuestos Internos (SII) en pesos constantes de septiembre de 2025.
-        </p>
-        <p className="mt-2">
-          La oferta académica, aranceles 2026, vacantes, acreditación y puntajes PAES promedio de
-          matriculados corresponden al <strong>Buscador de Carreras</strong> del SIES. Los datos
-          oficiales no desagregan sueldos por región ni por jornada debido al secreto tributario
-          del SII.
-        </p>
+          <TabsContent value="directorio" keepMounted className="mt-0 data-[hidden]:hidden">
+            <HubDirectorioAreas
+              grupos={gruposDirectorio}
+              totalCarreras={meta.conteos.genericas_unicas}
+              edicion={meta.edicion}
+            />
+          </TabsContent>
+
+          <TabsContent value="metodologia" keepMounted className="mt-0 space-y-4 data-[hidden]:hidden">
+            <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+              <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-base font-semibold text-foreground">
+                    Descarga los datos abiertos (CSV)
+                  </h2>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Bases limpias listas para analizar en Excel, Power BI, SQL o Python.
+                  </p>
+                </div>
+                <CsvDownloadButtons />
+              </CardContent>
+            </Card>
+
+            <ComoCitarBox cita={cita} />
+
+            <Card
+              aria-labelledby="metodologia-breve-titulo"
+              className="prose-datos gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0"
+            >
+              <CardContent className="p-6 text-sm leading-relaxed text-muted-foreground">
+                <h2 id="metodologia-breve-titulo" className="text-lg font-semibold text-foreground">
+                  Nota metodológica
+                </h2>
+                <p className="mt-3">
+                  Los ingresos y tasas de empleabilidad provienen de{" "}
+                  <strong className="font-medium text-foreground">Estadísticas por Carrera</strong>{" "}
+                  del Servicio de Información de Educación Superior (SIES, www.mifuturo.cl), edición{" "}
+                  {meta.edicion}, elaborados mediante cruces con el Servicio de Impuestos Internos
+                  (SII) en pesos constantes de septiembre de 2025.
+                </p>
+                <p className="mt-2">
+                  La oferta académica, aranceles 2026, vacantes, acreditación y puntajes PAES
+                  promedio de matriculados corresponden al{" "}
+                  <strong className="font-medium text-foreground">Buscador de Carreras</strong> del
+                  SIES. Los datos oficiales no desagregan sueldos por región ni por jornada debido al
+                  secreto tributario del SII.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </section>
 
       <FaqDatos faqs={faqs} />
-
-      {/* Directorio completo SSR por área (hub-spoke: 0 huérfanas) */}
-      <section aria-labelledby="directorio-carreras-titulo" className="rounded-xl border border-[#e2e2dc] bg-white p-6">
-        <h2 id="directorio-carreras-titulo" className="h2-datos text-[#171716]">
-          Todas las carreras analizadas por área
-        </h2>
-        <p className="mt-1 text-xs text-[#5c5c58]">
-          Acceso directo a las {meta.conteos.genericas_unicas} fichas oficiales de mifuturo.cl ({meta.edicion}).
-        </p>
-        <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {areas.map((areaNombre) => {
-            const listaArea = getCarreras()
-              .filter((c) => c.area === areaNombre && esFichaIndexable(c))
-              .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-            if (listaArea.length === 0) return null;
-            return (
-              <div key={areaNombre} className="space-y-2">
-                <h3 className="text-sm font-bold text-[#171716] border-b border-[#e2e2dc] pb-1">
-                  {areaNombre} ({listaArea.length})
-                </h3>
-                <ul className="space-y-1 text-xs">
-                  {listaArea.map((c) => (
-                    <li key={c.slug}>
-                      <Link
-                        href={`/datos/carreras/${c.slug}`}
-                        prefetch={false}
-                        className="inline-flex min-h-6 items-center py-0.5 text-[#3c3c39] hover:text-[#1063b8] hover:underline"
-                      >
-                        {c.nombre}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-      </section>
 
       <CtaDatos pagina="/datos/carreras" />
 

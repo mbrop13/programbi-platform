@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { notFound } from "next/navigation";
-import { GitCompare } from "lucide-react";
+import { Calculator, GitCompare } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CarrerasParecidas } from "@/components/datos/CarrerasParecidas";
 import { CtaDatos } from "@/components/datos/CtaDatos";
 import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
-import { FichaCarreraClient } from "@/components/datos/FichaCarreraClient";
+import {
+  AnalisisCarreraCollapsible,
+  CompartirFichaButton,
+  FichaCarreraClient,
+} from "@/components/datos/FichaCarreraClient";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";
-import { KpiCard } from "@/components/datos/KpiCard";
 import { MigasDatos } from "@/components/datos/MigasDatos";
+import { getAreaVisual } from "@/lib/datos/areas-visual";
 import {
   esFichaIndexable,
   getCarrera,
@@ -21,14 +29,7 @@ import {
   tipoPrincipalDeCarrera,
 } from "@/lib/datos/carreras";
 import { tituloH1Ficha } from "@/lib/datos/carreras-profesion";
-import {
-  anosDesdeSemestres,
-  entero,
-  fechaCorta,
-  pesos,
-  porcentaje,
-  semestres,
-} from "@/lib/datos/formato";
+import { fechaCorta } from "@/lib/datos/formato";
 import { carrerasParecidas } from "@/lib/datos/parecidas";
 import {
   breadcrumbsSchema,
@@ -43,6 +44,7 @@ import {
   narrativaUnicaFicha,
   resumenFichaCarrera,
 } from "@/lib/datos/textos-carreras";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -83,6 +85,7 @@ export default async function FichaCarreraPage({
   const narrativa = narrativaUnicaFicha(carrera, ctx);
   const faqs = faqsFichaCarrera(carrera, ctx);
   const { similares, menosAnos } = carrerasParecidas(carrera, ctx.tipo);
+  const areaVisual = getAreaVisual(carrera.area);
 
   const migas = [
     ...MIGAS_BASE,
@@ -102,9 +105,6 @@ export default async function FichaCarreraPage({
     ],
   };
 
-  const { data } = principal;
-  const oferta = data.oferta ?? carrera.oferta;
-
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
       <script
@@ -114,79 +114,74 @@ export default async function FichaCarreraPage({
         }}
       />
 
-      <MigasDatos migas={migas} />
+      <div className="space-y-4">
+        <MigasDatos migas={migas} />
 
-      {/* Header + H1 */}
-      <header className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span className="rounded-md bg-[#e9f4ff] px-2.5 py-1 text-[#1063b8]">
-            {carrera.area}
-          </span>
-          <span className="rounded-md border border-[#e2e2dc] bg-white px-2.5 py-1 text-[#5c5c58]">
-            {TIPO_ETIQUETAS[ctx.tipo].plural} · Puesto {ctx.posicionTipo} de {ctx.totalTipo}
-          </span>
-          <span className="text-[#5c5c58]">
-            Edición {meta.edicion} · Actualizado {fechaCorta(meta.fetched_at)}
-          </span>
-        </div>
+        <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1 space-y-3.5">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <Badge
+                variant="secondary"
+                className="h-auto rounded-md border border-blue-200/80 bg-blue-50 px-2.5 py-0.5 font-medium text-blue-800"
+              >
+                {carrera.area}
+              </Badge>
+              <Badge
+                variant="outline"
+                className="h-auto rounded-md bg-card px-2.5 py-0.5 font-medium text-foreground"
+              >
+                {TIPO_ETIQUETAS[ctx.tipo].plural} · Puesto {ctx.posicionTipo} de {ctx.totalTipo}
+              </Badge>
+              <span className="text-muted-foreground">
+                Edición {meta.edicion} · Actualizado {fechaCorta(meta.fetched_at)}
+              </span>
+            </div>
 
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <h1 className="h1-datos max-w-4xl text-[#171716]">
-            {tituloH1Ficha(carrera.slug, carrera.nombre)}
-          </h1>
-          {similares[0] ? (
-            <Link
-              href={`/datos/carreras/comparar?c=${encodeURIComponent(`${carrera.slug},${similares[0].slug}`)}`}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#d6e6f5] bg-white px-3.5 py-2 text-xs font-semibold text-[#1063b8] transition-colors hover:bg-[#e9f4ff]"
-            >
-              <GitCompare className="size-3.5" aria-hidden="true" />
-              Comparar carrera
-            </Link>
-          ) : null}
-        </div>
-      </header>
+            <h1 className="h1-datos max-w-4xl text-foreground">
+              {tituloH1Ficha(carrera.slug, carrera.nombre)}
+            </h1>
 
-      {/* Hero KPIs SSR (garantiza cifras clave en HTML inicial) */}
-      <section aria-label="Indicadores principales" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard
-          variante="primary"
-          etiqueta="Ingreso bruto 4.º año"
-          valor={pesos(data.ing[3])}
-          subtitulo={`1.er año: ${pesos(data.ing[0])} · sep-2025`}
-        />
-        <KpiCard
-          etiqueta="Empleabilidad 1.er año"
-          valor={porcentaje(data.emp1)}
-          subtitulo={
-            data.emp2 !== null
-              ? `2.º año: ${porcentaje(data.emp2)}`
-              : "Ingresos ≥ sueldo mínimo"
-          }
-        />
-        <KpiCard
-          etiqueta="Duración real"
-          valor={semestres(data.dur_real)}
-          subtitulo={anosDesdeSemestres(data.dur_real)}
-        />
-        <KpiCard
-          variante="accent"
-          etiqueta="Arancel mediano 2026"
-          valor={pesos(oferta?.arancel?.med ?? null)}
-          subtitulo={
-            oferta
-              ? `${entero(oferta.programas)} programas vigentes`
-              : "Sin oferta publicada"
-          }
-        />
-      </section>
+            <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              {similares[0] ? (
+                <Link
+                  href={`/datos/carreras/comparar?c=${encodeURIComponent(`${carrera.slug},${similares[0].slug}`)}`}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "h-9 shrink-0 gap-1.5 rounded-lg bg-card px-3.5 text-xs font-medium"
+                  )}
+                >
+                  <GitCompare className="size-3.5 text-blue-700" aria-hidden="true" />
+                  Comparar
+                </Link>
+              ) : null}
+              <a
+                href="#calculadora-retorno"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "h-9 shrink-0 gap-1.5 rounded-lg bg-card px-3.5 text-xs font-medium"
+                )}
+              >
+                <Calculator className="size-3.5 text-blue-700" aria-hidden="true" />
+                Calcular retorno
+              </a>
+              <CompartirFichaButton titulo={carrera.nombre} />
+            </div>
+          </div>
 
-      {/* Bloque "En resumen" citable */}
-      <EnResumen
-        frases={resumen}
-        fuente={`Fuente: www.mifuturo.cl (Mineduc), edición ${meta.edicion}. Cifras en pesos de septiembre de 2025.`}
-      />
+          <div className="hidden shrink-0 overflow-hidden rounded-xl border border-border bg-card p-1 shadow-xs sm:block">
+            <Image
+              src={areaVisual.image}
+              alt={areaVisual.nombre}
+              width={208}
+              height={130}
+              unoptimized
+              className="h-[116px] w-[186px] rounded-lg object-cover lg:h-[130px] lg:w-[208px]"
+            />
+          </div>
+        </header>
+      </div>
 
-      {/* Panel interactivo completo */}
+      {/* Panel interactivo unificado (incluye los 4 KPIs SSR + selector U/IP/CFT + ajuste IPC) */}
       <FichaCarreraClient
         carrera={carrera}
         tipoInicial={ctx.tipo}
@@ -195,20 +190,26 @@ export default async function FichaCarreraPage({
         edicion={meta.edicion}
       />
 
+      {/* Bloque "En resumen" citable */}
+      <EnResumen
+        frases={resumen}
+        fuente={`Fuente: www.mifuturo.cl (Mineduc), edición ${meta.edicion}. Cifras en pesos de septiembre de 2025.`}
+      />
+
       {/* Análisis editorial determinista (≥ 250 palabras SSR) */}
-      <section
+      <Card
         aria-labelledby="analisis-titulo"
-        className="prose-datos rounded-xl border border-[#e2e2dc] bg-white p-6"
+        className="prose-datos gap-3 rounded-xl border border-border bg-card py-6 shadow-xs ring-0"
       >
-        <h2 id="analisis-titulo" className="h2-datos text-[#171716]">
-          Análisis de {carrera.nombre} en Chile
-        </h2>
-        <div className="mt-4 space-y-3 text-sm leading-relaxed text-[#3c3c39]">
-          {narrativa.map((parrafo) => (
-            <p key={parrafo}>{parrafo}</p>
-          ))}
-        </div>
-      </section>
+        <CardHeader className="px-6 pb-0">
+          <CardTitle id="analisis-titulo" className="text-lg font-semibold text-foreground">
+            Análisis de {carrera.nombre} en Chile
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-6 text-sm leading-relaxed text-foreground/85">
+          <AnalisisCarreraCollapsible parrafos={narrativa} />
+        </CardContent>
+      </Card>
 
       {/* Carreras parecidas + Mismo sueldo menos años + Ranking + Cursos */}
       <CarrerasParecidas

@@ -54,10 +54,10 @@ export function AjustarPorIPC({
   return (
     <div className={cn("inline-flex flex-col gap-1.5", className)}>
       <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-        <span className="font-bold text-[#171716] tabular-nums">{valorPrincipal}</span>
+        <span className="font-semibold text-foreground tabular-nums">{valorPrincipal}</span>
 
         {calculo ? (
-          <span className="inline-flex items-center gap-1 text-xs text-[#5c5c58] tabular-nums">
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
             {modoActivo === "pesos_fuente" ? (
               <span>≈ {pesos(calculo.montoAjustado)} en pesos de {hastaLabel}</span>
             ) : (
@@ -71,16 +71,16 @@ export function AjustarPorIPC({
                 <TooltipTrigger
                   type="button"
                   aria-label="Ver fórmula de ajuste por IPC"
-                  className="inline-flex size-4 items-center justify-center rounded-full text-[#5c5c58] transition-colors hover:bg-[#e9f4ff] hover:text-[#1890ff]"
+                  className="inline-flex size-4 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <Info className="size-3.5" aria-hidden="true" />
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs border-[#e2e2dc] bg-white text-[#171716]">
+                <TooltipContent side="top" className="max-w-xs">
                   <div className="space-y-1">
-                    <p className="font-semibold text-[#171716]">
+                    <p className="font-semibold text-foreground">
                       Fórmula oficial: monto × IPC_hasta / IPC_desde
                     </p>
-                    <p className="text-[11px] text-[#5c5c58] tabular-nums">{formulaTexto}</p>
+                    <p className="text-[11px] text-muted-foreground tabular-nums">{formulaTexto}</p>
                   </div>
                 </TooltipContent>
               </Tooltip>
@@ -93,7 +93,7 @@ export function AjustarPorIPC({
         <div
           role="group"
           aria-label="Moneda de referencia"
-          className="inline-flex w-fit items-center rounded-lg border border-[#e2e2dc] bg-[#f3f3f0] p-0.5 text-[11px]"
+          className="inline-flex w-fit items-center rounded-lg border border-border bg-muted p-0.5 text-[11px]"
         >
           <button
             type="button"
@@ -102,11 +102,11 @@ export function AjustarPorIPC({
             className={cn(
               "rounded-md px-2.5 py-1 font-medium transition-colors",
               modoActivo === "pesos_fuente"
-                ? "bg-white text-[#171716] shadow-2xs"
-                : "text-[#5c5c58] hover:text-[#171716]"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
-            Pesos de {desdeLabel} (fuente)
+            Pesos de {desdeLabel}
           </button>
           <button
             type="button"
@@ -115,8 +115,8 @@ export function AjustarPorIPC({
             className={cn(
               "rounded-md px-2.5 py-1 font-medium transition-colors",
               modoActivo === "pesos_hoy"
-                ? "bg-white text-[#171716] shadow-2xs"
-                : "text-[#5c5c58] hover:text-[#171716]"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
             Pesos de hoy (IPC)

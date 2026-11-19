@@ -5,10 +5,7 @@ import { Link2, RotateCcw, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { pesos } from "@/lib/datos/formato";
-import {
-  contarFiltrosActivos,
-  type FiltrosCarrerasState,
-} from "./FiltrosAvanzados";
+import { contarFiltrosActivos, type FiltrosCarrerasState } from "./FiltrosAvanzados";
 
 interface ChipsFiltrosProps {
   filtros: FiltrosCarrerasState;
@@ -40,8 +37,7 @@ export function ChipsFiltros({ filtros, onChange, onReset }: ChipsFiltrosProps) 
     });
   }
   if (filtros.jornada) {
-    const jLabel =
-      filtros.jornada === "A Distancia" ? "A distancia (online)" : filtros.jornada;
+    const jLabel = filtros.jornada === "A Distancia" ? "Online" : filtros.jornada;
     chips.push({
       key: "jornada",
       label: `Jornada: ${jLabel}`,
@@ -69,7 +65,7 @@ export function ChipsFiltros({ filtros, onChange, onReset }: ChipsFiltrosProps) 
   if (filtros.duracionMax !== null) {
     chips.push({
       key: "duracion",
-      label: `Duración ≤ ${filtros.duracionMax} sem.`,
+      label: `Hasta ${(filtros.duracionMax / 2).toFixed(1).replace(".", ",")} años`,
       onRemove: () => onChange({ ...filtros, duracionMax: null }),
     });
   }
@@ -110,66 +106,53 @@ export function ChipsFiltros({ filtros, onChange, onReset }: ChipsFiltrosProps) 
   const copiarEnlace = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      toast.success("Enlace a esta vista copiado al portapapeles");
+      toast.success("Enlace a esta vista copiado");
     } catch {
       toast.error("No se pudo copiar el enlace");
     }
   };
 
   if (activos === 0 && chips.length === 0) {
-    return (
-      <div className="flex justify-end">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={copiarEnlace}
-          className="h-8 gap-1.5 text-xs text-[#5c5c58] hover:text-[#171716]"
-        >
-          <Link2 className="size-3.5" />
-          Copiar enlace a esta vista
-        </Button>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#e2e2dc] bg-white px-3.5 py-2.5">
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card px-3.5 py-2.5 shadow-xs">
       <div className="flex flex-wrap items-center gap-1.5">
         {chips.map((chip) => (
           <button
             key={chip.key}
             type="button"
             onClick={chip.onRemove}
-            className="inline-flex items-center gap-1 rounded-full border border-[#d4d4ce] bg-[#f7f7f4] px-2.5 py-1 text-xs font-medium text-[#171716] transition-colors hover:border-[#1890ff] hover:bg-[#e9f4ff]"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/60 px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-slate-300 hover:bg-muted"
             aria-label={`Quitar filtro ${chip.label}`}
           >
             <span>{chip.label}</span>
-            <X className="size-3 text-[#5c5c58]" />
+            <X className="size-3 text-muted-foreground" aria-hidden="true" />
           </button>
         ))}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <Button
           type="button"
           variant="ghost"
-          size="sm"
+          size="xs"
           onClick={onReset}
-          className="h-7 gap-1 px-2 text-xs text-[#5c5c58] hover:text-[#171716]"
+          className="h-7 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
         >
-          <RotateCcw className="size-3" />
-          Limpiar filtros
+          <RotateCcw className="size-3" aria-hidden="true" />
+          Limpiar
         </Button>
         <Button
           type="button"
           variant="outline"
-          size="sm"
+          size="xs"
           onClick={copiarEnlace}
-          className="h-7 gap-1.5 border-[#d4d4ce] bg-white px-2.5 text-xs text-[#171716]"
+          className="h-7 gap-1.5 bg-card px-2.5 text-xs"
         >
-          <Link2 className="size-3.5 text-[#1890ff]" />
-          Copiar enlace a esta vista
+          <Link2 className="size-3 text-muted-foreground" aria-hidden="true" />
+          Copiar enlace
         </Button>
       </div>
     </div>

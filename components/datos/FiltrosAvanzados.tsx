@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Filter, Info, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Info, MapPin, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -11,18 +13,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
 import { TIPO_ETIQUETAS, type TipoIesKey } from "@/lib/datos/carreras-tipos";
 import { entero, pesos } from "@/lib/datos/formato";
+import { cn } from "@/lib/utils";
 
 export type OrdenRankingKey =
   | "ing4"
@@ -171,9 +176,9 @@ export function contarFiltrosActivos(f: FiltrosCarrerasState): number {
 }
 
 const JORNADAS = [
-  { value: "Diurna", label: "Diurna" },
-  { value: "Vespertina", label: "Vespertina" },
-  { value: "A Distancia", label: "A distancia (online)" },
+  { value: "Diurna", label: "Diurna (día)" },
+  { value: "Vespertina", label: "Vespertina (tarde/noche)" },
+  { value: "A Distancia", label: "Online (a distancia)" },
   { value: "Semipresencial", label: "Semipresencial" },
 ] as const;
 
@@ -190,11 +195,9 @@ interface FiltrosAvanzadosProps {
 function PanelFiltrosContenido({
   filtros,
   onChange,
-  onReset,
   areas,
   regiones,
   arancelP95,
-  totalResultados,
 }: FiltrosAvanzadosProps) {
   const [paesInput, setPaesInput] = React.useState(filtros.paes ? String(filtros.paes) : "");
 
@@ -226,308 +229,281 @@ function PanelFiltrosContenido({
   const maxArancelSlider = Math.max(1_000_000, Math.ceil(arancelP95 / 100_000) * 100_000);
   const arancelActual = filtros.arancelMax ?? maxArancelSlider;
   const duracionActual = filtros.duracionMax ?? 18;
-  const activos = contarFiltrosActivos(filtros);
 
   return (
-    <div className="space-y-5 text-sm">
-      <div className="flex items-center justify-between">
-        <div className="font-semibold text-[#171716]">
-          Filtros{" "}
-          <span className="ml-1 text-xs font-normal text-[#5c5c58] tabular-nums">
-            ({entero(totalResultados)} resultados)
-          </span>
-        </div>
-        {activos > 0 ? (
-          <button
-            type="button"
-            onClick={onReset}
-            className="text-xs font-medium text-[#1063b8] hover:underline"
-          >
-            Limpiar ({activos})
-          </button>
-        ) : null}
-      </div>
+    <div className="space-y-6 text-sm">
+      {/* Grupo 1: Qué y dónde estudiar */}
+      <div className="space-y-4">
+        <p className="text-xs font-semibold text-foreground">Estudios y modalidad</p>
 
-      <Separator className="bg-[#e2e2dc]" />
-
-      {/* Tipo de institución */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-[#5c5c58]">
-          Tipo de institución
-        </label>
-        <div className="grid grid-cols-3 gap-1.5">
-          {(["u", "ip", "cft"] as const).map((tk) => (
-            <button
-              key={tk}
-              type="button"
-              onClick={() => onChange({ ...filtros, tipo: tk })}
-              className={`rounded-lg border px-2 py-1.5 text-xs font-semibold transition-colors ${
-                filtros.tipo === tk
-                  ? "border-[#1063b8] bg-[#e9f4ff] text-[#1063b8]"
-                  : "border-[#e2e2dc] bg-white text-[#171716] hover:bg-[#f3f3f0]"
-              }`}
-            >
-              {TIPO_ETIQUETAS[tk].corto}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Nivel */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-[#5c5c58]">
-          Nivel formativo
-        </label>
-        <Select
-          value={filtros.nivel || "__all__"}
-          onValueChange={(v) => onChange({ ...filtros, nivel: v === "__all__" ? "" : v })}
-        >
-          <SelectTrigger aria-label="Nivel formativo" className="w-full border-[#d4d4ce] bg-white text-xs">
-            <SelectValue placeholder="Todos los niveles" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__all__">Todos los niveles</SelectItem>
-            <SelectItem value="Profesional">Profesional</SelectItem>
-            <SelectItem value="Técnica de Nivel Superior">Técnica de Nivel Superior</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Área */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-[#5c5c58]">
-          Área del conocimiento
-        </label>
-        <Select
-          value={filtros.area || "__all__"}
-          onValueChange={(v) => onChange({ ...filtros, area: v === "__all__" ? "" : v })}
-        >
-          <SelectTrigger aria-label="Área del conocimiento" className="w-full border-[#d4d4ce] bg-white text-xs">
-            <SelectValue placeholder="Todas las áreas" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__all__">Todas las áreas ({areas.length})</SelectItem>
-            {areas.map((a) => (
-              <SelectItem key={a} value={a}>
-                {a}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Jornada */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-[#5c5c58]">
-          Jornada
-        </label>
-        <Select
-          value={filtros.jornada || "__all__"}
-          onValueChange={(v) => onChange({ ...filtros, jornada: v === "__all__" ? "" : v })}
-        >
-          <SelectTrigger aria-label="Jornada" className="w-full border-[#d4d4ce] bg-white text-xs">
-            <SelectValue placeholder="Cualquier jornada" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__all__">Cualquier jornada</SelectItem>
-            {JORNADAS.map((j) => (
-              <SelectItem key={j.value} value={j.value}>
-                {j.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Región multi-select */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-[#5c5c58]">
-            <MapPin className="size-3.5" />
-            Región donde se estudia
-          </label>
-          {filtros.regiones.length > 0 ? (
-            <button
-              type="button"
-              onClick={() => onChange({ ...filtros, regiones: [] })}
-              className="text-[11px] text-[#1063b8] hover:underline"
-            >
-              Todas
-            </button>
-          ) : null}
-        </div>
-        <div className="max-h-40 space-y-1 overflow-y-auto rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-2">
-          {regiones.map((reg) => {
-            const checked = filtros.regiones.includes(reg);
-            return (
-              <label
-                key={reg}
-                className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-xs text-[#171716] hover:bg-white"
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-muted-foreground">Tipo de institución</Label>
+          <div className="grid grid-cols-3 gap-1.5">
+            {(["u", "ip", "cft"] as const).map((tk) => (
+              <button
+                key={tk}
+                type="button"
+                onClick={() => onChange({ ...filtros, tipo: tk })}
+                className={cn(
+                  "rounded-lg border px-2 py-1.5 text-xs font-medium transition-colors",
+                  filtros.tipo === tk
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-foreground hover:bg-muted"
+                )}
               >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggleRegion(reg)}
-                  className="size-3.5 rounded border-[#d4d4ce] accent-[#1063b8]"
-                />
-                <span className="truncate">{reg}</span>
-              </label>
-            );
-          })}
+                {TIPO_ETIQUETAS[tk].corto}
+              </button>
+            ))}
+          </div>
         </div>
-        <p className="flex items-start gap-1.5 text-[11px] leading-snug text-[#5c5c58]">
-          <Info className="mt-0.5 size-3 shrink-0 text-[#1063b8]" />
-          <span>La región filtra dónde se estudia; los sueldos son nacionales.</span>
-        </p>
-      </div>
 
-      {/* Arancel anual máximo */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold uppercase tracking-wide text-[#5c5c58]">
-            Arancel anual máx.
-          </span>
-          <span className="font-semibold text-[#171716] tabular-nums">
-            {filtros.arancelMax === null ? "Sin límite" : pesos(filtros.arancelMax)}
-          </span>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-muted-foreground">Área del conocimiento</Label>
+          <Select
+            value={filtros.area || "__all__"}
+            onValueChange={(v) => onChange({ ...filtros, area: v === "__all__" ? "" : v })}
+          >
+            <SelectTrigger aria-label="Área del conocimiento" className="w-full bg-card text-xs">
+              <SelectValue placeholder="Todas las áreas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">Todas las áreas ({areas.length})</SelectItem>
+              {areas.map((a) => (
+                <SelectItem key={a} value={a}>
+                  {a}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <Slider
-          min={0}
-          max={maxArancelSlider}
-          step={100_000}
-          value={[arancelActual]}
-          onValueChange={([val]) =>
-            onChange({
-              ...filtros,
-              arancelMax: val >= maxArancelSlider ? null : val,
-            })
-          }
-          aria-label="Arancel anual máximo"
-        />
-        <div className="flex justify-between text-[11px] text-[#5c5c58] tabular-nums">
-          <span>$0</span>
-          <span>{pesos(maxArancelSlider)}</span>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Nivel</Label>
+            <Select
+              value={filtros.nivel || "__all__"}
+              onValueChange={(v) => onChange({ ...filtros, nivel: v === "__all__" ? "" : v })}
+            >
+              <SelectTrigger aria-label="Nivel formativo" className="w-full bg-card text-xs">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">Todos los niveles</SelectItem>
+                <SelectItem value="Profesional">Profesional</SelectItem>
+                <SelectItem value="Técnica de Nivel Superior">Técnica</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Jornada</Label>
+            <Select
+              value={filtros.jornada || "__all__"}
+              onValueChange={(v) => onChange({ ...filtros, jornada: v === "__all__" ? "" : v })}
+            >
+              <SelectTrigger aria-label="Jornada" className="w-full bg-card text-xs">
+                <SelectValue placeholder="Cualquiera" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">Cualquier jornada</SelectItem>
+                {JORNADAS.map((j) => (
+                  <SelectItem key={j.value} value={j.value}>
+                    {j.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <MapPin className="size-3.5" aria-hidden="true" />
+              Región donde se estudia
+            </Label>
+            {filtros.regiones.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => onChange({ ...filtros, regiones: [] })}
+                className="text-xs font-medium text-blue-700 hover:underline"
+              >
+                Quitar ({filtros.regiones.length})
+              </button>
+            ) : null}
+          </div>
+          <div className="max-h-40 space-y-0.5 overflow-y-auto rounded-lg border border-border bg-muted/40 p-2">
+            {regiones.map((reg) => {
+              const checked = filtros.regiones.includes(reg);
+              return (
+                <label
+                  key={reg}
+                  className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs text-foreground transition-colors hover:bg-card"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleRegion(reg)}
+                    className="size-3.5 rounded border-input accent-slate-900"
+                  />
+                  <span className="truncate">{reg}</span>
+                </label>
+              );
+            })}
+          </div>
+          <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground">
+            <Info className="mt-0.5 size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <span>Filtra dónde se imparte la carrera; los sueldos oficiales son nacionales.</span>
+          </p>
         </div>
       </div>
 
-      {/* Duración real máxima */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold uppercase tracking-wide text-[#5c5c58]">
-            Duración real máx.
-          </span>
-          <span className="font-semibold text-[#171716] tabular-nums">
-            {filtros.duracionMax === null ? "Sin límite" : `${filtros.duracionMax} sem.`}
-          </span>
+      <Separator />
+
+      {/* Grupo 2: Presupuesto y duración */}
+      <div className="space-y-4">
+        <p className="text-xs font-semibold text-foreground">Presupuesto y tiempo</p>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium text-muted-foreground">Arancel anual máximo</span>
+            <span className="font-semibold text-foreground tabular-nums">
+              {filtros.arancelMax === null ? "Sin límite" : pesos(filtros.arancelMax)}
+            </span>
+          </div>
+          <Slider
+            min={0}
+            max={maxArancelSlider}
+            step={100_000}
+            value={[arancelActual]}
+            onValueChange={([val]) =>
+              onChange({
+                ...filtros,
+                arancelMax: val >= maxArancelSlider ? null : val,
+              })
+            }
+            aria-label="Arancel anual máximo"
+          />
+          <div className="flex justify-between text-[11px] text-muted-foreground tabular-nums">
+            <span>$0</span>
+            <span>{pesos(maxArancelSlider)}</span>
+          </div>
         </div>
-        <Slider
-          min={4}
-          max={18}
-          step={1}
-          value={[duracionActual]}
-          onValueChange={([val]) =>
-            onChange({
-              ...filtros,
-              duracionMax: val >= 18 ? null : val,
-            })
-          }
-          aria-label="Duración real máxima en semestres"
-        />
-        <div className="flex justify-between text-[11px] text-[#5c5c58] tabular-nums">
-          <span>4 sem.</span>
-          <span>18+ sem.</span>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium text-muted-foreground">Duración real máxima</span>
+            <span className="font-semibold text-foreground tabular-nums">
+              {filtros.duracionMax === null
+                ? "Sin límite"
+                : `${(filtros.duracionMax / 2).toFixed(1).replace(".", ",")} años (${filtros.duracionMax} sem.)`}
+            </span>
+          </div>
+          <Slider
+            min={4}
+            max={18}
+            step={1}
+            value={[duracionActual]}
+            onValueChange={([val]) =>
+              onChange({
+                ...filtros,
+                duracionMax: val >= 18 ? null : val,
+              })
+            }
+            aria-label="Duración real máxima en semestres"
+          />
+          <div className="flex justify-between text-[11px] text-muted-foreground tabular-nums">
+            <span>2 años (4 sem.)</span>
+            <span>9+ años</span>
+          </div>
         </div>
       </div>
 
-      {/* Acreditación */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-[#5c5c58]">
-          Acreditación institución
-        </label>
-        <Select
-          value={String(filtros.acredMin)}
-          onValueChange={(v) =>
-            onChange({ ...filtros, acredMin: Number(v) as 0 | 1 | 4 | 6 })
-          }
-        >
-          <SelectTrigger aria-label="Acreditación institución" className="w-full border-[#d4d4ce] bg-white text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">Todas las instituciones</SelectItem>
-            <SelectItem value="1">Solo acreditadas (≥ 1 año)</SelectItem>
-            <SelectItem value="4">Acreditación ≥ 4 años</SelectItem>
-            <SelectItem value="6">Excelencia ≥ 6 años</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Separator />
 
-      {/* Vacantes mínimas */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-[#5c5c58]">
-          Vacantes mínimas 2026
-        </label>
-        <Select
-          value={String(filtros.vacantesMin)}
-          onValueChange={(v) =>
-            onChange({ ...filtros, vacantesMin: Number(v) as 0 | 50 | 100 })
-          }
-        >
-          <SelectTrigger aria-label="Vacantes mínimas 2026" className="w-full border-[#d4d4ce] bg-white text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">Cualquiera</SelectItem>
-            <SelectItem value="50">≥ 50 vacantes</SelectItem>
-            <SelectItem value="100">≥ 100 vacantes</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Grupo 3: Admisión y muestra */}
+      <div className="space-y-4">
+        <p className="text-xs font-semibold text-foreground">Calidad y admisión</p>
 
-      {/* Mínimo de titulados */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold uppercase tracking-wide text-[#5c5c58]">
-          Mínimo de titulados 2024
-        </label>
-        <Select
-          value={String(filtros.tituladosMin)}
-          onValueChange={(v) =>
-            onChange({ ...filtros, tituladosMin: Number(v) as 0 | 50 | 100 })
-          }
-        >
-          <SelectTrigger aria-label="Mínimo de titulados 2024" className="w-full border-[#d4d4ce] bg-white text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">Cualquiera</SelectItem>
-            <SelectItem value="50">≥ 50 titulados</SelectItem>
-            <SelectItem value="100">≥ 100 titulados</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="filtro-paes-input" className="text-xs font-medium text-muted-foreground">
+            Tu puntaje PAES estimado (100–1.000)
+          </Label>
+          <Input
+            id="filtro-paes-input"
+            type="number"
+            min={100}
+            max={1000}
+            step={5}
+            value={paesInput}
+            onChange={(e) => handlePaesChange(e.target.value)}
+            placeholder="Ej. 650 (opcional)"
+            className="h-9 bg-card text-xs tabular-nums"
+          />
+          <p className="text-[11px] leading-snug text-muted-foreground">
+            Se compara con el promedio de matriculados 2025, no con el puntaje de corte.
+          </p>
+        </div>
 
-      {/* Tu puntaje PAES */}
-      <div className="space-y-1.5">
-        <label
-          htmlFor="filtro-paes-input"
-          className="text-xs font-semibold uppercase tracking-wide text-[#5c5c58]"
-        >
-          Tu puntaje PAES (100–1000)
-        </label>
-        <input
-          id="filtro-paes-input"
-          type="number"
-          min={100}
-          max={1000}
-          step={5}
-          value={paesInput}
-          onChange={(e) => handlePaesChange(e.target.value)}
-          placeholder="Ej. 650 (opcional)"
-          className="h-9 w-full rounded-md border border-[#d4d4ce] bg-white px-3 text-xs text-[#171716] tabular-nums placeholder:text-[#5c5c58] focus-visible:outline-2 focus-visible:outline-[#1063b8]"
-        />
-        <p className="text-[11px] leading-snug text-[#5c5c58]">
-          Es el promedio de quienes se matricularon, no el puntaje de corte. El corte se conoce el 18-01-2027.
-        </p>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-muted-foreground">Acreditación institucional</Label>
+          <Select
+            value={String(filtros.acredMin)}
+            onValueChange={(v) =>
+              onChange({ ...filtros, acredMin: Number(v) as 0 | 1 | 4 | 6 })
+            }
+          >
+            <SelectTrigger aria-label="Acreditación institución" className="w-full bg-card text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">Todas las instituciones</SelectItem>
+              <SelectItem value="1">Solo acreditadas (≥ 1 año)</SelectItem>
+              <SelectItem value="4">Avanzada (≥ 4 años)</SelectItem>
+              <SelectItem value="6">Excelencia (≥ 6 años)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Vacantes 2026</Label>
+            <Select
+              value={String(filtros.vacantesMin)}
+              onValueChange={(v) =>
+                onChange({ ...filtros, vacantesMin: Number(v) as 0 | 50 | 100 })
+              }
+            >
+              <SelectTrigger aria-label="Vacantes mínimas 2026" className="w-full bg-card text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Cualquiera</SelectItem>
+                <SelectItem value="50">≥ 50 vacantes</SelectItem>
+                <SelectItem value="100">≥ 100 vacantes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Titulados 2024</Label>
+            <Select
+              value={String(filtros.tituladosMin)}
+              onValueChange={(v) =>
+                onChange({ ...filtros, tituladosMin: Number(v) as 0 | 50 | 100 })
+              }
+            >
+              <SelectTrigger aria-label="Mínimo de titulados 2024" className="w-full bg-card text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Cualquiera</SelectItem>
+                <SelectItem value="50">≥ 50 titulados</SelectItem>
+                <SelectItem value="100">≥ 100 titulados</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -537,46 +513,61 @@ export function FiltrosAvanzados(props: FiltrosAvanzadosProps) {
   const activos = contarFiltrosActivos(props.filtros);
 
   return (
-    <>
-      {/* Mobile Sheet */}
-      <div className="lg:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 border-[#d4d4ce] bg-white text-[#171716]"
-            >
-              <Filter className="size-4 text-[#1063b8]" />
-              Filtros
-              {activos > 0 ? (
-                <Badge className="ml-0.5 bg-[#1063b8] px-1.5 py-0 text-[11px] text-white">
-                  {activos}
-                </Badge>
-              ) : null}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[320px] overflow-y-auto bg-white p-5 sm:w-[360px]">
-            <SheetHeader className="px-0 pb-3 text-left">
-              <SheetTitle className="text-base font-bold text-[#171716]">
-                Filtrar carreras
-              </SheetTitle>
-              <SheetDescription className="text-xs text-[#5c5c58]">
-                {entero(props.totalResultados)} resultados con los criterios actuales.
-              </SheetDescription>
-            </SheetHeader>
-            <PanelFiltrosContenido {...props} />
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      {/* Desktop Sidebar */}
-      <aside
-        aria-label="Filtros de carreras"
-        className="hidden w-72 shrink-0 rounded-xl border border-[#e2e2dc] bg-white p-5 lg:block"
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-9 gap-2 rounded-lg bg-card px-3 text-xs font-medium text-foreground shadow-xs"
+        >
+          <SlidersHorizontal className="size-3.5 text-muted-foreground" aria-hidden="true" />
+          <span>Más filtros</span>
+          {activos > 0 ? (
+            <Badge className="ml-0.5 h-4.5 min-w-4.5 rounded-full px-1.5 text-[10px] font-semibold">
+              {activos}
+            </Badge>
+          ) : null}
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col gap-0 bg-card p-0 sm:max-w-md"
       >
-        <PanelFiltrosContenido {...props} />
-      </aside>
-    </>
+        <SheetHeader className="border-b border-border px-5 py-4 text-left">
+          <SheetTitle className="text-base font-semibold text-foreground">
+            Filtrar carreras
+          </SheetTitle>
+          <SheetDescription className="text-xs text-muted-foreground">
+            {entero(props.totalResultados)} carreras coinciden con tus criterios actuales.
+          </SheetDescription>
+        </SheetHeader>
+
+        <div className="flex-1 overflow-y-auto px-5 py-5">
+          <PanelFiltrosContenido {...props} />
+        </div>
+
+        <SheetFooter className="flex-row items-center justify-between gap-2 border-t border-border bg-muted/30 px-5 py-3.5">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={props.onReset}
+            disabled={activos === 0}
+            className="h-9 gap-1.5 text-xs text-muted-foreground"
+          >
+            <RotateCcw className="size-3.5" aria-hidden="true" />
+            Limpiar filtros
+          </Button>
+          <SheetClose
+            render={
+              <Button type="button" size="sm" className="h-9 px-4 text-xs font-medium" />
+            }
+          >
+            Ver {entero(props.totalResultados)} carreras
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }

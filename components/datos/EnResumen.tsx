@@ -1,4 +1,5 @@
-import { Sparkles } from "lucide-react";
+import { FileText } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export interface EnResumenProps {
@@ -19,23 +20,32 @@ export function EnResumen({
   if (frases.length === 0) return null;
 
   return (
-    <section
+    <Card
       aria-labelledby={id}
       className={cn(
-        "prose-datos rounded-xl border border-[#e2e2dc] border-t-4 border-t-[#1890ff] bg-white p-6",
+        "prose-datos gap-3 rounded-xl border border-border bg-card py-5 shadow-xs ring-0",
         className
       )}
     >
-      <h2 id={id} className="flex items-center gap-2 text-lg font-bold text-[#171716]">
-        <Sparkles className="size-4 text-[#1890ff]" aria-hidden="true" />
-        {titulo}
-      </h2>
-      <div className="mt-3 space-y-2.5 text-sm leading-relaxed text-[#3c3c39]">
+      <CardHeader className="px-6 pb-0">
+        <CardTitle
+          id={id}
+          className="flex items-center gap-2 text-base font-semibold tracking-tight text-foreground"
+        >
+          <FileText className="size-4 text-muted-foreground" aria-hidden="true" />
+          {titulo}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2.5 px-6 text-sm leading-relaxed text-muted-foreground">
         {frases.map((frase) => (
-          <p key={frase}>{frase}</p>
+          <p key={frase} className="text-foreground/85">
+            {frase}
+          </p>
         ))}
-      </div>
-      {fuente ? <p className="mt-4 text-xs text-[#5c5c58]">{fuente}</p> : null}
-    </section>
+        {fuente ? (
+          <p className="pt-2 text-xs text-muted-foreground">{fuente}</p>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }

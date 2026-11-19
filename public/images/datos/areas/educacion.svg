@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#ECFDF5"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#D1FAE5" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#CBD5E1" stroke-width="0.75" stroke-opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <rect width="640" height="400" fill="url(#grid)"/>
+  <rect width="640" height="400" fill="url(#glow)"/>
+  
+    <path d="M180 102 C230 92, 285 96, 320 116 C355 96, 410 92, 460 102 V226 C410 216, 355 220, 320 238 C285 220, 230 216, 180 226 Z" fill="#FFFFFF" stroke="#6EE7B7" stroke-width="2"/>
+    <line x1="320" y1="116" x2="320" y2="238" stroke="#047857" stroke-width="2"/>
+    <path d="M208 134 H292 M208 156 H286 M208 178 H272" stroke="#A7F3D0" stroke-width="4" stroke-linecap="round"/>
+    <path d="M348 134 H432 M348 156 H426 M348 178 H412" stroke="#047857" stroke-width="4" stroke-linecap="round" stroke-opacity="0.35"/>
+    <path d="M388 94 V142 L402 132 L416 142 V94 Z" fill="#047857"/>
+  
+</svg>

@@ -12,16 +12,17 @@ import {
   Share2,
   X,
 } from "lucide-react";
+import { toast } from "sonner";
 import type { ChartConfig } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
-
-const ComparadorChart = dynamic(
-  () => import("@/components/datos/ComparadorChart").then((m) => m.ComparadorChart),
-  {
-    ssr: false,
-    loading: () => <Skeleton className="h-[320px] w-full rounded-lg" />,
-  }
-);
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -30,8 +31,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -39,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { trackEvent, trackEventOnce } from "@/lib/analytics/marketing";
 import {
   TIPO_ETIQUETAS,
@@ -46,12 +46,22 @@ import {
   type TipoIesKey,
 } from "@/lib/datos/carreras-tipos";
 import {
+  anosDesdeSemestres,
   normalizarTexto,
   pesos,
   porcentaje,
   semestres,
 } from "@/lib/datos/formato";
 import { SINONIMOS_CARRERAS } from "@/lib/datos/carreras-sinonimos";
+import { cn } from "@/lib/utils";
+
+const ComparadorChart = dynamic(
+  () => import("@/components/datos/ComparadorChart").then((m) => m.ComparadorChart),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[320px] w-full rounded-lg" />,
+  }
+);
 
 export interface ComparadorTipoInfo {
   ing: (number | null)[];
@@ -75,10 +85,13 @@ interface Seleccion {
   tipo: TipoIesKey;
 }
 
-const COLORES = ["#1890ff", "#f99c00", "#171716"] as const;
-const COLORES_TEXTO = ["#1063b8", "#9a5200", "#171716"] as const;
+const COLORES = ["#2563eb", "#d97706", "#0f172a"] as const;
+const COLORES_TEXTO = ["#1d4ed8", "#b45309", "#0f172a"] as const;
 
-function primerTipoDisponible(c: ComparadorCarreraItem, preferido?: string | null): TipoIesKey {
+function primerTipoDisponible(
+  c: ComparadorCarreraItem,
+  preferido?: string | null
+): TipoIesKey {
   if (preferido === "u" || preferido === "ip" || preferido === "cft") {
     if (c.tipos[preferido]) return preferido;
   }
@@ -106,14 +119,20 @@ function generarFraseComparacion(
   if (ingA && ingB && ingA > 0 && ingB > 0) {
     const mayor = ingA >= ingB ? a : b;
     const menor = ingA >= ingB ? b : a;
-    const ratio = (Math.max(ingA, ingB) / Math.min(ingA, ingB));
+    const ratio = Math.max(ingA, ingB) / Math.min(ingA, ingB);
     if (ratio >= 1.05) {
       partes.push(
-        `${mayor.carrera.nombre} (${TIPO_ETIQUETAS[mayor.tipo].corto}) gana ${ratio.toFixed(1).replace(".", ",")} veces lo que ${menor.carrera.nombre} (${TIPO_ETIQUETAS[menor.tipo].corto}) al 4.º año`
+        `${mayor.carrera.nombre} (${TIPO_ETIQUETAS[mayor.tipo].corto}) gana ${ratio
+          .toFixed(1)
+          .replace(".", ",")} veces lo que ${menor.carrera.nombre} (${
+          TIPO_ETIQUETAS[menor.tipo].corto
+        }) al 4.º año`
       );
     } else {
       partes.push(
-        `${a.carrera.nombre} y ${b.carrera.nombre} registran ingresos promedio muy similares al 4.º año (${pesos(ingA)} vs ${pesos(ingB)})`
+        `${a.carrera.nombre} y ${b.carrera.nombre} registran ingresos promedio muy similares al 4.º año (${pesos(
+          ingA
+        )} vs ${pesos(ingB)})`
       );
     }
   }
@@ -133,7 +152,9 @@ function generarFraseComparacion(
     if (Math.abs(pp) >= 2) {
       const mayorEmp = pp > 0 ? a : b;
       partes.push(
-        `${mayorEmp.carrera.nombre} tiene ${Math.abs(pp).toFixed(1).replace(".", ",")} pp. más de empleabilidad al 1.er año`
+        `${mayorEmp.carrera.nombre} tiene ${Math.abs(pp)
+          .toFixed(1)
+          .replace(".", ",")} pp. más de empleabilidad al 1.er año`
       );
     }
   }
@@ -151,7 +172,6 @@ export function Comparador({
   edicion: string;
   pesosDe: string;
 }) {
-
   const mapaCarreras = React.useMemo(
     () => new Map(carreras.map((c) => [c.slug, c])),
     [carreras]
@@ -172,7 +192,6 @@ export function Comparador({
     return base;
   }, [mapaCarreras, carreras]);
 
-  // SSR-safe initial state: always matches prerendered HTML; URL params are applied in useEffect.
   const [seleccion, setSeleccion] = React.useState<Seleccion[]>(defaults);
   const [busqueda, setBusqueda] = React.useState("");
   const [selectorAbierto, setSelectorAbierto] = React.useState(false);
@@ -183,32 +202,48 @@ export function Comparador({
   React.useEffect(() => {
     const elemento = chartRef.current;
     if (!elemento) return;
-    if (!("IntersectionObserver" in window)) { setMostrarGrafico(true); return; }
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) { setMostrarGrafico(true); observer.disconnect(); }
-    }, { rootMargin: "300px" });
+    if (!("IntersectionObserver" in window)) {
+      setMostrarGrafico(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setMostrarGrafico(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px" }
+    );
     observer.observe(elemento);
     return () => observer.disconnect();
   }, []);
 
   React.useEffect(() => {
     const aplicarUrl = () => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const cParam = searchParams.get("c");
-    const tParam = searchParams.get("t");
-    if (!cParam) { setSeleccion(defaults); return; }
-    const slugs = cParam.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 3);
-    const tipos = tParam ? tParam.split(",").map((s) => s.trim()) : [];
-    const res: Seleccion[] = [];
-    slugs.forEach((slug, idx) => {
-      const car = mapaCarreras.get(slug);
-      if (car && !res.some((r) => r.slug === slug)) {
-        res.push({ slug, tipo: primerTipoDisponible(car, tipos[idx]) });
+      const searchParams = new URLSearchParams(window.location.search);
+      const cParam = searchParams.get("c");
+      const tParam = searchParams.get("t");
+      if (!cParam) {
+        setSeleccion(defaults);
+        return;
       }
-    });
-    if (res.length > 0) {
-      setSeleccion(res);
-    }
+      const slugs = cParam
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 3);
+      const tipos = tParam ? tParam.split(",").map((s) => s.trim()) : [];
+      const res: Seleccion[] = [];
+      slugs.forEach((slug, idx) => {
+        const car = mapaCarreras.get(slug);
+        if (car && !res.some((r) => r.slug === slug)) {
+          res.push({ slug, tipo: primerTipoDisponible(car, tipos[idx]) });
+        }
+      });
+      if (res.length > 0) {
+        setSeleccion(res);
+      }
     };
     aplicarUrl();
     window.addEventListener("popstate", aplicarUrl);
@@ -219,21 +254,22 @@ export function Comparador({
     trackEventOnce("datos_view_comparar", "datos_view", { pagina: "comparar" });
   }, []);
 
-  const sincronizarUrl = React.useCallback(
-    (next: Seleccion[]) => {
-      const c = next.map((s) => s.slug).join(",");
-      const t = next.map((s) => s.tipo).join(",");
-      window.history.replaceState(null, "", `/datos/carreras/comparar?c=${encodeURIComponent(c)}&t=${encodeURIComponent(t)}`);
-      if (next.length >= 2) {
-        trackEvent("datos_compare", {
-          slugs: c,
-          tipos: t,
-          cantidad: next.length,
-        });
-      }
-    },
-    []
-  );
+  const sincronizarUrl = React.useCallback((next: Seleccion[]) => {
+    const c = next.map((s) => s.slug).join(",");
+    const t = next.map((s) => s.tipo).join(",");
+    window.history.replaceState(
+      null,
+      "",
+      `/datos/carreras/comparar?c=${encodeURIComponent(c)}&t=${encodeURIComponent(t)}`
+    );
+    if (next.length >= 2) {
+      trackEvent("datos_compare", {
+        slugs: c,
+        tipos: t,
+        cantidad: next.length,
+      });
+    }
+  }, []);
 
   const agregarCarrera = (slug: string) => {
     if (seleccion.length >= 3 || seleccion.some((s) => s.slug === slug)) return;
@@ -264,7 +300,8 @@ export function Comparador({
       .map((s, idx) => {
         const carrera = mapaCarreras.get(s.slug);
         if (!carrera) return null;
-        const data = carrera.tipos[s.tipo] ?? carrera.tipos[primerTipoDisponible(carrera)];
+        const data =
+          carrera.tipos[s.tipo] ?? carrera.tipos[primerTipoDisponible(carrera)];
         if (!data) return null;
         return {
           carrera,
@@ -321,7 +358,9 @@ export function Comparador({
     if (itemsActivos.length < 2) return null;
     const a = itemsActivos[0];
     const b = itemsActivos[1];
-    return `/datos/carreras/compartir/${a.carrera.slug}/${b.carrera.slug}?ta=${a.tipo}&tb=${b.tipo}&formato=1080x1350&v=${encodeURIComponent(edicion)}`;
+    return `/datos/carreras/compartir/${a.carrera.slug}/${b.carrera.slug}?ta=${a.tipo}&tb=${b.tipo}&formato=1080x1350&v=${encodeURIComponent(
+      edicion
+    )}`;
   }, [itemsActivos, edicion]);
 
   const handleCopyLink = async () => {
@@ -329,13 +368,14 @@ export function Comparador({
     try {
       await navigator.clipboard.writeText(url);
       setCopiado(true);
+      toast.success("Enlace de comparación copiado");
       trackEvent("datos_share", {
         formato: "link",
         slugs: itemsActivos.map((i) => i.carrera.slug).join(","),
       });
       setTimeout(() => setCopiado(false), 2000);
     } catch {
-      // ignore clipboard errors
+      toast.error("No se pudo copiar el enlace");
     }
   };
 
@@ -346,7 +386,9 @@ export function Comparador({
       try {
         await navigator.share({
           title: `Comparación: ${titulo} | ProgramBI`,
-          text: fraseComparacion ?? `Compara ${titulo} con datos oficiales de mifuturo.cl`,
+          text:
+            fraseComparacion ??
+            `Compara ${titulo} con datos oficiales de mifuturo.cl`,
           url,
         });
         trackEvent("datos_share", {
@@ -365,22 +407,25 @@ export function Comparador({
     if (!shareImageUrl) return;
     trackEvent("datos_download", {
       formato: "png",
-      recurso: `comparar-${itemsActivos.slice(0, 2).map((i) => i.carrera.slug).join("-vs-")}`,
+      recurso: `comparar-${itemsActivos
+        .slice(0, 2)
+        .map((i) => i.carrera.slug)
+        .join("-vs-")}`,
     });
   };
 
   return (
     <div className="space-y-6">
-      {/* Selector de carreras (hasta 3) */}
-      <div className="rounded-xl border border-[#e2e2dc] bg-white p-5 shadow-2xs">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Selector de carreras */}
+      <Card className="gap-4 rounded-xl border border-border bg-card py-5 shadow-xs ring-0">
+        <CardHeader className="flex flex-col gap-3 px-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
-            <h2 className="text-base font-bold text-[#171716]">
+            <CardTitle className="text-base font-semibold text-foreground">
               Elige hasta 3 carreras para comparar
-            </h2>
-            <p className="text-xs text-[#5c5c58]">
-              Puedes cambiar el tipo de institución (U, IP o CFT) en cada tarjeta.
-            </p>
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Puedes cambiar el tipo de institución (U, IP o CFT) por separado en cada carrera.
+            </CardDescription>
           </div>
           {seleccion.length < 3 ? (
             <Button
@@ -388,115 +433,126 @@ export function Comparador({
               variant="outline"
               size="sm"
               onClick={() => setSelectorAbierto((v) => !v)}
-              className="border-[#1063b8] text-[#1063b8] hover:bg-[#e9f4ff]"
+              className="h-9 gap-1.5 bg-card text-xs font-medium"
             >
-              <Plus className="mr-1.5 size-4" />
+              <Plus className="size-3.5 text-blue-700" aria-hidden="true" />
               Agregar carrera ({seleccion.length}/3)
             </Button>
           ) : null}
-        </div>
+        </CardHeader>
 
-        {/* Chips de carreras seleccionadas */}
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {itemsActivos.map((item) => {
-            const tiposDisponibles = TIPO_ORDEN.filter((k) => Boolean(item.carrera.tipos[k]));
-            return (
-              <div
-                key={item.carrera.slug}
-                className="flex flex-col justify-between gap-3 rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-3.5"
-                style={{ borderTopWidth: 4, borderTopColor: item.color }}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <Link
-                      href={`/datos/carreras/${item.carrera.slug}`}
-                      className="inline-flex items-center gap-1 text-sm font-bold text-[#171716] hover:text-[#1890ff] hover:underline"
-                    >
-                      <span className="truncate">{item.carrera.nombre}</span>
-                      <ArrowUpRight className="size-3.5 shrink-0" />
-                    </Link>
-                    <p className="text-xs text-[#5c5c58]">{item.carrera.area}</p>
-                  </div>
-                  {seleccion.length > 1 ? (
-                    <button
-                      type="button"
-                      onClick={() => quitarCarrera(item.carrera.slug)}
-                      aria-label={`Quitar ${item.carrera.nombre}`}
-                      className="rounded p-1 text-[#5c5c58] hover:bg-white hover:text-[#171716]"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  ) : null}
-                </div>
-
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-medium text-[#5c5c58]">Tipo:</span>
-                  {tiposDisponibles.length > 1 ? (
-                    <Select
-                      value={item.tipo}
-                      onValueChange={(val) => cambiarTipo(item.carrera.slug, val as TipoIesKey)}
-                    >
-                      <SelectTrigger
-                        aria-label={`Tipo de institución para ${item.carrera.nombre}`}
-                        className="h-8 w-[140px] bg-white text-xs"
-                      >
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {tiposDisponibles.map((k) => (
-                          <SelectItem key={k} value={k} className="text-xs">
-                            {TIPO_ETIQUETAS[k].singular} ({TIPO_ETIQUETAS[k].corto})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge variant="secondary" className="bg-white text-xs text-[#171716]">
-                      {TIPO_ETIQUETAS[item.tipo].singular}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Buscador Command */}
-        {selectorAbierto && seleccion.length < 3 ? (
-          <div className="mt-4 rounded-xl border border-[#e2e2dc] bg-white p-2 shadow-sm">
-            <Command shouldFilter={false}>
-              <CommandInput
-                placeholder="Buscar carrera o sinónimo (ej. enfermería, informática, tens)..."
-                value={busqueda}
-                onValueChange={setBusqueda}
-              />
-              <CommandList>
-                <CommandEmpty>No se encontraron carreras con ese nombre.</CommandEmpty>
-                <CommandGroup heading="Carreras oficiales">
-                  {resultadosBusqueda.map((c) => (
-                    <CommandItem
-                      key={c.slug}
-                      value={c.slug}
-                      onSelect={() => agregarCarrera(c.slug)}
-                      className="flex cursor-pointer items-center justify-between"
-                    >
-                      <div>
-                        <span className="font-medium text-[#171716]">{c.nombre}</span>
-                        <span className="ml-2 text-xs text-[#5c5c58]">{c.area}</span>
+        <CardContent className="space-y-4 px-5 sm:px-6">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {itemsActivos.map((item) => {
+              const tiposDisponibles = TIPO_ORDEN.filter((k) =>
+                Boolean(item.carrera.tipos[k])
+              );
+              return (
+                <div
+                  key={item.carrera.slug}
+                  className="flex flex-col justify-between gap-3 rounded-lg border border-border bg-muted/35 p-4"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="size-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <Link
+                          href={`/datos/carreras/${item.carrera.slug}`}
+                          className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-foreground hover:text-blue-700 hover:underline"
+                        >
+                          <span className="truncate">{item.carrera.nombre}</span>
+                          <ArrowUpRight className="size-3.5 shrink-0" aria-hidden="true" />
+                        </Link>
                       </div>
-                      <span className="text-xs text-[#1890ff]">Agregar</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </div>
-        ) : null}
-      </div>
+                      <p className="mt-0.5 pl-4.5 text-xs text-muted-foreground">
+                        {item.carrera.area}
+                      </p>
+                    </div>
+                    {seleccion.length > 1 ? (
+                      <button
+                        type="button"
+                        onClick={() => quitarCarrera(item.carrera.slug)}
+                        aria-label={`Quitar ${item.carrera.nombre}`}
+                        className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+                      >
+                        <X className="size-4" aria-hidden="true" />
+                      </button>
+                    ) : null}
+                  </div>
 
-      {/* Frase comparativa automática */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground">Institución:</span>
+                    {tiposDisponibles.length > 1 ? (
+                      <Select
+                        value={item.tipo}
+                        onValueChange={(val) =>
+                          cambiarTipo(item.carrera.slug, val as TipoIesKey)
+                        }
+                      >
+                        <SelectTrigger
+                          aria-label={`Tipo de institución para ${item.carrera.nombre}`}
+                          className="h-8 w-[150px] bg-card text-xs"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {tiposDisponibles.map((k) => (
+                            <SelectItem key={k} value={k} className="text-xs">
+                              {TIPO_ETIQUETAS[k].singular} ({TIPO_ETIQUETAS[k].corto})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge variant="secondary" className="bg-card text-xs font-medium">
+                        {TIPO_ETIQUETAS[item.tipo].singular}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {selectorAbierto && seleccion.length < 3 ? (
+            <div className="rounded-xl border border-border bg-card p-1.5 shadow-md">
+              <Command shouldFilter={false}>
+                <CommandInput
+                  placeholder="Buscar carrera o apodo (ej. enfermería, informática, tens)..."
+                  value={busqueda}
+                  onValueChange={setBusqueda}
+                />
+                <CommandList>
+                  <CommandEmpty>No se encontraron carreras con ese nombre.</CommandEmpty>
+                  <CommandGroup heading="Carreras oficiales">
+                    {resultadosBusqueda.map((c) => (
+                      <CommandItem
+                        key={c.slug}
+                        value={c.slug}
+                        onSelect={() => agregarCarrera(c.slug)}
+                        className="flex cursor-pointer items-center justify-between"
+                      >
+                        <div>
+                          <span className="font-medium text-foreground">{c.nombre}</span>
+                          <span className="ml-2 text-xs text-muted-foreground">{c.area}</span>
+                        </div>
+                        <span className="text-xs font-medium text-blue-700">Agregar</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      {/* Frase resumen clara */}
       {fraseComparacion ? (
-        <div className="rounded-xl border border-[#d6e6f5] bg-[#e9f4ff]/50 px-5 py-4 text-sm font-medium text-[#171716]">
+        <div className="rounded-xl border border-blue-200/80 bg-blue-50/60 px-5 py-3.5 text-sm font-medium text-foreground">
           {fraseComparacion}
         </div>
       ) : null}
@@ -504,120 +560,165 @@ export function Comparador({
       {/* KPIs lado a lado */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {itemsActivos.map((item) => (
-          <div
+          <Card
             key={`${item.carrera.slug}-${item.tipo}-kpi`}
-            className="rounded-xl border border-[#e2e2dc] bg-white p-5 shadow-2xs"
-            style={{ borderTopWidth: 4, borderTopColor: item.color }}
+            className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0"
           >
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-base font-bold text-[#171716]">{item.carrera.nombre}</h3>
-              <Badge variant="outline" className="text-xs">
-                {TIPO_ETIQUETAS[item.tipo].corto}
-              </Badge>
-            </div>
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <h3 className="text-base font-semibold text-foreground">
+                    {item.carrera.nombre}
+                  </h3>
+                </div>
+                <Badge variant="secondary" className="text-xs font-medium">
+                  {TIPO_ETIQUETAS[item.tipo].corto}
+                </Badge>
+              </div>
 
-            <div className="mt-4">
-              <p className="text-xs font-semibold tracking-wide text-[#5c5c58] uppercase">
-                Ingreso bruto 4.º año
-              </p>
-              <p className="mt-1 text-3xl font-extrabold tracking-tight tabular-nums" style={{ color: item.colorTexto }}>
-                {pesos(item.data.ing[3] ?? null)}
-              </p>
-              <p className="mt-0.5 text-xs text-[#5c5c58]">Pesos de {pesosDe}</p>
-            </div>
+              <div className="mt-4">
+                <p className="text-xs text-muted-foreground">Sueldo bruto 4.º año</p>
+                <p
+                  className="mt-1 text-3xl font-bold tracking-tight tabular-nums"
+                  style={{ color: item.colorTexto }}
+                >
+                  {pesos(item.data.ing[3] ?? null)}
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Pesos de {pesosDe}</p>
+              </div>
 
-            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-[#f0f0ec] pt-4 text-xs">
-              <div>
-                <dt className="text-[#5c5c58]">Ingreso 1.er año</dt>
-                <dd className="mt-0.5 font-bold text-[#171716] tabular-nums">
-                  {pesos(item.data.ing[0] ?? null)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[#5c5c58]">Empleabilidad 1.er año</dt>
-                <dd className="mt-0.5 font-bold text-[#171716] tabular-nums">
-                  {porcentaje(item.data.emp1)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[#5c5c58]">Duración real</dt>
-                <dd className="mt-0.5 font-bold text-[#171716] tabular-nums">
-                  {semestres(item.data.dur_real)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[#5c5c58]">Arancel anual mediano</dt>
-                <dd className="mt-0.5 font-bold text-[#171716] tabular-nums">
-                  {pesos(item.data.arancel_med)}
-                </dd>
-              </div>
-            </dl>
-          </div>
+              <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border/70 pt-4 text-xs">
+                <div>
+                  <dt className="text-muted-foreground">Sueldo 1.er año</dt>
+                  <dd className="mt-0.5 font-semibold text-foreground tabular-nums">
+                    {pesos(item.data.ing[0] ?? null)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Empleabilidad 1.er año</dt>
+                  <dd className="mt-0.5 font-semibold text-foreground tabular-nums">
+                    {porcentaje(item.data.emp1)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Duración real</dt>
+                  <dd className="mt-0.5 font-semibold text-foreground tabular-nums">
+                    {item.data.dur_real !== null
+                      ? anosDesdeSemestres(item.data.dur_real)
+                      : "Sin dato"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Arancel anual 2026</dt>
+                  <dd className="mt-0.5 font-semibold text-foreground tabular-nums">
+                    {pesos(item.data.arancel_med)}
+                  </dd>
+                </div>
+              </dl>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      {/* Gráfico de trayectoria 1.º -> 5.º año */}
-      <div className="rounded-xl border border-[#e2e2dc] bg-white p-5 shadow-2xs sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+      {/* Gráfico de trayectoria */}
+      <Card className="gap-4 rounded-xl border border-border bg-card py-6 shadow-xs ring-0">
+        <CardHeader className="flex flex-col gap-3 px-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="text-base font-bold text-[#171716]">
-              Trayectoria de ingreso bruto mensual (1.º al 5.º año)
-            </h3>
-            <p className="text-xs text-[#5c5c58]">
+            <CardTitle className="text-base font-semibold text-foreground">
+              Evolución de sueldo del 1.º al 5.º año
+            </CardTitle>
+            <CardDescription className="text-xs">
               Valores oficiales en pesos de {pesosDe} (mifuturo.cl).
-            </p>
+            </CardDescription>
           </div>
           <div className="flex flex-wrap gap-3 text-xs">
             {itemsActivos.map((item) => (
-              <span key={item.carrera.slug} className="inline-flex items-center gap-1.5 font-medium text-[#171716]">
-                <span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+              <span
+                key={item.carrera.slug}
+                className="inline-flex items-center gap-1.5 font-medium text-foreground"
+              >
+                <span
+                  className="inline-block size-2.5 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                />
                 {item.carrera.nombre} ({TIPO_ETIQUETAS[item.tipo].corto})
               </span>
             ))}
           </div>
-        </div>
+        </CardHeader>
 
-        <div ref={chartRef}>
-        {mostrarGrafico ? <ComparadorChart
-          chartConfig={chartConfig}
-          chartData={chartData}
-          items={itemsActivos.map((item) => ({
-            slug: item.carrera.slug,
-            nombre: item.carrera.nombre,
-            tipo: item.tipo,
-            color: item.color,
-          }))}
-        /> : <Skeleton className="h-[320px] w-full rounded-lg" />}
-        </div>
-      </div>
+        <CardContent className="px-6">
+          <div ref={chartRef}>
+            {mostrarGrafico ? (
+              <ComparadorChart
+                chartConfig={chartConfig}
+                chartData={chartData}
+                items={itemsActivos.map((item) => ({
+                  slug: item.carrera.slug,
+                  nombre: item.carrera.nombre,
+                  tipo: item.tipo,
+                  color: item.color,
+                }))}
+              />
+            ) : (
+              <Skeleton className="h-[320px] w-full rounded-lg" />
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Acciones de compartir y descargar tarjeta */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#e2e2dc] bg-white p-4 shadow-2xs">
-        <div className="text-xs text-[#5c5c58]">
-          Comparte esta comparación o descarga la tarjeta oficial en PNG.
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={handleCopyLink}>
-            {copiado ? <Check className="mr-1.5 size-4 text-emerald-600" /> : <Copy className="mr-1.5 size-4" />}
-            {copiado ? "Enlace copiado" : "Copiar enlace"}
-          </Button>
-          <Button type="button" variant="outline" size="sm" onClick={handleShareNative}>
-            <Share2 className="mr-1.5 size-4" />
-            Compartir
-          </Button>
-          {shareImageUrl ? (
-            <a
-              href={shareImageUrl}
-              download={`comparacion-${itemsActivos[0].carrera.slug}-vs-${itemsActivos[1].carrera.slug}.png`}
-              onClick={handleDownloadPng}
-              className={buttonVariants({ size: "sm", className: "bg-[#1063b8] text-white hover:bg-[#0d549c]" })}
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 sm:px-5">
+          <div className="text-xs text-muted-foreground">
+            Comparte esta comparación o descarga la tarjeta oficial en PNG.
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleCopyLink}
+              className="h-8 gap-1.5 bg-card text-xs"
             >
-              <Download className="mr-1.5 size-4" />
-              Descargar imagen PNG
-            </a>
-          ) : null}
-        </div>
-      </div>
+              {copiado ? (
+                <Check className="size-3.5 text-emerald-600" aria-hidden="true" />
+              ) : (
+                <Copy className="size-3.5 text-muted-foreground" aria-hidden="true" />
+              )}
+              {copiado ? "Copiado" : "Copiar enlace"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleShareNative}
+              className="h-8 gap-1.5 bg-card text-xs"
+            >
+              <Share2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
+              Compartir
+            </Button>
+            {shareImageUrl ? (
+              <a
+                href={shareImageUrl}
+                download={`comparacion-${itemsActivos[0].carrera.slug}-vs-${itemsActivos[1].carrera.slug}.png`}
+                onClick={handleDownloadPng}
+                className={cn(
+                  buttonVariants({ size: "sm" }),
+                  "h-8 gap-1.5 rounded-lg px-3 text-xs font-medium"
+                )}
+              >
+                <Download className="size-3.5" aria-hidden="true" />
+                Descargar PNG
+              </a>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

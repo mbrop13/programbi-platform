@@ -1,20 +1,28 @@
 "use client";
 
+import { useState } from "react";
+import { LineChart, Table2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from "recharts";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { TradingViewCarreraChart } from "@/components/datos/charts/TradingViewCarreraChart";
 import type { CarreraTipoData } from "@/lib/datos/carreras";
-import { pesos, pesosEje, variacionPorcentual } from "@/lib/datos/formato";
+import { pesos, porcentaje, variacionPorcentual } from "@/lib/datos/formato";
+import { cn } from "@/lib/utils";
 
 interface EvolucionYoYProps {
   evolIng4: Record<string, number | null>;
@@ -27,14 +35,21 @@ interface EvolucionYoYProps {
 
 const ANOS_SERIE = ["2020", "2021", "2022", "2023", "2024"] as const;
 
-const ING_CONFIG: ChartConfig = {
-  ing4: { label: "Ingreso real 4.º año", color: "#1890ff" },
-};
-
-const EMP_CONFIG: ChartConfig = {
-  emp1: { label: "Empleabilidad 1.er año", color: "#1890ff" },
-  emp2: { label: "Empleabilidad 2.º año", color: "#f99c00" },
-};
+function DeltaPill({ label, value }: { label: string; value: number }) {
+  return (
+    <Badge
+      variant="secondary"
+      className={cn(
+        "h-auto rounded-md border px-2.5 py-1 text-xs font-medium tabular-nums",
+        value >= 0
+          ? "border-emerald-200/80 bg-emerald-50 text-emerald-800"
+          : "border-rose-200/80 bg-rose-50 text-rose-800"
+      )}
+    >
+      {label}: {variacionPorcentual(value)}
+    </Badge>
+  );
+}
 
 export function EvolucionYoY({
   evolIng4,
@@ -44,169 +59,112 @@ export function EvolucionYoY({
   factorIpc = 1,
   etiquetaPesos = "pesos de sep-2025",
 }: EvolucionYoYProps) {
-  const dataIng = ANOS_SERIE.map((ano) => {
-    const raw = evolIng4[ano] ?? null;
-    return {
-      ano,
-      ing4: raw !== null ? Math.round(raw * factorIpc) : null,
-    };
-  });
+  const [vista, setVista] = useState<"grafico" | "tabla">("grafico");
 
-  const dataEmp = ANOS_SERIE.map((ano) => {
-    const e1 = evolEmp1[ano] ?? null;
-    const e2 = evolEmp2[ano] ?? null;
-    return {
-      ano,
-      emp1: e1 !== null ? Math.round(e1 * 1000) / 10 : null,
-      emp2: e2 !== null ? Math.round(e2 * 1000) / 10 : null,
-    };
-  });
-
-  const tieneIng = dataIng.some((d) => d.ing4 !== null);
-  const tieneEmp = dataEmp.some((d) => d.emp1 !== null || d.emp2 !== null);
+  const tieneIng = ANOS_SERIE.some((a) => typeof evolIng4[a] === "number");
+  const tieneEmp = ANOS_SERIE.some(
+    (a) => typeof evolEmp1[a] === "number" || typeof evolEmp2[a] === "number"
+  );
 
   return (
-    <div className="rounded-xl border border-[#e2e2dc] bg-white p-5 sm:p-6">
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+    <Card className="gap-4 rounded-xl border border-border bg-card py-6 shadow-xs ring-0">
+      <CardHeader className="flex flex-col gap-3 px-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-base font-bold text-[#171716]">
-            Evolución histórica 2020–2024 (términos reales)
-          </h3>
-          <p className="text-xs text-[#5c5c58]">
-            Serie histórica del SIES en {etiquetaPesos}. Los vacíos muestran años sin mínimo de casos.
-          </p>
+          <CardTitle className="text-base font-semibold text-foreground">
+            Evolución histórica 2020–2024
+          </CardTitle>
+          <CardDescription className="mt-0.5 text-xs">
+            Tendencia real de ingresos y empleabilidad en {etiquetaPesos}.
+          </CardDescription>
         </div>
 
-        <div className="flex flex-wrap gap-2 text-xs tabular-nums">
+        <div className="flex flex-wrap items-center gap-2">
           {variacion.yoy_23_24 !== null ? (
-            <span className="rounded-md border border-[#e2e2dc] bg-[#f7f7f4] px-2.5 py-1 font-medium text-[#171716]">
-              2023→2024: {variacionPorcentual(variacion.yoy_23_24)}
-            </span>
+            <DeltaPill label="2023→2024" value={variacion.yoy_23_24} />
           ) : null}
           {variacion.crec_20_24 !== null ? (
-            <span className="rounded-md border border-[#e2e2dc] bg-[#f7f7f4] px-2.5 py-1 font-medium text-[#171716]">
-              2020→2024: {variacionPorcentual(variacion.crec_20_24)}
-            </span>
+            <DeltaPill label="2020→2024" value={variacion.crec_20_24} />
           ) : null}
           {variacion.edicion_anterior_yoy_real !== null ? (
-            <span className="rounded-md border border-[#e2e2dc] bg-[#f7f7f4] px-2.5 py-1 font-medium text-[#171716]">
-              vs ed. 2024–2025 (IPC): {variacionPorcentual(variacion.edicion_anterior_yoy_real)}
-            </span>
+            <DeltaPill label="vs ed. anterior" value={variacion.edicion_anterior_yoy_real} />
+          ) : null}
+
+          {tieneIng || tieneEmp ? (
+            <ToggleGroup
+              type="single"
+              value={vista}
+              onValueChange={(v) => {
+                if (v === "grafico" || v === "tabla") setVista(v);
+              }}
+              aria-label="Modo de visualización histórica"
+            >
+              <ToggleGroupItem value="grafico" className="px-2.5 py-1 text-xs">
+                <LineChart className="size-3.5" aria-hidden="true" />
+                Gráfico
+              </ToggleGroupItem>
+              <ToggleGroupItem value="tabla" className="px-2.5 py-1 text-xs">
+                <Table2 className="size-3.5" aria-hidden="true" />
+                Tabla
+              </ToggleGroupItem>
+            </ToggleGroup>
           ) : null}
         </div>
-      </div>
+      </CardHeader>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div>
-          <p className="mb-2 text-xs font-semibold text-[#5c5c58] uppercase tracking-wide">
-            Ingreso real al 4.º año
-          </p>
-          {tieneIng ? (
-            <ChartContainer config={ING_CONFIG} className="h-[240px] w-full tabular-nums">
-              <LineChart data={dataIng} margin={{ top: 12, right: 16, left: 4, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e2dc" vertical={false} />
-                <XAxis
-                  dataKey="ano"
-                  tickLine={false}
-                  axisLine={{ stroke: "#e2e2dc" }}
-                  tick={{ fill: "#5c5c58", fontSize: 12 }}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  width={56}
-                  domain={[0, "auto"]}
-                  tickFormatter={(v: number) => pesosEje(v)}
-                  tick={{ fill: "#5c5c58", fontSize: 12 }}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(val) => pesos(val)}
-                      labelFormatter={(lbl) => `Año de cálculo ${String(lbl)}`}
-                    />
-                  }
-                />
-                <Line
-                  type="monotone"
-                  dataKey="ing4"
-                  stroke="#1890ff"
-                  strokeWidth={2.5}
-                  connectNulls={false}
-                  dot={{ r: 3.5, fill: "#1890ff", stroke: "#ffffff", strokeWidth: 1.5 }}
-                  isAnimationActive={false}
-                />
-              </LineChart>
-            </ChartContainer>
-          ) : (
-            <div className="flex h-[240px] items-center justify-center rounded-lg border border-dashed border-[#e2e2dc] text-xs text-[#5c5c58]">
-              Sin serie histórica de ingresos disponible.
-            </div>
-          )}
-        </div>
+      <CardContent className="px-6">
+        {!tieneIng && !tieneEmp ? (
+          <div className="flex h-[220px] items-center justify-center rounded-lg border border-dashed border-border text-xs text-muted-foreground">
+            Sin serie histórica de ingresos o empleabilidad disponible para este tipo de institución.
+          </div>
+        ) : vista === "grafico" ? (
+          <TradingViewCarreraChart
+            evolIng4={evolIng4}
+            evolEmp1={evolEmp1}
+            factorIpc={factorIpc}
+            etiquetaPesos={etiquetaPesos}
+          />
+        ) : (
+          <div className="overflow-x-auto rounded-lg border border-border">
+            <Table className="tabular-nums">
+              <TableHeader className="bg-muted/60">
+                <TableRow className="hover:bg-muted/60">
+                  <TableHead className="normal-case">Año</TableHead>
+                  <TableHead className="text-right normal-case">
+                    Sueldo real 4.º año ({etiquetaPesos})
+                  </TableHead>
+                  <TableHead className="text-right normal-case">Empleabilidad 1.er año</TableHead>
+                  <TableHead className="text-right normal-case">Empleabilidad 2.º año</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ANOS_SERIE.map((ano) => {
+                  const ingRaw = evolIng4[ano] ?? null;
+                  const ingVal = ingRaw !== null ? Math.round(ingRaw * factorIpc) : null;
+                  return (
+                    <TableRow key={ano}>
+                      <TableCell className="font-medium text-foreground">{ano}</TableCell>
+                      <TableCell className="text-right font-semibold text-foreground">
+                        {pesos(ingVal)}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {porcentaje(evolEmp1[ano] ?? null)}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {porcentaje(evolEmp2[ano] ?? null)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
 
-        <div>
-          <p className="mb-2 text-xs font-semibold text-[#5c5c58] uppercase tracking-wide">
-            Empleabilidad 1.er y 2.º año (%)
-          </p>
-          {tieneEmp ? (
-            <ChartContainer config={EMP_CONFIG} className="h-[240px] w-full tabular-nums">
-              <LineChart data={dataEmp} margin={{ top: 12, right: 16, left: 4, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e2dc" vertical={false} />
-                <XAxis
-                  dataKey="ano"
-                  tickLine={false}
-                  axisLine={{ stroke: "#e2e2dc" }}
-                  tick={{ fill: "#5c5c58", fontSize: 12 }}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  width={44}
-                  domain={[0, 100]}
-                  tickFormatter={(v: number) => `${v}%`}
-                  tick={{ fill: "#5c5c58", fontSize: 12 }}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(val) => `${val.toFixed(1).replace(".", ",")} %`}
-                      labelFormatter={(lbl) => `Año de cálculo ${String(lbl)}`}
-                    />
-                  }
-                />
-                <Line
-                  type="monotone"
-                  dataKey="emp1"
-                  stroke="#1890ff"
-                  strokeWidth={2.5}
-                  connectNulls={false}
-                  dot={{ r: 3.5, fill: "#1890ff", stroke: "#ffffff", strokeWidth: 1.5 }}
-                  isAnimationActive={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="emp2"
-                  stroke="#f99c00"
-                  strokeWidth={2}
-                  strokeDasharray="4 3"
-                  connectNulls={false}
-                  dot={{ r: 3, fill: "#f99c00", stroke: "#ffffff", strokeWidth: 1.5 }}
-                  isAnimationActive={false}
-                />
-              </LineChart>
-            </ChartContainer>
-          ) : (
-            <div className="flex h-[240px] items-center justify-center rounded-lg border border-dashed border-[#e2e2dc] text-xs text-[#5c5c58]">
-              Sin serie histórica de empleabilidad disponible.
-            </div>
-          )}
-        </div>
-      </div>
-
-      <p className="mt-3 border-t border-[#f0f0ec] pt-2.5 text-xs text-[#5c5c58]">
-        Nota metodológica: cada año compara cohortes distintas de titulados y la comparación frente a la edición 2024–2025 ajustada por IPC puede reflejar rectificaciones de series del SIES.
-      </p>
-    </div>
+        <p className="mt-4 border-t border-border/70 pt-3 text-xs text-muted-foreground">
+          Cada año compara cohortes distintas de titulados; los vacíos indican períodos sin el
+          mínimo estadístico de casos publicado por el SIES.
+        </p>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,7 +1,11 @@
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, SlidersHorizontal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMetaCarreras, TIPO_ETIQUETAS } from "@/lib/datos/carreras";
-import { fechaCorta, pesos, porcentaje, semestres } from "@/lib/datos/formato";
+import { anosDesdeSemestres, fechaCorta, pesos, porcentaje } from "@/lib/datos/formato";
 import {
   filasPreset,
   PRESETS_MAP,
@@ -16,14 +20,13 @@ import {
   itemListSchema,
   MIGAS_BASE,
 } from "@/lib/datos/seo-carreras";
+import { cn } from "@/lib/utils";
 import { CtaDatos } from "./CtaDatos";
 import { EnResumen } from "./EnResumen";
 import { FaqDatos } from "./FaqDatos";
 import { FuenteLinea } from "./FuenteLinea";
 import { DatosViewTracker } from "./HubCarrerasExtras";
 import { MigasDatos } from "./MigasDatos";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 
 function TablaPreset({
   filas,
@@ -36,71 +39,73 @@ function TablaPreset({
 }) {
   if (filas.length === 0) {
     return (
-      <div className="rounded-xl border border-[#e2e2dc] bg-white p-6 text-sm text-[#5c5c58]">
-        No hay carreras que cumplan este criterio en la edición actual.
-      </div>
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="p-6 text-sm text-muted-foreground">
+          No hay carreras que cumplan este criterio en la edición actual.
+        </CardContent>
+      </Card>
     );
   }
 
   return (
     <div className="space-y-3">
       {/* Desktop Table */}
-      <div className="hidden overflow-x-auto rounded-xl border border-[#e2e2dc] bg-white md:block">
+      <div className="hidden overflow-x-auto rounded-xl border border-border bg-card shadow-xs md:block">
         <table className="w-full border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-[#e2e2dc] bg-[#f7f7f4] text-xs font-semibold text-[#5c5c58]">
-              <th className="px-3 py-3 text-center">#</th>
+            <tr className="border-b border-border bg-muted/50 text-xs font-medium text-muted-foreground">
+              <th className="w-12 px-3 py-3 text-center">#</th>
               <th className="px-3 py-3">Carrera</th>
               {mostrarTipo ? <th className="px-3 py-3">Tipo</th> : null}
               <th className="px-3 py-3 text-right">{columnaExtraLabel}</th>
               <th className="px-3 py-3 text-right">Sueldo 4.º año</th>
-              <th className="px-3 py-3 text-right">Empleab. 1.º</th>
-              <th className="px-3 py-3 text-right">Arancel med.</th>
-              <th className="px-3 py-3 text-right">Dur. real</th>
+              <th className="px-3 py-3 text-right">Empleabilidad</th>
+              <th className="px-3 py-3 text-right">Arancel anual</th>
+              <th className="px-3 py-3 text-right">Duración real</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#e2e2dc]">
+          <tbody className="divide-y divide-border/70">
             {filas.map((row, idx) => (
               <tr
                 key={`${row.slug}-${row.tipo}`}
-                className="transition-colors hover:bg-[#f7f7f4]/80"
+                className="transition-colors hover:bg-muted/35"
               >
-                <td className="px-3 py-3 text-center text-xs font-semibold text-[#5c5c58] tabular-nums">
+                <td className="px-3 py-3.5 text-center text-xs font-medium text-muted-foreground tabular-nums">
                   {idx + 1}
                 </td>
-                <td className="px-3 py-3">
+                <td className="px-3 py-3.5">
                   <Link
                     href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
-                    className="font-semibold text-[#171716] hover:text-[#1890ff] hover:underline"
+                    className="font-semibold text-foreground hover:text-blue-700 hover:underline"
                   >
                     {row.nombre}
                   </Link>
-                  <div className="text-xs text-[#5c5c58]">{row.area}</div>
+                  <div className="text-xs text-muted-foreground">{row.area}</div>
                 </td>
                 {mostrarTipo ? (
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-3.5">
                     <Badge
-                      variant="outline"
-                      className="border-[#e2e2dc] bg-[#f7f7f4] text-[11px] font-semibold text-[#171716]"
+                      variant="secondary"
+                      className="h-auto rounded px-1.5 py-0.5 text-[11px] font-medium"
                     >
                       {TIPO_ETIQUETAS[row.tipo].corto}
                     </Badge>
                   </td>
                 ) : null}
-                <td className="px-3 py-3 text-right font-bold text-[#1890ff] tabular-nums">
+                <td className="px-3 py-3.5 text-right font-semibold text-blue-700 tabular-nums">
                   {row.textoMetrica}
                 </td>
-                <td className="px-3 py-3 text-right font-semibold text-[#171716] tabular-nums">
+                <td className="px-3 py-3.5 text-right font-semibold text-foreground tabular-nums">
                   {pesos(row.ing4)}
                 </td>
-                <td className="px-3 py-3 text-right text-[#171716] tabular-nums">
+                <td className="px-3 py-3.5 text-right text-foreground tabular-nums">
                   {porcentaje(row.emp1)}
                 </td>
-                <td className="px-3 py-3 text-right text-xs text-[#171716] tabular-nums">
+                <td className="px-3 py-3.5 text-right text-xs text-foreground tabular-nums">
                   {pesos(row.arancel_med)}
                 </td>
-                <td className="px-3 py-3 text-right text-xs text-[#5c5c58] tabular-nums">
-                  {semestres(row.dur_real)}
+                <td className="px-3 py-3.5 text-right text-xs text-muted-foreground tabular-nums">
+                  {row.dur_real !== null ? anosDesdeSemestres(row.dur_real) : "Sin dato"}
                 </td>
               </tr>
             ))}
@@ -111,49 +116,51 @@ function TablaPreset({
       {/* Mobile Cards */}
       <div className="space-y-3 md:hidden">
         {filas.map((row, idx) => (
-          <div
+          <Card
             key={`${row.slug}-${row.tipo}`}
-            className="rounded-xl border border-[#e2e2dc] bg-white p-4"
+            className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0"
           >
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <span className="text-xs font-semibold text-[#5c5c58] tabular-nums">
-                  #{idx + 1} · {TIPO_ETIQUETAS[row.tipo].corto} · {row.area}
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                    #{idx + 1} · {TIPO_ETIQUETAS[row.tipo].corto} · {row.area}
+                  </span>
+                  <h3 className="mt-0.5 text-base font-semibold text-foreground">
+                    <Link
+                      href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
+                      className="hover:text-blue-700 hover:underline"
+                    >
+                      {row.nombre}
+                    </Link>
+                  </h3>
+                </div>
+                <span className="shrink-0 text-sm font-semibold text-blue-700 tabular-nums">
+                  {row.textoMetrica}
                 </span>
-                <h3 className="text-base font-bold text-[#171716]">
-                  <Link
-                    href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
-                    className="hover:text-[#1890ff] hover:underline"
-                  >
-                    {row.nombre}
-                  </Link>
-                </h3>
               </div>
-              <span className="shrink-0 text-sm font-bold text-[#1890ff] tabular-nums">
-                {row.textoMetrica}
-              </span>
-            </div>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-              <div>
-                <div className="text-[#5c5c58]">Sueldo 4.º</div>
-                <div className="font-semibold text-[#171716] tabular-nums">
-                  {pesos(row.ing4)}
+              <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border/70 pt-3 text-xs">
+                <div>
+                  <div className="text-muted-foreground">Sueldo 4.º</div>
+                  <div className="font-semibold text-foreground tabular-nums">
+                    {pesos(row.ing4)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Empleo 1.º</div>
+                  <div className="font-semibold text-foreground tabular-nums">
+                    {porcentaje(row.emp1)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Arancel</div>
+                  <div className="font-medium text-foreground tabular-nums">
+                    {pesos(row.arancel_med)}
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="text-[#5c5c58]">Empleab. 1.º</div>
-                <div className="font-semibold text-[#171716] tabular-nums">
-                  {porcentaje(row.emp1)}
-                </div>
-              </div>
-              <div>
-                <div className="text-[#5c5c58]">Arancel med.</div>
-                <div className="font-medium text-[#171716] tabular-nums">
-                  {pesos(row.arancel_med)}
-                </div>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>
@@ -194,7 +201,7 @@ export function VistaPreset({ slug }: { slug: PresetSlug }) {
   const otrosPresets = PRESET_SLUGS.filter((s) => s !== slug);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-12">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
       <DatosViewTracker evento="datos_preset_view" params={{ preset: slug }} />
       <script
         type="application/ld+json"
@@ -206,43 +213,40 @@ export function VistaPreset({ slug }: { slug: PresetSlug }) {
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <header className="max-w-3xl space-y-2.5">
-            <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-[#e2e2dc] bg-white px-3 py-1 text-xs font-semibold text-[#1890ff]">
-              <span>Edición {meta.edicion}</span>
-              <span aria-hidden="true" className="text-[#d4d4ce]">·</span>
-              <span className="font-medium text-[#5c5c58]">
-                Actualizado el {fechaCorta(meta.fetched_at)}
-              </span>
-            </div>
-            <h1 className="h1-datos text-[#171716]">{def.h1}</h1>
-            <p className="text-base leading-relaxed text-[#5c5c58]">{def.descriptionSeo}</p>
+            <Badge
+              variant="secondary"
+              className="h-auto rounded-md border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+            >
+              Edición {meta.edicion} · Actualizado el {fechaCorta(meta.fetched_at)}
+            </Badge>
+            <h1 className="h1-datos text-foreground">{def.h1}</h1>
+            <p className="text-base leading-relaxed text-muted-foreground">{def.descriptionSeo}</p>
           </header>
 
           <Link
             href={`/datos/carreras${def.queryFiltros}`}
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-[#1890ff] bg-white px-4 py-2.5 text-sm font-semibold text-[#1890ff] transition-colors hover:bg-[#e9f4ff]"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "h-9 shrink-0 gap-2 rounded-lg bg-card px-3.5 text-xs font-medium"
+            )}
           >
-            <SlidersHorizontal className="size-4" />
-            Ajustar filtros
+            <SlidersHorizontal className="size-3.5 text-blue-700" aria-hidden="true" />
+            Personalizar filtros
           </Link>
         </div>
       </div>
 
-      <EnResumen
-        frases={resumen}
-        fuente={`Fuente: www.mifuturo.cl (SIES, Mineduc), edición ${meta.edicion}.`}
-      />
-
       <section aria-label="Tabla de resultados">
         {esMejorPagadas ? (
           <Tabs defaultValue="u" className="space-y-4">
-            <TabsList className="bg-[#f3f3f0]">
-              <TabsTrigger value="u" className="text-xs font-semibold sm:text-sm">
+            <TabsList className="h-9 bg-muted p-1">
+              <TabsTrigger value="u" className="px-3 text-xs font-medium sm:text-sm">
                 Universidades ({filasU.length})
               </TabsTrigger>
-              <TabsTrigger value="ip" className="text-xs font-semibold sm:text-sm">
-                Institutos Profesionales ({filasIp.length})
+              <TabsTrigger value="ip" className="px-3 text-xs font-medium sm:text-sm">
+                Institutos (IP) ({filasIp.length})
               </TabsTrigger>
-              <TabsTrigger value="cft" className="text-xs font-semibold sm:text-sm">
+              <TabsTrigger value="cft" className="px-3 text-xs font-medium sm:text-sm">
                 CFT ({filasCft.length})
               </TabsTrigger>
             </TabsList>
@@ -273,25 +277,30 @@ export function VistaPreset({ slug }: { slug: PresetSlug }) {
         )}
       </section>
 
-      {/* Metodología 150-250 palabras */}
-      <section
+      <EnResumen
+        frases={resumen}
+        fuente={`Fuente: www.mifuturo.cl (SIES, Mineduc), edición ${meta.edicion}.`}
+      />
+
+      <Card
         aria-labelledby="metodologia-preset-titulo"
-        className="prose-datos rounded-xl border border-[#e2e2dc] bg-white p-6"
+        className="prose-datos gap-3 rounded-xl border border-border bg-card py-6 shadow-xs ring-0"
       >
-        <h2 id="metodologia-preset-titulo" className="h2-datos text-[#171716]">
-          Cómo se construye este ranking
-        </h2>
-        <div className="mt-3 space-y-2.5 text-sm leading-relaxed text-[#3c3c39]">
+        <CardHeader className="px-6 pb-0">
+          <CardTitle id="metodologia-preset-titulo" className="text-lg font-semibold text-foreground">
+            Cómo se construye este ranking
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2.5 px-6 text-sm leading-relaxed text-foreground/85">
           {def.metodologia.map((parrafo) => (
             <p key={parrafo}>{parrafo}</p>
           ))}
-        </div>
-      </section>
+        </CardContent>
+      </Card>
 
-      {/* Otras vistas */}
       <section aria-labelledby="otras-vistas-titulo" className="space-y-3">
-        <h2 id="otras-vistas-titulo" className="text-lg font-bold text-[#171716]">
-          Otras vistas del observatorio
+        <h2 id="otras-vistas-titulo" className="text-base font-semibold text-foreground">
+          Otras listas recomendadas
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {otrosPresets.map((otro) => {
@@ -300,10 +309,10 @@ export function VistaPreset({ slug }: { slug: PresetSlug }) {
               <Link
                 key={otro}
                 href={`/datos/carreras/${otro}`}
-                className="flex items-center justify-between gap-2 rounded-xl border border-[#e2e2dc] bg-white px-4 py-3 text-sm font-semibold text-[#171716] transition-colors hover:border-[#1890ff] hover:text-[#1890ff]"
+                className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground shadow-xs transition-all hover:border-slate-300 hover:text-blue-700"
               >
                 <span>{p.tituloCorto}</span>
-                <ArrowUpRight className="size-4 shrink-0 text-[#5c5c58]" />
+                <ArrowUpRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               </Link>
             );
           })}

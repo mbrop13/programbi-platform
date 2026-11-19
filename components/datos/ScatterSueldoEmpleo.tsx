@@ -11,7 +11,7 @@ const ScatterChartDynamic = dynamic(
     ssr: false,
     loading: () => (
       <Skeleton
-        className="h-[420px] w-full rounded-xl border border-[#e2e2dc] bg-[#f3f3f0]"
+        className="h-[420px] w-full rounded-xl border border-border bg-muted/60"
         aria-hidden="true"
       />
     ),
@@ -21,6 +21,7 @@ const ScatterChartDynamic = dynamic(
 export function ScatterSueldoEmpleo(props: ScatterSueldoEmpleoProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
@@ -35,18 +36,19 @@ export function ScatterSueldoEmpleo(props: ScatterSueldoEmpleoProps) {
           observer.disconnect();
         }
       },
-      { rootMargin: "150px" },
+      { rootMargin: "150px" }
     );
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
+
   return (
     <div ref={ref}>
       {visible ? (
         <ScatterChartDynamic {...props} />
       ) : (
         <Skeleton
-          className="h-[420px] w-full rounded-xl border border-[#e2e2dc] bg-[#f3f3f0]"
+          className="h-[420px] w-full rounded-xl border border-border bg-muted/60"
           aria-hidden="true"
         />
       )}

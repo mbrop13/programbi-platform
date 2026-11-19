@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, Calculator, Info } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,15 +25,16 @@ import {
 } from "@/lib/datos/carreras-tipos";
 import { mesCorto, pesos } from "@/lib/datos/formato";
 import { ajustarPorIpc } from "@/lib/datos/ipc";
+import { cn } from "@/lib/utils";
 
 interface ProgramaCompacto {
-  s: string; // slug
-  i: string; // institucion
-  n: string; // nombre programa
-  r: string; // region
-  j: string; // jornada
-  a: number | null; // arancel
-  d: number | null; // dur_formal
+  s: string;
+  i: string;
+  n: string;
+  r: string;
+  j: string;
+  a: number | null;
+  d: number | null;
 }
 
 export function CalculadoraRetorno({
@@ -69,6 +71,18 @@ export function CalculadoraRetorno({
   const [tipo, setTipo] = React.useState<TipoIesKey>("u");
 
   React.useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const cParam = sp.get("c");
+    const tParam = sp.get("t");
+    if (cParam && ranking.some((r) => r.slug === cParam)) {
+      setSlug(cParam);
+    }
+    if (tParam === "u" || tParam === "ip" || tParam === "cft") {
+      setTipo(tParam);
+    }
+  }, [ranking]);
+
+  React.useEffect(() => {
     if (tiposDisponibles.length > 0 && !tiposDisponibles.includes(tipo)) {
       setTipo(tiposDisponibles[0]);
     }
@@ -94,7 +108,6 @@ export function CalculadoraRetorno({
   );
   const [sueldoAlternativo, setSueldoAlternativo] = React.useState<string>("");
 
-  // Lazy load programas-{tipo}.json para selector opcional de institución
   const [programasCache, setProgramasCache] = React.useState<
     Partial<Record<TipoIesKey, ProgramaCompacto[]>>
   >({});
@@ -105,7 +118,6 @@ export function CalculadoraRetorno({
     trackEventOnce("datos_view_retorno", "datos_view", { pagina: "retorno" });
   }, []);
 
-  // Sincronizar defaults cuando cambia la carrera o tipo
   React.useEffect(() => {
     if (!itemActual) return;
     setArancelAnual(itemActual.arancel_med ?? 4_000_000);
@@ -173,21 +185,40 @@ export function CalculadoraRetorno({
   const arancelEfectivo = conGratuidad ? 0 : arancelAnual;
   const costoTotal = Math.round(arancelEfectivo * anosReales + costoTitulacion);
 
-  // Ajuste por IPC a pesos de hoy
   const ipcIng1 = React.useMemo(() => {
     if (!itemActual?.ing1) return null;
     const adj = ajustarPorIpc(itemActual.ing1, "2025-09");
-    return adj ? { ...adj, original: itemActual.ing1 } : { montoAjustado: itemActual.ing1, factor: 1, ipcDesde: 109.14, ipcHasta: 109.14, mesHasta: "2025-09", original: itemActual.ing1 };
+    return adj
+      ? { ...adj, original: itemActual.ing1 }
+      : {
+          montoAjustado: itemActual.ing1,
+          factor: 1,
+          ipcDesde: 109.14,
+          ipcHasta: 109.14,
+          mesHasta: "2025-09",
+          original: itemActual.ing1,
+        };
   }, [itemActual]);
 
   const ipcIng4 = React.useMemo(() => {
     if (!itemActual?.ing4) return null;
     const adj = ajustarPorIpc(itemActual.ing4, "2025-09");
-    return adj ? { ...adj, original: itemActual.ing4 } : { montoAjustado: itemActual.ing4, factor: 1, ipcDesde: 109.14, ipcHasta: 109.14, mesHasta: "2025-09", original: itemActual.ing4 };
+    return adj
+      ? { ...adj, original: itemActual.ing4 }
+      : {
+          montoAjustado: itemActual.ing4,
+          factor: 1,
+          ipcDesde: 109.14,
+          ipcHasta: 109.14,
+          mesHasta: "2025-09",
+          original: itemActual.ing4,
+        };
   }, [itemActual]);
 
-  const mesesEquiv1 = ipcIng1 && ipcIng1.montoAjustado > 0 ? costoTotal / ipcIng1.montoAjustado : null;
-  const mesesEquiv4 = ipcIng4 && ipcIng4.montoAjustado > 0 ? costoTotal / ipcIng4.montoAjustado : null;
+  const mesesEquiv1 =
+    ipcIng1 && ipcIng1.montoAjustado > 0 ? costoTotal / ipcIng1.montoAjustado : null;
+  const mesesEquiv4 =
+    ipcIng4 && ipcIng4.montoAjustado > 0 ? costoTotal / ipcIng4.montoAjustado : null;
 
   const sueldoAltNum = Number(sueldoAlternativo.replace(/[^\d]/g, ""));
   const costoOportunidad =
@@ -205,19 +236,19 @@ export function CalculadoraRetorno({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        {/* Panel de supuestos editables */}
-        <div className="space-y-5 rounded-xl border border-[#e2e2dc] bg-white p-6 shadow-2xs">
+    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      {/* Panel de supuestos editables */}
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="space-y-5 p-6">
           <div className="flex items-center gap-2">
-            <Calculator className="size-4 text-[#1890ff]" aria-hidden="true" />
-            <h2 className="text-base font-bold text-[#171716]">Supuestos de estudio</h2>
+            <Calculator className="size-4 text-blue-600" aria-hidden="true" />
+            <h2 className="text-base font-semibold text-foreground">Personaliza tus supuestos</h2>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
             <div className="space-y-1.5">
-              <Label htmlFor="retorno-carrera" className="text-xs font-semibold text-[#5c5c58]">
-                Carrera genérica
+              <Label htmlFor="retorno-carrera" className="text-xs font-medium text-muted-foreground">
+                Carrera
               </Label>
               <Select
                 value={slug}
@@ -226,7 +257,7 @@ export function CalculadoraRetorno({
                   trackEvent("datos_calc", { calculadora: "retorno", slug: v });
                 }}
               >
-                <SelectTrigger id="retorno-carrera" className="bg-white">
+                <SelectTrigger id="retorno-carrera" className="w-full bg-card">
                   <SelectValue placeholder="Selecciona una carrera" />
                 </SelectTrigger>
                 <SelectContent>
@@ -240,11 +271,11 @@ export function CalculadoraRetorno({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="retorno-tipo" className="text-xs font-semibold text-[#5c5c58]">
-                Tipo IES
+              <Label htmlFor="retorno-tipo" className="text-xs font-medium text-muted-foreground">
+                Institución
               </Label>
               <Select value={tipo} onValueChange={(v) => setTipo(v as TipoIesKey)}>
-                <SelectTrigger id="retorno-tipo" className="w-[140px] bg-white">
+                <SelectTrigger id="retorno-tipo" className="w-[155px] bg-card">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -258,9 +289,8 @@ export function CalculadoraRetorno({
             </div>
           </div>
 
-          {/* Selector opcional de institución */}
           <div className="space-y-1.5">
-            <Label htmlFor="retorno-inst" className="text-xs font-semibold text-[#5c5c58]">
+            <Label htmlFor="retorno-inst" className="text-xs font-medium text-muted-foreground">
               Arancel de institución específica (opcional)
             </Label>
             <Select
@@ -268,7 +298,7 @@ export function CalculadoraRetorno({
               onValueChange={handleSeleccionarInstitucion}
               disabled={cargandoProgramas || programasCarrera.length === 0}
             >
-              <SelectTrigger id="retorno-inst" className="bg-white">
+              <SelectTrigger id="retorno-inst" className="w-full bg-card">
                 <SelectValue
                   placeholder={
                     cargandoProgramas
@@ -290,14 +320,13 @@ export function CalculadoraRetorno({
             </Select>
           </div>
 
-          {/* Toggle gratuidad / beca */}
-          <div className="flex items-center justify-between rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] px-4 py-3">
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 px-4 py-3">
             <div>
-              <Label htmlFor="retorno-gratuidad" className="text-sm font-semibold text-[#171716]">
-                Estudio con gratuidad o beca de arancel
+              <Label htmlFor="retorno-gratuidad" className="text-sm font-medium text-foreground">
+                Estudio con gratuidad o beca
               </Label>
-              <p className="text-xs text-[#5c5c58]">
-                Fija el arancel anual en $0 para estimar solo titulación o costo alternativo.
+              <p className="text-xs text-muted-foreground">
+                Fija el arancel anual en $0 para evaluar solo titulación o costo alternativo.
               </p>
             </div>
             <Switch
@@ -310,13 +339,14 @@ export function CalculadoraRetorno({
             />
           </div>
 
-          {/* Arancel anual */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <Label htmlFor="retorno-arancel" className="font-semibold text-[#5c5c58]">
-                Arancel anual (CLP 2026)
+              <Label htmlFor="retorno-arancel" className="font-medium text-muted-foreground">
+                Arancel anual (2026)
               </Label>
-              <span className="font-bold text-[#171716] tabular-nums">{pesos(arancelEfectivo)}</span>
+              <span className="font-semibold text-foreground tabular-nums">
+                {pesos(arancelEfectivo)}
+              </span>
             </div>
             <Slider
               id="retorno-arancel"
@@ -330,13 +360,16 @@ export function CalculadoraRetorno({
             />
           </div>
 
-          {/* Años reales */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <Label htmlFor="retorno-anos" className="font-semibold text-[#5c5c58]">
-                Años reales de estudio (promedio oficial: {itemActual?.dur_real ? `${(itemActual.dur_real / 2).toFixed(1).replace(".", ",")} años` : "s/i"})
+              <Label htmlFor="retorno-anos" className="font-medium text-muted-foreground">
+                Años reales de estudio (prom. oficial:{" "}
+                {itemActual?.dur_real
+                  ? `${(itemActual.dur_real / 2).toFixed(1).replace(".", ",")} años`
+                  : "s/i"}
+                )
               </Label>
-              <span className="font-bold text-[#171716] tabular-nums">
+              <span className="font-semibold text-foreground tabular-nums">
                 {anosReales.toFixed(1).replace(".", ",")} años
               </span>
             </div>
@@ -351,10 +384,9 @@ export function CalculadoraRetorno({
             />
           </div>
 
-          {/* Costo de titulación */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="retorno-titulacion" className="text-xs font-semibold text-[#5c5c58]">
+              <Label htmlFor="retorno-titulacion" className="text-xs font-medium text-muted-foreground">
                 Costo de titulación (CLP)
               </Label>
               <Input
@@ -365,11 +397,12 @@ export function CalculadoraRetorno({
                 value={costoTitulacion}
                 onChange={(e) => setCostoTitulacion(Math.max(0, Number(e.target.value) || 0))}
                 onBlur={handleTrackCalc}
+                className="h-9 bg-card tabular-nums"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="retorno-alt" className="text-xs font-semibold text-[#5c5c58]">
+              <Label htmlFor="retorno-alt" className="text-xs font-medium text-muted-foreground">
                 Sueldo alternativo si no estudias (opcional)
               </Label>
               <Input
@@ -377,125 +410,138 @@ export function CalculadoraRetorno({
                 type="number"
                 min={0}
                 step={50000}
-                placeholder="Ej. 550000 (opcional)"
+                placeholder="Ej. 550000"
                 value={sueldoAlternativo}
                 onChange={(e) => setSueldoAlternativo(e.target.value)}
                 onBlur={handleTrackCalc}
+                className="h-9 bg-card tabular-nums"
               />
             </div>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        {/* Panel de resultados */}
-        <div className="flex flex-col justify-between gap-5 rounded-xl border border-[#e2e2dc] border-t-4 border-t-[#1890ff] bg-white p-6 shadow-2xs">
+      {/* Panel de resultados */}
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="flex h-full flex-col justify-between gap-5 p-6">
           <div className="space-y-5">
-            <div>
-              <p className="text-xs font-semibold tracking-wide text-[#5c5c58] uppercase">
+            <div className="rounded-xl border border-border bg-muted/35 p-5">
+              <p className="text-xs font-medium text-muted-foreground">
                 Costo directo estimado de estudiar
               </p>
-              <p className="mt-1 text-4xl font-extrabold tracking-tight text-[#171716] tabular-nums">
+              <p className="mt-1.5 text-3xl font-bold tracking-tight text-foreground tabular-nums sm:text-4xl">
                 {pesos(costoTotal)}
               </p>
-              <p className="mt-1 text-xs text-[#5c5c58]">
+              <p className="mt-1.5 text-xs text-muted-foreground">
                 {conGratuidad
-                  ? `Solo costo de titulación (${pesos(costoTitulacion)}) durante ${anosReales.toFixed(1).replace(".", ",")} años.`
-                  : `${pesos(arancelEfectivo)} × ${anosReales.toFixed(1).replace(".", ",")} años + ${pesos(costoTitulacion)} titulación.`}
+                  ? `Solo costo de titulación (${pesos(costoTitulacion)}) durante ${anosReales
+                      .toFixed(1)
+                      .replace(".", ",")} años.`
+                  : `${pesos(arancelEfectivo)} × ${anosReales
+                      .toFixed(1)
+                      .replace(".", ",")} años + ${pesos(costoTitulacion)} titulación.`}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-4">
-                <p className="text-xs font-semibold text-[#5c5c58]">
-                  Equivale a meses de sueldo 1.er año
+              <div className="rounded-lg border border-border bg-card p-4">
+                <p className="text-xs text-muted-foreground">En sueldos del 1.er año</p>
+                <p className="mt-1 text-2xl font-bold text-blue-700 tabular-nums">
+                  {mesesEquiv1 !== null
+                    ? `${mesesEquiv1.toFixed(1).replace(".", ",")} meses`
+                    : "Sin dato"}
                 </p>
-                <p className="mt-1 text-2xl font-extrabold text-[#1890ff] tabular-nums">
-                  {mesesEquiv1 !== null ? `${mesesEquiv1.toFixed(1).replace(".", ",")} meses` : "s/i"}
-                </p>
-                <p className="mt-1 text-[11px] text-[#5c5c58]">
-                  Con ingreso bruto 1.er año ajustado por IPC: {pesos(ipcIng1?.montoAjustado ?? null)}
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Sueldo 1.er año hoy: {pesos(ipcIng1?.montoAjustado ?? null)}
                 </p>
               </div>
 
-              <div className="rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-4">
-                <p className="text-xs font-semibold text-[#5c5c58]">
-                  Equivale a meses de sueldo 4.º año
+              <div className="rounded-lg border border-border bg-card p-4">
+                <p className="text-xs text-muted-foreground">En sueldos del 4.º año</p>
+                <p className="mt-1 text-2xl font-bold text-foreground tabular-nums">
+                  {mesesEquiv4 !== null
+                    ? `${mesesEquiv4.toFixed(1).replace(".", ",")} meses`
+                    : "Sin dato"}
                 </p>
-                <p className="mt-1 text-2xl font-extrabold text-[#f99c00] tabular-nums">
-                  {mesesEquiv4 !== null ? `${mesesEquiv4.toFixed(1).replace(".", ",")} meses` : "s/i"}
-                </p>
-                <p className="mt-1 text-[11px] text-[#5c5c58]">
-                  Con ingreso bruto 4.º año ajustado por IPC: {pesos(ipcIng4?.montoAjustado ?? null)}
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Sueldo 4.º año hoy: {pesos(ipcIng4?.montoAjustado ?? null)}
                 </p>
               </div>
             </div>
 
-            {/* Línea de tiempo simple */}
-            <div className="rounded-lg border border-[#e2e2dc] p-4">
-              <p className="text-xs font-bold text-[#171716]">Línea de tiempo referencial</p>
+            <div className="rounded-lg border border-border p-4">
+              <p className="text-xs font-semibold text-foreground">Resumen visual</p>
               <div className="mt-3 flex items-center gap-2 text-xs">
-                <div className="flex-1 rounded bg-[#f0f0ec] px-3 py-2">
-                  <span className="block font-semibold text-[#171716]">
+                <div className="flex-1 rounded-md bg-muted/70 px-3 py-2.5">
+                  <span className="block font-semibold text-foreground">
                     1. Estudio ({anosReales.toFixed(1).replace(".", ",")} años)
                   </span>
-                  <span className="text-[#5c5c58]">Costo directo: {pesos(costoTotal)}</span>
+                  <span className="text-muted-foreground">Inversión: {pesos(costoTotal)}</span>
                 </div>
-                <span className="text-[#8a8a84]">→</span>
-                <div className="flex-1 rounded bg-[#e9f4ff] px-3 py-2">
-                  <span className="block font-semibold text-[#1890ff]">
-                    2. Equivalencia bruta
-                  </span>
-                  <span className="text-[#5c5c58]">
+                <span className="text-muted-foreground">→</span>
+                <div className="flex-1 rounded-md border border-blue-200/80 bg-blue-50/70 px-3 py-2.5">
+                  <span className="block font-semibold text-blue-800">2. Equivalencia bruta</span>
+                  <span className="text-muted-foreground">
                     {mesesEquiv4 !== null
-                      ? `${mesesEquiv4.toFixed(1).replace(".", ",")} meses de sueldo al 4.º año`
-                      : "Sin dato de ingreso al 4.º año"}
+                      ? `${mesesEquiv4.toFixed(1).replace(".", ",")} meses de sueldo (4.º año)`
+                      : "Sin dato de ingreso"}
                   </span>
                 </div>
               </div>
               {costoOportunidad !== null ? (
-                <p className="mt-3 text-xs text-[#5c5c58]">
-                  Si además consideras el sueldo alternativo ingresado ({pesos(sueldoAltNum)}/mes durante{" "}
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Considerando el sueldo alternativo ({pesos(sueldoAltNum)}/mes durante{" "}
                   {anosReales.toFixed(1).replace(".", ",")} años), dejarías de percibir{" "}
-                  <strong className="text-[#171716]">{pesos(costoOportunidad)}</strong> brutos mientras estudias.
+                  <strong className="font-semibold text-foreground">
+                    {pesos(costoOportunidad)}
+                  </strong>{" "}
+                  brutos mientras estudias.
                 </p>
               ) : null}
             </div>
 
             {ipcIng4 ? (
-              <p className="text-[11px] text-[#5c5c58]">
-                Nota IPC: los sueldos oficiales de {pesosDe} se ajustaron a pesos de{" "}
-                {mesCorto(ipcIng4.mesHasta)} (factor {ipcIng4.factor.toFixed(3).replace(".", ",")}) para
-                compararlos en moneda de hoy con el arancel 2026.
+              <p className="text-[11px] text-muted-foreground">
+                Los sueldos oficiales de {pesosDe} fueron actualizados por IPC a{" "}
+                {mesCorto(ipcIng4.mesHasta)} (factor{" "}
+                {ipcIng4.factor.toFixed(3).replace(".", ",")}) para compararlos con el arancel 2026.
               </p>
             ) : null}
           </div>
 
-          <div className="space-y-3 border-t border-[#f0f0ec] pt-4">
-            <div className="flex items-start gap-2 rounded-lg bg-[#f7f7f4] p-3 text-xs text-[#5c5c58]">
-              <Info className="mt-0.5 size-4 shrink-0 text-[#1890ff]" aria-hidden="true" />
+          <div className="space-y-3 border-t border-border/70 pt-4">
+            <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+              <Info className="mt-0.5 size-4 shrink-0 text-blue-600" aria-hidden="true" />
               <p>
-                Es una estimación simple con supuestos que puedes cambiar. No considera impuestos,
-                cotizaciones, costo de vida ni el valor de lo que te gusta.
+                Estimación referencial con supuestos ajustables. No considera impuestos,
+                cotizaciones, gastos de vida ni vocación personal.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/datos/carreras/${slug}`}
-                className={buttonVariants({ variant: "outline", size: "sm" })}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "h-8 bg-card text-xs"
+                )}
               >
                 Ver ficha de carrera
-                <ArrowUpRight className="ml-1 size-3.5" />
+                <ArrowUpRight className="ml-1 size-3.5" aria-hidden="true" />
               </Link>
               <Link
                 href={`/datos/carreras/comparar?c=${slug}&t=${tipo}`}
-                className={buttonVariants({ variant: "outline", size: "sm" })}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "h-8 bg-card text-xs"
+                )}
               >
                 Comparar con otra carrera
               </Link>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -15,8 +15,13 @@ import {
   ZAxis,
 } from "recharts";
 import { ArrowUpRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { getAreaVisual } from "@/lib/datos/areas-visual";
 import { TIPO_ETIQUETAS, type RankingItem } from "@/lib/datos/carreras-tipos";
-import { pesos, pesosEje, porcentaje, semestres } from "@/lib/datos/formato";
+import { anosDesdeSemestres, pesos, pesosEje, porcentaje } from "@/lib/datos/formato";
+import { cn } from "@/lib/utils";
 
 export interface ScatterSueldoEmpleoProps {
   items: RankingItem[];
@@ -34,15 +39,14 @@ interface ScatterPoint {
   ing4: number;
   durReal: number | null;
   titulados: number | null;
+  accent: string;
 }
 
 function medianValue(nums: number[]): number | null {
   if (nums.length === 0) return null;
   const sorted = [...nums].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? (sorted[mid - 1] + sorted[mid]) / 2
-    : sorted[mid];
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 }
 
 export default function ScatterSueldoEmpleoChart({
@@ -53,6 +57,7 @@ export default function ScatterSueldoEmpleoChart({
 }: ScatterSueldoEmpleoProps) {
   const [hovered, setHovered] = React.useState<ScatterPoint | null>(null);
   const [clickedSlug, setClickedSlug] = React.useState<string | null>(null);
+  const [activeArea, setActiveArea] = React.useState<string | null>(null);
 
   const points = React.useMemo<ScatterPoint[]>(() => {
     return items
@@ -66,182 +71,295 @@ export default function ScatterSueldoEmpleoChart({
         ing4: Math.round((r.ing4 ?? 0) * factorIpc),
         durReal: r.dur_real,
         titulados: r.titulados,
+        accent: getAreaVisual(r.area).accent,
       }));
   }, [items, factorIpc]);
+
+  const areasPresentes = React.useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of points) {
+      counts.set(p.area, (counts.get(p.area) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([area, count]) => ({ area, count, visual: getAreaVisual(area) }));
+  }, [points]);
 
   const activeSlug = selectedSlug ?? clickedSlug;
   const activePoint = React.useMemo(() => {
     if (activeSlug) {
       return points.find((p) => p.slug === activeSlug) ?? hovered;
     }
+    if (activeArea) {
+      return hovered?.area === activeArea
+        ? hovered
+        : points.find((p) => p.area === activeArea) ?? points[0] ?? null;
+    }
     return hovered ?? points[0] ?? null;
-  }, [activeSlug, points, hovered]);
+  }, [activeSlug, activeArea, points, hovered]);
 
-  const medEmp = React.useMemo(
-    () => medianValue(points.map((p) => p.empPct)),
-    [points]
-  );
-  const medIng = React.useMemo(
-    () => medianValue(points.map((p) => p.ing4)),
-    [points]
-  );
+  const medEmp = React.useMemo(() => medianValue(points.map((p) => p.empPct)), [points]);
+  const medIng = React.useMemo(() => medianValue(points.map((p) => p.ing4)), [points]);
 
   if (points.length === 0) {
     return (
-      <div className="flex h-[420px] items-center justify-center rounded-xl border border-[#e2e2dc] bg-white p-6 text-sm text-[#5c5c58]">
-        No hay carreras con datos simultáneos de ingreso al 4.º año y empleabilidad para graficar.
-      </div>
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="flex h-[360px] items-center justify-center p-6 text-sm text-muted-foreground">
+          No hay carreras con datos simultáneos de sueldo y empleabilidad para graficar con estos
+          filtros.
+        </CardContent>
+      </Card>
     );
   }
 
+  const activeVisual = activePoint ? getAreaVisual(activePoint.area) : null;
+
   return (
-    <div className="rounded-xl border border-[#e2e2dc] bg-white p-4 sm:p-5">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[#5c5c58]">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-[#1890ff]" />
-            Carreras filtradas ({points.length})
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-[#f99c00]" />
-            Seleccionada
-          </span>
-        </div>
-        {medEmp !== null && medIng !== null ? (
-          <span className="tabular-nums">
-            Medianas: {medEmp.toFixed(1).replace(".", ",")} % empleo · {pesos(medIng)} sueldo
-          </span>
-        ) : null}
-      </div>
-
-      {/* Neutral quadrant labels */}
-      <div className="mb-1 flex justify-between px-2 text-[11px] font-medium text-[#5c5c58]">
-        <span>Menor empleabilidad · Mayor ingreso</span>
-        <span>Mayor empleabilidad · Mayor ingreso</span>
-      </div>
-
-      <div className="h-[300px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={{ top: 10, right: 16, bottom: 10, left: 6 }}>
-            <CartesianGrid stroke="#e2e2dc" strokeDasharray="3 3" />
-            <XAxis
-              type="number"
-              dataKey="empPct"
-              name="Empleabilidad 1.er año"
-              domain={[0, 100]}
-              tickFormatter={(v: number) => `${v}%`}
-              tick={{ fill: "#5c5c58", fontSize: 11 }}
-              stroke="#d4d4ce"
-            />
-            <YAxis
-              type="number"
-              dataKey="ing4"
-              name="Ingreso 4.º año"
-              tickFormatter={(v: number) => pesosEje(v)}
-              tick={{ fill: "#5c5c58", fontSize: 11 }}
-              stroke="#d4d4ce"
-              width={56}
-            />
-            <ZAxis range={[48, 48]} />
-            {medEmp !== null ? (
-              <ReferenceLine
-                x={medEmp}
-                stroke="#a3a3a0"
-                strokeDasharray="4 4"
-                ifOverflow="extendDomain"
-              />
-            ) : null}
-            {medIng !== null ? (
-              <ReferenceLine
-                y={medIng}
-                stroke="#a3a3a0"
-                strokeDasharray="4 4"
-                ifOverflow="extendDomain"
-              />
-            ) : null}
-            <Tooltip
-              cursor={{ strokeDasharray: "3 3", stroke: "#a3a3a0" }}
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-                const p = payload[0].payload as ScatterPoint;
-                return (
-                  <div className="rounded-lg border border-[#e2e2dc] bg-white px-3 py-2 text-xs shadow-sm">
-                    <div className="font-semibold text-[#171716]">{p.nombre}</div>
-                    <div className="text-[#5c5c58]">
-                      {TIPO_ETIQUETAS[p.tipo].corto} · {p.area}
-                    </div>
-                    <div className="mt-1 font-medium text-[#171716] tabular-nums">
-                      Ingreso 4.º año: {pesos(p.ing4)}
-                    </div>
-                    <div className="text-[#5c5c58] tabular-nums">
-                      Empleabilidad 1.º: {porcentaje(p.empPct / 100)}
-                    </div>
-                  </div>
-                );
-              }}
-            />
-            <Scatter
-              data={points}
-              onClick={(data) => {
-                const p = (data as unknown as { payload?: ScatterPoint })?.payload ?? (data as unknown as ScatterPoint);
-                if (p?.slug) {
-                  setClickedSlug(p.slug);
-                  onSelectSlug?.(p.slug);
-                }
-              }}
-              onMouseEnter={(data) => {
-                const p = (data as unknown as { payload?: ScatterPoint })?.payload ?? (data as unknown as ScatterPoint);
-                if (p?.slug) setHovered(p);
-              }}
-            >
-              {points.map((p) => {
-                const isSelected = p.slug === activeSlug;
-                return (
-                  <Cell
-                    key={`${p.slug}-${p.tipo}`}
-                    fill={isSelected ? "#f99c00" : "#1890ff"}
-                    fillOpacity={isSelected ? 1 : 0.72}
-                    stroke={isSelected ? "#171716" : "#ffffff"}
-                    strokeWidth={isSelected ? 1.5 : 1}
-                    style={{ cursor: "pointer" }}
-                  />
-                );
-              })}
-            </Scatter>
-          </ScatterChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="mt-1 flex justify-between px-2 text-[11px] font-medium text-[#5c5c58]">
-        <span>Menor empleabilidad · Menor ingreso</span>
-        <span>Mayor empleabilidad · Menor ingreso</span>
-      </div>
-
-      {activePoint ? (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] px-3.5 py-2.5 text-xs">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-semibold text-[#171716]">{activePoint.nombre}</span>
-              <span className="rounded bg-white px-1.5 py-0.5 text-[11px] font-semibold text-[#5c5c58] border border-[#e2e2dc]">
-                {TIPO_ETIQUETAS[activePoint.tipo].corto}
-              </span>
-              <span className="text-[#5c5c58]">{activePoint.area}</span>
-            </div>
-            <div className="mt-0.5 text-[#5c5c58] tabular-nums">
-              Sueldo 4.º año: <strong className="text-[#171716]">{pesos(activePoint.ing4)}</strong> ·
-              Empleabilidad 1.º: <strong className="text-[#171716]">{porcentaje(activePoint.empPct / 100)}</strong>
-              {activePoint.durReal ? ` · Duración real: ${semestres(activePoint.durReal)}` : ""}
-            </div>
+    <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+      <CardContent className="p-5 sm:p-6">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="font-medium text-foreground tabular-nums">
+              {points.length} carreras graficadas
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="size-2.5 rounded-full bg-slate-900 ring-2 ring-blue-500/40" />
+              Seleccionada
+            </span>
           </div>
-          <Link
-            href={`/datos/carreras/${activePoint.slug}?tipo=${activePoint.tipo}`}
-            className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-[#1063b8] px-3 py-1.5 font-semibold text-white hover:bg-[#0d5095]"
-          >
-            Ver ficha
-            <ArrowUpRight className="size-3.5" />
-          </Link>
+          {medEmp !== null && medIng !== null ? (
+            <span className="rounded-md bg-muted px-2 py-0.5 font-medium text-foreground tabular-nums">
+              Medianas: {medEmp.toFixed(1).replace(".", ",")} % empleo · {pesos(medIng)}
+            </span>
+          ) : null}
         </div>
-      ) : null}
-    </div>
+
+        {/* Leyenda interactiva por área */}
+        {areasPresentes.length > 1 ? (
+          <div
+            role="group"
+            aria-label="Resaltar área en el gráfico"
+            className="mb-4 flex flex-wrap items-center gap-1.5"
+          >
+            <button
+              type="button"
+              onClick={() => setActiveArea(null)}
+              aria-pressed={activeArea === null}
+              className={cn(
+                "rounded-md border px-2 py-1 text-[11px] font-medium transition-colors",
+                activeArea === null
+                  ? "border-slate-900 bg-slate-900 text-white"
+                  : "border-border bg-card text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Todas ({points.length})
+            </button>
+            {areasPresentes.map(({ area, count, visual }) => {
+              const isActive = activeArea === area;
+              return (
+                <button
+                  key={area}
+                  type="button"
+                  onClick={() => setActiveArea(isActive ? null : area)}
+                  aria-pressed={isActive}
+                  style={
+                    isActive
+                      ? {
+                          backgroundColor: visual.softBg,
+                          borderColor: visual.accent,
+                          color: visual.accent,
+                        }
+                      : undefined
+                  }
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-medium transition-colors",
+                    isActive
+                      ? "font-semibold"
+                      : "border-border bg-card text-muted-foreground hover:border-slate-300 hover:text-foreground"
+                  )}
+                >
+                  <span
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: visual.accent }}
+                    aria-hidden="true"
+                  />
+                  <span>{visual.nombre}</span>
+                  <span className="text-[10px] opacity-75 tabular-nums">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <div className="mb-1.5 flex justify-between px-2 text-[11px] font-medium text-muted-foreground">
+          <span>Alto sueldo · Empleo más competitivo</span>
+          <span className="text-emerald-700">Alto sueldo · Alta empleabilidad</span>
+        </div>
+
+        <div className="h-[310px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <ScatterChart margin={{ top: 10, right: 16, bottom: 10, left: 6 }}>
+              <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
+              <XAxis
+                type="number"
+                dataKey="empPct"
+                name="Empleabilidad 1.er año"
+                domain={[0, 100]}
+                tickFormatter={(v: number) => `${v}%`}
+                tick={{ fill: "#64748b", fontSize: 11 }}
+                stroke="#cbd5e1"
+              />
+              <YAxis
+                type="number"
+                dataKey="ing4"
+                name="Ingreso 4.º año"
+                tickFormatter={(v: number) => pesosEje(v)}
+                tick={{ fill: "#64748b", fontSize: 11 }}
+                stroke="#cbd5e1"
+                width={58}
+              />
+              <ZAxis range={[56, 56]} />
+              {medEmp !== null ? (
+                <ReferenceLine
+                  x={medEmp}
+                  stroke="#94a3b8"
+                  strokeDasharray="4 4"
+                  ifOverflow="extendDomain"
+                />
+              ) : null}
+              {medIng !== null ? (
+                <ReferenceLine
+                  y={medIng}
+                  stroke="#94a3b8"
+                  strokeDasharray="4 4"
+                  ifOverflow="extendDomain"
+                />
+              ) : null}
+              <Tooltip
+                cursor={{ strokeDasharray: "3 3", stroke: "#94a3b8" }}
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const p = payload[0].payload as ScatterPoint;
+                  return (
+                    <div className="rounded-lg border border-border bg-popover px-3 py-2.5 text-xs shadow-lg shadow-slate-900/10">
+                      <div className="font-semibold text-foreground">{p.nombre}</div>
+                      <div className="text-muted-foreground">
+                        {TIPO_ETIQUETAS[p.tipo].corto} · {p.area}
+                      </div>
+                      <div className="mt-1.5 font-semibold text-foreground tabular-nums">
+                        Sueldo 4.º año: {pesos(p.ing4)}
+                      </div>
+                      <div className="text-muted-foreground tabular-nums">
+                        Empleabilidad 1.er año: {porcentaje(p.empPct / 100)}
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+              <Scatter
+                data={points}
+                onClick={(data) => {
+                  const p =
+                    (data as unknown as { payload?: ScatterPoint })?.payload ??
+                    (data as unknown as ScatterPoint);
+                  if (p?.slug) {
+                    setClickedSlug(p.slug);
+                    onSelectSlug?.(p.slug);
+                  }
+                }}
+                onMouseEnter={(data) => {
+                  const p =
+                    (data as unknown as { payload?: ScatterPoint })?.payload ??
+                    (data as unknown as ScatterPoint);
+                  if (p?.slug) setHovered(p);
+                }}
+              >
+                {points.map((p) => {
+                  const isSelected = p.slug === activeSlug;
+                  const isDimmed = activeArea !== null && p.area !== activeArea && !isSelected;
+                  return (
+                    <Cell
+                      key={`${p.slug}-${p.tipo}`}
+                      fill={isSelected ? "#0f172a" : p.accent}
+                      fillOpacity={isSelected ? 1 : isDimmed ? 0.14 : 0.78}
+                      stroke={isSelected ? "#2563eb" : "#ffffff"}
+                      strokeWidth={isSelected ? 2.25 : 1}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                })}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="mt-1 flex justify-between px-2 text-[11px] font-medium text-muted-foreground">
+          <span>Menor sueldo · Menor empleo</span>
+          <span>Menor sueldo · Alta empleabilidad</span>
+        </div>
+
+        {activePoint && activeVisual ? (
+          <div className="mt-4 flex flex-col gap-3 rounded-xl border border-border bg-muted/35 p-3.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-3.5">
+              <div className="hidden size-14 shrink-0 overflow-hidden rounded-lg border border-border bg-slate-100 sm:block">
+                <img
+                  src={activeVisual.image}
+                  alt={activeVisual.nombre}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-semibold text-foreground">{activePoint.nombre}</span>
+                  <Badge variant="secondary" className="h-auto rounded px-1.5 py-0 text-[11px]">
+                    {TIPO_ETIQUETAS[activePoint.tipo].corto}
+                  </Badge>
+                  <span
+                    style={{
+                      backgroundColor: activeVisual.softBg,
+                      color: activeVisual.accent,
+                      borderColor: activeVisual.border,
+                    }}
+                    className="rounded border px-1.5 py-0 text-[11px] font-medium"
+                  >
+                    {activePoint.area}
+                  </span>
+                </div>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground tabular-nums">
+                  <span>
+                    Sueldo 4.º año:{" "}
+                    <strong className="font-semibold text-foreground">{pesos(activePoint.ing4)}</strong>
+                  </span>
+                  <span>
+                    Empleabilidad:{" "}
+                    <strong className="font-semibold text-foreground">
+                      {porcentaje(activePoint.empPct / 100)}
+                    </strong>
+                  </span>
+                  {activePoint.durReal ? (
+                    <span>
+                      Duración real:{" "}
+                      <strong className="font-semibold text-foreground">
+                        {anosDesdeSemestres(activePoint.durReal)}
+                      </strong>
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+            <Link
+              href={`/datos/carreras/${activePoint.slug}?tipo=${activePoint.tipo}`}
+              className={cn(
+                buttonVariants({ variant: "default", size: "sm" }),
+                "h-8 w-fit shrink-0 gap-1 rounded-lg px-3 text-xs font-medium"
+              )}
+            >
+              Ver ficha
+              <ArrowUpRight className="size-3.5" aria-hidden="true" />
+            </Link>
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
-import { ArrowUpRight, Cpu, TrendingUp } from "lucide-react";
+import { ArrowUpRight, TrendingUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { CtaDatos } from "@/components/datos/CtaDatos";
 import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
@@ -8,13 +10,12 @@ import { FuenteLinea } from "@/components/datos/FuenteLinea";
 import { KpiCard } from "@/components/datos/KpiCard";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { TablaDatos } from "@/components/datos/TablaDatos";
-import { Badge } from "@/components/ui/badge";
 import {
   getMetaCarreras,
   getRankingCarreras,
   TIPO_ETIQUETAS,
 } from "@/lib/datos/carreras";
-import { pesos, porcentaje, semestres } from "@/lib/datos/formato";
+import { anosDesdeSemestres, pesos, porcentaje } from "@/lib/datos/formato";
 import {
   breadcrumbsSchema,
   datasetCarrerasSchema,
@@ -91,15 +92,15 @@ export default function TecnologiaYDatosPage() {
   const items = ranking
     .filter(
       (r) =>
-        (RE_TEC_DATOS.test(r.slug) || RE_TEC_DATOS.test(r.nombre)) &&
-        r.ing4 !== null
+        (RE_TEC_DATOS.test(r.slug) || RE_TEC_DATOS.test(r.nombre)) && r.ing4 !== null
     )
     .sort((a, b) => (b.ing4 ?? 0) - (a.ing4 ?? 0));
 
   const top1 = items[0] ?? null;
-  const mejorEmp = [...items]
-    .filter((r) => r.emp1 !== null)
-    .sort((a, b) => (b.emp1 ?? 0) - (a.emp1 ?? 0))[0] ?? null;
+  const mejorEmp =
+    [...items]
+      .filter((r) => r.emp1 !== null)
+      .sort((a, b) => (b.emp1 ?? 0) - (a.emp1 ?? 0))[0] ?? null;
 
   const frasesResumen: string[] = [];
   if (top1) {
@@ -140,34 +141,38 @@ export default function TecnologiaYDatosPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      <MigasDatos migas={migas} className="mb-6" />
+      <div className="space-y-4">
+        <MigasDatos migas={migas} />
 
-      <header className="mb-8 max-w-3xl">
-        <p className="inline-flex items-center gap-2 rounded-full border border-[#e2e2dc] bg-white px-3 py-1 text-xs font-semibold tracking-wide text-[#1890ff] uppercase">
-          <Cpu className="size-3.5" aria-hidden="true" />
-          Tecnología y datos · Edición {meta.edicion}
-        </p>
-        <h1 className="h1-datos mt-3 text-[#171716]">
-          Carreras de tecnología y datos en Chile: sueldos y empleabilidad
-        </h1>
-        <p className="mt-3 text-base text-[#5c5c58]">
-          Ranking oficial filtrado para computación, informática, conectividad y redes,
-          telecomunicaciones y matemática/estadística según{" "}
-          <span className="font-medium text-[#171716]">mifuturo.cl</span>.
-        </p>
-      </header>
+        <header className="max-w-3xl space-y-2.5">
+          <Badge
+            variant="secondary"
+            className="h-auto rounded-md border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+          >
+            Especial Tecnología y Datos · Edición {meta.edicion}
+          </Badge>
+          <h1 className="h1-datos text-foreground">
+            Carreras de tecnología y datos en Chile: sueldos y empleabilidad
+          </h1>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Ranking oficial filtrado para computación, informática, conectividad y redes,
+            telecomunicaciones y matemática/estadística según{" "}
+            <strong className="font-medium text-foreground">mifuturo.cl</strong>.
+          </p>
+        </header>
+      </div>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3">
         {top1 ? (
           <KpiCard
             valor={pesos(top1.ing4)}
-            etiqueta="Mayor ingreso 4.º año"
+            etiqueta="Mayor sueldo 4.º año"
             subtitulo={`${top1.nombre} (${TIPO_ETIQUETAS[top1.tipo].corto})`}
             variante="primary"
           />
@@ -175,9 +180,8 @@ export default function TecnologiaYDatosPage() {
         {mejorEmp ? (
           <KpiCard
             valor={porcentaje(mejorEmp.emp1)}
-            etiqueta="Mayor empleo 1.er año"
+            etiqueta="Mayor empleabilidad 1.er año"
             subtitulo={`${mejorEmp.nombre} (${TIPO_ETIQUETAS[mejorEmp.tipo].corto})`}
-            variante="accent"
           />
         ) : null}
         <KpiCard
@@ -187,14 +191,8 @@ export default function TecnologiaYDatosPage() {
         />
       </div>
 
-      <EnResumen
-        frases={frasesResumen}
-        fuente={`Fuente: mifuturo.cl (Mineduc) · Edición ${meta.edicion}`}
-        className="mb-8"
-      />
-
-      <section aria-labelledby="tabla-tec-titulo" className="mb-10 space-y-4">
-        <h2 id="tabla-tec-titulo" className="h2-datos text-[#171716]">
+      <section aria-labelledby="tabla-tec-titulo" className="space-y-3">
+        <h2 id="tabla-tec-titulo" className="h2-datos text-foreground">
           Ranking oficial de tecnología, informática y datos
         </h2>
         <TablaDatos caption="Ranking de carreras de tecnología y datos en Chile">
@@ -203,109 +201,117 @@ export default function TecnologiaYDatosPage() {
               <th>#</th>
               <th>Carrera</th>
               <th>Tipo</th>
-              <th>Ingreso 4.º año</th>
-              <th>Ingreso 1.er año</th>
-              <th>Empleo 1.er año</th>
-              <th>Duración real</th>
-              <th>Arancel 2026</th>
+              <th className="text-right">Sueldo 4.º año</th>
+              <th className="text-right">Sueldo 1.er año</th>
+              <th className="text-right">Empleabilidad</th>
+              <th className="text-right">Duración real</th>
+              <th className="text-right">Arancel 2026</th>
             </tr>
           </thead>
           <tbody>
             {items.map((r, idx) => (
               <tr key={`${r.slug}-${r.tipo}`}>
-                <td className="font-bold text-[#5c5c58]">{idx + 1}</td>
+                <td className="font-medium text-muted-foreground">{idx + 1}</td>
                 <td>
                   <Link
                     href={`/datos/carreras/${r.slug}`}
-                    className="inline-flex items-center gap-1 font-semibold text-[#171716] hover:text-[#1890ff] hover:underline"
+                    className="inline-flex items-center gap-1 font-semibold text-foreground hover:text-blue-700 hover:underline"
                   >
                     {r.nombre}
-                    <ArrowUpRight className="size-3.5 shrink-0 text-[#8a8a84]" />
+                    <ArrowUpRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
                   </Link>
                 </td>
                 <td>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="secondary" className="text-xs font-medium">
                     {TIPO_ETIQUETAS[r.tipo].corto}
                   </Badge>
                 </td>
-                <td className="font-bold text-[#1890ff]">{pesos(r.ing4)}</td>
-                <td>{pesos(r.ing1)}</td>
-                <td>{porcentaje(r.emp1)}</td>
-                <td>{semestres(r.dur_real)}</td>
-                <td>{pesos(r.arancel_med)}</td>
+                <td className="text-right font-semibold text-blue-700">{pesos(r.ing4)}</td>
+                <td className="text-right">{pesos(r.ing1)}</td>
+                <td className="text-right">{porcentaje(r.emp1)}</td>
+                <td className="text-right">
+                  {r.dur_real !== null ? anosDesdeSemestres(r.dur_real) : "Sin dato"}
+                </td>
+                <td className="text-right">{pesos(r.arancel_med)}</td>
               </tr>
             ))}
           </tbody>
         </TablaDatos>
       </section>
 
-      {/* Sección: Cómo aumentar tu empleabilidad (estudies lo que estudies) */}
-      <section
-        aria-labelledby="empleabilidad-titulo"
-        className="mb-10 rounded-xl border border-[#e2e2dc] bg-white p-6 sm:p-8"
-      >
-        <div className="flex items-center gap-2 text-xs font-semibold tracking-wide text-[#1890ff] uppercase">
-          <TrendingUp className="size-4" aria-hidden="true" />
-          Habilidades transversales
-        </div>
-        <h2 id="empleabilidad-titulo" className="h2-datos mt-2 text-[#171716]">
-          Cómo aumentar tu empleabilidad (estudies lo que estudies)
-        </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[#5c5c58]">
-          El análisis de datos dejó de ser exclusivo de ingeniería informática. Sumar herramientas
-          prácticas como planillas avanzadas, bases de datos y visualización ayuda a perfiles de
-          administración, salud, ingeniería y ciencias sociales a responder con evidencia en su
-          primer empleo.
-        </p>
+      <EnResumen
+        frases={frasesResumen}
+        fuente={`Fuente: mifuturo.cl (Mineduc) · Edición ${meta.edicion}`}
+      />
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {CURSOS_EMPLEABILIDAD.map((curso) => (
+      <Card
+        aria-labelledby="empleabilidad-titulo"
+        className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0"
+      >
+        <CardContent className="p-6 sm:p-7">
+          <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <TrendingUp className="size-4 text-blue-600" aria-hidden="true" />
+            <span>Habilidades transversales</span>
+          </div>
+          <h2 id="empleabilidad-titulo" className="h2-datos mt-2 text-foreground">
+            Cómo aumentar tu empleabilidad (estudies lo que estudies)
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+            El análisis de datos dejó de ser exclusivo de ingeniería informática. Sumar herramientas
+            prácticas como planillas avanzadas, bases de datos y visualización ayuda a perfiles de
+            administración, salud, ingeniería y ciencias sociales a destacar desde su primer empleo.
+          </p>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {CURSOS_EMPLEABILIDAD.map((curso) => (
+              <Link
+                key={curso.href}
+                href={curso.href}
+                className="group flex flex-col justify-between rounded-lg border border-border bg-background/60 p-4 transition-all hover:border-slate-300 hover:bg-card"
+              >
+                <div>
+                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-foreground group-hover:text-blue-700">
+                    {curso.titulo}
+                    <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                  </span>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{curso.desc}</p>
+                </div>
+              </Link>
+            ))}
+
             <Link
-              key={curso.href}
-              href={curso.href}
-              className="group flex flex-col justify-between rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-4 transition-colors hover:border-[#1890ff] hover:bg-white"
+              href="/sueldos-analista-datos-chile"
+              className="group flex flex-col justify-between rounded-lg border border-blue-200/80 bg-blue-50/50 p-4 transition-all hover:border-blue-300 hover:bg-blue-50"
             >
               <div>
-                <span className="inline-flex items-center gap-1 text-sm font-bold text-[#171716] group-hover:text-[#1890ff]">
-                  {curso.titulo}
-                  <ArrowUpRight className="size-3.5" />
+                <span className="inline-flex items-center gap-1 text-sm font-semibold text-blue-800">
+                  Sueldos de Analista de Datos en Chile
+                  <ArrowUpRight className="size-3.5" aria-hidden="true" />
                 </span>
-                <p className="mt-1 text-xs text-[#5c5c58]">{curso.desc}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  Revisa nuestra guía específica sobre el rol de analista de datos y sus rangos
+                  referenciales.
+                </p>
               </div>
             </Link>
-          ))}
+          </div>
+        </CardContent>
+      </Card>
 
-          <Link
-            href="/sueldos-analista-datos-chile"
-            className="group flex flex-col justify-between rounded-lg border border-[#d6e6f5] bg-[#e9f4ff]/50 p-4 transition-colors hover:border-[#1890ff] hover:bg-[#e9f4ff]"
-          >
-            <div>
-              <span className="inline-flex items-center gap-1 text-sm font-bold text-[#1890ff]">
-                Sueldos de Analista de Datos en Chile
-                <ArrowUpRight className="size-3.5" />
-              </span>
-              <p className="mt-1 text-xs text-[#5c5c58]">
-                Revisa nuestra guía específica sobre el rol de analista de datos y sus rangos referenciales.
-              </p>
-            </div>
-          </Link>
-        </div>
-      </section>
+      <CtaDatos pagina="/datos/carreras/tecnologia-y-datos" />
 
-      <CtaDatos pagina="/datos/carreras/tecnologia-y-datos" className="mb-10" />
+      <FaqDatos faqs={FAQS} />
 
-      <FaqDatos faqs={FAQS} className="mb-8" />
-
-      <div className="mb-8 flex flex-wrap gap-3 text-sm">
-        <Link href="/datos/carreras" className="font-medium text-[#1890ff] hover:underline">
+      <div className="flex flex-wrap gap-4 text-sm">
+        <Link href="/datos/carreras" className="font-medium text-blue-700 hover:underline">
           ← Volver al ranking completo
         </Link>
-        <Link href="/datos/carreras/comparar" className="font-medium text-[#1890ff] hover:underline">
+        <Link href="/datos/carreras/comparar" className="font-medium text-blue-700 hover:underline">
           Comparar carreras lado a lado →
         </Link>
       </div>
 
-      <FuenteLinea edicion={meta.edicion} conAviso className="border-t border-[#e2e2dc] pt-6" />
+      <FuenteLinea edicion={meta.edicion} conAviso />
     </div>
   );
 }

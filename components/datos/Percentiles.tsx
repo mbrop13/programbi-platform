@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { CarreraTipoData } from "@/lib/datos/carreras";
 import { pesos } from "@/lib/datos/formato";
 
@@ -36,10 +43,10 @@ function BarraPercentil({
 
   if (p10 === null && p50 === null && p90 === null) {
     return (
-      <div className="rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-4">
-        <p className="text-sm font-semibold text-[#171716]">{corte.titulo}</p>
-        <p className="mt-1 text-xs text-[#5c5c58]">
-          Sin información suficiente de percentiles para este corte.
+      <div className="rounded-lg border border-border bg-muted/40 p-4">
+        <p className="text-sm font-semibold text-foreground">{corte.titulo}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Sin información suficiente de dispersión salarial para este año.
         </p>
       </div>
     );
@@ -53,70 +60,63 @@ function BarraPercentil({
   const medPos = p50 !== null ? toPct(p50) : null;
 
   return (
-    <div className="rounded-lg border border-[#e2e2dc] bg-[#f7f7f4]/60 p-4">
+    <div className="rounded-lg border border-border bg-muted/35 p-4">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-        <span className="text-sm font-bold text-[#171716]">{corte.titulo}</span>
+        <span className="text-sm font-semibold text-foreground">{corte.titulo}</span>
         {p50 !== null ? (
-          <span className="text-xs font-semibold text-[#1063b8] tabular-nums">
-            Mediana (P50): {pesos(p50)}
+          <span className="text-xs font-semibold text-blue-700 tabular-nums">
+            Sueldo típico (mediana): {pesos(p50)}
           </span>
         ) : null}
       </div>
 
       <div className="relative h-7 w-full">
-        {/* Eje base */}
-        <div className="absolute top-1/2 right-0 left-0 h-1.5 -translate-y-1/2 rounded-full bg-[#e2e2dc]" />
-
-        {/* Rango P10-P90 */}
+        <div className="absolute top-1/2 right-0 left-0 h-1.5 -translate-y-1/2 rounded-full bg-slate-200/80" />
         <div
-          className="absolute top-1/2 h-2.5 -translate-y-1/2 rounded-full bg-[#1890ff]/25"
+          className="absolute top-1/2 h-2.5 -translate-y-1/2 rounded-full bg-blue-500/25"
           style={{
             left: `${leftOuter}%`,
             width: `${Math.max(2, rightOuter - leftOuter)}%`,
           }}
         />
-
-        {/* Rango intercuartil P25-P75 */}
         {p25 !== null && p75 !== null ? (
           <div
-            className="absolute top-1/2 h-4 -translate-y-1/2 rounded-sm bg-[#1890ff]"
+            className="absolute top-1/2 h-3.5 -translate-y-1/2 rounded-sm bg-blue-600"
             style={{
               left: `${leftIqr}%`,
               width: `${Math.max(2, rightIqr - leftIqr)}%`,
             }}
           />
         ) : null}
-
-        {/* Marcador P50 */}
         {medPos !== null ? (
           <div
-            className="absolute top-1/2 h-6 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#171716]"
+            className="absolute top-1/2 h-6 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-900"
             style={{ left: `${medPos}%` }}
-            title={`Mediana P50: ${pesos(p50)}`}
+            title={`Mediana (P50): ${pesos(p50)}`}
           />
         ) : null}
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-5">
+      <div className="mt-3 grid grid-cols-2 gap-2.5 text-xs sm:grid-cols-5">
         <div>
-          <span className="block text-[#5c5c58]">10 % menor (P10)</span>
-          <span className="font-semibold text-[#171716] tabular-nums">{pesos(p10)}</span>
+          <span className="block text-[11px] text-muted-foreground">10 % menor</span>
+          <span className="font-semibold text-foreground tabular-nums">{pesos(p10)}</span>
         </div>
         <div>
-          <span className="block text-[#5c5c58]">P25</span>
-          <span className="font-semibold text-[#171716] tabular-nums">{pesos(p25)}</span>
+          <span className="block text-[11px] text-muted-foreground">Percentil 25</span>
+          <span className="font-semibold text-foreground tabular-nums">{pesos(p25)}</span>
         </div>
         <div>
-          <span className="block text-[#1063b8] font-medium">Mediana (P50)</span>
-          <span className="font-bold text-[#171716] tabular-nums">{pesos(p50)}</span>
+          <span className="block text-[11px] font-medium text-blue-700">Mediana (P50)</span>
+          <span className="font-bold text-foreground tabular-nums">{pesos(p50)}</span>
         </div>
         <div>
-          <span className="block text-[#5c5c58]">P75</span>
-          <span className="font-semibold text-[#171716] tabular-nums">{pesos(p75)}</span>
+          <span className="block text-[11px] text-muted-foreground">Percentil 75</span>
+          <span className="font-semibold text-foreground tabular-nums">{pesos(p75)}</span>
         </div>
         <div>
-          <span className="block text-[#5c5c58]">10 % mayor (P90)</span>
-          <span className="font-semibold text-[#171716] tabular-nums">{pesos(p90)}</span>
+          <span className="block text-[11px] text-muted-foreground">10 % mayor</span>
+          <span className="font-semibold text-foreground tabular-nums">{pesos(p90)}</span>
         </div>
       </div>
     </div>
@@ -130,7 +130,7 @@ export function Percentiles({
 }: PercentilesProps) {
   const cortes: CortePercentil[] = [
     {
-      titulo: "1.er año de titulación",
+      titulo: "Al 1.er año de egresar",
       p10: pct.p10_1,
       p25: pct.p25_1,
       p50: pct.p50_1,
@@ -138,7 +138,7 @@ export function Percentiles({
       p90: pct.p90_1,
     },
     {
-      titulo: "5.º año de titulación",
+      titulo: "Al 5.º año de egresar",
       p10: pct.p10_5,
       p25: pct.p25_5,
       p50: pct.p50_5,
@@ -161,17 +161,18 @@ export function Percentiles({
   const maxGlobal = valores.length > 0 ? Math.max(...valores) * 1.08 : 1;
 
   return (
-    <div className="rounded-xl border border-[#e2e2dc] bg-white p-5 sm:p-6">
-      <div className="mb-4">
-        <h3 className="text-base font-bold text-[#171716]">
-          Dispersión salarial: percentiles P10 a P90
-        </h3>
-        <p className="text-xs text-[#5c5c58]">
-          Rango entre el 10 % que menos gana (P10), el 50 % central (P25–P75) y el 10 % superior (P90) en {etiquetaPesos}.
-        </p>
-      </div>
+    <Card className="gap-4 rounded-xl border border-border bg-card py-6 shadow-xs ring-0">
+      <CardHeader className="px-6">
+        <CardTitle className="text-base font-semibold text-foreground">
+          ¿Cuánto varía el sueldo dentro de esta carrera?
+        </CardTitle>
+        <CardDescription className="text-xs">
+          Rango entre el 10 % que menos gana (P10), la mitad central en azul (P25–P75) y el 10 %
+          superior (P90) en {etiquetaPesos}.
+        </CardDescription>
+      </CardHeader>
 
-      <div className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-4 px-6">
         {cortes.map((corte) => (
           <BarraPercentil
             key={corte.titulo}
@@ -180,7 +181,7 @@ export function Percentiles({
             factorIpc={factorIpc}
           />
         ))}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -76,15 +76,15 @@
 }
 .skeleton {
   height: 420px;
-  background: #f3f3f0;
-  border: 1px solid #deded9;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   display: grid;
   place-items: center;
-  color: #555;
+  color: #475569;
 }
 .tableDetails {
-  border: 1px solid #deded9;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 1rem;
   overflow: auto;

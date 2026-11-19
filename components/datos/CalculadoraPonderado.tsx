@@ -5,6 +5,7 @@ import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, Calculator, Info, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { trackEvent, trackEventOnce } from "@/lib/analytics/marketing";
 import { normalizarTexto } from "@/lib/datos/formato";
+import { cn } from "@/lib/utils";
 
 interface Ponderaciones {
   nem: number;
@@ -40,7 +42,16 @@ interface ProgramaU {
 }
 
 function sumaPonderaciones(w: Ponderaciones): number {
-  return w.nem + w.ranking + w.lenguaje + w.mate1 + w.mate2 + w.historia + w.ciencias + w.otros;
+  return (
+    w.nem +
+    w.ranking +
+    w.lenguaje +
+    w.mate1 +
+    w.mate2 +
+    w.historia +
+    w.ciencias +
+    w.otros
+  );
 }
 
 function calcularPonderado(
@@ -54,7 +65,11 @@ function calcularPonderado(
     ciencias: number;
   },
   w: Ponderaciones
-): { total: number; usaMejorElectiva: boolean; electivaUsada: "historia" | "ciencias" | "ambas" } {
+): {
+  total: number;
+  usaMejorElectiva: boolean;
+  electivaUsada: "historia" | "ciencias" | "ambas";
+} {
   const base =
     (puntajes.nem * w.nem +
       puntajes.ranking * w.ranking +
@@ -70,9 +85,17 @@ function calcularPonderado(
     const aporteHist = (puntajes.historia * w.historia) / 100;
     const aporteCien = (puntajes.ciencias * w.ciencias) / 100;
     if (aporteHist >= aporteCien) {
-      return { total: base + aporteHist, usaMejorElectiva: true, electivaUsada: "historia" };
+      return {
+        total: base + aporteHist,
+        usaMejorElectiva: true,
+        electivaUsada: "historia",
+      };
     }
-    return { total: base + aporteCien, usaMejorElectiva: true, electivaUsada: "ciencias" };
+    return {
+      total: base + aporteCien,
+      usaMejorElectiva: true,
+      electivaUsada: "ciencias",
+    };
   }
 
   const aporteElectivos =
@@ -99,7 +122,9 @@ export function CalculadoraPonderado() {
   const [ciencias, setCiencias] = React.useState<number>(650);
 
   React.useEffect(() => {
-    trackEventOnce("datos_view_ponderado", "datos_view", { pagina: "puntaje-ponderado" });
+    trackEventOnce("datos_view_ponderado", "datos_view", {
+      pagina: "puntaje-ponderado",
+    });
   }, []);
 
   React.useEffect(() => {
@@ -115,9 +140,7 @@ export function CalculadoraPonderado() {
         );
         if (def >= 0) setProgramaIdx(def);
       })
-      .catch(() => {
-        // ignore
-      })
+      .catch(() => {})
       .finally(() => {
         if (activo) setCargando(false);
       });
@@ -163,26 +186,29 @@ export function CalculadoraPonderado() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        {/* Panel de puntajes y selector */}
-        <div className="space-y-5 rounded-xl border border-[#e2e2dc] bg-white p-6 shadow-2xs">
+    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      {/* Panel de puntajes y selector */}
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="space-y-5 p-6">
           <div className="flex items-center gap-2">
-            <Calculator className="size-4 text-[#1890ff]" aria-hidden="true" />
-            <h2 className="text-base font-bold text-[#171716]">
-              1. Elige un programa universitario y sus ponderaciones
+            <Calculator className="size-4 text-blue-600" aria-hidden="true" />
+            <h2 className="text-base font-semibold text-foreground">
+              1. Elige un programa universitario
             </h2>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <div className="relative">
-              <Search className="pointer-events-none absolute top-2.5 left-3 size-4 text-[#8a8a84]" />
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 type="search"
                 placeholder="Filtrar por carrera, universidad o región (ej. Medicina Chile, UDP)..."
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
-                className="pl-9"
+                className="h-9 bg-background/60 pl-9 text-sm focus-visible:bg-card"
               />
             </div>
 
@@ -194,9 +220,13 @@ export function CalculadoraPonderado() {
               }}
               disabled={cargando || programas.length === 0}
             >
-              <SelectTrigger className="bg-white">
+              <SelectTrigger className="w-full bg-card">
                 <SelectValue
-                  placeholder={cargando ? "Cargando programas universitarios..." : "Selecciona un programa"}
+                  placeholder={
+                    cargando
+                      ? "Cargando programas universitarios..."
+                      : "Selecciona un programa"
+                  }
                 />
               </SelectTrigger>
               <SelectContent>
@@ -209,8 +239,8 @@ export function CalculadoraPonderado() {
             </Select>
           </div>
 
-          <div className="border-t border-[#f0f0ec] pt-4">
-            <h3 className="mb-3 text-sm font-bold text-[#171716]">
+          <div className="border-t border-border/70 pt-4">
+            <h3 className="mb-3 text-sm font-semibold text-foreground">
               2. Ingresa tus puntajes (escala 100 a 1.000)
             </h3>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -225,14 +255,15 @@ export function CalculadoraPonderado() {
               ].map((campo) => (
                 <div key={campo.id} className="space-y-1">
                   <div className="flex items-center justify-between text-xs">
-                    <Label htmlFor={`paes-${campo.id}`} className="font-semibold text-[#5c5c58]">
+                    <Label htmlFor={`paes-${campo.id}`} className="font-medium text-muted-foreground">
                       {campo.label}
                     </Label>
                     {campo.peso !== undefined ? (
                       <span
-                        className={`font-bold tabular-nums ${
-                          campo.peso > 0 ? "text-[#1890ff]" : "text-[#8a8a84]"
-                        }`}
+                        className={cn(
+                          "font-semibold tabular-nums",
+                          campo.peso > 0 ? "text-blue-700" : "text-muted-foreground/70"
+                        )}
                       >
                         {campo.peso} %
                       </span>
@@ -246,67 +277,74 @@ export function CalculadoraPonderado() {
                     value={campo.val}
                     onChange={(e) => campo.set(clampPaes(e.target.value))}
                     onBlur={handleTrack}
+                    className="h-9 bg-card tabular-nums"
                   />
                 </div>
               ))}
             </div>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        {/* Panel de resultado */}
-        <div className="flex flex-col justify-between gap-5 rounded-xl border border-[#e2e2dc] border-t-4 border-t-[#1890ff] bg-white p-6 shadow-2xs">
+      {/* Panel de resultado */}
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="flex h-full flex-col justify-between gap-5 p-6">
           {programaActual && resultado ? (
             <div className="space-y-5">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs font-medium">
                     {programaActual.i}
                   </Badge>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-xs font-medium">
                     {programaActual.r} · {programaActual.j}
                   </Badge>
                 </div>
-                <h3 className="mt-2 text-lg font-bold text-[#171716]">{programaActual.n}</h3>
+                <h3 className="mt-2 text-lg font-semibold text-foreground">
+                  {programaActual.n}
+                </h3>
               </div>
 
-              <div className="rounded-xl border border-[#d6e6f5] bg-[#e9f4ff]/40 p-5">
-                <p className="text-xs font-semibold tracking-wide text-[#5c5c58] uppercase">
+              <div className="rounded-xl border border-blue-200/80 bg-blue-50/50 p-5">
+                <p className="text-xs font-medium text-muted-foreground">
                   Tu puntaje ponderado estimado
                 </p>
-                <p className="mt-1 text-5xl font-extrabold tracking-tight text-[#1890ff] tabular-nums">
+                <p className="mt-1 text-4xl font-bold tracking-tight text-blue-700 tabular-nums sm:text-5xl">
                   {resultado.total.toFixed(1).replace(".", ",")}
                 </p>
                 {programaActual.p ? (
-                  <p className="mt-2 text-xs text-[#5c5c58]">
-                    Promedio PAES referencial del programa: <strong className="text-[#171716]">{programaActual.p.toFixed(1).replace(".", ",")} pts</strong>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Promedio PAES referencial de matriculados:{" "}
+                    <strong className="font-semibold text-foreground">
+                      {programaActual.p.toFixed(1).replace(".", ",")} pts
+                    </strong>
                   </p>
                 ) : null}
               </div>
 
-              {/* Desglose de ponderación */}
-              <div className="space-y-2 rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-4 text-xs">
-                <p className="font-bold text-[#171716]">Desglose aplicado</p>
-                <div className="grid grid-cols-2 gap-y-1.5 text-[#5c5c58]">
+              <div className="space-y-2 rounded-lg border border-border bg-muted/35 p-4 text-xs">
+                <p className="font-semibold text-foreground">Desglose de aportes</p>
+                <div className="grid grid-cols-2 gap-y-1.5 text-muted-foreground">
                   <span>NEM ({programaActual.w.nem} %):</span>
-                  <span className="text-right font-semibold text-[#171716] tabular-nums">
+                  <span className="text-right font-semibold text-foreground tabular-nums">
                     +{((nem * programaActual.w.nem) / 100).toFixed(1).replace(".", ",")}
                   </span>
                   <span>Ranking ({programaActual.w.ranking} %):</span>
-                  <span className="text-right font-semibold text-[#171716] tabular-nums">
+                  <span className="text-right font-semibold text-foreground tabular-nums">
                     +{((ranking * programaActual.w.ranking) / 100).toFixed(1).replace(".", ",")}
                   </span>
                   <span>Comp. Lectora ({programaActual.w.lenguaje} %):</span>
-                  <span className="text-right font-semibold text-[#171716] tabular-nums">
+                  <span className="text-right font-semibold text-foreground tabular-nums">
                     +{((lenguaje * programaActual.w.lenguaje) / 100).toFixed(1).replace(".", ",")}
                   </span>
                   <span>Matemática 1 ({programaActual.w.mate1} %):</span>
-                  <span className="text-right font-semibold text-[#171716] tabular-nums">
+                  <span className="text-right font-semibold text-foreground tabular-nums">
                     +{((mate1 * programaActual.w.mate1) / 100).toFixed(1).replace(".", ",")}
                   </span>
                   {programaActual.w.mate2 > 0 ? (
                     <>
                       <span>Matemática 2 ({programaActual.w.mate2} %):</span>
-                      <span className="text-right font-semibold text-[#171716] tabular-nums">
+                      <span className="text-right font-semibold text-foreground tabular-nums">
                         +{((mate2 * programaActual.w.mate2) / 100).toFixed(1).replace(".", ",")}
                       </span>
                     </>
@@ -315,7 +353,7 @@ export function CalculadoraPonderado() {
                   (!resultado.usaMejorElectiva || resultado.electivaUsada === "historia") ? (
                     <>
                       <span>Historia ({programaActual.w.historia} %):</span>
-                      <span className="text-right font-semibold text-[#171716] tabular-nums">
+                      <span className="text-right font-semibold text-foreground tabular-nums">
                         +{((historia * programaActual.w.historia) / 100).toFixed(1).replace(".", ",")}
                       </span>
                     </>
@@ -324,31 +362,33 @@ export function CalculadoraPonderado() {
                   (!resultado.usaMejorElectiva || resultado.electivaUsada === "ciencias") ? (
                     <>
                       <span>Ciencias ({programaActual.w.ciencias} %):</span>
-                      <span className="text-right font-semibold text-[#171716] tabular-nums">
+                      <span className="text-right font-semibold text-foreground tabular-nums">
                         +{((ciencias * programaActual.w.ciencias) / 100).toFixed(1).replace(".", ",")}
                       </span>
                     </>
                   ) : null}
                 </div>
                 {resultado.usaMejorElectiva ? (
-                  <p className="pt-1 text-[11px] text-[#5c5c58]">
-                    * Se tomó tu mejor prueba electiva entre Historia y Ciencias ({resultado.electivaUsada}).
+                  <p className="pt-1 text-[11px] text-muted-foreground">
+                    * Se tomó automáticamente tu mejor electiva ({resultado.electivaUsada}).
                   </p>
                 ) : null}
               </div>
             </div>
           ) : (
-            <div className="py-12 text-center text-sm text-[#5c5c58]">
-              {cargando ? "Cargando ponderaciones oficiales..." : "Selecciona un programa universitario para calcular."}
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              {cargando
+                ? "Cargando ponderaciones oficiales..."
+                : "Selecciona un programa universitario para calcular."}
             </div>
           )}
 
-          <div className="space-y-3 border-t border-[#f0f0ec] pt-4">
-            <div className="flex items-start gap-2 rounded-lg bg-[#fff8eb] p-3 text-xs text-[#171716]">
-              <Info className="mt-0.5 size-4 shrink-0 text-[#f99c00]" aria-hidden="true" />
+          <div className="space-y-3 border-t border-border/70 pt-4">
+            <div className="flex items-start gap-2 rounded-lg border border-amber-200/80 bg-amber-50/70 p-3 text-xs text-amber-950">
+              <Info className="mt-0.5 size-4 shrink-0 text-amber-700" aria-hidden="true" />
               <p>
-                Ponderaciones informadas en el Buscador de Carreras 2025–2026; confirma las de la
-                Admisión 2027 en la Oferta Definitiva del DEMRE.
+                Ponderaciones informadas en el Buscador de Carreras 2025–2026; confirma las
+                definitivas para Admisión 2027 en el portal del DEMRE.
               </p>
             </div>
 
@@ -356,16 +396,19 @@ export function CalculadoraPonderado() {
               <div className="flex flex-wrap gap-2">
                 <Link
                   href={`/datos/carreras/${programaActual.s}`}
-                  className={buttonVariants({ variant: "outline", size: "sm" })}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "h-8 bg-card text-xs"
+                  )}
                 >
                   Ver ficha de la carrera
-                  <ArrowUpRight className="ml-1 size-3.5" />
+                  <ArrowUpRight className="ml-1 size-3.5" aria-hidden="true" />
                 </Link>
               </div>
             ) : null}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

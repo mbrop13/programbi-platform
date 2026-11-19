@@ -3,8 +3,22 @@
 import * as React from "react";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowUpRight, GitCompare, Loader2 } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  ArrowUpRight,
+  Download,
+  GitCompare,
+  Info,
+  LayoutGrid,
+  Loader2,
+  Search,
+  Table2,
+  X,
+} from "lucide-react";
+import { AreaVisualCard } from "./AreaVisualCard";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -13,15 +27,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { TIPO_ETIQUETAS, type RankingItem, type TipoIesKey } from "@/lib/datos/carreras-tipos";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  entero,
-  mesCorto,
-} from "@/lib/datos/formato";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { TIPO_ETIQUETAS, type RankingItem, type TipoIesKey } from "@/lib/datos/carreras-tipos";
+import { entero, mesCorto, normalizarTexto } from "@/lib/datos/formato";
 import { ajustarPorIpc, type PuntoIpc } from "@/lib/datos/ipc";
 import { trackEvent } from "@/lib/analytics/marketing";
+import { cn } from "@/lib/utils";
 import {
   contarFiltrosActivos,
   FILTROS_DEFAULT,
@@ -60,14 +77,14 @@ export interface RankingCarrerasProps {
 }
 
 const ORDEN_OPCIONES: { value: OrdenRankingKey; label: string }[] = [
-  { value: "ing4", label: "Mayor sueldo 4.º año" },
-  { value: "ing1", label: "Mayor sueldo 1.er año" },
-  { value: "ing5", label: "Mayor sueldo 5.º año" },
-  { value: "emp1", label: "Mayor empleabilidad 1.er año" },
-  { value: "yoy_real_4", label: "Mayor crecimiento real 2020–2024" },
-  { value: "dur_real", label: "Menor duración real" },
-  { value: "arancel_med", label: "Mayor arancel mediano" },
-  { value: "arancel_asc", label: "Menor arancel mediano" },
+  { value: "ing4", label: "Mejor sueldo (4.º año)" },
+  { value: "emp1", label: "Mayor empleabilidad (1.er año)" },
+  { value: "ing1", label: "Mejor sueldo al egresar (1.er año)" },
+  { value: "ing5", label: "Mejor sueldo (5.º año)" },
+  { value: "yoy_real_4", label: "Más crecieron (2020–2024)" },
+  { value: "dur_real", label: "Más cortas (duración real)" },
+  { value: "arancel_asc", label: "Arancel más económico" },
+  { value: "arancel_med", label: "Arancel más alto" },
 ];
 
 export function RankingCarreras({
@@ -86,58 +103,35 @@ export function RankingCarreras({
   const [filtros, setFiltros] = React.useState<FiltrosCarrerasState>(() =>
     parseFiltrosFromSearchParams(searchParams)
   );
+  const [busquedaTabla, setBusquedaTabla] = React.useState("");
+  const [vista, setVista] = React.useState<"tabla" | "tarjetas">("tabla");
   const [pesosHoy, setPesosHoy] = React.useState(false);
   const [allRanking, setAllRanking] = React.useState<RankingItem[] | null>(null);
   const [programasByTipo, setProgramasByTipo] = React.useState<
     Partial<Record<TipoIesKey, ProgramaCompacto[]>>
   >({});
   const [loadingProgramas, setLoadingProgramas] = React.useState(false);
-  const [visibleCount, setVisibleCount] = React.useState(25);
   const [compareSlugs, setCompareSlugs] = React.useState<string[]>([]);
   const [selectedScatterSlug, setSelectedScatterSlug] = React.useState<string | null>(null);
 
-  // Sync from URL when navigating back/forward
   React.useEffect(() => {
     setFiltros(parseFiltrosFromSearchParams(searchParams));
   }, [searchParams]);
 
-  // Lazy load full ranking.json only when user filters/paginates, or once idle after initial hydration
-  const needsFullRanking = React.useMemo(() => {
-    return (
-      visibleCount > 25 ||
-      filtros.tipo !== FILTROS_DEFAULT.tipo ||
-      filtros.orden !== FILTROS_DEFAULT.orden ||
-      contarFiltrosActivos(filtros) > 0
-    );
-  }, [visibleCount, filtros]);
-
   React.useEffect(() => {
     if (allRanking !== null) return;
     let cancelled = false;
-    const load = () => {
-      fetch("/datos/carreras/ranking.json")
-        .then((r) => (r.ok ? r.json() : null))
-        .then((data: RankingItem[] | null) => {
-          if (!cancelled && data) setAllRanking(data);
-        })
-        .catch(() => {});
-    };
-
-    if (needsFullRanking) {
-      load();
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const timer = window.setTimeout(load, 2800);
+    fetch("/datos/carreras/ranking.json")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: RankingItem[] | null) => {
+        if (!cancelled && data) setAllRanking(data);
+      })
+      .catch(() => {});
     return () => {
       cancelled = true;
-      window.clearTimeout(timer);
     };
-  }, [allRanking, needsFullRanking]);
+  }, [allRanking]);
 
-  // Lazy load programas-{tipo}.json when program-level filters are active
   const needsPrograms = tieneFiltrosPrograma(filtros);
   React.useEffect(() => {
     if (!needsPrograms) return;
@@ -170,7 +164,6 @@ export function RankingCarreras({
   const updateFiltros = React.useCallback(
     (next: FiltrosCarrerasState) => {
       setFiltros(next);
-      setVisibleCount(25);
       const qs = serializeFiltrosToQuery(next);
       router.replace(`${pathname}${qs}`, { scroll: false });
       trackEvent("datos_filter", {
@@ -183,10 +176,10 @@ export function RankingCarreras({
   );
 
   const resetFiltros = React.useCallback(() => {
+    setBusquedaTabla("");
     updateFiltros({ ...FILTROS_DEFAULT, tipo: filtros.tipo });
   }, [filtros.tipo, updateFiltros]);
 
-  // Program-level matching slugs set
   const matchingSlugsByProgram = React.useMemo(() => {
     if (!needsPrograms) return null;
     const progs = programasByTipo[filtros.tipo];
@@ -206,9 +199,23 @@ export function RankingCarreras({
 
   const baseDataset = allRanking ?? initialRows;
 
+  // Mapa de nombres reales para el dock de comparación
+  const nombrePorSlug = React.useMemo(() => {
+    const mapa = new Map<string, string>();
+    for (const item of baseDataset) {
+      if (!mapa.has(item.slug)) mapa.set(item.slug, item.nombre);
+    }
+    return mapa;
+  }, [baseDataset]);
+
   const filteredRows = React.useMemo(() => {
+    const q = normalizarTexto(busquedaTabla);
     const rows = baseDataset.filter((r) => {
       if (r.tipo !== filtros.tipo) return false;
+      if (q) {
+        const texto = normalizarTexto(`${r.nombre} ${r.area}`);
+        if (!texto.includes(q)) return false;
+      }
       if (filtros.nivel && r.nivel !== filtros.nivel) return false;
       if (filtros.area && r.area !== filtros.area) return false;
       if (filtros.duracionMax !== null && (r.dur_real === null || r.dur_real > filtros.duracionMax))
@@ -218,14 +225,16 @@ export function RankingCarreras({
       if (matchingSlugsByProgram !== null) {
         if (!matchingSlugsByProgram.has(r.slug)) return false;
       } else if (needsPrograms) {
-        // Fallback while programs JSON is loading: use summary fields
         if (
           filtros.regiones.length > 0 &&
           !filtros.regiones.some((reg) => r.regiones.includes(reg))
         )
           return false;
         if (filtros.jornada && !r.jornadas.includes(filtros.jornada)) return false;
-        if (filtros.arancelMax !== null && (r.arancel_med === null || r.arancel_med > filtros.arancelMax))
+        if (
+          filtros.arancelMax !== null &&
+          (r.arancel_med === null || r.arancel_med > filtros.arancelMax)
+        )
           return false;
         if (filtros.acredMin > 0 && r.acred_max < filtros.acredMin) return false;
         if (filtros.vacantesMin > 0 && r.vacantes_total < filtros.vacantesMin) return false;
@@ -258,9 +267,68 @@ export function RankingCarreras({
     });
 
     return sorted;
-  }, [baseDataset, filtros, matchingSlugsByProgram, needsPrograms]);
+  }, [baseDataset, busquedaTabla, filtros, matchingSlugsByProgram, needsPrograms]);
 
-  const visibleRows = filteredRows.slice(0, visibleCount);
+  const areaStats = React.useMemo(() => {
+    const byArea = new Map<string, { count: number; salaries: number[] }>();
+    for (const a of areas) {
+      byArea.set(a, { count: 0, salaries: [] });
+    }
+    for (const r of baseDataset) {
+      if (r.tipo !== filtros.tipo) continue;
+      const entry = byArea.get(r.area) ?? { count: 0, salaries: [] };
+      entry.count += 1;
+      if (r.ing4 !== null) {
+        entry.salaries.push(Math.round(r.ing4 * ipcInfo.factor));
+      }
+      byArea.set(r.area, entry);
+    }
+    return areas.map((area) => {
+      const entry = byArea.get(area) ?? { count: 0, salaries: [] };
+      const sorted = [...entry.salaries].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const medianSalary =
+        sorted.length === 0
+          ? null
+          : sorted.length % 2 === 0
+            ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
+            : sorted[mid];
+      return { area, count: entry.count, medianSalary };
+    });
+  }, [areas, baseDataset, filtros.tipo, ipcInfo.factor]);
+
+  const handleExportCsv = React.useCallback(() => {
+    const header = [
+      "Carrera",
+      "Area",
+      "Tipo",
+      "Sueldo_4_Anio",
+      "Empleabilidad_1_Anio",
+      "Arancel_Anual_Med",
+      "Duracion_Real_Semestres",
+    ].join(",");
+    const escape = (val: string) => `"${val.replace(/"/g, '""')}"`;
+    const lines = filteredRows.map((r) =>
+      [
+        escape(r.nombre),
+        escape(r.area),
+        TIPO_ETIQUETAS[r.tipo].corto,
+        r.ing4 !== null ? Math.round(r.ing4 * ipcInfo.factor) : "",
+        r.emp1 !== null ? (r.emp1 * 100).toFixed(1) : "",
+        r.arancel_med ?? "",
+        r.dur_real ?? "",
+      ].join(",")
+    );
+    const csv = [header, ...lines].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `carreras-${filtros.tipo}-programbi.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    trackEvent("datos_download", { formato: "csv", recurso: "ranking-filtrado" });
+  }, [filteredRows, filtros.tipo, ipcInfo.factor]);
 
   const toggleCompare = (slug: string) => {
     setCompareSlugs((prev) => {
@@ -271,190 +339,349 @@ export function RankingCarreras({
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <FiltrosAvanzados
-          filtros={filtros}
-          onChange={updateFiltros}
-          onReset={resetFiltros}
-          areas={areas}
-          regiones={regiones}
-          arancelP95={arancelP95}
-          totalResultados={filteredRows.length}
-        />
-
-        <div className="min-w-0 flex-1 space-y-4">
-          {/* Top controls: Tabs U/IP/CFT + Orden + IPC toggle */}
-          <div className="flex flex-col gap-3 rounded-xl border border-[#e2e2dc] bg-white p-3.5 sm:flex-row sm:items-center sm:justify-between">
-            <Tabs
-              value={filtros.tipo}
-              onValueChange={(val) => {
-                if (val === "u" || val === "ip" || val === "cft") {
-                  updateFiltros({ ...filtros, tipo: val });
-                }
-              }}
-            >
-              <TabsList className="bg-[#f3f3f0]">
-                <TabsTrigger value="u" className="text-xs font-semibold">
-                  Universidades
-                </TabsTrigger>
-                <TabsTrigger value="ip" className="text-xs font-semibold">
-                  IP
-                </TabsTrigger>
-                <TabsTrigger value="cft" className="text-xs font-semibold">
-                  CFT
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="toggle-ipc-ranking"
-                  checked={pesosHoy}
-                  onCheckedChange={setPesosHoy}
-                />
-                <label
-                  htmlFor="toggle-ipc-ranking"
-                  className="cursor-pointer text-xs font-medium text-[#171716]"
-                >
-                  {pesosHoy
-                    ? `Pesos de hoy (${ipcInfo.mesLabel})`
-                    : `Pesos ${mesCorto(pesosDe)}`}
-                </label>
-              </div>
-
-              <Select
-                value={filtros.orden}
-                onValueChange={(v) =>
-                  updateFiltros({ ...filtros, orden: v as OrdenRankingKey })
-                }
+    <div className="min-w-0 max-w-full space-y-8">
+      <div className="min-w-0 max-w-full space-y-4">
+        {/* Tira visual de Áreas del Conocimiento */}
+        <div className="min-w-0 max-w-full space-y-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold text-foreground">
+              Explora por área del conocimiento
+            </h3>
+            {filtros.area ? (
+              <button
+                type="button"
+                onClick={() => updateFiltros({ ...filtros, area: "" })}
+                className="text-xs font-medium text-blue-700 hover:underline"
               >
-                <SelectTrigger
-                  aria-label="Ordenar carreras por"
-                  className="h-8 w-[220px] border-[#d4d4ce] bg-white text-xs"
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {ORDEN_OPCIONES.map((op) => (
-                    <SelectItem key={op.value} value={op.value}>
-                      {op.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                Ver todas las áreas
+              </button>
+            ) : (
+              <span className="text-xs text-muted-foreground">
+                Haz clic en un área para filtrar
+              </span>
+            )}
+          </div>
+          <div className="w-full max-w-full min-w-0 overflow-x-auto pb-2 md:overflow-visible md:pb-0">
+            <div className="flex w-max gap-3 md:grid md:w-full md:grid-cols-5">
+              {areaStats.map(({ area, count, medianSalary }) => (
+                <div key={area} className="w-44 shrink-0 md:w-auto md:min-w-0">
+                  <AreaVisualCard
+                    area={area}
+                    count={count}
+                    medianSalary={medianSalary}
+                    active={filtros.area === area}
+                    onClick={() =>
+                      updateFiltros({
+                        ...filtros,
+                        area: filtros.area === area ? "" : area,
+                      })
+                    }
+                  />
+                </div>
+              ))}
             </div>
           </div>
+        </div>
 
-          <ChipsFiltros
-            filtros={filtros}
-            onChange={updateFiltros}
-            onReset={resetFiltros}
-          />
+        {/* Barra principal de exploración (ancho completo, sin sidebar apretado) */}
+        <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+          <CardContent className="space-y-3.5 p-4">
+            {/* Fila 1: Tabs U/IP/CFT + Búsqueda rápida + Vista Tabla/Tarjetas */}
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <Tabs
+                value={filtros.tipo}
+                onValueChange={(val) => {
+                  if (val === "u" || val === "ip" || val === "cft") {
+                    updateFiltros({ ...filtros, tipo: val });
+                  }
+                }}
+              >
+                <TabsList className="h-9 bg-muted p-1">
+                  <TabsTrigger value="u" className="px-3 text-xs font-medium sm:text-sm">
+                    Universidades
+                  </TabsTrigger>
+                  <TabsTrigger value="ip" className="px-3 text-xs font-medium sm:text-sm">
+                    Institutos (IP)
+                  </TabsTrigger>
+                  <TabsTrigger value="cft" className="px-3 text-xs font-medium sm:text-sm">
+                    Técnicos (CFT)
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
 
-          {compareSlugs.length > 0 ? (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#1890ff]/40 bg-[#e9f4ff] px-4 py-2.5 text-xs">
-              <div className="flex flex-wrap items-center gap-2">
-                <GitCompare className="size-4 text-[#1063b8]" />
-                <span className="font-semibold text-[#171716]">
-                  Seleccionadas para comparar ({compareSlugs.length}/3):
-                </span>
-                {compareSlugs.map((s) => (
-                  <Badge key={s} variant="secondary" className="bg-white text-[#171716]">
-                    {s}
-                  </Badge>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <button
+              <div className="flex flex-1 flex-wrap items-center gap-2 md:justify-end">
+                <div className="relative min-w-[200px] flex-1 md:max-w-xs">
+                  <Search
+                    className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <Input
+                    type="search"
+                    value={busquedaTabla}
+                    onChange={(e) => {
+                      setBusquedaTabla(e.target.value);
+                    }}
+                    placeholder="Filtrar lista por nombre o área..."
+                    aria-label="Filtrar ranking por nombre o área"
+                    className="h-9 bg-background/60 pl-8 text-xs focus-visible:bg-card"
+                  />
+                </div>
+
+                <div
+                  role="group"
+                  aria-label="Cambiar modo de vista"
+                  className="hidden rounded-lg bg-muted p-0.5 sm:inline-flex"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setVista("tabla")}
+                    aria-pressed={vista === "tabla"}
+                    className={cn(
+                      "inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all",
+                      vista === "tabla"
+                        ? "bg-card text-foreground shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Table2 className="size-3.5" aria-hidden="true" />
+                    Tabla
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVista("tarjetas")}
+                    aria-pressed={vista === "tarjetas"}
+                    className={cn(
+                      "inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all",
+                      vista === "tarjetas"
+                        ? "bg-card text-foreground shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <LayoutGrid className="size-3.5" aria-hidden="true" />
+                    Tarjetas
+                  </button>
+                </div>
+
+                <Button
                   type="button"
-                  onClick={() => setCompareSlugs([])}
-                  className="text-[#5c5c58] hover:text-[#171716] hover:underline"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportCsv}
+                  disabled={filteredRows.length === 0}
+                  className="h-9 gap-1.5 bg-card text-xs font-medium"
                 >
-                  Vaciar
-                </button>
-                <Link
-                  href={`/datos/carreras/comparar?c=${compareSlugs.join(",")}`}
-                  prefetch={false}
-                  className="inline-flex items-center gap-1 rounded-lg bg-[#1063b8] px-3 py-1.5 font-semibold text-white hover:bg-[#0d549c]"
-                >
-                  Comparar ahora
-                  <ArrowUpRight className="size-3.5" />
-                </Link>
+                  <Download className="size-3.5 text-blue-600" aria-hidden="true" />
+                  <span className="hidden sm:inline">Exportar</span> CSV
+                </Button>
               </div>
             </div>
-          ) : null}
 
-          {loadingProgramas ? (
-            <div className="flex items-center gap-2 rounded-lg border border-[#e2e2dc] bg-white px-3 py-2 text-xs text-[#5c5c58]">
-              <Loader2 className="size-3.5 animate-spin text-[#1063b8]" />
-              Aplicando filtros exactos a nivel de programas 2026...
+            {/* Fila 2: Área + Orden + Más filtros (Sheet) + Switch IPC + Contador */}
+            <div className="flex flex-wrap items-center justify-between gap-2.5 border-t border-border/70 pt-3.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <Select
+                  value={filtros.area || "__all__"}
+                  onValueChange={(v) =>
+                    updateFiltros({ ...filtros, area: v === "__all__" ? "" : v })
+                  }
+                >
+                  <SelectTrigger
+                    aria-label="Filtrar por área"
+                    className="h-9 w-[195px] bg-card text-xs"
+                  >
+                    <SelectValue placeholder="Todas las áreas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__all__">Todas las áreas</SelectItem>
+                    {areas.map((a) => (
+                      <SelectItem key={a} value={a}>
+                        {a}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={filtros.orden}
+                  onValueChange={(v) =>
+                    updateFiltros({ ...filtros, orden: v as OrdenRankingKey })
+                  }
+                >
+                  <SelectTrigger
+                    aria-label="Ordenar carreras por"
+                    className="h-9 w-[225px] bg-card text-xs"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ORDEN_OPCIONES.map((op) => (
+                      <SelectItem key={op.value} value={op.value}>
+                        {op.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <FiltrosAvanzados
+                  filtros={filtros}
+                  onChange={updateFiltros}
+                  onReset={resetFiltros}
+                  areas={areas}
+                  regiones={regiones}
+                  arancelP95={arancelP95}
+                  totalResultados={filteredRows.length}
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <TooltipProvider delayDuration={150}>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="toggle-ipc-ranking"
+                      checked={pesosHoy}
+                      onCheckedChange={setPesosHoy}
+                    />
+                    <label
+                      htmlFor="toggle-ipc-ranking"
+                      className="cursor-pointer text-xs font-medium text-foreground"
+                    >
+                      {pesosHoy
+                        ? `Pesos de hoy (${ipcInfo.mesLabel})`
+                        : `Pesos ${mesCorto(pesosDe)}`}
+                    </label>
+                    <Tooltip>
+                      <TooltipTrigger
+                        type="button"
+                        aria-label="Información sobre ajuste por IPC"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <Info className="size-3.5" aria-hidden="true" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-xs leading-snug">
+                        Mi Futuro publica los sueldos en pesos de septiembre de 2025. Activa este
+                        interruptor para ajustarlos automáticamente a pesos actuales con el IPC del
+                        INE.
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </TooltipProvider>
+
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {entero(filteredRows.length)}{" "}
+                  {filteredRows.length === 1 ? "carrera" : "carreras"}
+                </span>
+              </div>
             </div>
-          ) : null}
+          </CardContent>
+        </Card>
 
-          {filteredRows.length === 0 ? (
-            <div className="rounded-xl border border-[#e2e2dc] bg-white p-8 text-center">
-              <p className="text-sm font-medium text-[#171716]">
-                Ninguna carrera en {TIPO_ETIQUETAS[filtros.tipo].plural} cumple todos los filtros seleccionados.
+        <ChipsFiltros filtros={filtros} onChange={updateFiltros} onReset={resetFiltros} />
+
+        {loadingProgramas ? (
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2.5 text-xs text-muted-foreground shadow-xs">
+            <Loader2 className="size-3.5 animate-spin text-blue-600" aria-hidden="true" />
+            Aplicando filtros exactos a nivel de programas 2026...
+          </div>
+        ) : null}
+
+        {filteredRows.length === 0 ? (
+          <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+            <CardContent className="p-10 text-center">
+              <p className="text-sm font-semibold text-foreground">
+                Ninguna carrera en {TIPO_ETIQUETAS[filtros.tipo].plural.toLowerCase()} coincide con
+                estos filtros.
               </p>
-              <p className="mt-1 text-xs text-[#5c5c58]">
-                Prueba ampliar el arancel máximo, quitar una región o cambiar el tipo de institución.
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Prueba limpiar la búsqueda, ampliar el presupuesto de arancel o cambiar el tipo de
+                institución.
               </p>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={resetFiltros}
-                className="mt-4 border-[#d4d4ce]"
+                className="mt-4 bg-card"
               >
-                Limpiar filtros
+                Limpiar todos los filtros
               </Button>
-            </div>
-          ) : (
-            <>
-              <TablaRankingCarreras rows={visibleRows} maxP90={filteredRows.reduce((max, row) => Math.max(max, row.p90_5 ?? 0), 1_000_000)} factor={ipcInfo.factor} compareSlugs={compareSlugs} onToggleCompare={toggleCompare} onSelectSlug={setSelectedScatterSlug} />
-
-              {visibleCount < filteredRows.length ? (
-                <div className="flex items-center justify-between rounded-xl border border-[#e2e2dc] bg-white px-4 py-3 text-xs">
-                  <span className="text-[#5c5c58] tabular-nums">
-                    Mostrando {visibleRows.length} de {entero(filteredRows.length)} carreras
-                  </span>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setVisibleCount((c) => c + 25)}
-                      className="border-[#d4d4ce] text-xs"
-                    >
-                      Ver 25 más
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setVisibleCount(filteredRows.length)}
-                      className="text-xs text-[#1063b8]"
-                    >
-                      Ver todas
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
-            </>
-          )}
-        </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <TablaRankingCarreras
+              rows={filteredRows}
+              maxP90={filteredRows.reduce((max, row) => Math.max(max, row.p90_5 ?? 0), 1_000_000)}
+              factor={ipcInfo.factor}
+              compareSlugs={compareSlugs}
+              onToggleCompare={toggleCompare}
+              onSelectSlug={setSelectedScatterSlug}
+              vista={vista}
+              interactiveTooltips
+            />
+          </>
+        )}
       </div>
 
-      {/* Scatter Sueldo vs Empleabilidad */}
+      {/* Barra flotante de comparación cuando hay carreras elegidas */}
+      {compareSlugs.length > 0 ? (
+        <div className="sticky bottom-4 z-30 mx-auto max-w-4xl">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800/15 bg-slate-900 px-4 py-3 text-xs text-white shadow-xl shadow-slate-900/20">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 font-medium text-slate-200">
+                <GitCompare className="size-4 text-blue-400" aria-hidden="true" />
+                Comparar ({compareSlugs.length}/3):
+              </span>
+              {compareSlugs.map((slug) => (
+                <Badge
+                  key={slug}
+                  variant="secondary"
+                  className="h-auto gap-1 rounded-md border border-white/15 bg-white/10 px-2 py-1 text-xs font-medium text-white"
+                >
+                  <span className="max-w-[160px] truncate">{nombrePorSlug.get(slug) ?? slug}</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleCompare(slug)}
+                    aria-label={`Quitar ${nombrePorSlug.get(slug) ?? slug}`}
+                    className="ml-0.5 rounded hover:bg-white/20"
+                  >
+                    <X className="size-3" aria-hidden="true" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCompareSlugs([])}
+                className="px-2 py-1 text-slate-300 transition-colors hover:text-white"
+              >
+                Vaciar
+              </button>
+              <Link
+                href={`/datos/carreras/comparar?c=${compareSlugs.join(",")}`}
+                prefetch={false}
+                className={cn(
+                  buttonVariants({ size: "sm" }),
+                  "h-8 gap-1 rounded-lg bg-white px-3 text-xs font-semibold text-slate-900 hover:bg-slate-100"
+                )}
+              >
+                Comparar ahora
+                <ArrowUpRight className="size-3.5" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Gráfico interactivo Sueldo vs Empleabilidad */}
       <section aria-labelledby="heading-scatter" className="space-y-3">
         <div>
-          <h2 id="heading-scatter" className="h2-datos text-[#171716]">
-            Sueldo al 4.º año vs. empleabilidad al 1.er año
+          <h2 id="heading-scatter" className="h2-datos text-foreground">
+            Mapa sueldo vs. empleabilidad
           </h2>
-          <p className="mt-1 text-sm text-[#5c5c58]">
-            Cada punto representa una carrera en {TIPO_ETIQUETAS[filtros.tipo].plural.toLowerCase()} según los filtros activos. Haz clic en un punto para ver su ficha.
+          <p className="mt-1 text-sm text-muted-foreground">
+            Cada punto es una carrera en {TIPO_ETIQUETAS[filtros.tipo].plural.toLowerCase()} según
+            tus filtros. Arriba a la derecha están las carreras con mejor sueldo y mayor empleo.
           </p>
         </div>
         <ScatterSueldoEmpleo

@@ -18,12 +18,17 @@ export function FuenteLinea({
     `Fuente: www.mifuturo.cl (Mineduc) · Edición ${edicion} · ProgramBI no está afiliado al Mineduc`;
 
   return (
-    <footer className={cn("space-y-1.5 text-xs leading-relaxed text-[#5c5c58]", className)}>
+    <footer
+      className={cn(
+        "space-y-1.5 border-t border-border/80 pt-5 text-xs leading-relaxed text-muted-foreground",
+        className
+      )}
+    >
       <p>{textoFuente}</p>
       {conAviso ? (
-        <p className="text-[11px] text-[#5c5c58]">
+        <p className="text-[11px] text-muted-foreground/90">
           Cifras referenciales con datos oficiales. No son una oferta de sueldo ni una garantía de
-          empleo. Antes de postular, revisa la información en mifuturo.cl y en la institución.
+          empleo. Antes de postular, revisa la información en mifuturo.cl y en cada institución.
         </p>
       ) : null}
     </footer>

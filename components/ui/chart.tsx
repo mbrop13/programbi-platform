@@ -70,13 +70,13 @@ export function ChartTooltipContent({
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-lg border border-[#e2e2dc] bg-white px-3 py-2 text-xs shadow-md">
+    <div className="rounded-lg border border-border bg-popover px-3 py-2.5 text-xs text-popover-foreground shadow-lg shadow-slate-900/5">
       {label !== undefined && label !== "" ? (
-        <div className="mb-1 font-semibold text-[#171716]">
+        <div className="mb-1.5 font-semibold text-foreground">
           {labelFormatter ? labelFormatter(label) : String(label)}
         </div>
       ) : null}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1.5">
         {payload.map((entry, idx) => {
           const key = String(entry.dataKey ?? entry.name ?? idx);
           const itemCfg = config[key];
@@ -86,14 +86,14 @@ export function ChartTooltipContent({
             formatter && Number.isFinite(numVal) ? formatter(numVal, displayLabel) : String(entry.value ?? "");
           return (
             <div key={key} className="flex items-center justify-between gap-4">
-              <span className="flex items-center gap-1.5 text-[#5c5c58]">
+              <span className="flex items-center gap-1.5 text-muted-foreground">
                 <span
-                  className="inline-block size-2.5 rounded-full"
-                  style={{ backgroundColor: entry.color ?? itemCfg?.color ?? "#1890ff" }}
+                  className="inline-block size-2 rounded-full"
+                  style={{ backgroundColor: entry.color ?? itemCfg?.color ?? "var(--chart-1)" }}
                 />
                 {displayLabel}
               </span>
-              <span className="font-semibold text-[#171716] tabular-nums">{displayValue}</span>
+              <span className="font-semibold text-foreground tabular-nums">{displayValue}</span>
             </div>
           );
         })}

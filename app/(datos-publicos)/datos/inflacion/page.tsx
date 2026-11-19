@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "@/components/datos/EnlaceNavegacionDatos";
+import { ArrowUpRight, ChevronDown, GraduationCap } from "lucide-react";
 import { CtaDatos } from "@/components/datos/CtaDatos";
 import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";
 import { InflacionInteractiva } from "@/components/datos/InflacionInteractiva";
 import { MigasDatos } from "@/components/datos/MigasDatos";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { Card, CardContent } from "@/components/ui/card";
 import { mesLargo, variacionPorcentual } from "@/lib/datos/formato";
 import { getIpcSeries, getUltimoIpc, variacionIpc } from "@/lib/datos/ipc";
 import {
@@ -15,6 +21,7 @@ import {
   type MigajaDatos,
 } from "@/lib/datos/seo-carreras";
 import { jsonLdString, ORG_ID, SITE_URL } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 export const dynamic = "force-static";
 
@@ -31,6 +38,11 @@ const FAQS = [
     pregunta: "¿Cómo se calcula el ajuste por IPC en Chile?",
     respuesta:
       "Se multiplica el monto original por el índice IPC del mes de destino y se divide por el índice IPC del mes de origen: monto × (IPC_destino / IPC_origen). Es la fórmula oficial utilizada por el Instituto Nacional de Estadísticas (INE).",
+  },
+  {
+    pregunta: "¿Cómo sé si mi sueldo le ganó a la inflación?",
+    respuesta:
+      "Si el porcentaje en que subió tu sueldo es mayor que la variación del IPC en el mismo período, ganaste poder adquisitivo. Si subió menos (o se mantuvo igual), hoy puedes comprar menos con ese mismo dinero. Puedes comprobarlo al instante en la pestaña «¿Mi sueldo le ganó al IPC?».",
   },
   {
     pregunta: "¿Por qué los sueldos de mifuturo.cl están en pesos de septiembre de 2025?",
@@ -62,6 +74,9 @@ export default function InflacionPage() {
   const serie = getIpcSeries();
   const primer = serie[0];
   const ultimo = getUltimoIpc();
+  const [ultimoY, ultimoM] = ultimo.m.split("-");
+  const mesHace12 = ultimoY && ultimoM ? `${Number(ultimoY) - 1}-${ultimoM}` : "2025-10";
+  const var12Meses = variacionIpc(mesHace12, ultimo.m, serie);
   const varSep25 = variacionIpc("2025-09", ultimo.m, serie);
   const varTotal = primer ? variacionIpc(primer.m, ultimo.m, serie) : null;
 
@@ -77,7 +92,7 @@ export default function InflacionPage() {
         ).toLocaleString("es-CL")} pesos.`
       : "Puedes actualizar cualquier monto desde septiembre de 2025 al último mes oficial disponible.",
     primer && varTotal !== null
-      ? `En el tramo completo cargado en la serie (${mesLargo(primer.m)} a ${mesLargo(
+      ? `En el tramo completo de la serie (${mesLargo(primer.m)} a ${mesLargo(
           ultimo.m
         )}), el índice acumula una variación de ${variacionPorcentual(varTotal).replace("\u00a0", " ")}.`
       : "La fórmula oficial aplica la razón directa entre ambos índices mensuales sin redondeos intermedios.",
@@ -115,33 +130,105 @@ export default function InflacionPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-12">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
 
-      <MigasDatos migas={MIGAS} />
+      <div className="space-y-4">
+        <MigasDatos migas={MIGAS} />
 
-      <header className="max-w-3xl space-y-3">
-        <p className="inline-flex items-center rounded-full border border-[#e2e2dc] bg-white px-3 py-1 text-xs font-semibold tracking-wide text-[#1890ff] uppercase">
-          IPC oficial INE · Base 2023 = 100
-        </p>
-        <h1 className="h1-datos text-[#171716]">
-          Calculadora de IPC: cuánto valen tus pesos hoy
-        </h1>
-        <p className="text-base leading-relaxed text-[#5c5c58] sm:text-lg">
-          Convierte montos históricos, aranceles o sueldos de mifuturo.cl a pesos actuales usando la
-          serie oficial del Índice de Precios al Consumidor de Chile.
-        </p>
-      </header>
+        <header className="grid items-center gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:gap-10">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge
+                variant="secondary"
+                className="h-auto rounded-md border border-border bg-white px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+              >
+                Datos oficiales del INE · Actualizado a {mesLargo(ultimo.m)}
+              </Badge>
+              {var12Meses !== null ? (
+                <Badge
+                  variant="secondary"
+                  className="h-auto rounded-md border border-blue-200/80 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 tabular-nums"
+                >
+                  Inflación 12m: {variacionPorcentual(var12Meses)}
+                </Badge>
+              ) : null}
+            </div>
+            <h1 className="h1-datos text-foreground">
+              Calculadora de IPC: cuánto valen tus pesos hoy
+            </h1>
+            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+              Actualiza sueldos, arriendos o aranceles con la serie oficial del INE y comprueba si
+              tus ingresos le ganaron a la inflación en Chile.
+            </p>
+          </div>
+
+          <div className="hidden overflow-hidden rounded-xl border border-border bg-slate-100 shadow-xs md:block">
+            <div className="aspect-[16/10] w-full overflow-hidden">
+              <Image
+                src="/images/datos/hero-inflacion.jpg"
+                alt="Distrito financiero de Santiago de Chile"
+                width={640}
+                height={400}
+                priority
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        </header>
+      </div>
 
       <InflacionInteractiva serie={serie} />
 
-      <EnResumen
-        frases={resumenFrases}
-        fuente="Fuente: Instituto Nacional de Estadísticas (INE) de Chile · Base 2023 = 100 · Licencia CC BY-SA 4.0."
-      />
+      {/* Enlace útil al observatorio de carreras */}
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex items-start gap-3.5">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-blue-700">
+              <GraduationCap className="size-5" aria-hidden="true" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-foreground sm:text-base">
+                ¿Estabas revisando sueldos de carreras en Chile?
+              </h2>
+              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                En nuestro observatorio de carreras puedes activar el ajuste automático por IPC en
+                un clic para ver todos los sueldos de mifuturo.cl en pesos de hoy.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/datos/carreras"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "h-9 shrink-0 gap-1.5 bg-card px-3.5 text-xs font-medium"
+            )}
+          >
+            Explorar carreras y sueldos
+            <ArrowUpRight className="size-3.5" aria-hidden="true" />
+          </Link>
+        </CardContent>
+      </Card>
+
+      <details className="group rounded-xl border border-border bg-white shadow-xs">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-6 py-4 text-sm font-semibold text-foreground select-none hover:bg-slate-50/70">
+          <span>En resumen y nota metodológica oficial</span>
+          <ChevronDown
+            className="size-4 shrink-0 text-muted-foreground transition-transform duration-150 group-open:rotate-180"
+            aria-hidden="true"
+          />
+        </summary>
+        <div className="border-t border-border/70">
+          <EnResumen
+            frases={resumenFrases}
+            fuente="Fuente: Instituto Nacional de Estadísticas (INE) de Chile · Base 2023 = 100 · Licencia CC BY-SA 4.0."
+            className="rounded-none border-0 shadow-none"
+          />
+        </div>
+      </details>
 
       <FaqDatos faqs={FAQS} />
 

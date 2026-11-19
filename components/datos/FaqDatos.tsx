@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export interface FaqItemDatos {
@@ -29,25 +30,32 @@ export function FaqDatos({
   if (faqs.length === 0) return null;
 
   return (
-    <section
+    <Card
       aria-labelledby={id}
-      className={cn("rounded-xl border border-[#e2e2dc] bg-white p-6", className)}
+      className={cn(
+        "gap-2 rounded-xl border border-border bg-card py-6 shadow-xs ring-0",
+        className
+      )}
     >
-      <h2 id={id} className="h2-datos text-[#171716]">
-        {titulo}
-      </h2>
-      <Accordion className="mt-4">
-        {faqs.map((item, idx) => (
-          <AccordionItem key={item.pregunta} value={`faq-${idx}`}>
-            <AccordionTrigger className="text-base text-[#171716]">
-              {item.pregunta}
-            </AccordionTrigger>
-            <AccordionContent className="text-sm leading-relaxed text-[#3c3c39]">
-              {item.respuesta}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </section>
+      <CardHeader className="px-6 pb-1">
+        <CardTitle id={id} className="text-lg font-semibold tracking-tight text-foreground">
+          {titulo}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="px-6">
+        <Accordion>
+          {faqs.map((item, idx) => (
+            <AccordionItem key={item.pregunta} value={`faq-${idx}`}>
+              <AccordionTrigger className="text-[15px] font-medium text-foreground">
+                {item.pregunta}
+              </AccordionTrigger>
+              <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                {item.respuesta}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </CardContent>
+    </Card>
   );
 }

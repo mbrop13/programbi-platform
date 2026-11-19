@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { Search } from "lucide-react";
 import { buscarCarreras, type BuscadorEntry } from "@/lib/datos/carreras-sinonimos";
 import { trackEvent } from "@/lib/analytics/marketing";
+import { cn } from "@/lib/utils";
 
 const DialogoBuscador = dynamic(
   () => import("./BuscadorCarrerasDialog").then(({ BuscadorCarrerasDialog }) => BuscadorCarrerasDialog),
@@ -25,7 +26,7 @@ interface BuscadorCarrerasProps {
 export function BuscadorCarreras({
   initialItems,
   onSelect,
-  placeholder = "Busca una carrera (ej. medicina, informática, tens, comercial)...",
+  placeholder = "Busca una carrera por nombre o apodo (ej. medicina, informática, tens, comercial)...",
   className,
 }: BuscadorCarrerasProps) {
   const router = useRouter();
@@ -54,13 +55,16 @@ export function BuscadorCarreras({
     }
   }, [loading]);
 
-  const cambiarApertura = React.useCallback((abierto: boolean) => {
-    setOpen(abierto);
-    if (abierto) {
-      setUsado(true);
-      void ensureLoaded();
-    }
-  }, [ensureLoaded]);
+  const cambiarApertura = React.useCallback(
+    (abierto: boolean) => {
+      setOpen(abierto);
+      if (abierto) {
+        setUsado(true);
+        void ensureLoaded();
+      }
+    },
+    [ensureLoaded]
+  );
 
   React.useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -112,28 +116,28 @@ export function BuscadorCarreras({
   };
 
   return (
-    <div className={className}>
+    <div className={cn("w-full", className)}>
       <button
         type="button"
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => cambiarApertura(true)}
         onFocus={() => void ensureLoaded()}
-        className="flex w-full items-center justify-between gap-3 rounded-xl border border-[#d4d4ce] bg-white px-4 py-3 text-left text-sm text-[#5c5c58] shadow-xs transition-colors hover:border-[#1063b8] focus-visible:outline-2 focus-visible:outline-[#1063b8]"
+        className="group flex h-12 w-full items-center justify-between gap-3 rounded-xl border border-input bg-card px-4 text-left text-sm text-muted-foreground shadow-xs transition-all hover:border-slate-400 hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
       >
-        <span className="flex min-w-0 items-center gap-2.5">
-          <Search className="size-4 shrink-0 text-[#1063b8]" aria-hidden="true" />
+        <span className="flex min-w-0 items-center gap-3">
+          <Search
+            className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+            aria-hidden="true"
+          />
           <span className="truncate">{placeholder}</span>
         </span>
-        <span
-          aria-hidden="true"
-          className="hidden shrink-0 items-center gap-1 sm:inline-flex"
-        >
-          <kbd className="rounded border border-[#e2e2dc] bg-[#f7f7f4] px-1.5 py-0.5 font-mono text-[11px] text-[#5c5c58]">
+        <span aria-hidden="true" className="hidden shrink-0 items-center gap-1 sm:inline-flex">
+          <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] font-medium text-muted-foreground">
             /
           </kbd>
-          <span className="text-[11px] text-[#5c5c58]">o</span>
-          <kbd className="rounded border border-[#e2e2dc] bg-[#f7f7f4] px-1.5 py-0.5 font-mono text-[11px] text-[#5c5c58]">
+          <span className="text-[11px] text-muted-foreground/70">o</span>
+          <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] font-medium text-muted-foreground">
             Ctrl K
           </kbd>
         </span>

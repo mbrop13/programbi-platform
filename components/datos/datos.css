@@ -1,29 +1,29 @@
 .datos-scope {
-  --background: #f7f7f4;
-  --foreground: #171716;
+  --radius: 0.625rem;
+  --background: #f8f9fb;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #171716;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #171716;
-  --primary: #1890ff;
+  --popover-foreground: #0f172a;
+  --primary: #0f172a;
   --primary-foreground: #ffffff;
-  --secondary: #f0f0ec;
-  --secondary-foreground: #171716;
-  --muted: #f3f3f0;
-  --muted-foreground: #5c5c58;
-  --accent: #f99c00;
-  --accent-foreground: #171716;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #e2e2dc;
-  --input: #d4d4ce;
-  --ring: #1890ff;
-  --radius: 0.75rem;
-  --chart-1: #1890ff;
-  --chart-2: #f99c00;
-  --chart-3: #a3a3a0;
-  --chart-4: #475569;
-  --chart-5: #d4d4d0;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #2563eb;
+  --chart-1: #2563eb;
+  --chart-2: #0ea5e9;
+  --chart-3: #d97706;
+  --chart-4: #10b981;
+  --chart-5: #64748b;
   background-color: var(--background);
   color: var(--foreground);
   color-scheme: light;
@@ -42,30 +42,30 @@
 }
 
 .datos-scope .kpi-hero {
-  font-size: clamp(2.75rem, 6.5vw, 4.75rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-size: clamp(2.125rem, 4.5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
 }
 
 .datos-scope .h1-datos {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.035em;
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
 .datos-scope .h2-datos {
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1.22;
-  letter-spacing: -0.025em;
+  font-size: 1.375rem;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
 .datos-scope .prose-datos p {
-  max-width: 70ch;
-  line-height: 1.6;
+  max-width: 72ch;
+  line-height: 1.65;
 }
 
 @media (prefers-reduced-motion: reduce) {

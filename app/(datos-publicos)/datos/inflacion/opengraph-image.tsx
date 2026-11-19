@@ -22,8 +22,8 @@ export default async function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#f7f7f4",
-          color: "#171716",
+          background: "#f8f9fb",
+          color: "#0f172a",
           padding: "52px 64px",
           fontFamily: "sans-serif",
         }}
@@ -41,14 +41,15 @@ export default async function Image() {
             style={{
               display: "flex",
               fontSize: 18,
-              fontWeight: 700,
+              fontWeight: 600,
               padding: "8px 18px",
-              borderRadius: 999,
-              background: "#e9f4ff",
-              color: "#1890ff",
+              borderRadius: 10,
+              background: "#eff6ff",
+              color: "#1d4ed8",
+              border: "1px solid #bfdbfe",
             }}
           >
-            {`IPC Base 2023 = 100 · ${mesCorto(ultimo.m)}`}
+            {`IPC oficial INE · ${mesCorto(ultimo.m)}`}
           </div>
         </div>
 
@@ -63,7 +64,7 @@ export default async function Image() {
           >
             Calculadora de IPC: cuánto valen tus pesos hoy
           </div>
-          <div style={{ fontSize: 25, color: "#5c5c58", lineHeight: 1.35 }}>
+          <div style={{ fontSize: 25, color: "#475569", lineHeight: 1.35 }}>
             Ajusta sueldos, aranceles y montos en CLP con la serie oficial del INE.
           </div>
 
@@ -73,15 +74,15 @@ export default async function Image() {
                 display: "flex",
                 flexDirection: "column",
                 background: "#ffffff",
-                border: "1px solid #e2e2dc",
+                border: "1px solid #e2e8f0",
                 borderRadius: 16,
                 padding: "18px 28px",
               }}
             >
-              <span style={{ fontSize: 16, color: "#5c5c58" }}>
+              <span style={{ fontSize: 16, color: "#475569" }}>
                 Último índice ({mesCorto(ultimo.m)})
               </span>
-              <span style={{ fontSize: 36, fontWeight: 800, color: "#1890ff" }}>
+              <span style={{ fontSize: 36, fontWeight: 800, color: "#1d4ed8" }}>
                 {ultimo.v.toFixed(2).replace(".", ",")}
               </span>
             </div>
@@ -92,15 +93,15 @@ export default async function Image() {
                   display: "flex",
                   flexDirection: "column",
                   background: "#ffffff",
-                  border: "1px solid #e2e2dc",
+                  border: "1px solid #e2e8f0",
                   borderRadius: 16,
                   padding: "18px 28px",
                 }}
               >
-                <span style={{ fontSize: 16, color: "#5c5c58" }}>
+                <span style={{ fontSize: 16, color: "#475569" }}>
                   Variación sep-2025 → {mesCorto(ultimo.m)}
                 </span>
-                <span style={{ fontSize: 36, fontWeight: 800, color: "#171716" }}>
+                <span style={{ fontSize: 36, fontWeight: 800, color: "#0f172a" }}>
                   {variacionPorcentual(varSep25).replace("\u00a0", " ")}
                 </span>
               </div>
@@ -113,7 +114,7 @@ export default async function Image() {
             display: "flex",
             justifyContent: "space-between",
             fontSize: 18,
-            color: "#5c5c58",
+            color: "#475569",
           }}
         >
           <span>Fuente: INE Chile (CC BY-SA 4.0)</span>

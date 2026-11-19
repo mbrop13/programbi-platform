@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#F0F9FF"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#CBD5E1" stroke-width="0.75" stroke-opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <rect width="640" height="400" fill="url(#grid)"/>
+  <rect width="640" height="400" fill="url(#glow)"/>
+  
+    <ellipse cx="320" cy="162" rx="112" ry="42" transform="rotate(-24 320 162)" fill="none" stroke="#38BDF8" stroke-width="2"/>
+    <ellipse cx="320" cy="162" rx="112" ry="42" transform="rotate(24 320 162)" fill="none" stroke="#0369A1" stroke-width="2"/>
+    <ellipse cx="320" cy="162" rx="42" ry="112" fill="none" stroke="#7DD3FC" stroke-width="1.5" stroke-dasharray="5 5"/>
+    <circle cx="320" cy="162" r="22" fill="#0369A1"/>
+    <circle cx="320" cy="162" r="10" fill="#FFFFFF"/>
+    <circle cx="225" cy="120" r="7" fill="#0284C7"/>
+    <circle cx="416" cy="204" r="7" fill="#0284C7"/>
+    <circle cx="320" cy="50" r="6" fill="#38BDF8"/>
+  
+</svg>

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export interface TablaDatosProps {
@@ -17,9 +18,9 @@ export function TablaDatos({
   tableClassName,
 }: TablaDatosProps) {
   return (
-    <div
+    <Card
       className={cn(
-        "overflow-hidden rounded-xl border border-[#e2e2dc] bg-white shadow-2xs",
+        "gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 shadow-xs ring-0",
         className
       )}
     >
@@ -28,12 +29,12 @@ export function TablaDatos({
           className={cn(
             "w-full border-collapse text-left text-sm tabular-nums",
             stickyHeader &&
-              "[&_thead_th]:sticky [&_thead_th]:top-0 [&_thead_th]:z-10 [&_thead_th]:bg-[#f7f7f4]",
-            "[&_thead_tr]:border-b [&_thead_tr]:border-[#e2e2dc]",
-            "[&_th]:px-4 [&_th]:py-3 [&_th]:text-xs [&_th]:font-semibold [&_th]:tracking-wide [&_th]:text-[#5c5c58] [&_th]:uppercase",
-            "[&_tbody_tr]:border-b [&_tbody_tr]:border-[#f0f0ec] [&_tbody_tr:last-child]:border-b-0",
-            "[&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-[#f7f7f4]/70",
-            "[&_td]:px-4 [&_td]:py-3 [&_td]:align-middle [&_td]:text-[#171716]",
+              "[&_thead_th]:sticky [&_thead_th]:top-0 [&_thead_th]:z-10 [&_thead_th]:bg-muted/70 [&_thead_th]:backdrop-blur-xs",
+            "[&_thead_tr]:border-b [&_thead_tr]:border-border",
+            "[&_th]:px-4 [&_th]:py-3 [&_th]:text-xs [&_th]:font-medium [&_th]:text-muted-foreground",
+            "[&_tbody_tr]:border-b [&_tbody_tr]:border-border/60 [&_tbody_tr:last-child]:border-b-0",
+            "[&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-muted/40",
+            "[&_td]:px-4 [&_td]:py-3 [&_td]:align-middle [&_td]:text-foreground",
             tableClassName
           )}
         >
@@ -41,6 +42,6 @@ export function TablaDatos({
           {children}
         </table>
       </div>
-    </div>
+    </Card>
   );
 }

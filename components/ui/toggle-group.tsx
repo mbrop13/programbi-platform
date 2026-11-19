@@ -78,8 +78,8 @@ function ToggleGroupItem({ value, className, children, ...props }: ToggleGroupIt
       className={cn(
         "inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer",
         pressed
-          ? "border-[#1890ff] bg-[#1890ff] text-white"
-          : "border-[#e2e2dc] bg-white text-[#171716] hover:bg-[#f3f3f0]",
+          ? "border-primary bg-primary text-primary-foreground shadow-xs"
+          : "border-border bg-card text-foreground hover:bg-muted",
         className
       )}
       {...props}

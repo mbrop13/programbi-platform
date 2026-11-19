@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#EFF6FF"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#E0E7FF" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#CBD5E1" stroke-width="0.75" stroke-opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg)"/>
+  <rect width="640" height="400" fill="url(#grid)"/>
+  <rect width="640" height="400" fill="url(#glow)"/>
+  
+    <rect x="180" y="74" width="280" height="176" rx="14" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.5"/>
+    <rect x="214" y="168" width="32" height="54" rx="6" fill="#DBEAFE"/>
+    <rect x="262" y="142" width="32" height="80" rx="6" fill="#93C5FD"/>
+    <rect x="310" y="124" width="32" height="98" rx="6" fill="#3B82F6"/>
+    <rect x="358" y="98" width="32" height="124" rx="6" fill="#1D4ED8"/>
+    <rect x="406" y="114" width="24" height="108" rx="6" fill="#CBD5E1"/>
+    <path d="M210 152 L278 124 L326 106 L374 84 L424 96" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="374" cy="84" r="5" fill="#1D4ED8" stroke="#FFFFFF" stroke-width="2"/>
+  
+</svg>

@@ -27,8 +27,8 @@ export default async function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#f7f7f4",
-          color: "#171716",
+          background: "#f8f9fb",
+          color: "#0f172a",
           padding: "52px 64px",
           fontFamily: "sans-serif",
         }}
@@ -40,11 +40,12 @@ export default async function Image() {
             style={{
               display: "flex",
               fontSize: 18,
-              fontWeight: 700,
+              fontWeight: 600,
               padding: "8px 18px",
-              borderRadius: 999,
-              background: "#e9f4ff",
-              color: "#1890ff",
+              borderRadius: 10,
+              background: "#eff6ff",
+              color: "#1d4ed8",
+              border: "1px solid #bfdbfe",
             }}
           >
             {`Edición ${meta.edicion} · ${meta.conteos.genericas_unicas} carreras`}
@@ -55,7 +56,7 @@ export default async function Image() {
           <div style={{ fontSize: 54, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.08 }}>
             Ranking de carreras en Chile: sueldos y empleabilidad
           </div>
-          <div style={{ fontSize: 24, color: "#5c5c58", lineHeight: 1.35 }}>
+          <div style={{ fontSize: 24, color: "#475569", lineHeight: 1.35 }}>
             Ingresos brutos 1.º al 5.º año, percentiles P10–P90, aranceles 2026 y comparador oficial.
           </div>
           <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
@@ -65,17 +66,17 @@ export default async function Image() {
                   display: "flex",
                   flexDirection: "column",
                   background: "#ffffff",
-                  border: "1px solid #e2e2dc",
+                  border: "1px solid #e2e8f0",
                   borderRadius: 16,
                   padding: "18px 24px",
                   flex: 1,
                 }}
               >
-                <span style={{ fontSize: 16, color: "#5c5c58" }}>Top Universidades (4.º año)</span>
-                <span style={{ fontSize: 28, fontWeight: 800, color: "#1890ff", marginTop: 4 }}>
+                <span style={{ fontSize: 16, color: "#475569" }}>Top Universidades (4.º año)</span>
+                <span style={{ fontSize: 28, fontWeight: 800, color: "#1d4ed8", marginTop: 4 }}>
                   {`${topU.nombre}: ${pesos(topU.ing4)}`}
                 </span>
-                <span style={{ fontSize: 16, color: "#5c5c58", marginTop: 4 }}>
+                <span style={{ fontSize: 16, color: "#475569", marginTop: 4 }}>
                   {`Empleabilidad 1.º: ${porcentaje(topU.emp1)}`}
                 </span>
               </div>
@@ -86,17 +87,17 @@ export default async function Image() {
                   display: "flex",
                   flexDirection: "column",
                   background: "#ffffff",
-                  border: "1px solid #e2e2dc",
+                  border: "1px solid #e2e8f0",
                   borderRadius: 16,
                   padding: "18px 24px",
                   flex: 1,
                 }}
               >
-                <span style={{ fontSize: 16, color: "#5c5c58" }}>Top IP (4.º año)</span>
-                <span style={{ fontSize: 28, fontWeight: 800, color: "#f99c00", marginTop: 4 }}>
+                <span style={{ fontSize: 16, color: "#475569" }}>Top IP (4.º año)</span>
+                <span style={{ fontSize: 28, fontWeight: 800, color: "#0f172a", marginTop: 4 }}>
                   {`${topIp.nombre}: ${pesos(topIp.ing4)}`}
                 </span>
-                <span style={{ fontSize: 16, color: "#5c5c58", marginTop: 4 }}>
+                <span style={{ fontSize: 16, color: "#475569", marginTop: 4 }}>
                   {`${entero(meta.conteos.filas_C)} programas analizados`}
                 </span>
               </div>
@@ -104,7 +105,7 @@ export default async function Image() {
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, color: "#5c5c58" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, color: "#475569" }}>
           <span>Fuente: www.mifuturo.cl (Mineduc) · Pesos sep-2025</span>
           <span>programbi.com/datos/carreras</span>
         </div>

@@ -1,27 +1,93 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeftRight, Calculator, ExternalLink, Info, TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+  ArrowLeftRight,
+  Calculator,
+  Check,
+  ChevronDown,
+  Copy,
+  ExternalLink,
+  Link2,
+  Scale,
+  Table2,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
+import { toast } from "sonner";
+import { TradingViewIpcChart } from "@/components/datos/charts/TradingViewIpcChart";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trackEvent, trackEventOnce } from "@/lib/analytics/marketing";
 import { mesCorto, mesLargo, pesos, variacionPorcentual } from "@/lib/datos/formato";
 import { ajustarPorIpc, variacionIpc, type PuntoIpc } from "@/lib/datos/ipc";
 import { cn } from "@/lib/utils";
 
-const MONTOS_RAPIDOS = [100_000, 500_000, 1_000_000, 2_000_000] as const;
+const MONTOS_RAPIDOS = [
+  { valor: 500_000, etiqueta: "Sueldo mínimo ref." },
+  { valor: 650_000, etiqueta: "Arriendo" },
+  { valor: 1_000_000, etiqueta: "Sueldo $1M" },
+  { valor: 4_500_000, etiqueta: "Arancel anual" },
+] as const;
 
-const CHART_CONFIG: ChartConfig = {
-  v: {
-    label: "Índice IPC (base 2023 = 100)",
-    color: "#1890ff",
-  },
-};
+const REFERENCIAS_COTIDIANAS = [
+  { concepto: "Compra semanal de supermercado", monto: 60_000 },
+  { concepto: "Cuentas básicas del hogar", monto: 150_000 },
+  { concepto: "Sueldo mínimo referencial", monto: 500_000 },
+  { concepto: "Arriendo mensual promedio", monto: 650_000 },
+  { concepto: "Sueldo profesional base", monto: 1_000_000 },
+  { concepto: "Sueldo profesional consolidado", monto: 2_000_000 },
+  { concepto: "Arancel universitario anual", monto: 4_500_000 },
+] as const;
+
+type FrecuenciaMonto = "mensual" | "anual" | "unico";
+
+function capitalizar(texto: string): string {
+  return texto ? texto.charAt(0).toUpperCase() + texto.slice(1) : "";
+}
+
+function getMesHace12(ym: string): string {
+  const [yStr, mStr] = ym.split("-");
+  const y = Number(yStr);
+  if (!Number.isFinite(y) || !mStr) return "";
+  return `${y - 1}-${mStr}`;
+}
+
+function formatearMiles(rawDigits: string): string {
+  if (!rawDigits) return "";
+  const num = Number(rawDigits);
+  if (!Number.isFinite(num)) return "";
+  return num.toLocaleString("es-CL");
+}
+
+function parseDigits(val: string): number {
+  const limpio = Number(val.replace(/[^\d]/g, ""));
+  return Number.isFinite(limpio) && limpio >= 0 ? limpio : 0;
+}
 
 export interface InflacionInteractivaProps {
   serie: readonly PuntoIpc[];
@@ -34,29 +100,59 @@ export function InflacionInteractiva({
   defaultDesde,
   defaultHasta,
 }: InflacionInteractivaProps) {
-  const primerMes = serie[0]?.m ?? "2024-09";
+  const primerMes = serie[0]?.m ?? "2024-01";
   const ultimoMes = serie[serie.length - 1]?.m ?? "2026-10";
+  const mesHace12 = getMesHace12(ultimoMes);
   const inicialDesde =
     defaultDesde && serie.some((p) => p.m === defaultDesde)
       ? defaultDesde
-      : serie.some((p) => p.m === "2025-09")
-        ? "2025-09"
-        : primerMes;
+      : serie.some((p) => p.m === mesHace12)
+        ? mesHace12
+        : serie.some((p) => p.m === "2025-09")
+          ? "2025-09"
+          : primerMes;
   const inicialHasta =
     defaultHasta && serie.some((p) => p.m === defaultHasta) ? defaultHasta : ultimoMes;
 
+  const [tabActiva, setTabActiva] = useState<string>("ajustar");
   const [montoRaw, setMontoRaw] = useState<string>("1000000");
+  const [frecuencia, setFrecuencia] = useState<FrecuenciaMonto>("mensual");
   const [mesOrigen, setMesOrigen] = useState<string>(inicialDesde);
   const [mesDestino, setMesDestino] = useState<string>(inicialHasta);
+  const [verFormula, setVerFormula] = useState<boolean>(false);
+
+  // Tab 2: Comparador de sueldo real
+  const [sueldoAntesRaw, setSueldoAntesRaw] = useState<string>("1000000");
+  const [sueldoHoyRaw, setSueldoHoyRaw] = useState<string>("1080000");
+
+  const [copiadoResumen, setCopiadoResumen] = useState<boolean>(false);
 
   useEffect(() => {
     trackEventOnce("datos_view:inflacion", "datos_view", { pagina: "inflacion" });
   }, []);
 
-  const monto = useMemo(() => {
-    const limpio = Number(montoRaw.replace(/[^\d]/g, ""));
-    return Number.isFinite(limpio) && limpio >= 0 ? limpio : 0;
-  }, [montoRaw]);
+  // Restaurar parámetros desde la URL tras hidratar (SSR-safe)
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const sp = new URLSearchParams(window.location.search);
+      const mParam = sp.get("monto");
+      const dParam = sp.get("desde");
+      const hParam = sp.get("hasta");
+      if (mParam && /^\d+$/.test(mParam)) setMontoRaw(mParam);
+      if (dParam && serie.some((p) => p.m === dParam)) setMesOrigen(dParam);
+      if (hParam && serie.some((p) => p.m === hParam)) setMesDestino(hParam);
+    };
+    const timer = window.setTimeout(syncFromUrl, 0);
+    window.addEventListener("popstate", syncFromUrl);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("popstate", syncFromUrl);
+    };
+  }, [serie]);
+
+  const monto = useMemo(() => parseDigits(montoRaw), [montoRaw]);
+  const sueldoAntes = useMemo(() => parseDigits(sueldoAntesRaw), [sueldoAntesRaw]);
+  const sueldoHoy = useMemo(() => parseDigits(sueldoHoyRaw), [sueldoHoyRaw]);
 
   const calculo = useMemo(
     () => ajustarPorIpc(monto, mesOrigen, mesDestino, serie),
@@ -68,295 +164,755 @@ export function InflacionInteractiva({
     [mesOrigen, mesDestino, serie]
   );
 
-  const chartData = useMemo(
-    () =>
-      serie.map((p) => ({
-        m: p.m,
-        etiqueta: mesCorto(p.m),
-        v: p.v,
-      })),
-    [serie]
-  );
+  // Métricas humanas derivadas del ajuste
+  const diferenciaPesos = calculo ? calculo.montoAjustado - monto : null;
+  const poderCompraSinReajuste =
+    calculo && calculo.factor > 0 ? Math.round(monto / calculo.factor) : null;
+  const perdidaPctSinReajuste =
+    calculo && calculo.factor > 0 ? (1 / calculo.factor - 1) : null;
 
-  const notificarCalculo = () => {
-    trackEvent("datos_calc", { calculadora: "ipc" });
+  // Cálculo Tab 2: ¿Mi sueldo le ganó a la inflación?
+  const comparacionSueldo = useMemo(() => {
+    if (sueldoAntes <= 0) return null;
+    const empate = ajustarPorIpc(sueldoAntes, mesOrigen, mesDestino, serie);
+    if (!empate) return null;
+    const brechaMensual = sueldoHoy - empate.montoAjustado;
+    const brechaAnual = brechaMensual * 12;
+    const varNominal = (sueldoHoy - sueldoAntes) / sueldoAntes;
+    const varIpcVal = empate.factor - 1;
+    const varReal = (1 + varNominal) / empate.factor - 1;
+    return {
+      sueldoEmpate: empate.montoAjustado,
+      brechaMensual,
+      brechaAnual,
+      varNominal,
+      varIpc: varIpcVal,
+      varReal,
+      estado:
+        Math.abs(brechaMensual) < 500
+          ? ("empate" as const)
+          : brechaMensual > 0
+            ? ("gana" as const)
+            : ("pierde" as const),
+    };
+  }, [sueldoAntes, sueldoHoy, mesOrigen, mesDestino, serie]);
+
+  const ultimoPunto = serie[serie.length - 1];
+  const penultimoPunto = serie.length >= 2 ? serie[serie.length - 2] : null;
+  const puntoHace12 = serie.find((p) => p.m === mesHace12) ?? null;
+  const varUltimoTramo =
+    penultimoPunto && ultimoPunto
+      ? variacionIpc(penultimoPunto.m, ultimoPunto.m, serie)
+      : null;
+  const var12Meses =
+    puntoHace12 && ultimoPunto
+      ? variacionIpc(puntoHace12.m, ultimoPunto.m, serie)
+      : null;
+
+  const notificarCalculo = (tipo = "ipc") => {
+    trackEvent("datos_calc", { calculadora: tipo });
   };
 
   const handleMontoChange = (val: string) => {
-    setMontoRaw(val.replace(/[^\d]/g, ""));
-    notificarCalculo();
+    setMontoRaw(val.replace(/[^\d]/g, "").slice(0, 12));
+    notificarCalculo("ipc");
   };
 
   const handleOrigenChange = (val: string) => {
     setMesOrigen(val);
-    notificarCalculo();
+    notificarCalculo("ipc");
   };
 
   const handleDestinoChange = (val: string) => {
     setMesDestino(val);
-    notificarCalculo();
+    notificarCalculo("ipc");
   };
 
   const handleSwap = () => {
     setMesOrigen(mesDestino);
     setMesDestino(mesOrigen);
-    notificarCalculo();
+    notificarCalculo("ipc");
   };
 
-  const esSerieResumida = serie.length <= 6;
+  const copiarResultado = async () => {
+    if (!calculo) return;
+    const texto = `${pesos(monto)} de ${mesLargo(mesOrigen)} equivalen a ${pesos(
+      calculo.montoAjustado
+    )} en ${mesLargo(mesDestino)} (${variacion !== null ? variacionPorcentual(variacion) : ""} según IPC oficial del INE). Calculado en programbi.com/datos/inflacion`;
+    try {
+      await navigator.clipboard.writeText(texto);
+      setCopiadoResumen(true);
+      toast.success("Resultado copiado al portapapeles");
+      window.setTimeout(() => setCopiadoResumen(false), 2000);
+    } catch {
+      toast.error("No se pudo copiar el resultado");
+    }
+  };
+
+  const copiarEnlace = async () => {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("monto", String(monto));
+      url.searchParams.set("desde", mesOrigen);
+      url.searchParams.set("hasta", mesDestino);
+      await navigator.clipboard.writeText(url.toString());
+      toast.success("Enlace con tu cálculo copiado");
+    } catch {
+      toast.error("No se pudo copiar el enlace");
+    }
+  };
+
+  const variacionSube = (variacion ?? 0) > 0;
+  const variacionBaja = (variacion ?? 0) < 0;
 
   return (
     <div className="space-y-8">
-      <section
-        aria-label="Calculadora de ajuste por IPC"
-        className="grid gap-6 rounded-xl border border-[#e2e2dc] bg-white p-6 shadow-2xs lg:grid-cols-[1.05fr_0.95fr] lg:p-8"
-      >
-        <div className="space-y-5">
-          <div>
-            <label
-              htmlFor="ipc-monto"
-              className="block text-xs font-semibold tracking-wide text-[#5c5c58] uppercase"
-            >
-              Monto en pesos chilenos (CLP)
-            </label>
-            <div className="relative mt-2">
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-base font-semibold text-[#5c5c58]"
+      {/* KPIs resumen de la serie oficial */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
+          <CardContent className="p-5">
+            <p className="text-xs font-medium text-muted-foreground">Inflación 12 meses</p>
+            <p className="mt-2 text-2xl font-semibold tracking-tight text-blue-700 tabular-nums sm:text-3xl">
+              {var12Meses !== null ? variacionPorcentual(var12Meses) : "—"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {puntoHace12 && ultimoPunto
+                ? `${mesCorto(puntoHace12.m)} → ${mesCorto(ultimoPunto.m)} · INE oficial`
+                : "Variación interanual del IPC"}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
+          <CardContent className="p-5">
+            <p className="text-xs font-medium text-muted-foreground">
+              Última variación mensual
+            </p>
+            <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground tabular-nums sm:text-3xl">
+              {varUltimoTramo !== null ? variacionPorcentual(varUltimoTramo) : "—"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {penultimoPunto && ultimoPunto
+                ? `${mesCorto(penultimoPunto.m)} → ${mesCorto(ultimoPunto.m)}`
+                : "Referencia oficial del INE"}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
+          <CardContent className="p-5">
+            <p className="text-xs font-medium text-muted-foreground">Índice IPC actual</p>
+            <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground tabular-nums sm:text-3xl">
+              {ultimoPunto ? ultimoPunto.v.toFixed(2).replace(".", ",") : "—"}
+              <span className="ml-1.5 text-sm font-normal text-muted-foreground">pts</span>
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {ultimoPunto ? `${capitalizar(mesLargo(ultimoPunto.m))} · Base 2023 = 100` : ""}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Herramienta principal con 3 modos */}
+      <Card className="gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <Tabs value={tabActiva} onValueChange={setTabActiva} className="gap-0">
+          <div className="border-b border-border bg-muted/35 px-4 pt-4 pb-3 sm:px-6">
+            <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-lg bg-muted p-1 sm:w-fit">
+              <TabsTrigger
+                value="ajustar"
+                className="h-8 gap-1.5 px-3 text-xs font-medium sm:text-sm"
               >
-                $
-              </span>
-              <input
-                id="ipc-monto"
-                type="number"
-                inputMode="numeric"
-                min={0}
-                step={1000}
-                value={montoRaw}
-                onChange={(e) => handleMontoChange(e.target.value)}
-                className="w-full rounded-lg border border-[#d4d4ce] bg-[#f7f7f4] py-3 pr-4 pl-8 text-lg font-bold text-[#171716] tabular-nums transition-colors focus:border-[#1890ff] focus:bg-white focus:outline-none"
-                placeholder="1000000"
-              />
-            </div>
-
-            <div className="mt-2.5 flex flex-wrap gap-1.5">
-              {MONTOS_RAPIDOS.map((preset) => {
-                const activo = monto === preset;
-                return (
-                  <button
-                    key={preset}
-                    type="button"
-                    onClick={() => handleMontoChange(String(preset))}
-                    className={cn(
-                      "rounded-md border px-2.5 py-1 text-xs font-medium tabular-nums transition-colors",
-                      activo
-                        ? "border-[#1890ff] bg-[#e9f4ff] text-[#1890ff]"
-                        : "border-[#e2e2dc] bg-[#f7f7f4] text-[#5c5c58] hover:text-[#171716]"
-                    )}
-                  >
-                    {pesos(preset)}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
-            <div>
-              <label
-                htmlFor="ipc-mes-origen"
-                className="block text-xs font-semibold tracking-wide text-[#5c5c58] uppercase"
-              >
-                Mes de origen
-              </label>
-              <select
-                id="ipc-mes-origen"
-                value={mesOrigen}
-                onChange={(e) => handleOrigenChange(e.target.value)}
-                className="mt-2 w-full rounded-lg border border-[#d4d4ce] bg-[#f7f7f4] px-3 py-2.5 text-sm font-medium text-[#171716] transition-colors focus:border-[#1890ff] focus:bg-white focus:outline-none"
-              >
-                {serie.map((p) => (
-                  <option key={p.m} value={p.m}>
-                    {mesLargo(p.m)} ({p.m})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleSwap}
-              aria-label="Invertir mes de origen y destino"
-              title="Invertir meses"
-              className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] px-3 text-[#5c5c58] transition-colors hover:border-[#1890ff] hover:text-[#1890ff] sm:w-10"
-            >
-              <ArrowLeftRight className="size-4" aria-hidden="true" />
-            </button>
-
-            <div>
-              <label
-                htmlFor="ipc-mes-destino"
-                className="block text-xs font-semibold tracking-wide text-[#5c5c58] uppercase"
-              >
-                Mes de destino
-              </label>
-              <select
-                id="ipc-mes-destino"
-                value={mesDestino}
-                onChange={(e) => handleDestinoChange(e.target.value)}
-                className="mt-2 w-full rounded-lg border border-[#d4d4ce] bg-[#f7f7f4] px-3 py-2.5 text-sm font-medium text-[#171716] transition-colors focus:border-[#1890ff] focus:bg-white focus:outline-none"
-              >
-                {serie.map((p) => (
-                  <option key={p.m} value={p.m}>
-                    {mesLargo(p.m)} ({p.m})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#f0f0ec] pt-4 text-xs text-[#5c5c58]">
-            <span>Metodología oficial INE (empalme Base 2023 = 100)</span>
-            <a
-              href="https://calculadoraipc.ine.cl"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-semibold text-[#1890ff] hover:underline"
-            >
-              Calculadora oficial INE
-              <ExternalLink className="size-3.5" aria-hidden="true" />
-            </a>
-          </div>
-        </div>
-
-        <div className="flex flex-col justify-between rounded-xl border border-[#d6e6f5] bg-[#f7f7f4] p-6">
-          <div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-[#1890ff] uppercase">
                 <Calculator className="size-3.5" aria-hidden="true" />
-                Monto actualizado
-              </span>
-              {variacion !== null ? (
-                <span className="inline-flex items-center rounded-full border border-[#e2e2dc] bg-white px-2.5 py-0.5 text-xs font-semibold text-[#171716] tabular-nums">
-                  Variación: {variacionPorcentual(variacion)}
-                </span>
-              ) : null}
+                Ajustar un monto
+              </TabsTrigger>
+              <TabsTrigger
+                value="sueldo"
+                className="h-8 gap-1.5 px-3 text-xs font-medium sm:text-sm"
+              >
+                <Scale className="size-3.5" aria-hidden="true" />
+                ¿Mi sueldo le ganó al IPC?
+              </TabsTrigger>
+              <TabsTrigger
+                value="referencias"
+                className="h-8 gap-1.5 px-3 text-xs font-medium sm:text-sm"
+              >
+                <Table2 className="size-3.5" aria-hidden="true" />
+                Ejemplos cotidianos
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          {/* TAB 1: AJUSTAR UN MONTO */}
+          <TabsContent value="ajustar" className="p-5 sm:p-7">
+            <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <Label htmlFor="ipc-monto" className="text-sm font-medium text-foreground">
+                      ¿Qué monto quieres actualizar?
+                    </Label>
+                    <span className="text-xs text-muted-foreground">Pesos chilenos (CLP)</span>
+                  </div>
+
+                  <div className="relative">
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-lg font-medium text-muted-foreground"
+                    >
+                      $
+                    </span>
+                    <Input
+                      id="ipc-monto"
+                      type="text"
+                      inputMode="numeric"
+                      value={formatearMiles(montoRaw)}
+                      onChange={(e) => handleMontoChange(e.target.value)}
+                      placeholder="1.000.000"
+                      className="h-12 rounded-lg border-input bg-background/60 pr-4 pl-8 text-xl font-semibold text-foreground tabular-nums focus-visible:bg-card"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {MONTOS_RAPIDOS.map((preset) => {
+                      const activo = monto === preset.valor;
+                      return (
+                        <Button
+                          key={preset.valor}
+                          type="button"
+                          variant={activo ? "default" : "outline"}
+                          size="xs"
+                          onClick={() => handleMontoChange(String(preset.valor))}
+                          className={cn(
+                            "h-7 rounded-md px-2.5 text-xs font-medium tabular-nums",
+                            !activo && "bg-card text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          {preset.etiqueta}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Frecuencia para mostrar impacto anual */}
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium text-muted-foreground">
+                    Tipo de monto (para ver el impacto anual)
+                  </Label>
+                  <div className="grid grid-cols-3 gap-1.5 rounded-lg bg-muted p-1">
+                    {(
+                      [
+                        { id: "mensual", label: "Mensual" },
+                        { id: "anual", label: "Anual" },
+                        { id: "unico", label: "Monto único" },
+                      ] as const
+                    ).map((op) => (
+                      <button
+                        key={op.id}
+                        type="button"
+                        onClick={() => setFrecuencia(op.id)}
+                        aria-pressed={frecuencia === op.id}
+                        className={cn(
+                          "rounded-md py-1.5 text-xs font-medium transition-all",
+                          frecuencia === op.id
+                            ? "bg-card text-foreground shadow-xs"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        {op.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Fechas origen / destino con shadcn Select */}
+                <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="ipc-mes-origen" className="text-xs font-medium text-muted-foreground">
+                      Desde qué fecha
+                    </Label>
+                    <Select value={mesOrigen} onValueChange={handleOrigenChange}>
+                      <SelectTrigger
+                        id="ipc-mes-origen"
+                        aria-label="Mes de origen"
+                        className="h-10 w-full bg-card text-sm font-medium"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serie.map((p) => (
+                          <SelectItem key={p.m} value={p.m}>
+                            {capitalizar(mesLargo(p.m))}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleSwap}
+                    aria-label="Invertir fecha de origen y destino"
+                    title="Invertir fechas"
+                    className="h-10 w-full bg-card sm:w-10"
+                  >
+                    <ArrowLeftRight className="size-4" aria-hidden="true" />
+                  </Button>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="ipc-mes-destino" className="text-xs font-medium text-muted-foreground">
+                      Hasta qué fecha
+                    </Label>
+                    <Select value={mesDestino} onValueChange={handleDestinoChange}>
+                      <SelectTrigger
+                        id="ipc-mes-destino"
+                        aria-label="Mes de destino"
+                        className="h-10 w-full bg-card text-sm font-medium"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serie.map((p) => (
+                          <SelectItem key={p.m} value={p.m}>
+                            {capitalizar(mesLargo(p.m))}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/70 pt-4 text-xs text-muted-foreground">
+                  <span>Cálculo exacto con índice oficial del INE</span>
+                  <a
+                    href="https://calculadoraipc.ine.cl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 font-medium text-blue-700 hover:underline"
+                  >
+                    ¿Necesitas fechas anteriores? Ir al INE
+                    <ExternalLink className="size-3.5" aria-hidden="true" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Panel de resultado */}
+              <div className="flex flex-col justify-between rounded-xl border border-border bg-muted/35 p-5 sm:p-6">
+                <div>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Equivale en {mesLargo(mesDestino)} a
+                    </span>
+                    {variacion !== null ? (
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "h-auto gap-1 rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums",
+                          variacionSube && "border border-blue-200/80 bg-blue-50 text-blue-700",
+                          variacionBaja && "border border-emerald-200/80 bg-emerald-50 text-emerald-800"
+                        )}
+                      >
+                        {variacionSube ? (
+                          <TrendingUp className="size-3" aria-hidden="true" />
+                        ) : variacionBaja ? (
+                          <TrendingDown className="size-3" aria-hidden="true" />
+                        ) : null}
+                        {variacionPorcentual(variacion)} de variación
+                      </Badge>
+                    ) : null}
+                  </div>
+
+                  <p className="kpi-hero mt-3 text-foreground tabular-nums">
+                    {calculo ? pesos(calculo.montoAjustado) : "Sin dato"}
+                  </p>
+
+                  <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                    {calculo ? (
+                      <>
+                        Para mantener el mismo poder de compra que{" "}
+                        <strong className="font-semibold text-foreground">{pesos(monto)}</strong> en{" "}
+                        {mesLargo(mesOrigen)}, necesitas{" "}
+                        <strong className="font-semibold text-foreground">
+                          {pesos(calculo.montoAjustado)}
+                        </strong>{" "}
+                        en {mesLargo(mesDestino)}.
+                      </>
+                    ) : (
+                      "Selecciona dos fechas válidas para calcular el ajuste por inflación."
+                    )}
+                  </p>
+
+                  {calculo && diferenciaPesos !== null && poderCompraSinReajuste !== null ? (
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-lg border border-border bg-card p-3.5">
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                          Diferencia en pesos
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-foreground tabular-nums">
+                          {diferenciaPesos >= 0 ? "+" : ""}
+                          {pesos(diferenciaPesos)}
+                        </p>
+                        {frecuencia === "mensual" && diferenciaPesos !== 0 ? (
+                          <p className="mt-0.5 text-[11px] text-muted-foreground tabular-nums">
+                            {diferenciaPesos > 0 ? "+" : ""}
+                            {pesos(diferenciaPesos * 12)} en 12 meses
+                          </p>
+                        ) : (
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">
+                            Ajuste neto del período
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="rounded-lg border border-border bg-card p-3.5">
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                          Si el monto no se reajustó
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-foreground tabular-nums">
+                          {pesos(poderCompraSinReajuste)}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground tabular-nums">
+                          {perdidaPctSinReajuste !== null && perdidaPctSinReajuste < 0
+                            ? `Rinde ${Math.abs(perdidaPctSinReajuste * 100)
+                                .toFixed(1)
+                                .replace(".", ",")} % menos hoy`
+                            : "Poder de compra equivalente"}
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+
+                {/* Acciones y detalle colapsable */}
+                <div className="mt-5 space-y-3 border-t border-border/70 pt-4">
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={copiarResultado}
+                      className="h-8 gap-1.5 bg-card text-xs"
+                    >
+                      {copiadoResumen ? (
+                        <Check className="size-3.5 text-emerald-600" aria-hidden="true" />
+                      ) : (
+                        <Copy className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                      )}
+                      {copiadoResumen ? "Copiado" : "Copiar resultado"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={copiarEnlace}
+                      className="h-8 gap-1.5 bg-card text-xs"
+                    >
+                      <Link2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                      Compartir cálculo
+                    </Button>
+                  </div>
+
+                  {calculo ? (
+                    <Collapsible open={verFormula} onOpenChange={setVerFormula}>
+                      <CollapsibleTrigger className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
+                        <ChevronDown
+                          className={cn(
+                            "size-3.5 transition-transform duration-150",
+                            verFormula && "rotate-180"
+                          )}
+                          aria-hidden="true"
+                        />
+                        {verFormula ? "Ocultar cálculo paso a paso" : "Ver cómo se calcula paso a paso"}
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-2.5 rounded-lg border border-border bg-card p-3.5 text-xs">
+                        <p className="font-medium text-foreground">Fórmula oficial del INE</p>
+                        <p className="mt-1 font-mono text-[11px] text-muted-foreground tabular-nums">
+                          {pesos(monto)} × ({calculo.ipcHasta.toFixed(2).replace(".", ",")} /{" "}
+                          {calculo.ipcDesde.toFixed(2).replace(".", ",")}) ={" "}
+                          <span className="font-semibold text-foreground">
+                            {pesos(calculo.montoAjustado)}
+                          </span>
+                        </p>
+                        <p className="mt-1 text-[11px] text-muted-foreground">
+                          Factor de reajuste: {calculo.factor.toFixed(4).replace(".", ",")} · IPC{" "}
+                          {mesCorto(mesOrigen)} ({calculo.ipcDesde.toFixed(2).replace(".", ",")}) →
+                          IPC {mesCorto(mesDestino)} ({calculo.ipcHasta.toFixed(2).replace(".", ",")})
+                        </p>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ) : null}
+                </div>
+              </div>
             </div>
+          </TabsContent>
 
-            <p className="kpi-hero mt-4 text-[#171716] tabular-nums">
-              {calculo ? pesos(calculo.montoAjustado) : "s/i"}
-            </p>
+          {/* TAB 2: ¿MI SUELDO LE GANÓ A LA INFLACIÓN? */}
+          <TabsContent value="sueldo" className="p-5 sm:p-7">
+            <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+              <div className="space-y-5">
+                <div>
+                  <h2 className="text-base font-semibold text-foreground">
+                    Comprueba si tu sueldo ganó o perdió poder de compra
+                  </h2>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    Compara tu sueldo anterior con el actual y te mostramos cuánto debías recibir
+                    solo para empatar la subida de precios.
+                  </p>
+                </div>
 
-            <p className="mt-2 text-sm text-[#5c5c58]">
-              {calculo ? (
-                <>
-                  <strong className="font-semibold text-[#171716]">{pesos(monto)}</strong> de{" "}
-                  {mesLargo(mesOrigen)} equivalen a{" "}
-                  <strong className="font-semibold text-[#171716]">
-                    {pesos(calculo.montoAjustado)}
-                  </strong>{" "}
-                  en {mesLargo(mesDestino)}.
-                </>
-              ) : (
-                "Selecciona un rango válido para calcular el ajuste por IPC."
-              )}
-            </p>
-          </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="sueldo-antes" className="text-xs font-medium text-muted-foreground">
+                      Sueldo en {mesLargo(mesOrigen)}
+                    </Label>
+                    <div className="relative">
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm font-medium text-muted-foreground"
+                      >
+                        $
+                      </span>
+                      <Input
+                        id="sueldo-antes"
+                        type="text"
+                        inputMode="numeric"
+                        value={formatearMiles(sueldoAntesRaw)}
+                        onChange={(e) => {
+                          setSueldoAntesRaw(e.target.value.replace(/[^\d]/g, "").slice(0, 12));
+                          notificarCalculo("ipc_sueldo_real");
+                        }}
+                        className="h-11 bg-background/60 pl-7 text-base font-semibold tabular-nums focus-visible:bg-card"
+                      />
+                    </div>
+                  </div>
 
-          {calculo ? (
-            <div className="mt-6 rounded-lg border border-[#e2e2dc] bg-white p-3.5 text-xs">
-              <p className="font-semibold text-[#171716]">Fórmula aplicada</p>
-              <p className="mt-1 font-mono text-[11px] text-[#5c5c58] tabular-nums">
-                {pesos(monto)} × ({calculo.ipcHasta.toFixed(2).replace(".", ",")} /{" "}
-                {calculo.ipcDesde.toFixed(2).replace(".", ",")}) ={" "}
-                <span className="font-semibold text-[#171716]">
-                  {pesos(calculo.montoAjustado)}
-                </span>
-              </p>
-              <p className="mt-1 text-[11px] text-[#5c5c58]">
-                Factor de ajuste: {calculo.factor.toFixed(4).replace(".", ",")} (IPC{" "}
-                {mesCorto(mesOrigen)} = {calculo.ipcDesde.toFixed(2).replace(".", ",")} → IPC{" "}
-                {mesCorto(mesDestino)} = {calculo.ipcHasta.toFixed(2).replace(".", ",")})
-              </p>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="sueldo-hoy" className="text-xs font-medium text-muted-foreground">
+                      Sueldo en {mesLargo(mesDestino)}
+                    </Label>
+                    <div className="relative">
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm font-medium text-muted-foreground"
+                      >
+                        $
+                      </span>
+                      <Input
+                        id="sueldo-hoy"
+                        type="text"
+                        inputMode="numeric"
+                        value={formatearMiles(sueldoHoyRaw)}
+                        onChange={(e) => {
+                          setSueldoHoyRaw(e.target.value.replace(/[^\d]/g, "").slice(0, 12));
+                          notificarCalculo("ipc_sueldo_real");
+                        }}
+                        className="h-11 bg-background/60 pl-7 text-base font-semibold tabular-nums focus-visible:bg-card"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Fecha inicial</Label>
+                    <Select value={mesOrigen} onValueChange={handleOrigenChange}>
+                      <SelectTrigger className="h-10 w-full bg-card text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serie.map((p) => (
+                          <SelectItem key={p.m} value={p.m}>
+                            {capitalizar(mesLargo(p.m))}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Fecha actual</Label>
+                    <Select value={mesDestino} onValueChange={handleDestinoChange}>
+                      <SelectTrigger className="h-10 w-full bg-card text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serie.map((p) => (
+                          <SelectItem key={p.m} value={p.m}>
+                            {capitalizar(mesLargo(p.m))}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between rounded-xl border border-border bg-muted/35 p-5 sm:p-6">
+                {comparacionSueldo ? (
+                  <div className="space-y-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "h-auto rounded-md px-2.5 py-1 text-xs font-semibold",
+                          comparacionSueldo.estado === "gana" &&
+                            "border border-emerald-200 bg-emerald-50 text-emerald-800",
+                          comparacionSueldo.estado === "pierde" &&
+                            "border border-rose-200 bg-rose-50 text-rose-800",
+                          comparacionSueldo.estado === "empate" &&
+                            "border border-border bg-card text-foreground"
+                        )}
+                      >
+                        {comparacionSueldo.estado === "gana"
+                          ? "Le ganaste a la inflación"
+                          : comparacionSueldo.estado === "pierde"
+                            ? "Perdiste poder de compra"
+                            : "Empataste con la inflación"}
+                      </Badge>
+                      <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                        Variación real: {variacionPorcentual(comparacionSueldo.varReal)}
+                      </span>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Diferencia real mensual frente al IPC
+                      </p>
+                      <p
+                        className={cn(
+                          "mt-1 text-3xl font-bold tracking-tight tabular-nums sm:text-4xl",
+                          comparacionSueldo.estado === "gana" && "text-emerald-700",
+                          comparacionSueldo.estado === "pierde" && "text-rose-700",
+                          comparacionSueldo.estado === "empate" && "text-foreground"
+                        )}
+                      >
+                        {comparacionSueldo.brechaMensual >= 0 ? "+" : ""}
+                        {pesos(comparacionSueldo.brechaMensual)}
+                        <span className="ml-1 text-sm font-normal text-muted-foreground">/mes</span>
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground tabular-nums">
+                        Equivale a{" "}
+                        <strong className="font-semibold text-foreground">
+                          {comparacionSueldo.brechaAnual >= 0 ? "+" : ""}
+                          {pesos(comparacionSueldo.brechaAnual)}
+                        </strong>{" "}
+                        en un año completo.
+                      </p>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-lg border border-border bg-card p-3.5">
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                          Para solo empatar al IPC
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-foreground tabular-nums">
+                          {pesos(comparacionSueldo.sueldoEmpate)}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">
+                          Inflación período: {variacionPorcentual(comparacionSueldo.varIpc)}
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-border bg-card p-3.5">
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                          Cambio nominal de tu sueldo
+                        </p>
+                        <p className="mt-1 text-base font-semibold text-foreground tabular-nums">
+                          {variacionPorcentual(comparacionSueldo.varNominal)}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">
+                          De {pesos(sueldoAntes)} a {pesos(sueldoHoy)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Ingresa ambos sueldos para ver si tu remuneración superó la inflación del período.
+                  </p>
+                )}
+              </div>
             </div>
-          ) : null}
-        </div>
-      </section>
+          </TabsContent>
 
-      <section
-        aria-labelledby="ipc-grafico-titulo"
-        className="rounded-xl border border-[#e2e2dc] bg-white p-6 shadow-2xs"
-      >
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2
-              id="ipc-grafico-titulo"
-              className="flex items-center gap-2 text-lg font-bold text-[#171716]"
-            >
-              <TrendingUp className="size-4 text-[#1890ff]" aria-hidden="true" />
-              Evolución del Índice de Precios al Consumidor (IPC)
-            </h2>
-            <p className="mt-1 text-xs text-[#5c5c58]">
-              Serie oficial base 2023 = 100 ({mesCorto(primerMes)} a {mesCorto(ultimoMes)})
-            </p>
-          </div>
-        </div>
+          {/* TAB 3: EJEMPLOS COTIDIANOS */}
+          <TabsContent value="referencias" className="p-5 sm:p-7">
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <div>
+                  <h2 className="text-base font-semibold text-foreground">
+                    ¿Cuánto subieron distintos montos cotidianos?
+                  </h2>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Equivalencia entre {mesLargo(mesOrigen)} y {mesLargo(mesDestino)}. Haz clic en
+                    «Usar» para llevar cualquier monto a la calculadora.
+                  </p>
+                </div>
+                {variacion !== null ? (
+                  <Badge variant="secondary" className="tabular-nums">
+                    IPC del tramo: {variacionPorcentual(variacion)}
+                  </Badge>
+                ) : null}
+              </div>
 
-        {esSerieResumida ? (
-          <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-3.5 text-xs leading-relaxed text-[#5c5c58]">
-            <Info className="mt-0.5 size-4 shrink-0 text-[#1890ff]" aria-hidden="true" />
-            <p>
-              Actualmente se muestran los puntos de referencia base de la serie ({serie.length}{" "}
-              registros: {serie.map((p) => mesCorto(p.m)).join(", ")}). La serie mensual completa
-              desde 2009 se incorpora automáticamente al sincronizar con la API del Banco Central de
-              Chile (<code className="font-mono text-[#171716]">BCCH_API_TOKEN</code>).
-            </p>
-          </div>
-        ) : null}
+              <div className="overflow-hidden rounded-lg border border-border">
+                <Table className="tabular-nums">
+                  <TableHeader className="bg-muted/60">
+                    <TableRow className="hover:bg-muted/60">
+                      <TableHead>Ejemplo cotidiano</TableHead>
+                      <TableHead className="text-right">En {mesCorto(mesOrigen)}</TableHead>
+                      <TableHead className="text-right">En {mesCorto(mesDestino)}</TableHead>
+                      <TableHead className="text-right">Diferencia</TableHead>
+                      <TableHead className="text-right">Acción</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {REFERENCIAS_COTIDIANAS.map((ref) => {
+                      const adj = ajustarPorIpc(ref.monto, mesOrigen, mesDestino, serie);
+                      const diff = adj ? adj.montoAjustado - ref.monto : null;
+                      return (
+                        <TableRow key={ref.concepto}>
+                          <TableCell className="font-medium text-foreground">
+                            {ref.concepto}
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground">
+                            {pesos(ref.monto)}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold text-foreground">
+                            {adj ? pesos(adj.montoAjustado) : "—"}
+                          </TableCell>
+                          <TableCell className="text-right text-xs font-medium text-muted-foreground">
+                            {diff !== null ? `${diff >= 0 ? "+" : ""}${pesos(diff)}` : "—"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="xs"
+                              onClick={() => {
+                                setMontoRaw(String(ref.monto));
+                                setTabActiva("ajustar");
+                                notificarCalculo("ipc_preset");
+                              }}
+                              className="text-xs font-medium text-blue-700 hover:text-blue-800"
+                            >
+                              Usar
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </Card>
 
-        <div className="mt-5 h-64 w-full">
-          <ChartContainer config={CHART_CONFIG} className="h-full w-full">
-            <LineChart data={chartData} margin={{ top: 12, right: 16, left: 0, bottom: 4 }}>
-              <CartesianGrid stroke="#f0f0ec" strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="etiqueta"
-                tickLine={false}
-                axisLine={{ stroke: "#e2e2dc" }}
-                tick={{ fill: "#5c5c58", fontSize: 12 }}
-              />
-              <YAxis
-                domain={["auto", "auto"]}
-                tickLine={false}
-                axisLine={false}
-                width={48}
-                tick={{ fill: "#5c5c58", fontSize: 12 }}
-                tickFormatter={(val: number) => val.toFixed(0)}
-              />
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(label) => {
-                      const punto = chartData.find((d) => d.etiqueta === String(label));
-                      return punto ? mesLargo(punto.m) : String(label);
-                    }}
-                    formatter={(value) => value.toFixed(2).replace(".", ",")}
-                  />
-                }
-              />
-              <Line
-                type="monotone"
-                dataKey="v"
-                name="IPC"
-                stroke="#1890ff"
-                strokeWidth={2.5}
-                dot={{ r: 4, fill: "#1890ff", stroke: "#ffffff", strokeWidth: 2 }}
-                activeDot={{ r: 6, fill: "#f99c00", stroke: "#ffffff", strokeWidth: 2 }}
-                isAnimationActive={false}
-              />
-            </LineChart>
-          </ChartContainer>
-        </div>
-      </section>
+      {/* Gráfico interactivo TradingView Lightweight Charts */}
+      <TradingViewIpcChart serie={serie} />
     </div>
   );
 }

@@ -121,10 +121,7 @@ export function CompartirDialog({
         render={
           <Button
             variant="outline"
-            className={cn(
-              "border-[#e2e2dc] bg-white text-[#171716] hover:bg-[#f3f3f0]",
-              className
-            )}
+            className={cn("bg-card text-foreground hover:bg-muted", className)}
           />
         }
       >
@@ -132,10 +129,10 @@ export function CompartirDialog({
         {triggerLabel}
       </DialogTrigger>
 
-      <DialogContent className="border border-[#e2e2dc] bg-white text-[#171716] sm:max-w-lg">
+      <DialogContent className="border border-border bg-card text-foreground sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold text-[#171716]">{titulo}</DialogTitle>
-          <DialogDescription className="text-xs text-[#5c5c58]">
+          <DialogTitle className="text-lg font-semibold text-foreground">{titulo}</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
             Elige el formato de la tarjeta oficial con datos de mifuturo.cl (edición {edicion}).
           </DialogDescription>
         </DialogHeader>
@@ -143,7 +140,7 @@ export function CompartirDialog({
         <div
           role="group"
           aria-label="Formato de tarjeta"
-          className="grid grid-cols-3 gap-2 rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-1"
+          className="grid grid-cols-3 gap-2 rounded-lg border border-border bg-muted p-1"
         >
           {FORMATOS.map((f) => {
             const activo = formato === f.id;
@@ -156,8 +153,8 @@ export function CompartirDialog({
                 className={cn(
                   "flex flex-col items-center rounded-md px-2 py-1.5 text-center transition-colors",
                   activo
-                    ? "bg-white text-[#171716] shadow-2xs"
-                    : "text-[#5c5c58] hover:text-[#171716]"
+                    ? "bg-card text-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span className="text-xs font-semibold">{f.label}</span>
@@ -167,49 +164,29 @@ export function CompartirDialog({
           })}
         </div>
 
-        <div className="flex max-h-72 items-center justify-center overflow-hidden rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-3">
+        <div className="flex max-h-72 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted/40 p-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imgPath}
             alt={`Vista previa ${titulo} (${formato})`}
-            className="max-h-64 w-auto rounded-md border border-[#e2e2dc] object-contain shadow-xs"
+            className="max-h-64 w-auto rounded-md border border-border object-contain shadow-xs"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-2 pt-1 sm:grid-cols-4">
-          <Button
-            type="button"
-            onClick={handleDownloadPng}
-            disabled={descargando}
-            className="bg-[#1890ff] text-white hover:bg-[#1074d4]"
-          >
+          <Button type="button" onClick={handleDownloadPng} disabled={descargando}>
             <Download className="size-4" aria-hidden="true" />
             {descargando ? "Bajando…" : "PNG"}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCopyLink}
-            className="border-[#e2e2dc] bg-white text-[#171716] hover:bg-[#f3f3f0]"
-          >
+          <Button type="button" variant="outline" onClick={handleCopyLink} className="bg-card">
             <Copy className="size-4" aria-hidden="true" />
             Copiar link
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleWhatsApp}
-            className="border-[#e2e2dc] bg-white text-[#171716] hover:bg-[#f3f3f0]"
-          >
+          <Button type="button" variant="outline" onClick={handleWhatsApp} className="bg-card">
             <MessageCircle className="size-4" aria-hidden="true" />
             WhatsApp
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleWebShare}
-            className="border-[#e2e2dc] bg-white text-[#171716] hover:bg-[#f3f3f0]"
-          >
+          <Button type="button" variant="outline" onClick={handleWebShare} className="bg-card">
             <Share2 className="size-4" aria-hidden="true" />
             Compartir
           </Button>

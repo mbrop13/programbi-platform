@@ -3,6 +3,13 @@
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -24,7 +31,7 @@ interface HistogramaArancelesProps {
 }
 
 const CHART_CONFIG: ChartConfig = {
-  count: { label: "Programas", color: "#1890ff" },
+  count: { label: "Programas", color: "#2563eb" },
 };
 
 function calcularMediana(vals: number[]): number | null {
@@ -50,7 +57,7 @@ function construirBins(aranceles: number[]) {
       isLast ? a >= lo && a <= hi : a >= lo && a < hi
     ).length;
     bins.push({
-      label: `$${m}M – $${m + 1}M`,
+      label: `$${m}M–$${m + 1}M`,
       min: lo,
       max: hi,
       count,
@@ -59,10 +66,7 @@ function construirBins(aranceles: number[]) {
   return bins;
 }
 
-export function HistogramaAranceles({
-  programas,
-  oferta,
-}: HistogramaArancelesProps) {
+export function HistogramaAranceles({ programas, oferta }: HistogramaArancelesProps) {
   const [jornada, setJornada] = useState("todas");
   const [region, setRegion] = useState("todas");
 
@@ -116,20 +120,20 @@ export function HistogramaAranceles({
   }
 
   return (
-    <div className="rounded-xl border border-[#e2e2dc] bg-white p-5 sm:p-6">
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+    <Card className="gap-4 rounded-xl border border-border bg-card py-6 shadow-xs ring-0">
+      <CardHeader className="flex flex-col gap-3 px-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-base font-bold text-[#171716]">
-            Distribución de aranceles anuales 2026
-          </h3>
-          <p className="text-xs text-[#5c5c58]">
-            Oferta oficial del Buscador de Carreras (Mineduc) según jornada y región.
-          </p>
+          <CardTitle className="text-base font-semibold text-foreground">
+            ¿Cuánto cuesta estudiar esta carrera? (2026)
+          </CardTitle>
+          <CardDescription className="mt-0.5 text-xs">
+            Distribución de aranceles anuales por jornada y región.
+          </CardDescription>
         </div>
 
         <div className="flex flex-wrap gap-2">
           <Select value={jornada} onValueChange={setJornada}>
-            <SelectTrigger size="sm" aria-label="Filtrar por jornada" className="bg-[#f7f7f4]">
+            <SelectTrigger size="sm" aria-label="Filtrar por jornada" className="bg-card text-xs">
               <SelectValue placeholder="Jornada" />
             </SelectTrigger>
             <SelectContent>
@@ -143,7 +147,7 @@ export function HistogramaAranceles({
           </Select>
 
           <Select value={region} onValueChange={setRegion}>
-            <SelectTrigger size="sm" aria-label="Filtrar por región" className="bg-[#f7f7f4]">
+            <SelectTrigger size="sm" aria-label="Filtrar por región" className="bg-card text-xs">
               <SelectValue placeholder="Región" />
             </SelectTrigger>
             <SelectContent>
@@ -156,64 +160,68 @@ export function HistogramaAranceles({
             </SelectContent>
           </Select>
         </div>
-      </div>
+      </CardHeader>
 
-      {resumen ? (
-        <div className="mb-4 grid grid-cols-3 gap-3 rounded-lg border border-[#e2e2dc] bg-[#f7f7f4] p-3 text-xs tabular-nums">
-          <div>
-            <span className="block text-[#5c5c58]">Mínimo</span>
-            <span className="text-sm font-bold text-[#171716]">{pesos(resumen.min)}</span>
+      <CardContent className="px-6">
+        {resumen ? (
+          <div className="mb-4 grid grid-cols-3 gap-3 rounded-lg border border-border bg-muted/40 p-3.5 text-xs tabular-nums">
+            <div>
+              <span className="block text-[11px] text-muted-foreground">Mínimo</span>
+              <span className="text-sm font-semibold text-foreground">{pesos(resumen.min)}</span>
+            </div>
+            <div>
+              <span className="block text-[11px] text-muted-foreground">
+                Mediana ({entero(resumen.n)} prog.)
+              </span>
+              <span className="text-sm font-semibold text-blue-700">{pesos(resumen.med)}</span>
+            </div>
+            <div>
+              <span className="block text-[11px] text-muted-foreground">Máximo</span>
+              <span className="text-sm font-semibold text-foreground">{pesos(resumen.max)}</span>
+            </div>
           </div>
-          <div>
-            <span className="block text-[#5c5c58]">Mediana ({entero(resumen.n)} prog.)</span>
-            <span className="text-sm font-bold text-[#1063b8]">{pesos(resumen.med)}</span>
-          </div>
-          <div>
-            <span className="block text-[#5c5c58]">Máximo</span>
-            <span className="text-sm font-bold text-[#171716]">{pesos(resumen.max)}</span>
-          </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      {bins.length > 0 ? (
-        <ChartContainer config={CHART_CONFIG} className="h-[260px] w-full tabular-nums">
-          <BarChart data={bins} margin={{ top: 12, right: 12, left: 0, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e2dc" vertical={false} />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              axisLine={{ stroke: "#e2e2dc" }}
-              tick={{ fill: "#5c5c58", fontSize: 11 }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              width={36}
-              domain={[0, "auto"]}
-              allowDecimals={false}
-              tick={{ fill: "#5c5c58", fontSize: 12 }}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(val) => `${entero(val)} programas`}
-                  labelFormatter={(lbl) => `Tramo arancel: ${String(lbl)}`}
-                />
-              }
-            />
-            <Bar
-              dataKey="count"
-              fill="#1890ff"
-              radius={[4, 4, 0, 0]}
-              isAnimationActive={false}
-            />
-          </BarChart>
-        </ChartContainer>
-      ) : (
-        <div className="flex h-[200px] items-center justify-center rounded-lg border border-dashed border-[#e2e2dc] text-sm text-[#5c5c58]">
-          No hay programas con arancel publicado para la combinación seleccionada.
-        </div>
-      )}
-    </div>
+        {bins.length > 0 ? (
+          <ChartContainer config={CHART_CONFIG} className="h-[250px] w-full tabular-nums">
+            <BarChart data={bins} margin={{ top: 12, right: 12, left: 0, bottom: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={{ stroke: "#e2e8f0" }}
+                tick={{ fill: "#64748b", fontSize: 11 }}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                width={34}
+                domain={[0, "auto"]}
+                allowDecimals={false}
+                tick={{ fill: "#64748b", fontSize: 12 }}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(val) => `${entero(val)} programas`}
+                    labelFormatter={(lbl) => `Arancel anual: ${String(lbl)}`}
+                  />
+                }
+              />
+              <Bar
+                dataKey="count"
+                fill="#2563eb"
+                radius={[6, 6, 0, 0]}
+                isAnimationActive={false}
+              />
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex h-[200px] items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
+            No hay programas con arancel publicado para la combinación seleccionada.
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

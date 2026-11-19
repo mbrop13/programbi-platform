@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
-import { Compass } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { FaqDatos } from "@/components/datos/FaqDatos";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { TestCarrera } from "@/components/datos/TestCarrera";
@@ -68,54 +69,49 @@ export default function TestCarrerasPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      <MigasDatos migas={migas} className="mb-6" />
+      <div className="space-y-4">
+        <MigasDatos migas={migas} />
 
-      <header className="mb-8 max-w-3xl">
-        <p className="inline-flex items-center gap-2 rounded-full border border-[#e2e2dc] bg-white px-3 py-1 text-xs font-semibold tracking-wide text-[#1890ff] uppercase">
-          <Compass className="size-3.5" aria-hidden="true" />
-          Explorador en 5 pasos · Edición {meta.edicion}
-        </p>
-        <h1 className="h1-datos mt-3 text-[#171716]">
-          ¿Qué carrera conviene explorar según tus datos?
-        </h1>
-        <p className="mt-3 text-base text-[#5c5c58]">
-          Filtra por área, presupuesto, PAES, región y jornada. Fórmula transparente con cifras
-          oficiales de <span className="font-medium text-[#171716]">mifuturo.cl</span>.
-        </p>
-      </header>
+        <header className="max-w-3xl space-y-2.5">
+          <Badge
+            variant="secondary"
+            className="h-auto rounded-md border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+          >
+            Explorador en 5 pasos · Edición {meta.edicion}
+          </Badge>
+          <h1 className="h1-datos text-foreground">
+            ¿Qué carrera conviene explorar según tus prioridades?
+          </h1>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            Elige tus áreas de interés, presupuesto, puntaje PAES, región y jornada para ordenar
+            carreras reales con datos oficiales de{" "}
+            <strong className="font-medium text-foreground">mifuturo.cl</strong>.
+          </p>
+        </header>
+      </div>
 
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}>
         <TestCarrera ranking={ranking} edicion={meta.edicion} />
       </Suspense>
 
-      <section className="mt-10 rounded-xl border border-[#e2e2dc] bg-white p-6">
-        <h2 className="text-lg font-bold text-[#171716]">Preguntas frecuentes</h2>
-        <dl className="mt-4 space-y-4">
-          {FAQS.map((f) => (
-            <div key={f.pregunta} className="border-b border-[#f0f0ec] pb-4 last:border-b-0 last:pb-0">
-              <dt className="text-sm font-bold text-[#171716]">{f.pregunta}</dt>
-              <dd className="mt-1 text-sm text-[#5c5c58]">{f.respuesta}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+      <FaqDatos faqs={FAQS} />
 
-      <div className="mt-8 flex flex-wrap gap-3 text-sm">
-        <Link href="/datos/carreras" className="font-medium text-[#1890ff] hover:underline">
+      <div className="flex flex-wrap gap-4 text-sm">
+        <Link href="/datos/carreras" className="font-medium text-blue-700 hover:underline">
           ← Volver al ranking de carreras
         </Link>
-        <Link href="/datos/carreras/comparar" className="font-medium text-[#1890ff] hover:underline">
+        <Link href="/datos/carreras/comparar" className="font-medium text-blue-700 hover:underline">
           Ir al comparador →
         </Link>
       </div>
 
-      <FuenteLinea edicion={meta.edicion} conAviso className="mt-8 border-t border-[#e2e2dc] pt-6" />
+      <FuenteLinea edicion={meta.edicion} conAviso />
     </div>
   );
 }

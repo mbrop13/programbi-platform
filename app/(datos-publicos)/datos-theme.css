@@ -1,6 +1,19 @@
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant data-horizontal (&:where([data-horizontal], [data-orientation="horizontal"]));
+@custom-variant data-vertical (&:where([data-vertical], [data-orientation="vertical"]));
+@custom-variant data-active (&:where([data-active], [aria-selected="true"]));
+@custom-variant data-open (&:where([data-open], [data-state="open"]));
+@custom-variant data-closed (&:where([data-closed], [data-state="closed"]));
+@custom-variant data-checked (&:where([data-checked], [data-state="checked"]));
+@custom-variant data-unchecked (&:where([data-unchecked], [data-state="unchecked"]));
+@custom-variant data-selected (&:where([data-selected], [aria-selected="true"]));
+@custom-variant data-disabled (&:where([data-disabled], :disabled, [aria-disabled="true"]));
+@custom-variant data-starting-style (&:where([data-starting-style]));
+@custom-variant data-ending-style (&:where([data-ending-style]));
 
 @theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -25,15 +38,19 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 @theme {
-  --color-canvas: #f3f3f0;
-  --color-paper: #f7f7f4;
-  --color-wash: #ebebe6;
-  --color-ink: #171716;
-  --color-mute: #5f5e59;
-  --color-faint: #6a6964;
-  --color-line: rgb(23 23 22 / 9%);
-  --color-line-strong: rgb(23 23 22 / 16%);
+  --color-canvas: #f8f9fb;
+  --color-paper: #ffffff;
+  --color-wash: #f1f5f9;
+  --color-ink: #0f172a;
+  --color-mute: #475569;
+  --color-faint: #64748b;
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
 }
