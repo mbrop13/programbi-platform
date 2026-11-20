@@ -7,12 +7,17 @@ import { cifra, periodo, personas, puntos, tasa } from "@/lib/datos/desempleo-fo
 import { buscarRegion, NACIONAL, REGIONES, RUTA_DESEMPLEO, rutaTerritorio } from "@/lib/datos/regiones";
 import { breadcrumbs, dataset, faqSchema, metaObservatorio, MIGAS_DATOS } from "@/lib/datos/seo";
 import { diferencia, lecturaRegional, movimiento, otrasTasas, resumenTerritorio } from "@/lib/datos/textos";
-import { DatosEstructurados, Descargas, Fuente, Metodologia, Migas, MiniSerie, Preguntas, preguntasObservatorio, TablaHistorica } from "./ElementosDatos";
+import { DatosEstructurados, Descargas, Fuente, Metodologia, Migas, Preguntas, preguntasObservatorio, TablaHistorica } from "./ElementosDatos";
 import { VistaDatos } from "./AccionesDatos";
 import { DesglosesDesempleo } from "./DesglosesDesempleo";
 import { SeguroCesantia } from "./SeguroCesantia";
 import { ExploradorDesempleo } from "./ExploradorDesempleo";
 import { MapaRanking, type FilaMapa } from "./MapaRanking";
+import { ChileMap, type RegionKey } from "@/components/datos/viz/ChileMap";
+import { RangeBar } from "@/components/datos/viz/RangeBar";
+import { Sparkline } from "@/components/datos/viz/Sparkline";
+import { InlineBar } from "@/components/datos/viz/InlineBar";
+import { StatTile } from "@/components/datos/viz/StatTile";
 import estilos from "./Observatorio.module.css";
 
 const migasNacional = [...MIGAS_DATOS, { label: "Desempleo", path: RUTA_DESEMPLEO }];
@@ -46,6 +51,22 @@ export function Observatorio({ slug }: { slug: string }) {
     const { actual, indicadores } = datosRegion;
     return [{ slug, nombre, tasa: actual.tasa, yoy: indicadores.yoy_pp, nota: actual.notas.tasa ?? actual.notas.des }];
   });
+  // Heroes: cifras derivadas de los JSON existentes (RANKING, filasMapa, serie).
+  const valoresMapa: Partial<Record<RegionKey, number | null>> = Object.fromEntries(
+    filasMapa.map((fila) => [fila.slug as RegionKey, fila.tasa] as [RegionKey, number]),
+  );
+  const regionesConNota = filasMapa.filter((fila) => fila.nota).map((fila) => fila.slug as RegionKey);
+  const tasaMenor = menor?.tasa ?? actual.tasa;
+  const tasaMayor = mayor?.tasa ?? actual.tasa;
+  const serie24 = serie.slice(-24).map((observacion) => observacion.tasa);
+  const delta12m = indicadores.yoy_pp;
+  const direccionDelta = delta12m === null || Math.abs(delta12m) < 0.05 ? "flat" : delta12m > 0 ? "up" : "down";
+  // Más desempleo empeora: sube = rojo, baja = verde (paleta brief, solo deltas).
+  const claseDelta = direccionDelta === "up" ? estilos.deltaSube : direccionDelta === "down" ? estilos.deltaBaja : estilos.deltaPlano;
+  const primera24 = serie.at(-24) ?? serie[0];
+  const chileYoy = chile.indicadores.yoy_pp;
+  const chileDireccion = chileYoy === null || Math.abs(chileYoy) < 0.05 ? "flat" : chileYoy > 0 ? "up" : "down";
+  const formatoTasa = (valor: number) => `${cifra(valor)} %`;
   const itemList = {
     "@type": "ItemList",
     name: `Ranking de desocupación por región, ${trimestre}`,
@@ -75,35 +96,94 @@ export function Observatorio({ slug }: { slug: string }) {
         <h1>Desempleo en {nombre}</h1>
         <p>{region ? `Tasa regional, comparación con Chile y evolución desde 2010.` : "Tasa de desocupación, evolución histórica y panorama de las 16 regiones de Chile."}</p>
       </header>
-      <div className={estilos.heroes}>
-        <section className={estilos.heroPrincipal} aria-label="Tasa de desocupación actual">
-          <div className={estilos.heroIndicador}>
-            <p className={estilos.periodo}><CalendarDays size={16} aria-hidden="true" /> {trimestre}</p>
-            <p className={estilos.valorHero} data-tasa-hero={actual.tasa}>{cifra(actual.tasa)}<span> %</span>{nota && <sup aria-label={`Nota ${nota} de calidad`}>{nota}</sup>}</p>
-            <p className={estilos.etiquetaHero}>Tasa de desocupación</p>
-            <p className={estilos.recuento}>{personas(actual.des)} personas desocupadas{actual.notas.des && <sup aria-label={`Nota ${actual.notas.des} de calidad`}>{actual.notas.des}</sup>}</p>
-          </div>
-          <MiniSerie serie={serie} />
-          <div className={estilos.heroFuente}><Fuente edicion /></div>
-        </section>
-        <section className={estilos.heroComparacion} aria-labelledby="comparacion-anual">
-          <h2 id="comparacion-anual"><ChartNoAxesCombined size={19} aria-hidden="true" /> Variación en doce meses</h2>
-          {haceUnAno && indicadores.yoy_pp !== null && <>
-            <p className={estilos.valorDelta} data-yoy-hero={indicadores.yoy_pp}>{puntos(indicadores.yoy_pp)}</p>
-            <dl className={estilos.parPeriodos}>
-              <div><dt>{periodo(haceUnAno.p)}</dt><dd>{tasa(haceUnAno.tasa)}</dd></div>
-              <div><dt>{trimestre}</dt><dd>{tasa(actual.tasa)}</dd></div>
-            </dl>
-            <p>{comparable
-              ? `Último registro igual o mayor para estos meses: ${tasa(comparable.tasa)} en ${periodo(comparable.p)}.`
-              : "Tasa más alta de la serie para este mismo trimestre móvil."}</p>
-          </>}
-          <div className={estilos.comparacionPie}>
-            {indicadores.anterior_pp !== null && <span><strong>{puntos(indicadores.anterior_pp)}</strong> vs. trimestre anterior</span>}
-            {region && <span><strong>{puntos(brecha)}</strong> vs. Chile · Puesto {posicion} de {RANKING.length}</span>}
-          </div>
-        </section>
-      </div>
+      {!region ? (
+        /* Hero NACIONAL: 3 columnas desktop (KPI · mapa md · top 5); móvil KPI → mapa horizontal → top 3. */
+        <div className={`${estilos.heroes} ${estilos.heroesNacional}`}>
+          <section className={estilos.heroPrincipal} aria-label="Tasa de desocupación actual de Chile">
+            <div className={estilos.heroIndicador}>
+              <p className={estilos.periodo}><CalendarDays size={16} aria-hidden="true" /> {trimestre}</p>
+              <p className={estilos.valorHero} data-tasa-hero={actual.tasa}>{cifra(actual.tasa)}<span> %</span>{nota && <sup aria-label={`Nota ${nota} de calidad`}>{nota}</sup>}</p>
+              <p className={estilos.etiquetaHero}>Tasa de desocupación</p>
+              {delta12m !== null && <p className={`${estilos.heroDelta} ${claseDelta}`} data-yoy-hero={delta12m}>{puntos(delta12m)} en doce meses</p>}
+              <p className={estilos.recuento}>{personas(actual.des)} personas desocupadas{actual.notas.des && <sup aria-label={`Nota ${actual.notas.des} de calidad`}>{actual.notas.des}</sup>}</p>
+            </div>
+            <div className={estilos.heroFuente}><Fuente edicion /></div>
+          </section>
+          <section className={estilos.heroMapa} aria-label="Mapa de desempleo por región">
+            <div className={estilos.heroMapaVertical}>
+              <ChileMap size="md" values={valoresMapa} format={formatoTasa} hrefFor={(r) => rutaTerritorio(r)} legendLabel="Tasa de desocupación" hatched={regionesConNota} ariaLabel={`Mapa de desempleo por región de Chile, ${trimestre}`} />
+            </div>
+            <div className={estilos.heroMapaHorizontal}>
+              <ChileMap size="mini" orientation="horizontal" values={valoresMapa} format={formatoTasa} hrefFor={(r) => rutaTerritorio(r)} legendLabel="Tasa de desocupación" hatched={regionesConNota} ariaLabel={`Mapa de desempleo por región de Chile, ${trimestre}`} />
+            </div>
+          </section>
+          <section className={estilos.heroTop} aria-label="Regiones con mayor tasa de desocupación">
+            <h2>Las 5 tasas más altas</h2>
+            <ol className={estilos.topLista}>
+              {RANKING.slice(0, 5).map((item, indice) => (
+                <li key={item.slug} className={indice >= 3 ? estilos.topOpcional : undefined}>
+                  <a href={rutaTerritorio(item.slug)}>
+                    <span className={estilos.topNombre}><span className={estilos.topPuesto}>{indice + 1}</span> {item.nombre}</span>
+                    <span className={estilos.topCifra}>{tasa(item.tasa)}</span>
+                    <InlineBar value={item.tasa} max={tasaMayor} />
+                  </a>
+                </li>
+              ))}
+            </ol>
+            <a className={estilos.topEnlace} href="#regiones">Ver las {RANKING.length} regiones <ChevronRight size={15} aria-hidden="true" /></a>
+          </section>
+        </div>
+      ) : (
+        /* Hero REGIONAL: KPI + mini-mapa con la región resaltada; variación 12 m, rango regional vs Chile y sparkline. */
+        <div className={`${estilos.heroes} ${estilos.heroesRegional}`}>
+          <section className={estilos.heroPrincipal} aria-label={`Tasa de desocupación actual de ${nombre}`}>
+            <div className={estilos.heroIndicador}>
+              <p className={estilos.periodo}><CalendarDays size={16} aria-hidden="true" /> {trimestre}</p>
+              <p className={estilos.valorHero} data-tasa-hero={actual.tasa}>{cifra(actual.tasa)}<span> %</span>{nota && <sup aria-label={`Nota ${nota} de calidad`}>{nota}</sup>}</p>
+              <p className={estilos.etiquetaHero}>Tasa de desocupación</p>
+              {delta12m !== null && <p className={`${estilos.heroDelta} ${claseDelta}`}>{puntos(delta12m)} en doce meses</p>}
+              <p className={estilos.recuento}>{personas(actual.des)} personas desocupadas{actual.notas.des && <sup aria-label={`Nota ${actual.notas.des} de calidad`}>{actual.notas.des}</sup>}</p>
+              <p className={estilos.heroPuesto}>Puesto <strong>{posicion}.ª de {RANKING.length}</strong> entre las regiones</p>
+            </div>
+            <div className={estilos.heroMiniMapa}>
+              <ChileMap size="mini" values={valoresMapa} highlight={slug as RegionKey} format={formatoTasa} hrefFor={(r) => rutaTerritorio(r)} legendLabel="Tasa de desocupación" hatched={regionesConNota} ariaLabel={`Mapa de desempleo de Chile con ${nombre} resaltada, ${trimestre}`} />
+            </div>
+            <div className={estilos.heroFuente}><Fuente edicion /></div>
+          </section>
+          <section className={estilos.heroComparacion} aria-labelledby="comparacion-anual">
+            <h2 id="comparacion-anual"><ChartNoAxesCombined size={19} aria-hidden="true" /> Variación en doce meses</h2>
+            {haceUnAno && delta12m !== null && <>
+              <p className={`${estilos.valorDelta} ${claseDelta}`} data-yoy-hero={delta12m}>{puntos(delta12m)}</p>
+              <dl className={estilos.parPeriodos}>
+                <div><dt>{periodo(haceUnAno.p)}</dt><dd>{tasa(haceUnAno.tasa)}</dd></div>
+                <div><dt>{trimestre}</dt><dd>{tasa(actual.tasa)}</dd></div>
+              </dl>
+              <p>{comparable
+                ? `Último registro igual o mayor para estos meses: ${tasa(comparable.tasa)} en ${periodo(comparable.p)}.`
+                : "Tasa más alta de la serie para este mismo trimestre móvil."}</p>
+            </>}
+            <div className={estilos.heroRango}>
+              <h3 className={estilos.heroSubtitulo}>Frente al resto de las regiones</h3>
+              <RangeBar min={tasaMenor} max={tasaMayor} mid={chile.actual.tasa} you={actual.tasa} format={formatoTasa} labels={["Menor región", "Mayor región"]} />
+              <div className={estilos.heroTileChile}>
+                <StatTile label="Chile" value={tasa(chile.actual.tasa)} sub={`Referencia nacional · ${trimestre}`} delta={chileYoy !== null ? { text: `${puntos(chileYoy)} 12 m`, dir: chileDireccion, good: chileDireccion === "down" } : undefined} />
+              </div>
+            </div>
+            <div className={estilos.comparacionPie}>
+              {indicadores.anterior_pp !== null && <span><strong>{puntos(indicadores.anterior_pp)}</strong> vs. trimestre anterior</span>}
+              <span><strong>{puntos(brecha)}</strong> vs. Chile · Puesto {posicion}.ª de {RANKING.length}</span>
+            </div>
+          </section>
+          <section className={estilos.heroEvolucion} aria-labelledby="evolucion-reciente">
+            <h2 id="evolucion-reciente">Últimos 24 trimestres móviles</h2>
+            <div className={estilos.heroSpark}>
+              <Sparkline data={serie24} ariaLabel={`Desempleo en ${nombre}, últimos 24 trimestres móviles`} lastDot />
+            </div>
+            <div className={estilos.miniFechas}><span>{periodo(primera24.p)}</span><span>{trimestre}</span></div>
+            {delta12m !== null && haceUnAno && <p className={`${estilos.heroDelta} ${claseDelta}`}>{puntos(delta12m)} en doce meses · {tasa(haceUnAno.tasa)} → {tasa(actual.tasa)}</p>}
+          </section>
+        </div>
+      )}
 
       <DatosEstructurados nodos={[breadcrumbs(migas), dataset(slug, nombre, descripcion, serie), faqSchema(preguntas), ...(region ? [] : [itemList])]} />
       <nav className={estilos.indice} aria-label="En esta página">

@@ -18,6 +18,14 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+/* Enlaces principales del sitio: réplica visual de components/shared/Navbar.tsx
+   (referencia de solo lectura; el Navbar cliente no se importa). */
+const SITIO_LINKS = [
+  { href: "/cursos", label: "Ver Cursos" },
+  { href: "/precios", label: "Precios" },
+  { href: "/plantillas", label: "Recursos" },
+];
+
 const FOOTER_DATOS_LINKS = [
   { href: "/datos", label: "Resumen de Datos" },
   { href: "/datos/carreras", label: "Carreras y sueldos" },
@@ -52,14 +60,15 @@ export function DatosRootShell({
               </a>
             </div>
 
-            <nav className={styles.desktopNav} aria-label="Datos de Chile">
-              <DatosNavLinks />
+            <nav className={styles.desktopNav} aria-label="Principal">
+              {SITIO_LINKS.map(({ href, label }) => (
+                <a key={href} className={styles.siteLink} href={href}>
+                  {label}
+                </a>
+              ))}
             </nav>
 
             <div className={styles.actions}>
-              <a className={styles.subtleLink} href="/cursos">
-                Cursos
-              </a>
               <a className={styles.account} href="/login">
                 Iniciar sesión
               </a>
@@ -70,6 +79,14 @@ export function DatosRootShell({
             </div>
           </div>
         </header>
+
+        {/* Subnav sticky de /datos: las 5 secciones viven aquí, no en el header.
+            DatosNavLinks marca la activa con usePathname. */}
+        <nav className={styles.subnav} aria-label="Datos de Chile">
+          <div className={styles.subnavInner}>
+            <DatosNavLinks />
+          </div>
+        </nav>
 
         <main id="contenido-principal" tabIndex={-1} className={styles.main}>
           {children}

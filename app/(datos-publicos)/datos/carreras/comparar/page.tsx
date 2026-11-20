@@ -6,6 +6,7 @@ import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";
 import { MigasDatos } from "@/components/datos/MigasDatos";
+import { OcultarSiParam } from "@/components/datos/OcultarSiParam";
 import { TablaDatos } from "@/components/datos/TablaDatos";
 import {
   getCarrera,
@@ -113,14 +114,19 @@ export default function CompararCarrerasPage() {
             <strong className="font-medium text-foreground">mifuturo.cl</strong>: sueldos del 1.º al
             5.º año, empleabilidad, duración real y arancel anual 2026.
           </p>
+          <p className="text-sm text-muted-foreground">
+            Comparte el enlace con <code className="rounded bg-muted px-1 py-0.5 text-xs">?c=</code>{" "}
+            para abrir una comparación directa.
+          </p>
         </header>
       </div>
 
       {/* Comparador interactivo protagonista */}
       <ComparadorActivador edicion={meta.edicion} pesosDe={meta.pesos_de} />
 
-      {/* Referencia SSR */}
-      {frasesResumen.length > 0 ? (
+      {/* Referencia SSR: se oculta en cliente cuando la URL trae ?c= */}
+      <OcultarSiParam param="c">
+        {frasesResumen.length > 0 ? (
         <div className="space-y-6">
           <EnResumen
             titulo="Ejemplo de referencia: Ingeniería Comercial vs Ingeniería Civil Industrial"
@@ -175,15 +181,16 @@ export default function CompararCarrerasPage() {
             </TablaDatos>
           ) : null}
         </div>
-      ) : null}
+        ) : null}
+      </OcultarSiParam>
 
       <FaqDatos faqs={FAQS} />
 
       <div className="flex flex-wrap gap-4 text-sm">
-        <Link href="/datos/carreras" className="font-medium text-blue-700 hover:underline">
+        <Link href="/datos/carreras" className="font-medium text-[#0b63c5] hover:underline">
           ← Volver al ranking de carreras
         </Link>
-        <Link href="/datos/carreras/retorno" className="font-medium text-blue-700 hover:underline">
+        <Link href="/datos/carreras/retorno" className="font-medium text-[#0b63c5] hover:underline">
           Calcular retorno estimado →
         </Link>
       </div>

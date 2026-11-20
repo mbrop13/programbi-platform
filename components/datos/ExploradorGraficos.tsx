@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   CartesianGrid,
-  LabelList,
   Line,
   LineChart,
   ReferenceArea,
@@ -11,8 +10,19 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  usePlotArea,
+  useYAxisScale,
 } from "recharts";
 import { trackEvent } from "@/lib/analytics/marketing";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import styles from "./ExploradorDesempleo.module.css";
 
 type Periodo = { codigo: string; label: string };
@@ -28,6 +38,19 @@ type Territorio = {
   promedios_anuales: { ano: number; tasa: number }[];
 };
 type Datos = { periodos: Periodo[]; territorios: Territorio[] };
+type Serie = { key: string; color: string; corto?: string };
+type Fila = Record<string, string | number | null>;
+
+const AZUL = "#1890ff";
+const AZUL_TEXTO = "#0b63c5";
+const AMARILLO = "#f2c811";
+const AMARILLO_TEXTO = "#8a6d00";
+const AZUL_OSCURO = "#0b3d7a";
+const GRIS_LINEA = "#686868";
+const GRIS_LINEA_CLARO = "#a3a3a0";
+const GRIS_ETIQUETA = "#555555";
+const REGION_COLORES = [AZUL_OSCURO, AMARILLO, GRIS_LINEA];
+
 const fmt = (n: number | null | undefined) =>
   n == null
     ? "Sin datos"
@@ -43,14 +66,122 @@ function urlState(key: string, value: string) {
   url.searchParams.set(key, value);
   window.history.replaceState(null, "", url);
 }
+/** Color de texto AA para cada color de línea (el amarillo nunca va en texto). */
+function colorEtiqueta(color: string) {
+  const c = color.toLowerCase();
+  if (c === AZUL) return AZUL_TEXTO;
+  if (c === AMARILLO) return AMARILLO_TEXTO;
+  if (
+    c === GRIS_LINEA_CLARO ||
+    c === "#aaa" ||
+    c === "#aaaaaa" ||
+    c === "#888" ||
+    c === "#888888"
+  )
+    return GRIS_ETIQUETA;
+  return color;
+}
+/** Nombres cortos para etiquetas finales y chips (las tablas conservan el nombre completo). */
+const NOMBRES_CORTOS: Record<string, string> = {
+  metropolitana: "RM",
+  "arica-y-parinacota": "Arica y Par.",
+  ohiggins: "O’Higgins",
+  araucania: "Araucanía",
+  "los-rios": "Los Ríos",
+  "los-lagos": "Los Lagos",
+};
+function nombreCorto(t: Territorio) {
+  return NOMBRES_CORTOS[t.slug] ?? t.nombre;
+}
+const MIN_GAP_ETIQUETA = 14;
+const clamp = (v: number, min: number, max: number) =>
+  Math.min(Math.max(v, min), max);
+/**
+ * Colisión de etiquetas finales en Y: ordena por Y, empuja hacia abajo las
+ * que quedan a menos de 14px de la anterior, clamp dentro del área de
+ * trazado y, si el bloque se sale por abajo, compacta hacia arriba.
+ */
+function resolverColisiones(
+  items: { key: string; y: number }[],
+  top: number,
+  bottom: number,
+) {
+  const orden = [...items].sort((a, b) => a.y - b.y);
+  const ys = orden.map((d) => clamp(d.y, top, bottom));
+  for (let i = 1; i < ys.length; i++) {
+    if (ys[i] - ys[i - 1] < MIN_GAP_ETIQUETA) {
+      ys[i] = ys[i - 1] + MIN_GAP_ETIQUETA;
+    }
+  }
+  if (ys.length > 0 && ys[ys.length - 1] > bottom) {
+    ys[ys.length - 1] = bottom;
+    for (let i = ys.length - 2; i >= 0; i--) {
+      ys[i] = Math.min(ys[i], ys[i + 1] - MIN_GAP_ETIQUETA);
+    }
+  }
+  return orden.map((d, i) => ({ key: d.key, y: ys[i] }));
+}
+/**
+ * Etiquetas finales sin superposición (nombre de serie + última tasa).
+ * Hijo directo de LineChart: recharts 3 renderiza elementos arbitrarios
+ * dentro del SVG y los hooks públicos exponen las escalas reales de los ejes.
+ */
+function EtiquetasFinales({ data, series }: { data: Fila[]; series: Serie[] }) {
+  const plot = usePlotArea();
+  const yScale = useYAxisScale();
+  const etiquetas = useMemo(() => {
+    if (!plot || !yScale || data.length === 0) return [];
+    const puntos = series
+      .map((s) => {
+        let i = data.length - 1;
+        while (i >= 0 && data[i][s.key] == null) i--;
+        if (i < 0) return null;
+        const valor = data[i][s.key];
+        if (typeof valor !== "number") return null;
+        const y = yScale(valor);
+        if (typeof y !== "number" || !Number.isFinite(y)) return null;
+        return { key: s.key, texto: `${s.corto ?? s.key}: ${fmt(valor)}`, color: s.color, y };
+      })
+      .filter((p): p is NonNullable<typeof p> => p != null);
+    const resueltas = resolverColisiones(
+      puntos.map((p) => ({ key: p.key, y: p.y })),
+      plot.y + 7,
+      plot.y + plot.height - 7,
+    );
+    const x = plot.x + plot.width + 8;
+    return puntos.map((p) => ({
+      ...p,
+      x,
+      y: resueltas.find((r) => r.key === p.key)?.y ?? p.y,
+    }));
+  }, [data, series, plot, yScale]);
+  if (etiquetas.length === 0) return null;
+  return (
+    <g className={styles.endLabels} aria-hidden="true">
+      {etiquetas.map((e) => (
+        <text
+          key={e.key}
+          x={e.x}
+          y={e.y}
+          dy="0.35em"
+          fontSize={11}
+          fontWeight={600}
+          fill={colorEtiqueta(e.color)}
+        >
+          {e.texto}
+        </text>
+      ))}
+    </g>
+  );
+}
 function Grafico({
   data,
   series,
   label,
   pandemia = false,
 }: {
-  data: Record<string, string | number | null>[];
-  series: { key: string; color: string }[];
+  data: Fila[];
+  series: Serie[];
   label: string;
   pandemia?: boolean;
 }) {
@@ -65,11 +196,19 @@ function Grafico({
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
-            margin={{ top: 12, right: 170, left: 0, bottom: 12 }}
+            margin={{ top: 12, right: 120, left: 0, bottom: 12 }}
           >
-            <CartesianGrid stroke="#e8e8e4" vertical={false} />
-            <XAxis dataKey="label" minTickGap={35} tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} width={40} unit="%" />
+            <CartesianGrid stroke="#e5e4df" vertical={false} />
+            <XAxis
+              dataKey="label"
+              minTickGap={35}
+              tick={{ fontSize: 11, fill: "#5f5e5a" }}
+            />
+            <YAxis
+              tick={{ fontSize: 11, fill: "#5f5e5a" }}
+              width={40}
+              unit="%"
+            />
             <Tooltip
               formatter={(value) =>
                 typeof value === "number" ? fmt(value) : "Sin datos"
@@ -79,43 +218,30 @@ function Grafico({
               <ReferenceArea
                 x1={data.find((d) => d.codigo === "2020-03")?.label ?? ""}
                 x2={data.find((d) => d.codigo === "2021-12")?.label ?? ""}
-                fill="#d4d4d0"
-                fillOpacity={0.5}
+                fill="#e5e4df"
+                fillOpacity={0.6}
                 label={{
                   value: "Pandemia",
                   position: "insideTop",
                   fontSize: 11,
+                  fill: "#5f5e5a",
                 }}
               />
             )}
-            {series.map((s) => {
-              let last = data.length - 1;
-              while (last >= 0 && data[last][s.key] == null) last--;
-              return (
-                <Line
-                  key={s.key}
-                  type="monotone"
-                  dataKey={s.key}
-                  name={s.key}
-                  stroke={s.color}
-                  strokeWidth={s.color === "#1890ff" ? 2.5 : 1.5}
-                  dot={false}
-                  isAnimationActive={false}
-                  connectNulls={false}
-                >
-                  <LabelList
-                    position="right"
-                    fill={
-                      s.color === "#aaa" || s.color === "#a3a3a0"
-                        ? "#555"
-                        : s.color
-                    }
-                    fontSize={11}
-                    valueAccessor={(_, index) => (index === last ? s.key : "")}
-                  />
-                </Line>
-              );
-            })}
+            {series.map((s) => (
+              <Line
+                key={s.key}
+                type="monotone"
+                dataKey={s.key}
+                name={s.key}
+                stroke={s.color}
+                strokeWidth={s.color === AZUL ? 2.5 : 1.5}
+                dot={false}
+                isAnimationActive={false}
+                connectNulls={false}
+              />
+            ))}
+            <EtiquetasFinales data={data} series={series} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -272,6 +398,7 @@ export default function ExploradorGraficos({
     ...(territorio !== "nacional" ? { Chile: chile.tasas[desde + i] } : {}),
   }));
   const years = [...new Set(periodos.map((p) => Number(p.codigo.slice(0, 4))))];
+  const anoMasReciente = years.at(-1) ?? 0;
   const estacional = Array.from({ length: 12 }, (_, month) => {
     const row: Record<string, string | number | null> = {
       label:
@@ -288,10 +415,13 @@ export default function ExploradorGraficos({
     return row;
   });
   const selected = disponibles.filter((t) => regiones.includes(t.slug));
+  const colorPorRegion = new Map(
+    selected.map((t, i) => [t.slug, REGION_COLORES[i]]),
+  );
   const compare = periodos.map((p, i) =>
     Object.assign(
       { label: p.label, Chile: chile.tasas[i] },
-      ...selected.map((t) => ({ [t.nombre]: t.tasas[i] })),
+      ...selected.map((t) => ({ [nombreCorto(t)]: t.tasas[i] })),
     ),
   );
   const ia = periodos.findIndex((p) => p.codigo === a);
@@ -335,14 +465,33 @@ export default function ExploradorGraficos({
     const target = `${year}-${a.slice(5)}`;
     if (periodos.some((p) => p.codigo === target)) setPeriodo("b", target);
   }
-  function toggleRegion(slug: string) {
-    const next = regiones.includes(slug)
-      ? regiones.filter((x) => x !== slug)
-      : [...regiones, slug].slice(0, 3);
+  function cambiarAnos(valor: string | string[]) {
+    if (!Array.isArray(valor)) return;
+    const next = valor
+      .map(Number)
+      .filter((n) => years.includes(n))
+      .sort((x, y) => x - y);
+    setAnos(next);
+    evento("tendencia", next.join(","));
+  }
+  function cambiarRegiones(valor: string | string[]) {
+    if (!Array.isArray(valor)) return;
+    const next = valor
+      .filter((slug) => disponibles.some((t) => t.slug === slug))
+      .slice(0, 3);
     setRegiones(next);
     urlState("comparar", next.join(","));
     evento("comparar", next.join(","));
   }
+  const periodosDesc = [...periodos].reverse();
+  const etiquetaA = periodos[ia]?.label ?? "";
+  const etiquetaB = periodos[ib]?.label ?? "";
+  const targetDe = (v: number | "2019") => {
+    const year = v === "2019" ? 2019 : Number(a.slice(0, 4)) - v;
+    return `${year}-${a.slice(5)}`;
+  };
+  const nombreCortoActual =
+    territorio === "nacional" ? "Chile" : NOMBRES_CORTOS[territorio] ?? nombre;
   return (
     <>
       <section className={styles.panel} aria-labelledby="historico-titulo">
@@ -351,55 +500,69 @@ export default function ExploradorGraficos({
           Tasa de desocupación en trimestres móviles. Fuente: INE · Gráfico:
           ProgramBI.
         </p>
-        <div className={styles.controls} aria-label="Vista histórica">
-          <button
-            aria-pressed={vista === "historico"}
-            onClick={() => {
-              setVista("historico");
-              evento("tendencia", "historico");
+        <div className={styles.controls}>
+          <ToggleGroup
+            type="single"
+            value={vista}
+            onValueChange={(v) => {
+              if (typeof v !== "string" || v === "") return;
+              setVista(v);
+              evento("tendencia", v === "historico" ? "historico" : "multi-anio");
             }}
+            aria-label="Vista histórica"
           >
-            Evolución
-          </button>
-          <button
-            aria-pressed={vista === "tendencias"}
-            onClick={() => {
-              setVista("tendencias");
-              evento("tendencia", "multi-anio");
-            }}
-          >
-            Tendencias multi-año
-          </button>
+            <ToggleGroupItem value="historico" className={styles.toggleItem}>
+              Evolución
+            </ToggleGroupItem>
+            <ToggleGroupItem value="tendencias" className={styles.toggleItem}>
+              Tendencias multi-año
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
         {vista === "historico" ? (
           <>
-            <div className={styles.controls} aria-label="Rango histórico">
-              {[
-                ["1", "1 año"],
-                ["5", "5 años"],
-                ["10", "10 años"],
-                ["todo", "Todo"],
-              ].map(([v, label]) => (
-                <button
-                  key={v}
-                  aria-pressed={rango === v}
-                  onClick={() => {
-                    setRango(v);
-                    evento("rango", v);
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
+            <div className={styles.controls}>
+              <ToggleGroup
+                type="single"
+                value={rango}
+                onValueChange={(v) => {
+                  if (typeof v !== "string" || v === "") return;
+                  setRango(v);
+                  evento("rango", v);
+                }}
+                aria-label="Rango histórico"
+              >
+                <ToggleGroupItem value="1" className={styles.toggleItem}>1A</ToggleGroupItem>
+                <ToggleGroupItem value="5" className={styles.toggleItem}>5A</ToggleGroupItem>
+                <ToggleGroupItem value="10" className={styles.toggleItem}>10A</ToggleGroupItem>
+                <ToggleGroupItem value="todo" className={styles.toggleItem}>Todo</ToggleGroupItem>
+              </ToggleGroup>
             </div>
             {territorio === "nacional" && (
-              <div className={styles.controls} role="group" aria-label="Tipo de serie">
-                <button type="button" aria-pressed={!ajustada} onClick={() => seleccionarSerie("original")}>Original</button>
-                <button type="button" aria-pressed={ajustada} onClick={() => seleccionarSerie("ajustada")}>Desestacionalizada</button>
+              <div className={styles.controls}>
+                <ToggleGroup
+                  type="single"
+                  value={tipoSerie}
+                  onValueChange={(v) => {
+                    if (v === "original" || v === "ajustada") {
+                      void seleccionarSerie(v);
+                    } else if (
+                      v === "" &&
+                      tipoSerie === "ajustada" &&
+                      ajuste?.estado === "error"
+                    ) {
+                      void seleccionarSerie("ajustada");
+                    }
+                  }}
+                  aria-label="Tipo de serie"
+                >
+                  <ToggleGroupItem value="original" className={styles.toggleItem}>Original</ToggleGroupItem>
+                  <ToggleGroupItem value="ajustada" className={styles.toggleItem}>Desestacionalizada</ToggleGroupItem>
+                </ToggleGroup>
               </div>
             )}
             {ajustada && !archivoAjuste ? (
-              <div className={styles.chart} role="status">
+              <div className={styles.chartStatus} role="status">
                 {ajuste?.estado === "error"
                   ? "No se pudo cargar la serie ajustada. Presiona Desestacionalizada para reintentar."
                   : "Cargando la serie desestacionalizada…"}
@@ -407,9 +570,9 @@ export default function ExploradorGraficos({
             ) : <Grafico
               data={history}
               series={[
-                { key: nombre, color: "#1890ff" },
+                { key: nombre, color: AZUL, corto: nombreCortoActual },
                 ...(territorio !== "nacional"
-                  ? [{ key: "Chile", color: "#888" }]
+                  ? [{ key: "Chile", color: GRIS_LINEA }]
                   : []),
               ]}
               label={`Evolución de la tasa de desocupación ${ajustada ? "desestacionalizada " : ""}de ${nombre}`}
@@ -447,37 +610,59 @@ export default function ExploradorGraficos({
             <h3>Estacionalidad por año</h3>
             <p className={styles.subtle}>
               Compara el mismo trimestre móvil entre años. El año más reciente
-              se destaca en azul y el anterior en naranja.
+              se destaca en azul; el resto, en gris.
             </p>
-            <fieldset className={styles.checks}>
-              <legend>Selecciona los años</legend>
-              {years.map((y) => (
-                <label key={y}>
-                  <input
-                    type="checkbox"
-                    checked={anos.includes(y)}
-                    onChange={() => {
-                      const next = anos.includes(y)
-                        ? anos.filter((x) => x !== y)
-                        : [...anos, y];
-                      setAnos(next);
-                      evento("tendencia", next.join(","));
-                    }}
-                  />
-                  {y}
-                </label>
-              ))}
-            </fieldset>
+            <div className={styles.checks}>
+              <ToggleGroup
+                type="multiple"
+                value={anos.map(String)}
+                onValueChange={cambiarAnos}
+                aria-label="Selecciona los años"
+              >
+                {years.map((y) => {
+                  const activo = anos.includes(y);
+                  const color =
+                    y === anoMasReciente
+                      ? AZUL
+                      : y === anoMasReciente - 1
+                        ? GRIS_LINEA
+                        : GRIS_LINEA_CLARO;
+                  return (
+                    <ToggleGroupItem
+                      key={y}
+                      value={String(y)}
+                      className={`${styles.toggleItem} rounded-full`}
+                      style={
+                        activo
+                          ? {
+                              borderColor: color,
+                              background: `${color}1f`,
+                              color: colorEtiqueta(color),
+                            }
+                          : undefined
+                      }
+                    >
+                      <span
+                        className={styles.dot}
+                        style={{ background: color }}
+                        aria-hidden="true"
+                      />
+                      {y}
+                    </ToggleGroupItem>
+                  );
+                })}
+              </ToggleGroup>
+            </div>
             <Grafico
               data={estacional}
               series={anos.map((y) => ({
                 key: String(y),
                 color:
-                  y === years.at(-1)
-                    ? "#1890ff"
-                    : y === (years.at(-1) ?? 0) - 1
-                      ? "#e38700"
-                      : "#aaa",
+                  y === anoMasReciente
+                    ? AZUL
+                    : y === anoMasReciente - 1
+                      ? GRIS_LINEA
+                      : GRIS_LINEA_CLARO,
               }))}
               label={`Tendencias estacionales de ${nombre} por año`}
             />
@@ -584,27 +769,51 @@ export default function ExploradorGraficos({
       <section className={styles.panel} id="comparar-regiones-contenido">
         <h2>Compara regiones con Chile</h2>
         <p>Elige hasta tres regiones. La línea nacional sirve de referencia.</p>
-        <fieldset className={styles.checks}>
-          <legend>Regiones seleccionadas: {regiones.length} de 3</legend>
-          {disponibles.map((t) => (
-            <label key={t.slug}>
-              <input
-                type="checkbox"
-                checked={regiones.includes(t.slug)}
-                disabled={!regiones.includes(t.slug) && regiones.length >= 3}
-                onChange={() => toggleRegion(t.slug)}
-              />
-              {t.nombre}
-            </label>
-          ))}
-        </fieldset>
+        <div className={styles.checks}>
+          <ToggleGroup
+            type="multiple"
+            value={regiones}
+            onValueChange={cambiarRegiones}
+            aria-label={`Regiones seleccionadas: ${regiones.length} de 3`}
+          >
+            {disponibles.map((t) => {
+              const activo = regiones.includes(t.slug);
+              const lleno = !activo && regiones.length >= 3;
+              const color = colorPorRegion.get(t.slug) ?? GRIS_LINEA_CLARO;
+              return (
+                <ToggleGroupItem
+                  key={t.slug}
+                  value={t.slug}
+                  disabled={lleno}
+                  className={`${styles.toggleItem} rounded-full`}
+                  style={
+                    activo
+                      ? {
+                          borderColor: color,
+                          background: `${color}1f`,
+                          color: colorEtiqueta(color),
+                        }
+                      : undefined
+                  }
+                >
+                  <span
+                    className={styles.dot}
+                    style={{ background: color }}
+                    aria-hidden="true"
+                  />
+                  {nombreCorto(t)}
+                </ToggleGroupItem>
+              );
+            })}
+          </ToggleGroup>
+        </div>
         <Grafico
           data={compare}
           series={[
-            { key: "Chile", color: "#1890ff" },
-            ...selected.map((t, i) => ({
-              key: t.nombre,
-              color: ["#e38700", "#686868", "#a3a3a0"][i],
+            { key: "Chile", color: AZUL },
+            ...selected.map((t) => ({
+              key: nombreCorto(t),
+              color: colorPorRegion.get(t.slug) ?? GRIS_LINEA_CLARO,
             })),
           ]}
           label="Comparación de tasas regionales con Chile"
@@ -662,38 +871,61 @@ export default function ExploradorGraficos({
         <div className={styles.controls}>
           <label>
             Período A
-            <select value={a} onChange={(e) => setPeriodo("a", e.target.value)}>
-              {periodos.map((p) => (
-                <option value={p.codigo} key={p.codigo}>
-                  {p.label}
-                </option>
-              ))}
-            </select>
+            <Select value={a} onValueChange={(v) => setPeriodo("a", v)}>
+              <SelectTrigger className="min-w-[200px] border-[#e5e4df] bg-white">
+                <SelectValue placeholder="Selecciona un período" />
+              </SelectTrigger>
+              <SelectContent>
+                {periodosDesc.map((p) => (
+                  <SelectItem key={p.codigo} value={p.codigo}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </label>
           <label>
             Período B
-            <select value={b} onChange={(e) => setPeriodo("b", e.target.value)}>
-              {periodos.map((p) => (
-                <option value={p.codigo} key={p.codigo}>
-                  {p.label}
-                </option>
-              ))}
-            </select>
+            <Select value={b} onValueChange={(v) => setPeriodo("b", v)}>
+              <SelectTrigger className="min-w-[200px] border-[#e5e4df] bg-white">
+                <SelectValue placeholder="Selecciona un período" />
+              </SelectTrigger>
+              <SelectContent>
+                {periodosDesc.map((p) => (
+                  <SelectItem key={p.codigo} value={p.codigo}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </label>
         </div>
         <div className={styles.controls}>
-          {[
+          {([
             [1, "vs hace 1 año"],
             [5, "vs hace 5 años"],
             ["2019", "vs 2019 (prepandemia)"],
-          ].map(([v, label]) => (
-            <button
-              key={String(v)}
-              onClick={() => shortcut(v as number | "2019")}
-            >
-              {label}
-            </button>
-          ))}
+          ] as [number | "2019", string][]).map(([v, label]) => {
+            const disponible = periodos.some((p) => p.codigo === targetDe(v));
+            const activo = b === targetDe(v);
+            return (
+              <Button
+                key={String(v)}
+                variant="outline"
+                size="sm"
+                disabled={!disponible}
+                aria-pressed={activo}
+                className={
+                  activo
+                    ? "border-[#0b63c5] bg-[#e8f3ff] text-[#0b63c5]"
+                    : undefined
+                }
+                onClick={() => shortcut(v)}
+              >
+                {label}
+              </Button>
+            );
+          })}
         </div>
         {max && (
           <p>
@@ -715,8 +947,8 @@ export default function ExploradorGraficos({
                   (diff ?? 0) === 0
                     ? "#f3f3f0"
                     : (diff ?? 0) > 0
-                      ? `rgba(227,135,0,${0.12 + (0.45 * Math.abs(diff ?? 0)) / maxMagnitud})`
-                      : `rgba(24,105,173,${0.12 + (0.35 * Math.abs(diff ?? 0)) / maxMagnitud})`,
+                      ? `rgba(194,65,12,${0.08 + (0.3 * Math.abs(diff ?? 0)) / maxMagnitud})`
+                      : `rgba(15,123,74,${0.08 + (0.28 * Math.abs(diff ?? 0)) / maxMagnitud})`,
               }}
             >
               <strong>{t.nombre}</strong>
@@ -726,7 +958,7 @@ export default function ExploradorGraficos({
           ))}
         </div>
         <p className={styles.subtle}>
-          Naranja: aumento · Azul: disminución · Gris: sin cambio
+          Rojo: aumento de la desocupación · Verde: disminución · Gris: sin cambio
         </p>
         <div className={styles.tableWrap}>
           <table className={styles.table}>
@@ -752,8 +984,8 @@ export default function ExploradorGraficos({
                     Territorio ↕
                   </button>
                 </th>
-                <th>{periodos[ia]?.label}</th>
-                <th>{periodos[ib]?.label}</th>
+                <th>{etiquetaA}</th>
+                <th>{etiquetaB}</th>
                 <th
                   aria-sort={
                     orden === "diferencia"

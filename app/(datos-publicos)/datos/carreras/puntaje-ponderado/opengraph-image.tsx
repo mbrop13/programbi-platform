@@ -1,7 +1,9 @@
 import { ImageResponse } from "next/og";
 import { loadLogoDataUrl } from "@/lib/og/assets";
-import { getMetaCarreras } from "@/lib/datos/carreras";
+import { OG_HEADERS, renderOgCard } from "@/lib/datos/og-card";
+import { getMetaCarreras, getProgramasCarrera } from "@/lib/datos/carreras";
 
+export const dynamic = "force-static";
 export const alt = "Calculadora de puntaje ponderado PAES | ProgramBI";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -9,55 +11,54 @@ export const contentType = "image/png";
 export default async function Image() {
   const logoSrc = await loadLogoDataUrl();
   const meta = getMetaCarreras();
+  // Ponderaciones REALES del programa por defecto de CalculadoraPonderado:
+  // Ingeniería Civil Industrial (U) con ponderación NEM publicada.
+  const programa = getProgramasCarrera("ingenieria-civil-industrial").find(
+    (p) => p.tipo === "u" && p.ponderaciones.nem > 0
+  );
+  const w = programa?.ponderaciones;
+  const tieneHistoria = (w?.historia ?? 0) > 0;
+  const tieneCiencias = (w?.ciencias ?? 0) > 0;
 
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: 1200,
-          height: 630,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          background: "#f7f7f4",
-          color: "#171716",
-          padding: "52px 64px",
-          fontFamily: "sans-serif",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoSrc} alt="ProgramBI" width={180} height={46} style={{ objectFit: "contain" }} />
-          <div
-            style={{
-              display: "flex",
-              fontSize: 18,
-              fontWeight: 700,
-              padding: "8px 18px",
-              borderRadius: 999,
-              background: "#e9f4ff",
-              color: "#1890ff",
-            }}
-          >
-            Simulador PAES · {meta.edicion}
-          </div>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          <div style={{ fontSize: 52, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.08 }}>
-            Calculadora de puntaje ponderado PAES
-          </div>
-          <div style={{ fontSize: 24, color: "#5c5c58", lineHeight: 1.35 }}>
-            Calcula tu ponderado con NEM, Ranking y PAES según las ponderaciones informadas por cada carrera y universidad.
-          </div>
-        </div>
-
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, color: "#5c5c58" }}>
-          <span>Fuente: www.mifuturo.cl (Mineduc)</span>
-          <span>programbi.com/datos/carreras/puntaje-ponderado</span>
-        </div>
-      </div>
-    ),
-    size
+    renderOgCard({
+      titulo: "Calculadora de puntaje ponderado PAES",
+      cifra: programa && w ? `${w.nem} %` : undefined,
+      cifraLabel:
+        programa && w ? `ponderación NEM · ${programa.institucion}` : undefined,
+      subtitulo:
+        "Simula tu puntaje ponderado con NEM, Ranking y PAES según las ponderaciones reales de cada programa universitario.",
+      badge: `Simulador PAES · Edición ${meta.edicion}`,
+      miniVisual:
+        w && (w.lenguaje > 0 || w.mate1 > 0 || tieneHistoria || tieneCiencias)
+          ? {
+              tipo: "barras",
+              caption: "Ponderaciones del programa de ejemplo (%)",
+              barras: [
+                { label: "NEM", valor: w.nem, valorTexto: `${w.nem} %` },
+                { label: "Ranking", valor: w.ranking, valorTexto: `${w.ranking} %` },
+                { label: "Lenguaje", valor: w.lenguaje, valorTexto: `${w.lenguaje} %` },
+                { label: "Matemática 1", valor: w.mate1, valorTexto: `${w.mate1} %` },
+                ...(tieneHistoria && tieneCiencias
+                  ? [
+                      {
+                        label: "Historia o Ciencias",
+                        valor: Math.max(w.historia, w.ciencias),
+                        valorTexto: `${Math.max(w.historia, w.ciencias)} %`,
+                      },
+                    ]
+                  : tieneHistoria
+                    ? [{ label: "Historia", valor: w.historia, valorTexto: `${w.historia} %` }]
+                    : tieneCiencias
+                      ? [{ label: "Ciencias", valor: w.ciencias, valorTexto: `${w.ciencias} %` }]
+                      : []),
+              ],
+            }
+          : undefined,
+      logoSrc,
+      fuente: "Fuente: www.mifuturo.cl (Mineduc) · Buscador de Carreras",
+      urlCorta: "programbi.com/datos/carreras/puntaje-ponderado",
+    }),
+    { width: 1200, height: 630, headers: OG_HEADERS }
   );
 }

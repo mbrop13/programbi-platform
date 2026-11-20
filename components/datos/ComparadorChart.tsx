@@ -15,6 +15,8 @@ export interface ComparadorChartItem {
   nombre: string;
   tipo: TipoIesKey;
   color: string;
+  /** Color AA para la etiqueta de texto del extremo (el amarillo de línea no se usa en texto chico). */
+  colorTexto?: string;
 }
 
 export function ComparadorChart({
@@ -29,16 +31,16 @@ export function ComparadorChart({
   return (
     <ChartContainer config={chartConfig} className="h-[320px] w-full">
       <LineChart data={chartData} margin={{ top: 16, right: 88, left: 8, bottom: 8 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#e5e4df" vertical={false} />
         <XAxis
           dataKey="anio"
-          tick={{ fill: "#64748b", fontSize: 12 }}
-          axisLine={{ stroke: "#e2e8f0" }}
+          tick={{ fill: "#5f5e5a", fontSize: 12 }}
+          axisLine={{ stroke: "#e5e4df" }}
           tickLine={false}
         />
         <YAxis
           tickFormatter={(v) => pesosEje(Number(v))}
-          tick={{ fill: "#64748b", fontSize: 12 }}
+          tick={{ fill: "#5f5e5a", fontSize: 12 }}
           axisLine={false}
           tickLine={false}
           width={62}
@@ -76,7 +78,7 @@ export function ComparadorChart({
                 <text
                   x={numX + 8}
                   y={numY + 4}
-                  fill={item.color}
+                  fill={item.colorTexto ?? item.color}
                   fontSize={11}
                   fontWeight={600}
                 >

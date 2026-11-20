@@ -1,101 +1,53 @@
 import { ImageResponse } from "next/og";
 import { loadLogoDataUrl } from "@/lib/og/assets";
-import { getMetaCarreras, getRankingCarreras } from "@/lib/datos/carreras";
-import { pesos, porcentaje } from "@/lib/datos/formato";
+import { OG_HEADERS, renderOgCard } from "@/lib/datos/og-card";
+import { getMetaCarreras, getRankingCarreras, TIPO_ETIQUETAS } from "@/lib/datos/carreras";
+import { pesos } from "@/lib/datos/formato";
 
+export const dynamic = "force-static";
 export const alt = "Carreras de tecnología y datos en Chile | ProgramBI";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+// Mismo filtro que tecnologia-y-datos/page.tsx (solo lectura de su lógica).
+const RE_TEC_DATOS =
+  /computacion|informatica|conectividad|redes|telecomunicaciones|matematica|estadistica|datos/i;
+
 export default async function Image() {
   const logoSrc = await loadLogoDataUrl();
   const meta = getMetaCarreras();
-  const top = getRankingCarreras().find(
-    (r) => r.slug === "ingenieria-civil-en-computacion-e-informatica" && r.tipo === "u"
-  );
+  const items = getRankingCarreras()
+    .filter(
+      (r) =>
+        (RE_TEC_DATOS.test(r.slug) || RE_TEC_DATOS.test(r.nombre)) && r.ing4 !== null
+    )
+    .sort((a, b) => (b.ing4 ?? 0) - (a.ing4 ?? 0));
+  const top = items.slice(0, 5);
+  const top1 = top[0];
 
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: 1200,
-          height: 630,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          background: "#f7f7f4",
-          color: "#171716",
-          padding: "52px 64px",
-          fontFamily: "sans-serif",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoSrc} alt="ProgramBI" width={180} height={46} style={{ objectFit: "contain" }} />
-          <div
-            style={{
-              display: "flex",
-              fontSize: 18,
-              fontWeight: 700,
-              padding: "8px 18px",
-              borderRadius: 999,
-              background: "#e9f4ff",
-              color: "#1890ff",
-            }}
-          >
-            Tecnología y datos · {meta.edicion}
-          </div>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          <div style={{ fontSize: 52, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.08 }}>
-            Carreras de tecnología y datos en Chile
-          </div>
-          <div style={{ fontSize: 24, color: "#5c5c58", lineHeight: 1.35 }}>
-            Computación, informática, conectividad y redes, telecomunicaciones y matemática/estadística.
-          </div>
-          {top ? (
-            <div style={{ display: "flex", gap: 24, marginTop: 8 }}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  background: "#ffffff",
-                  border: "1px solid #e2e2dc",
-                  borderRadius: 16,
-                  padding: "18px 26px",
-                }}
-              >
-                <span style={{ fontSize: 16, color: "#5c5c58" }}>{top.nombre} (U) · 4.º año</span>
-                <span style={{ fontSize: 34, fontWeight: 800, color: "#1890ff" }}>
-                  {pesos(top.ing4)}
-                </span>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  background: "#ffffff",
-                  border: "1px solid #e2e2dc",
-                  borderRadius: 16,
-                  padding: "18px 26px",
-                }}
-              >
-                <span style={{ fontSize: 16, color: "#5c5c58" }}>Empleabilidad 1.er año</span>
-                <span style={{ fontSize: 34, fontWeight: 800, color: "#171716" }}>
-                  {porcentaje(top.emp1)}
-                </span>
-              </div>
-            </div>
-          ) : null}
-        </div>
-
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, color: "#5c5c58" }}>
-          <span>Fuente: www.mifuturo.cl (Mineduc)</span>
-          <span>programbi.com/datos/carreras/tecnologia-y-datos</span>
-        </div>
-      </div>
-    ),
-    size
+    renderOgCard({
+      titulo: "Carreras de tecnología y datos en Chile",
+      cifra: top1 ? pesos(top1.ing4) : undefined,
+      cifraLabel: top1 ? `mayor sueldo 4.º año (${TIPO_ETIQUETAS[top1.tipo].corto})` : undefined,
+      subtitulo: `${top1 ? `${top1.nombre} lidera · ` : ""}${items.length} combinaciones carrera-tipo con datos oficiales de computación, informática, redes, telecomunicaciones y estadística`,
+      badge: `Tecnología y datos · Edición ${meta.edicion}`,
+      miniVisual:
+        top.length > 0
+          ? {
+              tipo: "barras",
+              caption: `Ingreso bruto 4.º año · top del área · pesos ${meta.pesos_de}`,
+              barras: top.map((r) => ({
+                label: `${r.nombre} (${TIPO_ETIQUETAS[r.tipo].corto})`,
+                valor: r.ing4 ?? 0,
+                valorTexto: pesos(r.ing4),
+              })),
+            }
+          : undefined,
+      logoSrc,
+      fuente: "Fuente: www.mifuturo.cl (Mineduc)",
+      urlCorta: "programbi.com/datos/carreras/tecnologia-y-datos",
+    }),
+    { width: 1200, height: 630, headers: OG_HEADERS }
   );
 }

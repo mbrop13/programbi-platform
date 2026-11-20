@@ -1,0 +1,65 @@
+{
+  "static": [
+    {
+      "source": "/datos/capacitacion/opengraph-image",
+      "destination": "/datos/capacitacion/opengraph-image-i7pnd2"
+    },
+    {
+      "source": "/datos/carreras/baratas-con-buena-empleabilidad/opengraph-image",
+      "destination": "/datos/carreras/baratas-con-buena-empleabilidad/opengraph-image-1fxwx6"
+    },
+    {
+      "source": "/datos/carreras/comparar/opengraph-image",
+      "destination": "/datos/carreras/comparar/opengraph-image-opu8v2"
+    },
+    {
+      "source": "/datos/carreras/crecieron-en-sueldo-real/opengraph-image",
+      "destination": "/datos/carreras/crecieron-en-sueldo-real/opengraph-image-yb4tzh"
+    },
+    {
+      "source": "/datos/carreras/mas-empleabilidad/opengraph-image",
+      "destination": "/datos/carreras/mas-empleabilidad/opengraph-image-1n2c1h"
+    },
+    {
+      "source": "/datos/carreras/mejor-pagadas-vespertinas/opengraph-image",
+      "destination": "/datos/carreras/mejor-pagadas-vespertinas/opengraph-image-1ikaf6"
+    },
+    {
+      "source": "/datos/carreras/mejor-pagadas/opengraph-image",
+      "destination": "/datos/carreras/mejor-pagadas/opengraph-image-1ip2av"
+    },
+    {
+      "source": "/datos/carreras/mejor-sueldo-por-arancel/opengraph-image",
+      "destination": "/datos/carreras/mejor-sueldo-por-arancel/opengraph-image-rijfb4"
+    },
+    {
+      "source": "/datos/carreras/opengraph-image",
+      "destination": "/datos/carreras/opengraph-image-79slui"
+    },
+    {
+      "source": "/datos/carreras/puntaje-ponderado/opengraph-image",
+      "destination": "/datos/carreras/puntaje-ponderado/opengraph-image-1dk4e5"
+    },
+    {
+      "source": "/datos/carreras/retorno/opengraph-image",
+      "destination": "/datos/carreras/retorno/opengraph-image-qd2g6q"
+    },
+    {
+      "source": "/datos/carreras/tecnologia-y-datos/opengraph-image",
+      "destination": "/datos/carreras/tecnologia-y-datos/opengraph-image-11zbuj"
+    },
+    {
+      "source": "/datos/carreras/test/opengraph-image",
+      "destination": "/datos/carreras/test/opengraph-image-u6gxgp"
+    },
+    {
+      "source": "/datos/inflacion/opengraph-image",
+      "destination": "/datos/inflacion/opengraph-image-vdwa7u"
+    },
+    {
+      "source": "/datos/opengraph-image",
+      "destination": "/datos/opengraph-image-16qvl6"
+    }
+  ],
+  "slugHash": "xjbb5o"
+}

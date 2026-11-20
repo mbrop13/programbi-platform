@@ -54,6 +54,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { InlineBar } from "@/components/datos/viz/InlineBar";
+import { C } from "@/components/datos/viz/tokens";
 import { getAreaVisual } from "@/lib/datos/areas-visual";
 import type { RankingItem } from "@/lib/datos/carreras-tipos";
 import {
@@ -65,26 +67,29 @@ import {
 } from "@/lib/datos/formato";
 import { cn } from "@/lib/utils";
 
-function EmpleabilidadBadge({ emp1 }: { emp1: number | null }) {
+/**
+ * Mini-dot de empleabilidad: círculo de 8 px con color por umbral
+ * (≥70 % verde, 40–70 % azul, <40 % rojo) y el porcentaje al lado.
+ * El color nunca es el único canal: la cifra va en texto y el
+ * title + sr-only describen el umbral para lectores de pantalla.
+ */
+function EmpleabilidadDot({ emp1 }: { emp1: number | null }) {
   if (emp1 === null) {
     return <span className="text-xs text-muted-foreground">Sin dato</span>;
   }
   const pct = emp1 * 100;
-  const clase =
-    pct >= 85
-      ? "border-emerald-200/80 bg-emerald-50 text-emerald-800"
-      : pct >= 70
-        ? "border-amber-200/80 bg-amber-50 text-amber-800"
-        : "border-slate-200/80 bg-slate-100 text-slate-700";
-
+  const color = pct >= 70 ? C.up : pct >= 40 ? C.blue : C.down;
+  const banda = pct >= 70 ? "alta (≥70 %)" : pct >= 40 ? "media (40–70 %)" : "baja (<40 %)";
+  const texto = `Empleabilidad al 1.er año: ${porcentaje(emp1)}, ${banda}`;
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold tabular-nums",
-        clase
-      )}
-    >
-      {porcentaje(emp1)}
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap" title={texto}>
+      <span
+        aria-hidden="true"
+        className="inline-block size-2 shrink-0 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      <span className="text-xs font-medium text-foreground tabular-nums">{porcentaje(emp1)}</span>
+      <span className="sr-only">{texto}</span>
     </span>
   );
 }
@@ -108,18 +113,26 @@ function MiniRangoBar({
   const left = Math.max(0, Math.min(100, (p10 / maxGlobal) * 100));
   const right = Math.max(left, Math.min(100, (p90 / maxGlobal) * 100));
   const mid = p50 !== null ? Math.max(left, Math.min(right, (p50 / maxGlobal) * 100)) : null;
+  const etiqueta = `Rango salarial al 5.º año: de ${pesos(p10 * factor)} a ${pesos(p90 * factor)}${
+    p50 !== null ? `, mediana ${pesos(p50 * factor)}` : ""
+  }`;
 
   return (
     <div className="w-28 space-y-1">
-      <div className="relative h-1.5 w-full rounded-full bg-slate-200/80">
+      <div className="relative h-1.5 w-full rounded-full" style={{ backgroundColor: C.line }}>
         <div
-          className="absolute top-0 h-1.5 rounded-full bg-blue-500/40"
-          style={{ left: `${left}%`, width: `${Math.max(4, right - left)}%` }}
+          className="absolute top-0 h-1.5 rounded-full"
+          style={{
+            left: `${left}%`,
+            width: `${Math.max(4, right - left)}%`,
+            backgroundColor: C.blue,
+            opacity: 0.35,
+          }}
         />
         {mid !== null ? (
           <div
-            className="absolute -top-0.5 h-2.5 w-1 rounded-full bg-blue-600"
-            style={{ left: `${mid}%` }}
+            className="absolute -top-0.5 h-2.5 w-1 rounded-full"
+            style={{ left: `${mid}%`, backgroundColor: C.blueText }}
           />
         ) : null}
       </div>
@@ -127,6 +140,7 @@ function MiniRangoBar({
         <span>{pesos(p10 * factor)}</span>
         <span>{pesos(p90 * factor)}</span>
       </div>
+      <span className="sr-only">{etiqueta}</span>
     </div>
   );
 }
@@ -150,8 +164,10 @@ function HeaderTooltip({ label, ayuda }: { label: string; ayuda: string }) {
 }
 
 function SortIcon({ sorted }: { sorted: false | "asc" | "desc" }) {
-  if (sorted === "asc") return <ArrowUp className="size-3.5 text-blue-600" aria-hidden="true" />;
-  if (sorted === "desc") return <ArrowDown className="size-3.5 text-blue-600" aria-hidden="true" />;
+  if (sorted === "asc")
+    return <ArrowUp className="size-3.5" style={{ color: C.blueText }} aria-hidden="true" />;
+  if (sorted === "desc")
+    return <ArrowDown className="size-3.5" style={{ color: C.blueText }} aria-hidden="true" />;
   return <ArrowUpDown className="size-3.5 text-muted-foreground/60" aria-hidden="true" />;
 }
 
@@ -207,6 +223,17 @@ export function TablaRankingCarreras({
     [rows, suppliedMaxP90]
   );
 
+  // Máximo de sueldo al 4.º año entre las filas recibidas (nunca hardcode):
+  // escala las InlineBar de la columna de sueldo.
+  const maxIng4 = React.useMemo(
+    () =>
+      rows.reduce(
+        (max, row) => (row.ing4 !== null ? Math.max(max, Math.round(row.ing4 * factor)) : max),
+        0
+      ),
+    [rows, factor]
+  );
+
   const columns = React.useMemo<LegacyColumnDef<RankingItem>[]>(
     () => [
       {
@@ -244,7 +271,8 @@ export function TablaRankingCarreras({
             <div className="min-w-[165px] max-w-[220px]">
               <a
                 href={`/datos/carreras/${item.slug}?tipo=${item.tipo}`}
-                className="line-clamp-2 text-sm font-semibold text-foreground transition-colors hover:text-blue-700 hover:underline"
+                className="line-clamp-2 text-sm font-semibold transition-colors hover:underline"
+                style={{ color: C.blueText }}
               >
                 {item.nombre}
               </a>
@@ -252,10 +280,8 @@ export function TablaRankingCarreras({
                 <span className="truncate">{item.area}</span>
                 {item.yoy_real_4 !== null ? (
                   <span
-                    className={cn(
-                      "font-medium tabular-nums",
-                      item.yoy_real_4 >= 0 ? "text-emerald-700" : "text-rose-700"
-                    )}
+                    className="font-medium tabular-nums"
+                    style={{ color: item.yoy_real_4 >= 0 ? C.up : C.down }}
                   >
                     {variacionPorcentual(item.yoy_real_4)} real
                   </span>
@@ -290,13 +316,21 @@ export function TablaRankingCarreras({
         enableHiding: false,
         cell: ({ getValue }) => {
           const val = getValue<number | null>();
+          if (val === null) {
+            return (
+              <div className="flex h-11 flex-col justify-center">
+                <span className="text-right text-xs font-normal text-muted-foreground">
+                  Sin dato
+                </span>
+              </div>
+            );
+          }
           return (
-            <div className="text-right text-sm font-semibold text-foreground tabular-nums">
-              {val !== null ? (
-                pesos(val)
-              ) : (
-                <span className="font-normal text-xs text-muted-foreground">Sin dato</span>
-              )}
+            <div className="flex h-11 min-w-[140px] flex-col justify-center gap-0.5">
+              <span className="block text-right text-sm font-semibold text-foreground tabular-nums">
+                {pesos(val)}
+              </span>
+              <InlineBar value={val} max={maxIng4} />
             </div>
           );
         },
@@ -317,7 +351,7 @@ export function TablaRankingCarreras({
             {interactiveTooltips ? (
               <HeaderTooltip
                 label="Empleabilidad"
-                ayuda="Porcentaje de titulados con empleo formal al primer año de egresar."
+                ayuda="Porcentaje de titulados con empleo formal al primer año de egresar. El punto resume el nivel: verde ≥70 %, azul 40–70 %, rojo <40 %."
               />
             ) : null}
           </div>
@@ -325,7 +359,7 @@ export function TablaRankingCarreras({
         enableHiding: false,
         cell: ({ getValue }) => (
           <div className="text-right">
-            <EmpleabilidadBadge emp1={getValue<number | null>()} />
+            <EmpleabilidadDot emp1={getValue<number | null>()} />
           </div>
         ),
       },
@@ -495,7 +529,7 @@ export function TablaRankingCarreras({
         },
       },
     ],
-    [compareSlugs, factor, interactiveTooltips, maxP90, onToggleCompare]
+    [compareSlugs, factor, interactiveTooltips, maxP90, maxIng4, onToggleCompare]
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -619,7 +653,9 @@ export function TablaRankingCarreras({
                     >
                       #{globalRank}
                     </Badge>
-                    <EmpleabilidadBadge emp1={row.emp1} />
+                    <span className="rounded-md bg-white/90 px-1.5 py-0.5">
+                      <EmpleabilidadDot emp1={row.emp1} />
+                    </span>
                   </div>
                   <span
                     className="absolute bottom-2 left-3 inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium shadow-xs"
@@ -639,7 +675,8 @@ export function TablaRankingCarreras({
                     <h3 className="text-base font-semibold leading-snug text-foreground">
                       <a
                         href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
-                        className="inline-flex items-start gap-1 transition-colors hover:text-blue-700"
+                        className="inline-flex items-start gap-1 transition-colors hover:underline"
+                        style={{ color: C.blueText }}
                       >
                         <span>{row.nombre}</span>
                         <ArrowUpRight
@@ -660,17 +697,19 @@ export function TablaRankingCarreras({
                       </div>
                       {row.yoy_real_4 !== null ? (
                         <span
-                          className={cn(
-                            "rounded-md px-2 py-0.5 text-xs font-medium tabular-nums",
-                            row.yoy_real_4 >= 0
-                              ? "bg-emerald-50 text-emerald-700"
-                              : "bg-rose-50 text-rose-700"
-                          )}
+                          className="rounded-md bg-muted/60 px-2 py-0.5 text-xs font-medium tabular-nums"
+                          style={{ color: row.yoy_real_4 >= 0 ? C.up : C.down }}
                         >
                           {variacionPorcentual(row.yoy_real_4)} real
                         </span>
                       ) : null}
                     </div>
+
+                    {ing4Adj !== null ? (
+                      <div className="mt-2">
+                        <InlineBar value={ing4Adj} max={maxIng4} />
+                      </div>
+                    ) : null}
 
                     <div className="mt-3 grid grid-cols-2 gap-2.5 text-xs">
                       <div className="rounded-lg bg-muted/50 px-3 py-2">
@@ -691,7 +730,8 @@ export function TablaRankingCarreras({
                   <div className="flex items-center justify-between gap-2 border-t border-border/70 pt-3">
                     <a
                       href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 hover:underline"
+                      className="inline-flex items-center gap-1 text-xs font-medium hover:underline"
+                      style={{ color: C.blueText }}
                     >
                       Ver ficha completa
                       <ArrowUpRight className="size-3.5" aria-hidden="true" />

@@ -1,6 +1,7 @@
 /**
  * Forma natural de profesión revisada a mano para el H1 de las fichas más buscadas.
  * Si una carrera no está aquí, se usa directamente el nombre oficial de la carrera.
+ * Conservado como catálogo: lo leen otras piezas (p. ej. títulos/OG).
  */
 export const PROFESION_POR_SLUG: Record<string, string> = {
   medicina: "médico",
@@ -47,10 +48,16 @@ export const PROFESION_POR_SLUG: Record<string, string> = {
   "tecnico-en-administracion-de-empresas": "técnico en administración",
 };
 
+/**
+ * H1 de la ficha de carrera, sin «un/a»: pregunta directa con el nombre oficial
+ * de la carrera. El sufijo «en Chile» se agrega solo si el título queda razonable
+ * (≤ 72 caracteres); si no, se mantiene la pregunta corta. Fallback sin profesión.
+ * El parámetro slug se conserva por compatibilidad de firma (el catálogo
+ * PROFESION_POR_SLUG sigue disponible para otras piezas).
+ */
 export function tituloH1Ficha(slug: string, nombre: string): string {
-  const prof = PROFESION_POR_SLUG[slug];
-  if (prof) {
-    return `¿Cuánto gana un/a ${prof} en Chile? Sueldo de ${nombre}`;
-  }
-  return `Sueldo y empleabilidad de ${nombre} en Chile`;
+  void slug;
+  const pregunta = `¿Cuánto se gana estudiando ${nombre}?`;
+  const conChile = `¿Cuánto se gana estudiando ${nombre} en Chile?`;
+  return conChile.length <= 72 ? conChile : pregunta;
 }

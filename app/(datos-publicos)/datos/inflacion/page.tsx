@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, ChevronDown, GraduationCap } from "lucide-react";
 import { CtaDatos } from "@/components/datos/CtaDatos";
@@ -139,48 +138,34 @@ export default function InflacionPage() {
       <div className="space-y-4">
         <MigasDatos migas={MIGAS} />
 
-        <header className="grid items-center gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:gap-10">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
+        <header className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="h-auto rounded-md border border-border bg-white px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+            >
+              Datos oficiales del INE · Actualizado a {mesLargo(ultimo.m)}
+            </Badge>
+            {var12Meses !== null ? (
               <Badge
                 variant="secondary"
-                className="h-auto rounded-md border border-border bg-white px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+                className="h-auto rounded-md border border-blue-200/80 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-[#0b63c5] tabular-nums"
               >
-                Datos oficiales del INE · Actualizado a {mesLargo(ultimo.m)}
+                Inflación 12m: {variacionPorcentual(var12Meses)}
               </Badge>
-              {var12Meses !== null ? (
-                <Badge
-                  variant="secondary"
-                  className="h-auto rounded-md border border-blue-200/80 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 tabular-nums"
-                >
-                  Inflación 12m: {variacionPorcentual(var12Meses)}
-                </Badge>
-              ) : null}
-            </div>
-            <h1 className="h1-datos text-foreground">
-              Calculadora de IPC: cuánto valen tus pesos hoy
-            </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Actualiza sueldos, arriendos o aranceles con la serie oficial del INE y comprueba si
-              tus ingresos le ganaron a la inflación en Chile.
-            </p>
+            ) : null}
           </div>
-
-          <div className="hidden overflow-hidden rounded-xl border border-border bg-slate-100 shadow-xs md:block">
-            <div className="aspect-[16/10] w-full overflow-hidden">
-              <Image
-                src="/images/datos/hero-inflacion.jpg"
-                alt="Distrito financiero de Santiago de Chile"
-                width={640}
-                height={400}
-                priority
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
+          <h1 className="h1-datos text-foreground">
+            Calculadora de IPC: cuánto valen tus pesos hoy
+          </h1>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            Actualiza sueldos, arriendos o aranceles con la serie oficial del INE y comprueba si
+            tus ingresos le ganaron a la inflación en Chile.
+          </p>
         </header>
       </div>
 
+      {/* Calculadora protagonista del primer pliegue (sparkline 12m a la derecha dentro del cliente) */}
       <InflacionInteractiva serie={serie} />
 
       {/* Enlace útil al observatorio de carreras */}

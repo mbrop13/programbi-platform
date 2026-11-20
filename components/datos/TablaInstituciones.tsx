@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowUpDown, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -27,29 +28,74 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { InstitucionAvatar } from "@/components/datos/InstitucionAvatar";
-import type { InstitucionCarrera, ProgramaCarrera } from "@/lib/datos/carreras";
-import { anosDesdeSemestres, normalizarTexto, pesos, porcentaje } from "@/lib/datos/formato";
-import { compararTramosDesc, puntoMedioTramo } from "@/lib/datos/tramos";
-import { cn } from "@/lib/utils";
+import { ChileMap, type RegionKey } from "@/components/datos/viz/ChileMap";
+import { InlineBar } from "@/components/datos/viz/InlineBar";
+import { C } from "@/components/datos/viz/tokens";
+import {
+  TIPO_ETIQUETAS,
+  TIPO_ORDEN,
+  type InstitucionCarrera,
+  type ProgramaCarrera,
+} from "@/lib/datos/carreras-tipos";
+import { entero, normalizarTexto, pesos, porcentaje } from "@/lib/datos/formato";
+import { REGIONES } from "@/lib/datos/regiones";
+import { compararTramosDesc, formatearTramoCorto, puntoMedioTramo } from "@/lib/datos/tramos";
 
 interface TablaInstitucionesProps {
   instituciones: InstitucionCarrera[];
   programas?: ProgramaCarrera[];
 }
 
-type SortKey =
-  | "tramo"
-  | "institucion"
-  | "acred_anos"
-  | "arancel"
-  | "emp1"
-  | "emp2"
-  | "continuidad"
-  | "retencion_1"
-  | "dur_real";
+type SortKey = "institucion" | "tipo" | "tramo" | "emp1" | "arancel" | "programas";
 
-const ESCALA_MIN = 600_000;
-const ESCALA_MAX = 3_800_000;
+const LIMITE_FILAS = 10;
+
+/* ---- Normalización de regiones (nombre legible -> RegionKey) ---- */
+
+const canonRegion = (s: string) =>
+  normalizarTexto(s).replace(/['’´`]/g, "").replace(/\s+/g, " ").trim();
+
+const ALIAS_REGION = (() => {
+  const m = new Map<string, RegionKey>();
+  const add = (form: string, slug: RegionKey) => {
+    const c = canonRegion(form);
+    if (!c) return;
+    m.set(c, slug);
+    m.set(c.replace(/\s+/g, "-"), slug);
+    m.set(c.replace(/-/g, " "), slug);
+  };
+  for (const r of REGIONES) {
+    const slug = r.slug as RegionKey;
+    for (const form of [r.slug, r.nombre, r.nombreOficial]) {
+      add(form, slug);
+      const sinRegion = canonRegion(form).replace(
+        /^region\s+(?:de\s+la\s+|de\s+|del\s+|metropolitana\s+)?/,
+        ""
+      );
+      if (sinRegion) add(sinRegion, slug);
+    }
+  }
+  return m;
+})();
+
+const NOMBRE_REGION = new Map<RegionKey, string>(
+  REGIONES.map((r) => [r.slug as RegionKey, r.nombre] as [RegionKey, string])
+);
+
+function normalizarRegion(raw: string | null | undefined): RegionKey | null {
+  if (!raw) return null;
+  const c = canonRegion(raw);
+  if (!c) return null;
+  return ALIAS_REGION.get(c) ?? ALIAS_REGION.get(c.replace(/\s+/g, "-")) ?? null;
+}
+
+/* ---- Helpers de fila ---- */
+
+/** Valor representativo del sueldo al 4.º año a partir del tramo oficial. */
+function valorSueldo(item: InstitucionCarrera): number | null {
+  if (!item.tramo) return null;
+  return puntoMedioTramo(item.tramo) ?? item.tramo.min;
+}
 
 function SortIcon({
   col,
@@ -62,70 +108,21 @@ function SortIcon({
 }) {
   if (sortKey !== col) return <ArrowUpDown className="ml-1 inline size-3 opacity-45" />;
   return sortDir === "desc" ? (
-    <ArrowDown className="ml-1 inline size-3 text-blue-700" />
+    <ArrowDown className="ml-1 inline size-3" style={{ color: C.blueText }} />
   ) : (
-    <ArrowUp className="ml-1 inline size-3 text-blue-700" />
+    <ArrowUp className="ml-1 inline size-3" style={{ color: C.blueText }} />
   );
 }
 
-function AcreditacionBadge({
-  anos,
-  texto,
-}: {
-  anos: number;
-  texto: string;
-}) {
-  if (anos <= 0 && !texto) {
-    return <span className="text-xs text-muted-foreground">Sin dato</span>;
-  }
-
-  const badgeClass =
-    anos >= 6
-      ? "border-emerald-200/80 bg-emerald-50 text-emerald-800"
-      : anos >= 4
-        ? "border-blue-200/80 bg-blue-50 text-blue-800"
-        : "border-slate-200 bg-slate-100 text-slate-700";
-
+function TipoBadge({ tipo }: { tipo: InstitucionCarrera["tipo"] }) {
   return (
     <Badge
       variant="secondary"
-      className={cn("h-auto rounded-md border px-2 py-0.5 text-[11px] font-medium", badgeClass)}
+      title={TIPO_ETIQUETAS[tipo].singular}
+      className="h-auto rounded-md border border-border bg-background/60 px-2 py-0.5 text-[11px] font-semibold text-foreground"
     >
-      {texto || `${anos} años`}
+      {TIPO_ETIQUETAS[tipo].corto}
     </Badge>
-  );
-}
-
-function BarraTramo({ tramo }: { tramo: InstitucionCarrera["tramo"] }) {
-  if (!tramo) {
-    return <span className="text-xs text-muted-foreground">Sin dato suficiente</span>;
-  }
-  const minClamped = Math.max(ESCALA_MIN, Math.min(ESCALA_MAX, tramo.min));
-  const maxClamped =
-    tramo.max === null
-      ? ESCALA_MAX
-      : Math.max(ESCALA_MIN, Math.min(ESCALA_MAX, tramo.max));
-
-  const leftPct = ((minClamped - ESCALA_MIN) / (ESCALA_MAX - ESCALA_MIN)) * 100;
-  const widthPct = Math.max(
-    6,
-    ((maxClamped - minClamped) / (ESCALA_MAX - ESCALA_MIN)) * 100
-  );
-
-  return (
-    <div className="min-w-[170px]">
-      <div className="text-xs font-semibold text-foreground">{tramo.texto}</div>
-      <div className="relative mt-1.5 h-1.5 w-full rounded-full bg-slate-200/80">
-        <div
-          className="absolute top-0 bottom-0 rounded-full bg-blue-600"
-          style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
-        />
-      </div>
-      <div className="mt-0.5 flex justify-between text-[10px] text-muted-foreground">
-        <span>$600k</span>
-        <span>$3,5M+</span>
-      </div>
-    </div>
   );
 }
 
@@ -133,6 +130,7 @@ interface OfertaIesMeta {
   arancelMed: number | null;
   regiones: string[];
   jornadas: string[];
+  programas: number;
 }
 
 export function TablaInstituciones({
@@ -144,19 +142,32 @@ export function TablaInstituciones({
   const [jornadaFiltro, setJornadaFiltro] = useState<string>("todas");
   const [sortKey, setSortKey] = useState<SortKey>("tramo");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [expandido, setExpandido] = useState(false);
 
-  const { metaPorIes, regionesDisponibles, jornadasDisponibles, tieneAranceles } = useMemo(() => {
-    const mapa = new Map<string, { aranceles: number[]; regiones: Set<string>; jornadas: Set<string> }>();
+  const {
+    metaPorIes,
+    regionesDisponibles,
+    jornadasDisponibles,
+    valoresMapa,
+    listaRegiones,
+    totalRegiones,
+  } = useMemo(() => {
+    const mapa = new Map<
+      string,
+      { aranceles: number[]; regiones: Set<string>; jornadas: Set<string>; count: number }
+    >();
     const regSet = new Set<string>();
     const jorSet = new Set<string>();
+    const conteo = new Map<RegionKey, number>();
 
     for (const p of programas) {
       const key = normalizarTexto(p.institucion);
       let entry = mapa.get(key);
       if (!entry) {
-        entry = { aranceles: [], regiones: new Set(), jornadas: new Set() };
+        entry = { aranceles: [], regiones: new Set(), jornadas: new Set(), count: 0 };
         mapa.set(key, entry);
       }
+      entry.count += 1;
       if (typeof p.arancel === "number" && p.arancel > 0) {
         entry.aranceles.push(p.arancel);
       }
@@ -168,27 +179,35 @@ export function TablaInstituciones({
         entry.jornadas.add(p.jornada);
         jorSet.add(p.jornada);
       }
+      const rk = normalizarRegion(p.region);
+      if (rk) conteo.set(rk, (conteo.get(rk) ?? 0) + 1);
     }
 
     const resumen = new Map<string, OfertaIesMeta>();
-    let anyArancel = false;
     for (const [key, val] of mapa.entries()) {
       const sorted = [...val.aranceles].sort((a, b) => a - b);
-      const med =
-        sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)] : null;
-      if (med !== null) anyArancel = true;
+      const med = sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)] : null;
       resumen.set(key, {
         arancelMed: med,
         regiones: [...val.regiones].sort((a, b) => a.localeCompare(b, "es")),
         jornadas: [...val.jornadas].sort((a, b) => a.localeCompare(b, "es")),
+        programas: val.count,
       });
     }
+
+    const valoresMapa: Partial<Record<RegionKey, number>> = {};
+    for (const [rk, n] of conteo.entries()) valoresMapa[rk] = n;
+    const listaRegiones = [...conteo.entries()]
+      .map(([rk, n]) => ({ slug: rk, nombre: NOMBRE_REGION.get(rk) ?? rk, count: n }))
+      .sort((a, b) => b.count - a.count || a.nombre.localeCompare(b.nombre, "es"));
 
     return {
       metaPorIes: resumen,
       regionesDisponibles: [...regSet].sort((a, b) => a.localeCompare(b, "es")),
       jornadasDisponibles: [...jorSet].sort((a, b) => a.localeCompare(b, "es")),
-      tieneAranceles: anyArancel,
+      valoresMapa,
+      listaRegiones,
+      totalRegiones: conteo.size,
     };
   }, [programas]);
 
@@ -197,7 +216,7 @@ export function TablaInstituciones({
       setSortDir((prev) => (prev === "desc" ? "asc" : "desc"));
     } else {
       setSortKey(key);
-      setSortDir(key === "institucion" || key === "arancel" ? "asc" : "desc");
+      setSortDir(key === "institucion" || key === "arancel" || key === "tipo" ? "asc" : "desc");
     }
   };
 
@@ -222,7 +241,6 @@ export function TablaInstituciones({
     });
 
     return [...filtradas].sort((a, b) => {
-      const mul = sortDir === "desc" ? 1 : -1;
       if (sortKey === "tramo") {
         if (sortDir === "desc") return compararTramosDesc(a.tramo, b.tramo);
         if (!a.tramo && !b.tramo) return 0;
@@ -234,32 +252,41 @@ export function TablaInstituciones({
         return a.institucion.localeCompare(b.institucion, "es") * (sortDir === "asc" ? 1 : -1);
       }
       const numVal = (item: InstitucionCarrera): number | null => {
-        if (sortKey === "acred_anos") return item.acred_anos;
-        if (sortKey === "arancel") {
-          return metaPorIes.get(normalizarTexto(item.institucion))?.arancelMed ?? null;
-        }
+        const meta = metaPorIes.get(normalizarTexto(item.institucion));
+        if (sortKey === "tipo") return TIPO_ORDEN.indexOf(item.tipo);
         if (sortKey === "emp1") return item.emp1;
-        if (sortKey === "emp2") return item.emp2;
-        if (sortKey === "continuidad") return item.continuidad;
-        if (sortKey === "retencion_1") return item.retencion_1;
-        if (sortKey === "dur_real") return item.dur_real;
-        return puntoMedioTramo(item.tramo);
+        if (sortKey === "arancel") return meta?.arancelMed ?? null;
+        if (sortKey === "programas") return meta?.programas ?? 0;
+        return null;
       };
       const va = numVal(a);
       const vb = numVal(b);
       if (va === null && vb === null) return 0;
       if (va === null) return 1;
       if (vb === null) return -1;
+      const mul = sortDir === "desc" ? 1 : -1;
       return (vb - va) * mul;
     });
   }, [instituciones, busqueda, regionFiltro, jornadaFiltro, sortKey, sortDir, metaPorIes]);
+
+  const filasVisibles = expandido ? filas : filas.slice(0, LIMITE_FILAS);
+  const hayMas = filas.length > LIMITE_FILAS;
+
+  const maxSueldoVisibles = useMemo(() => {
+    let m = 0;
+    for (const it of filasVisibles) {
+      const v = valorSueldo(it);
+      if (v !== null && v > m) m = v;
+    }
+    return m > 0 ? m : 1;
+  }, [filasVisibles]);
 
   if (instituciones.length === 0) {
     return (
       <Card className="gap-2 rounded-xl border border-border bg-card py-6 shadow-xs ring-0">
         <CardHeader className="px-6">
           <CardTitle className="text-base font-semibold text-foreground">
-            Resultados por institución
+            Dónde estudiar
           </CardTitle>
         </CardHeader>
         <CardContent className="px-6 text-sm text-muted-foreground">
@@ -270,17 +297,20 @@ export function TablaInstituciones({
     );
   }
 
+  const totalInstituciones = instituciones.length;
+  const totalProgramas = programas.length;
+
   return (
     <Card className="gap-4 rounded-xl border border-border bg-card py-6 shadow-xs ring-0">
       <CardHeader className="flex flex-col gap-3 px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle className="text-base font-semibold text-foreground">
-              Resultados por institución ({filas.length})
+              Dónde estudiar
             </CardTitle>
-            <CardDescription className="mt-0.5 text-xs">
-              Los ingresos por institución se publican en tramos oficiales. Haz clic en cualquier
-              columna para ordenar.
+            <CardDescription className="mt-0.5 text-xs tabular-nums">
+              {entero(totalInstituciones)} instituciones · {entero(totalProgramas)} programas ·{" "}
+              {entero(totalRegiones)} regiones
             </CardDescription>
           </div>
 
@@ -338,22 +368,60 @@ export function TablaInstituciones({
       </CardHeader>
 
       <CardContent className="px-6">
+        {/* Mapa por región + alternativa textual (solo si hay regiones utilizables). */}
+        {listaRegiones.length > 0 ? (
+          <div className="mb-6 grid gap-5 md:grid-cols-[minmax(0,auto)_minmax(0,1fr)] md:items-start">
+            <ChileMap
+              size="md"
+              values={valoresMapa}
+              format={(v) => `${v} programas`}
+              legendLabel="Programas por región"
+              ariaLabel="Mapa de programas de la carrera por región"
+            />
+            <div className="min-w-0">
+              <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                Programas por región
+              </h3>
+              <ul className="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 tabular-nums sm:grid-cols-2">
+                {listaRegiones.map((r) => (
+                  <li
+                    key={r.slug}
+                    className="flex items-center justify-between gap-2 border-b border-border/50 py-1 text-xs"
+                  >
+                    <span className="truncate text-foreground">{r.nombre}</span>
+                    <span className="font-semibold" style={{ color: C.blueText }}>
+                      {entero(r.count)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : null}
+
         {filas.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border py-8 text-center text-xs text-muted-foreground">
             Ninguna institución coincide con los filtros aplicados.
           </div>
         ) : (
           <>
-            {/* Desktop Table */}
+            <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+              <span className="tabular-nums">
+                Mostrando {entero(filasVisibles.length)} de {entero(filas.length)}
+              </span>
+              <span>Haz clic en una columna para ordenar.</span>
+            </div>
+
+            {/* Tabla compacta (desktop) */}
             <div className="hidden overflow-x-auto rounded-lg border border-border md:block">
               <Table className="tabular-nums">
                 <TableHeader className="bg-muted/60">
                   <TableRow className="hover:bg-muted/60">
-                    <TableHead className="min-w-[240px] normal-case">
+                    <TableHead className="min-w-[230px] normal-case">
                       <button
                         type="button"
                         onClick={() => toggleSort("institucion")}
-                        className="font-medium text-foreground hover:text-blue-700"
+                        className="font-medium text-foreground hover:text-[#0b63c5]"
                       >
                         Institución / Título
                         <SortIcon col="institucion" sortKey={sortKey} sortDir={sortDir} />
@@ -362,40 +430,28 @@ export function TablaInstituciones({
                     <TableHead className="normal-case">
                       <button
                         type="button"
-                        onClick={() => toggleSort("acred_anos")}
-                        className="font-medium text-foreground hover:text-blue-700"
+                        onClick={() => toggleSort("tipo")}
+                        className="font-medium text-foreground hover:text-[#0b63c5]"
                       >
-                        Acreditación
-                        <SortIcon col="acred_anos" sortKey={sortKey} sortDir={sortDir} />
+                        Tipo
+                        <SortIcon col="tipo" sortKey={sortKey} sortDir={sortDir} />
                       </button>
                     </TableHead>
                     <TableHead className="min-w-[190px] normal-case">
                       <button
                         type="button"
                         onClick={() => toggleSort("tramo")}
-                        className="font-medium text-foreground hover:text-blue-700"
+                        className="font-medium text-foreground hover:text-[#0b63c5]"
                       >
-                        Tramo sueldo 4.º año
+                        Sueldo 4.º año
                         <SortIcon col="tramo" sortKey={sortKey} sortDir={sortDir} />
                       </button>
                     </TableHead>
-                    {tieneAranceles ? (
-                      <TableHead className="text-right normal-case">
-                        <button
-                          type="button"
-                          onClick={() => toggleSort("arancel")}
-                          className="font-medium text-foreground hover:text-blue-700"
-                        >
-                          Arancel anual
-                          <SortIcon col="arancel" sortKey={sortKey} sortDir={sortDir} />
-                        </button>
-                      </TableHead>
-                    ) : null}
                     <TableHead className="text-right normal-case">
                       <button
                         type="button"
                         onClick={() => toggleSort("emp1")}
-                        className="font-medium text-foreground hover:text-blue-700"
+                        className="font-medium text-foreground hover:text-[#0b63c5]"
                       >
                         Empleo 1.º
                         <SortIcon col="emp1" sortKey={sortKey} sortDir={sortDir} />
@@ -404,48 +460,29 @@ export function TablaInstituciones({
                     <TableHead className="text-right normal-case">
                       <button
                         type="button"
-                        onClick={() => toggleSort("emp2")}
-                        className="font-medium text-foreground hover:text-blue-700"
+                        onClick={() => toggleSort("arancel")}
+                        className="font-medium text-foreground hover:text-[#0b63c5]"
                       >
-                        Empleo 2.º
-                        <SortIcon col="emp2" sortKey={sortKey} sortDir={sortDir} />
+                        Arancel anual
+                        <SortIcon col="arancel" sortKey={sortKey} sortDir={sortDir} />
                       </button>
                     </TableHead>
                     <TableHead className="text-right normal-case">
                       <button
                         type="button"
-                        onClick={() => toggleSort("retencion_1")}
-                        className="font-medium text-foreground hover:text-blue-700"
+                        onClick={() => toggleSort("programas")}
+                        className="font-medium text-foreground hover:text-[#0b63c5]"
                       >
-                        Retención 1.º
-                        <SortIcon col="retencion_1" sortKey={sortKey} sortDir={sortDir} />
-                      </button>
-                    </TableHead>
-                    <TableHead className="text-right normal-case">
-                      <button
-                        type="button"
-                        onClick={() => toggleSort("continuidad")}
-                        className="font-medium text-foreground hover:text-blue-700"
-                      >
-                        Continuidad
-                        <SortIcon col="continuidad" sortKey={sortKey} sortDir={sortDir} />
-                      </button>
-                    </TableHead>
-                    <TableHead className="text-right normal-case">
-                      <button
-                        type="button"
-                        onClick={() => toggleSort("dur_real")}
-                        className="font-medium text-foreground hover:text-blue-700"
-                      >
-                        Duración real
-                        <SortIcon col="dur_real" sortKey={sortKey} sortDir={sortDir} />
+                        Programas
+                        <SortIcon col="programas" sortKey={sortKey} sortDir={sortDir} />
                       </button>
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filas.map((item) => {
+                  {filasVisibles.map((item) => {
                     const meta = metaPorIes.get(normalizarTexto(item.institucion));
+                    const sueldo = valorSueldo(item);
                     return (
                       <TableRow key={`${item.codigo_ies}-${item.titulo}`}>
                         <TableCell className="align-top">
@@ -467,35 +504,28 @@ export function TablaInstituciones({
                           </div>
                         </TableCell>
                         <TableCell className="align-top">
-                          <AcreditacionBadge
-                            anos={item.acred_anos}
-                            texto={item.acreditacion}
-                          />
+                          <TipoBadge tipo={item.tipo} />
                         </TableCell>
                         <TableCell className="align-top">
-                          <BarraTramo tramo={item.tramo} />
+                          {item.tramo && sueldo !== null ? (
+                            <InlineBar
+                              value={sueldo}
+                              max={maxSueldoVisibles}
+                              label={formatearTramoCorto(item.tramo)}
+                              tone="blue"
+                            />
+                          ) : (
+                            <span className="text-xs text-muted-foreground">s/i</span>
+                          )}
                         </TableCell>
-                        {tieneAranceles ? (
-                          <TableCell className="text-right align-top text-muted-foreground">
-                            {meta?.arancelMed ? pesos(meta.arancelMed) : "s/i"}
-                          </TableCell>
-                        ) : null}
                         <TableCell className="text-right align-top font-semibold text-foreground">
                           {porcentaje(item.emp1)}
                         </TableCell>
                         <TableCell className="text-right align-top text-muted-foreground">
-                          {porcentaje(item.emp2)}
+                          {meta?.arancelMed ? pesos(meta.arancelMed) : "s/i"}
                         </TableCell>
                         <TableCell className="text-right align-top text-muted-foreground">
-                          {porcentaje(item.retencion_1)}
-                        </TableCell>
-                        <TableCell className="text-right align-top text-muted-foreground">
-                          {porcentaje(item.continuidad)}
-                        </TableCell>
-                        <TableCell className="text-right align-top text-muted-foreground">
-                          {item.dur_real !== null
-                            ? anosDesdeSemestres(item.dur_real)
-                            : "Sin dato"}
+                          {entero(meta?.programas ?? 0)}
                         </TableCell>
                       </TableRow>
                     );
@@ -504,10 +534,11 @@ export function TablaInstituciones({
               </Table>
             </div>
 
-            {/* Mobile Card Rows */}
+            {/* Filas compactas (móvil) */}
             <div className="space-y-3 md:hidden">
-              {filas.map((item) => {
+              {filasVisibles.map((item) => {
                 const meta = metaPorIes.get(normalizarTexto(item.institucion));
+                const sueldo = valorSueldo(item);
                 return (
                   <div
                     key={`${item.codigo_ies}-${item.titulo}-mob`}
@@ -530,13 +561,19 @@ export function TablaInstituciones({
                           </div>
                         </div>
                       </div>
-                      <AcreditacionBadge
-                        anos={item.acred_anos}
-                        texto={item.acreditacion}
-                      />
+                      <TipoBadge tipo={item.tipo} />
                     </div>
 
-                    <BarraTramo tramo={item.tramo} />
+                    {item.tramo && sueldo !== null ? (
+                      <InlineBar
+                        value={sueldo}
+                        max={maxSueldoVisibles}
+                        label={formatearTramoCorto(item.tramo)}
+                        tone="blue"
+                      />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Sueldo 4.º año: s/i</span>
+                    )}
 
                     <div className="grid grid-cols-3 gap-2 border-t border-border/60 pt-2.5 text-xs">
                       <div>
@@ -546,23 +583,15 @@ export function TablaInstituciones({
                         </div>
                       </div>
                       <div>
-                        <div className="text-[11px] text-muted-foreground">Retención 1.º</div>
+                        <div className="text-[11px] text-muted-foreground">Arancel</div>
                         <div className="font-medium text-foreground">
-                          {porcentaje(item.retencion_1)}
+                          {meta?.arancelMed ? pesos(meta.arancelMed) : "s/i"}
                         </div>
                       </div>
                       <div>
-                        <div className="text-[11px] text-muted-foreground">
-                          {tieneAranceles ? "Arancel" : "Duración"}
-                        </div>
+                        <div className="text-[11px] text-muted-foreground">Programas</div>
                         <div className="font-medium text-foreground">
-                          {tieneAranceles
-                            ? meta?.arancelMed
-                              ? pesos(meta.arancelMed)
-                              : "s/i"
-                            : item.dur_real !== null
-                              ? anosDesdeSemestres(item.dur_real)
-                              : "s/i"}
+                          {entero(meta?.programas ?? 0)}
                         </div>
                       </div>
                     </div>
@@ -570,6 +599,31 @@ export function TablaInstituciones({
                 );
               })}
             </div>
+
+            {hayMas ? (
+              <div className="mt-4 flex justify-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  aria-expanded={expandido}
+                  onClick={() => setExpandido((v) => !v)}
+                  className="gap-1.5 text-xs"
+                >
+                  {expandido ? (
+                    <>
+                      <ChevronUp className="size-3.5" aria-hidden="true" />
+                      Mostrar menos
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="size-3.5" aria-hidden="true" />
+                      Ver las {entero(filas.length)}
+                    </>
+                  )}
+                </Button>
+              </div>
+            ) : null}
           </>
         )}
       </CardContent>

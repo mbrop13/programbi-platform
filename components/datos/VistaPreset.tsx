@@ -21,12 +21,27 @@ import {
   MIGAS_BASE,
 } from "@/lib/datos/seo-carreras";
 import { cn } from "@/lib/utils";
+import { InlineBar } from "@/components/datos/viz/InlineBar";
+import { StatTile } from "@/components/datos/viz/StatTile";
 import { CtaDatos } from "./CtaDatos";
 import { EnResumen } from "./EnResumen";
 import { FaqDatos } from "./FaqDatos";
 import { FuenteLinea } from "./FuenteLinea";
 import { DatosViewTracker } from "./HubCarrerasExtras";
 import { MigasDatos } from "./MigasDatos";
+
+/**
+ * Primera frase de un texto, recortada a ≤40 palabras para el pliegue. El texto
+ * SEO completo sigue disponible más abajo (EnResumen / metodología) y en la meta
+ * description; aquí solo se muestra una línea breve bajo el H1.
+ */
+function parrafoPliegue(texto: string, maxPalabras = 32): string {
+  const limpio = texto.replace(/\s+/g, " ").trim();
+  const primeraFrase = limpio.split(/(?<=\.)\s+/)[0] ?? limpio;
+  const palabras = primeraFrase.split(" ");
+  if (palabras.length <= maxPalabras) return primeraFrase;
+  return palabras.slice(0, maxPalabras).join(" ").replace(/[.,;:\-–—]+$/, "") + "…";
+}
 
 function TablaPreset({
   filas,
@@ -47,8 +62,23 @@ function TablaPreset({
     );
   }
 
+  // Máximo del grupo para escalar las barras inline (magnitud relativa; en las
+  // vistas ascendentes como «baratas» la barra mide el tamaño del arancel).
+  const maxMetrica = Math.max(
+    0,
+    ...filas.map((f) => f.valorMetrica ?? f.ing4 ?? 0)
+  );
+  const top = filas[0];
+
   return (
     <div className="space-y-3">
+      {/* KPI del #1 del grupo (cifra grande + nombre), estilo levels.fyi. */}
+      <StatTile
+        label={`#1 ${TIPO_ETIQUETAS[top.tipo].corto}`}
+        value={top.textoMetrica || pesos(top.ing4)}
+        sub={top.nombre}
+      />
+
       {/* Desktop Table */}
       <div className="hidden overflow-x-auto rounded-xl border border-border bg-card shadow-xs md:block">
         <table className="w-full border-collapse text-left text-sm">
@@ -92,8 +122,12 @@ function TablaPreset({
                     </Badge>
                   </td>
                 ) : null}
-                <td className="px-3 py-3.5 text-right font-semibold text-blue-700 tabular-nums">
-                  {row.textoMetrica}
+                <td className="px-3 py-3.5">
+                  <InlineBar
+                    value={row.valorMetrica ?? row.ing4 ?? 0}
+                    max={maxMetrica}
+                    label={row.textoMetrica}
+                  />
                 </td>
                 <td className="px-3 py-3.5 text-right font-semibold text-foreground tabular-nums">
                   {pesos(row.ing4)}
@@ -139,6 +173,12 @@ function TablaPreset({
                   {row.textoMetrica}
                 </span>
               </div>
+              <div className="mt-2">
+                <InlineBar
+                  value={row.valorMetrica ?? row.ing4 ?? 0}
+                  max={maxMetrica}
+                />
+              </div>
               <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border/70 pt-3 text-xs">
                 <div>
                   <div className="text-muted-foreground">Sueldo 4.º</div>
@@ -177,7 +217,9 @@ export function VistaPreset({ slug }: { slug: PresetSlug }) {
   const filasCft = esMejorPagadas ? filasPreset(slug, "cft") : [];
   const filasUnicas = esMejorPagadas ? filasU : filasPreset(slug);
 
-  const resumen = resumenPreset(slug, filasUnicas);
+  // El texto SEO completo vive aquí (bajo el pliegue), no en el hero: el pliegue
+  // muestra solo una frase corta y el resumen largo queda más abajo en el HTML.
+  const resumen = [def.descriptionSeo, ...resumenPreset(slug, filasUnicas)];
 
   const migas = [
     ...MIGAS_BASE,
@@ -220,7 +262,9 @@ export function VistaPreset({ slug }: { slug: PresetSlug }) {
               Edición {meta.edicion} · Actualizado el {fechaCorta(meta.fetched_at)}
             </Badge>
             <h1 className="h1-datos text-foreground">{def.h1}</h1>
-            <p className="text-base leading-relaxed text-muted-foreground">{def.descriptionSeo}</p>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              {parrafoPliegue(def.descriptionSeo)}
+            </p>
           </header>
 
           <Link

@@ -6,7 +6,7 @@ import styles from "./DatosRootShell.module.css";
 const DATOS_LINKS = [
   { href: "/datos", label: "Resumen", exact: true },
   { href: "/datos/carreras", label: "Carreras", exact: false },
-  { href: "/datos/inflacion", label: "Inflación (IPC)", exact: false },
+  { href: "/datos/inflacion", label: "Inflación", exact: false },
   { href: "/datos/desempleo", label: "Desempleo", exact: false },
   { href: "/datos/capacitacion", label: "Capacitación", exact: false },
 ] as const;

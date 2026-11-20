@@ -17,14 +17,19 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Card, CardContent } from "@/components/ui/card";
-import { DatosEstructurados, Fuente, MiniSerie } from "@/components/datos/ElementosDatos";
+import { BuscadorCarreras } from "@/components/datos/BuscadorCarreras";
+import { DatosEstructurados, Fuente } from "@/components/datos/ElementosDatos";
 import { MigasDatos } from "@/components/datos/MigasDatos";
+import { ChileMap, type RegionKey } from "@/components/datos/viz/ChileMap";
+import { InlineBar } from "@/components/datos/viz/InlineBar";
+import { Sparkline } from "@/components/datos/viz/Sparkline";
+import { StatTile } from "@/components/datos/viz/StatTile";
 import { datosTerritorio, RANKING } from "@/lib/datos/desempleo";
 import { cifra, periodo, puntos } from "@/lib/datos/desempleo-formato";
 import { getMetaCarreras, getRankingCarreras } from "@/lib/datos/carreras";
-import { entero, mesLargo, pesos, porcentaje, variacionPorcentual } from "@/lib/datos/formato";
+import { entero, mesCorto, mesLargo, pesos, variacionPorcentual } from "@/lib/datos/formato";
 import { getIpcSeries, getUltimoIpc, variacionIpc } from "@/lib/datos/ipc";
-import { NACIONAL, RUTA_DESEMPLEO } from "@/lib/datos/regiones";
+import { NACIONAL, RUTA_DESEMPLEO, rutaTerritorio } from "@/lib/datos/regiones";
 import { breadcrumbs, dataset, metaObservatorio, MIGAS_DATOS } from "@/lib/datos/seo";
 import { resumenTerritorio } from "@/lib/datos/textos";
 import { cn } from "@/lib/utils";
@@ -44,18 +49,38 @@ export const metadata = {
   twitter: { ...baseMeta.twitter, title: titulo, description: descripcion },
 };
 
+/** Resta 12 meses a un período "YYYY-MM" (mismo mes del año anterior). */
+function mesHaceUnAno(ym: string): string {
+  const [ano, mes] = ym.split("-").map(Number);
+  return `${ano - 1}-${String(mes).padStart(2, "0")}`;
+}
+
 export default function DatosPage() {
   const nacional = datosTerritorio(NACIONAL);
   if (!nacional) notFound();
   const { actual, serie, indicadores } = nacional;
   const resumen = resumenTerritorio("Chile", actual, indicadores, 0, RANKING.length);
   const carrerasMeta = getMetaCarreras();
-  const medicina = getRankingCarreras().find(
-    (item) => item.slug === "medicina" && item.tipo === "u"
-  );
+
+  // Top 5 carreras universitarias mejor pagadas al 4.º año (solo JSON existente).
+  const topU = getRankingCarreras()
+    .filter((item) => item.tipo === "u" && item.ing4 !== null)
+    .sort((a, b) => (b.ing4 ?? 0) - (a.ing4 ?? 0))
+    .slice(0, 5);
+  const maxIng4 = topU[0]?.ing4 ?? 1;
+
   const ipcSerie = getIpcSeries();
   const ultimoIpc = getUltimoIpc();
-  const varIpcSep = variacionIpc("2025-09", ultimoIpc.m, ipcSerie);
+  const ipcDesde12m = mesHaceUnAno(ultimoIpc.m);
+  const varIpc12m = variacionIpc(ipcDesde12m, ultimoIpc.m, ipcSerie);
+
+  // Tasas regionales para el mini-mapa del hero (RANKING ya excluye "nacional").
+  const tasasPorRegion = Object.fromEntries(
+    RANKING.map((region) => [region.slug, region.tasa])
+  ) as Partial<Record<RegionKey, number | null>>;
+
+  const sparkDesempleo = serie.slice(-24).map((observacion) => observacion.tasa);
+  const sparkIpc = ipcSerie.map((punto) => punto.v);
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:px-6 lg:py-10">
@@ -66,80 +91,143 @@ export default function DatosPage() {
       <div className="space-y-4">
         <MigasDatos migas={MIGAS_DATOS} />
 
-        <header className="max-w-3xl space-y-3">
-          <Badge
-            variant="secondary"
-            className="h-auto gap-1.5 rounded-md border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
-          >
-            <Activity className="size-3.5 text-blue-600" aria-hidden="true" />
-            Datos abiertos de ProgramBI
-          </Badge>
-          <h1 className="h1-datos text-foreground">Datos de Chile, explicados en simple</h1>
-          <p className="text-base leading-relaxed text-muted-foreground">
-            Explora cifras oficiales sobre carreras, inflación, desempleo y capacitación. Todo
-            gratis, sin registro y listo para comparar o descargar.
-          </p>
-        </header>
+        {/* Hero: texto + buscador a la izquierda; mini-mapa + 3 KPI a la derecha. */}
+        <section
+          aria-label="Panorama de datos de Chile"
+          className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center"
+        >
+          <div className="space-y-4">
+            <Badge
+              variant="secondary"
+              className="h-auto gap-1.5 rounded-md border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+            >
+              <Activity className="size-3.5 text-[#0b63c5]" aria-hidden="true" />
+              Datos abiertos de ProgramBI
+            </Badge>
+            <h1 className="h1-datos text-foreground">Datos de Chile, explicados en simple</h1>
+            <p className="max-w-[68ch] text-base leading-relaxed text-muted-foreground">
+              Explora cifras oficiales sobre carreras, inflación, desempleo y capacitación. Todo
+              gratis, sin registro y listo para comparar o descargar.
+            </p>
+            <BuscadorCarreras placeholder="Busca una carrera (ej. medicina, informática, tens)…" />
+          </div>
+
+          <div className="space-y-3">
+            <div className="rounded-xl border border-border bg-card p-4 shadow-xs">
+              <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                <p className="text-xs font-semibold text-foreground">Desocupación por región</p>
+                <p className="text-xs text-muted-foreground tabular-nums">
+                  {periodo(actual.p)} · INE
+                </p>
+              </div>
+              <ChileMap
+                values={tasasPorRegion}
+                format={(v) => `${cifra(v)} %`}
+                hrefFor={(r) => rutaTerritorio(r)}
+                legendLabel="Tasa de desocupación"
+                orientation="vertical"
+                size="mini"
+                ariaLabel="Mapa de desempleo por región de Chile"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <StatTile
+                label="Desempleo"
+                value={`${cifra(actual.tasa)} %`}
+                sub={`${periodo(actual.p)} · INE`}
+                delta={
+                  indicadores.yoy_pp !== null
+                    ? {
+                        text: `${puntos(indicadores.yoy_pp)} en 12 meses`,
+                        dir:
+                          indicadores.yoy_pp > 0
+                            ? "up"
+                            : indicadores.yoy_pp < 0
+                              ? "down"
+                              : "flat",
+                        good: indicadores.yoy_pp <= 0,
+                      }
+                    : undefined
+                }
+                spark={sparkDesempleo}
+              />
+              <StatTile
+                label="Inflación 12 meses"
+                value={variacionPorcentual(varIpc12m)}
+                sub={`IPC ${mesCorto(ipcDesde12m)} → ${mesCorto(ultimoIpc.m)}`}
+                spark={sparkIpc}
+              />
+              {topU.length > 0 ? (
+                <StatTile
+                  label="Carreras"
+                  value={pesos(topU[0].ing4)}
+                  sub="Mejor sueldo 4.º año (U)"
+                />
+              ) : null}
+            </div>
+          </div>
+        </section>
       </div>
 
-      {/* 3 Observatorios principales en grid moderno */}
+      {/* 3 observatorios principales: mini-visuales de datos en vez de fotos. */}
       <section aria-labelledby="hub-observatorios" className="space-y-4">
         <h2 id="hub-observatorios" className="sr-only">
           Observatorios principales
         </h2>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          {/* Carreras y empleabilidad */}
-          <Card className="group gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 shadow-xs ring-0 transition-all hover:border-slate-300 hover:shadow-sm">
-            <div className="relative h-44 w-full overflow-hidden border-b border-border bg-slate-100">
-              <img
-                src="/images/datos/hero-carreras.jpg"
-                alt="Campus universitario moderno en Chile"
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent"
-              />
-              <div className="absolute top-3 left-4 right-4 flex items-center justify-between gap-2">
+        <div className="grid gap-4 lg:grid-cols-3">
+          {/* Carreras y empleabilidad: top 5 mejor pagadas (U) con barras inline. */}
+          <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0 transition-all hover:border-slate-300 hover:shadow-sm">
+            <CardContent className="flex flex-1 flex-col gap-4 p-5">
+              <div className="flex items-center justify-between gap-2">
                 <Badge
                   variant="secondary"
-                  className="h-auto rounded-md border border-white/25 bg-white/95 px-2.5 py-0.5 text-xs font-medium text-blue-800 backdrop-blur-xs"
+                  className="h-auto rounded-md border border-border bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-[#0b63c5]"
                 >
                   Mi Futuro · Edición {carrerasMeta.edicion}
                 </Badge>
-                <div className="flex size-7 items-center justify-center rounded-lg border border-white/25 bg-white/90 text-slate-700 backdrop-blur-xs">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-foreground">
                   <GraduationCap className="size-4" aria-hidden="true" />
                 </div>
               </div>
-            </div>
-            <CardContent className="flex flex-1 flex-col justify-between gap-5 p-6">
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-xl font-semibold tracking-tight text-foreground">
-                    Carreras, sueldos y empleabilidad
-                  </h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    {carrerasMeta.conteos.genericas_unicas} carreras y{" "}
-                    {entero(carrerasMeta.conteos.filas_C)} programas 2026 en universidades, IP y
-                    CFT.
-                  </p>
-                </div>
 
-                {medicina && medicina.ing4 !== null ? (
-                  <div className="rounded-lg border border-border bg-muted/40 p-3.5 text-xs text-muted-foreground">
-                    Ejemplo: <strong className="font-semibold text-foreground">Medicina (U)</strong>{" "}
-                    promedia{" "}
-                    <strong className="font-semibold text-foreground">
-                      {pesos(medicina.ing4)}
-                    </strong>{" "}
-                    al 4.º año y{" "}
-                    <strong className="font-semibold text-foreground">
-                      {porcentaje(medicina.emp1)}
-                    </strong>{" "}
-                    de empleabilidad al 1.er año.
-                  </div>
-                ) : null}
+              <div>
+                <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                  Carreras, sueldos y empleabilidad
+                </h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  {carrerasMeta.conteos.genericas_unicas} carreras y{" "}
+                  {entero(carrerasMeta.conteos.filas_C)} programas 2026 en universidades, IP y CFT.
+                </p>
+              </div>
+
+              <div className="flex-1">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Top 5 · sueldo al 4.º año en universidades
+                </p>
+                <ol className="mt-2 space-y-2.5">
+                  {topU.map((carrera) => (
+                    <li key={carrera.slug}>
+                      <div className="flex items-baseline justify-between gap-2 text-xs">
+                        <Link
+                          href={`/datos/carreras/${carrera.slug}`}
+                          className="truncate font-medium text-foreground hover:text-[#0b63c5]"
+                        >
+                          {carrera.nombre}
+                        </Link>
+                        <span className="shrink-0 font-semibold text-foreground tabular-nums">
+                          {pesos(carrera.ing4)}
+                        </span>
+                      </div>
+                      <InlineBar
+                        value={carrera.ing4 ?? 0}
+                        max={maxIng4}
+                        label={`${carrera.nombre}: ${pesos(carrera.ing4)} al 4.º año`}
+                      />
+                    </li>
+                  ))}
+                </ol>
               </div>
 
               <Link
@@ -155,42 +243,44 @@ export default function DatosPage() {
             </CardContent>
           </Card>
 
-          {/* Inflación e IPC */}
-          <Card className="group gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 shadow-xs ring-0 transition-all hover:border-slate-300 hover:shadow-sm">
-            <div className="relative h-44 w-full overflow-hidden border-b border-border bg-slate-100">
-              <img
-                src="/images/datos/hero-inflacion.jpg"
-                alt="Distrito financiero de Santiago de Chile"
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent"
-              />
-              <div className="absolute top-3 left-4 right-4 flex items-center justify-between gap-2">
+          {/* Inflación e IPC: sparkline de la serie mensual + últimas cifras. */}
+          <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0 transition-all hover:border-slate-300 hover:shadow-sm">
+            <CardContent className="flex flex-1 flex-col gap-4 p-5">
+              <div className="flex items-center justify-between gap-2">
                 <Badge
                   variant="secondary"
-                  className="h-auto rounded-md border border-white/25 bg-white/95 px-2.5 py-0.5 text-xs font-medium text-foreground backdrop-blur-xs"
+                  className="h-auto rounded-md border border-border bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
                 >
                   INE · {mesLargo(ultimoIpc.m)}
                 </Badge>
-                <div className="flex size-7 items-center justify-center rounded-lg border border-white/25 bg-white/90 text-slate-700 backdrop-blur-xs">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-foreground">
                   <Percent className="size-4" aria-hidden="true" />
                 </div>
               </div>
-            </div>
-            <CardContent className="flex flex-1 flex-col justify-between gap-5 p-6">
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-xl font-semibold tracking-tight text-foreground">
-                    Calculadora de inflación (IPC)
-                  </h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    Actualiza sueldos, arriendos o aranceles a pesos de hoy y comprueba si tus
-                    ingresos le ganaron al costo de la vida.
+
+              <div>
+                <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                  Calculadora de inflación (IPC)
+                </h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  Actualiza sueldos, arriendos o aranceles a pesos de hoy y comprueba si tus
+                  ingresos le ganaron al costo de la vida.
+                </p>
+              </div>
+
+              <div className="flex-1 space-y-2.5">
+                <div className="rounded-lg border border-border bg-muted/40 p-3">
+                  <Sparkline
+                    data={sparkIpc}
+                    width={280}
+                    height={64}
+                    ariaLabel="Evolución del IPC mensual de Chile"
+                    lastDot
+                  />
+                  <p className="mt-1.5 text-xs text-muted-foreground tabular-nums">
+                    IPC mensual · {mesCorto(ipcSerie[0].m)} → {mesCorto(ultimoIpc.m)}
                   </p>
                 </div>
-
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs">
                     <span className="text-muted-foreground">Último índice</span>
@@ -199,9 +289,9 @@ export default function DatosPage() {
                     </p>
                   </div>
                   <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs">
-                    <span className="text-muted-foreground">Var. sep-2025 → hoy</span>
-                    <p className="mt-0.5 text-base font-bold text-blue-700 tabular-nums">
-                      {varIpcSep !== null ? variacionPorcentual(varIpcSep) : "—"}
+                    <span className="text-muted-foreground">Var. 12 meses</span>
+                    <p className="mt-0.5 text-base font-bold text-[#0b63c5] tabular-nums">
+                      {varIpc12m !== null ? variacionPorcentual(varIpc12m) : "—"}
                     </p>
                   </div>
                 </div>
@@ -219,66 +309,98 @@ export default function DatosPage() {
               </Link>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Observatorio de Desempleo destacado */}
-        <Card
-          aria-labelledby="hub-desempleo"
-          className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0"
-        >
-          <CardContent className="grid gap-6 p-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
+          {/* Desempleo: sparkline nacional + tasa SSR (data-* del check) + 16 regiones. */}
+          <Card
+            aria-labelledby="hub-desempleo"
+            className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0 transition-all hover:border-slate-300 hover:shadow-sm"
+          >
+            <CardContent className="flex flex-1 flex-col gap-4 p-5">
+              <div className="flex items-center justify-between gap-2">
                 <Badge
                   variant="secondary"
-                  className="h-auto rounded-md border border-border bg-muted/60 px-2 py-0.5 text-xs font-medium text-muted-foreground"
+                  className="h-auto rounded-md border border-border bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
                 >
                   {periodo(actual.p)} · INE
                 </Badge>
-                {indicadores.yoy_pp !== null ? (
-                  <span
-                    data-yoy-hero={indicadores.yoy_pp}
-                    className="text-xs font-medium text-muted-foreground tabular-nums"
-                  >
-                    {puntos(indicadores.yoy_pp)} en 12 meses
-                  </span>
-                ) : null}
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-foreground">
+                  <Activity className="size-4" aria-hidden="true" />
+                </div>
               </div>
 
               <div>
-                <h2 id="hub-desempleo" className="text-xl font-semibold text-foreground">
-                  Observatorio de Desempleo en Chile
-                </h2>
-                <p
-                  className="mt-2 text-4xl font-bold tracking-tight text-foreground tabular-nums sm:text-5xl"
-                  data-tasa-hero={actual.tasa}
+                <h3
+                  id="hub-desempleo"
+                  className="text-lg font-semibold tracking-tight text-foreground"
                 >
-                  {cifra(actual.tasa)}
-                  <span className="ml-1 text-2xl font-semibold text-blue-700">%</span>
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Tasa de desocupación nacional con evolución desde 2010 y mapa de las 16 regiones.
+                  Observatorio de Desempleo en Chile
+                </h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  Tasa de desocupación nacional con evolución desde 2010 y mapa de las{" "}
+                  {RANKING.length} regiones.
                 </p>
               </div>
 
-              <Fuente edicion />
+              <div className="flex-1 space-y-2.5">
+                <div className="rounded-lg border border-border bg-muted/40 p-3">
+                  <Sparkline
+                    data={sparkDesempleo}
+                    width={280}
+                    height={64}
+                    ariaLabel="Tasa de desocupación nacional, últimos 24 trimestres móviles"
+                    lastDot
+                  />
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    Últimos 24 trimestres móviles
+                  </p>
+                </div>
 
-              <div className="flex flex-wrap gap-2 pt-1">
+                <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
+                  <p
+                    className="text-3xl font-bold tracking-tight text-foreground tabular-nums"
+                    data-tasa-hero={actual.tasa}
+                  >
+                    {cifra(actual.tasa)}
+                    <span className="ml-1 text-lg font-semibold text-[#0b63c5]">%</span>
+                  </p>
+                  {indicadores.yoy_pp !== null ? (
+                    <span
+                      data-yoy-hero={indicadores.yoy_pp}
+                      className="text-xs font-medium text-muted-foreground tabular-nums"
+                    >
+                      {puntos(indicadores.yoy_pp)} en 12 meses
+                    </span>
+                  ) : null}
+                </div>
+
+                <Fuente edicion />
+              </div>
+
+              <div className="flex flex-wrap gap-2">
                 <Link
                   href={RUTA_DESEMPLEO}
                   className={cn(
-                    buttonVariants({ variant: "outline", size: "sm" }),
-                    "h-9 gap-1.5 rounded-lg bg-card px-4 text-xs font-medium"
+                    buttonVariants({ variant: "default", size: "sm" }),
+                    "h-9 gap-1.5 rounded-lg px-4 text-xs font-medium"
                   )}
                 >
-                  Explorar desempleo en Chile
+                  Explorar desempleo
                   <ArrowUpRight className="size-4" aria-hidden="true" />
+                </Link>
+                <Link
+                  href={`${RUTA_DESEMPLEO}#regiones`}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "h-9 rounded-lg bg-card px-3 text-xs font-medium"
+                  )}
+                >
+                  {RANKING.length} regiones
                 </Link>
                 <Link
                   href={`${RUTA_DESEMPLEO}/jovenes`}
                   className={cn(
                     buttonVariants({ variant: "ghost", size: "sm" }),
-                    "h-9 text-xs font-medium text-muted-foreground hover:text-foreground"
+                    "h-9 px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
                   )}
                 >
                   Empleo juvenil
@@ -287,19 +409,15 @@ export default function DatosPage() {
                   href="/datos/capacitacion"
                   className={cn(
                     buttonVariants({ variant: "ghost", size: "sm" }),
-                    "h-9 text-xs font-medium text-muted-foreground hover:text-foreground"
+                    "h-9 px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
                   )}
                 >
                   Capacitación SENCE
                 </Link>
               </div>
-            </div>
-
-            <div className="rounded-xl border border-border bg-muted/30 p-4">
-              <MiniSerie serie={serie} variante="hub" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </section>
 
       {/* Herramientas rápidas */}
@@ -371,11 +489,11 @@ export default function DatosPage() {
                 href={tool.href}
                 className="group flex items-start gap-3.5 rounded-xl border border-border bg-card p-4 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm"
               >
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-blue-700">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-[#0b63c5]">
                   <Icon className="size-4" aria-hidden="true" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-700">
+                  <h3 className="text-sm font-semibold text-foreground group-hover:text-[#0b63c5]">
                     {tool.titulo}
                   </h3>
                   <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
@@ -388,14 +506,14 @@ export default function DatosPage() {
         </div>
       </section>
 
-      {/* En resumen del panorama laboral */}
+      {/* Texto SEO largo, bajo el pliegue: resumen del panorama laboral. */}
       <Card
         aria-labelledby="hub-resumen"
         className="prose-datos gap-2 rounded-xl border border-border bg-card py-6 shadow-xs ring-0"
       >
         <CardContent className="space-y-2.5 px-6 text-sm leading-relaxed text-foreground/85">
           <h2 id="hub-resumen" className="text-base font-semibold text-foreground">
-            Resumen del mercado laboral en Chile
+            En resumen: el mercado laboral en Chile
           </h2>
           {resumen.map((texto) => (
             <p key={texto}>{texto}</p>

@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import type { ChartConfig } from "@/components/ui/chart";
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -85,8 +84,10 @@ interface Seleccion {
   tipo: TipoIesKey;
 }
 
-const COLORES = ["#2563eb", "#d97706", "#0f172a"] as const;
-const COLORES_TEXTO = ["#1d4ed8", "#b45309", "#0f172a"] as const;
+// Paleta brief: líneas/barras con azul, azul profundo y amarillo; el texto usa
+// la variante legible (amarillo NUNCA en texto chico: el 3.er puesto usa tinta).
+const COLORES = ["#1890FF", "#0b3d7a", "#f2c811"] as const;
+const COLORES_TEXTO = ["#0b63c5", "#0b3d7a", "#171716"] as const;
 
 function primerTipoDisponible(
   c: ComparadorCarreraItem,
@@ -283,7 +284,6 @@ export function Comparador({
   };
 
   const quitarCarrera = (slug: string) => {
-    if (seleccion.length <= 1) return;
     const next = seleccion.filter((s) => s.slug !== slug);
     setSeleccion(next);
     sincronizarUrl(next);
@@ -347,6 +347,72 @@ export function Comparador({
       };
     });
     return cfg;
+  }, [itemsActivos]);
+
+  // Tabla comparativa por indicador: sueldo/empleabilidad mayor = mejor;
+  // duración real y arancel menor = mejor; null («s/i») no compite.
+  const filasComparacion = React.useMemo(() => {
+    const defs: {
+      etiqueta: string;
+      mejor: "mayor" | "menor";
+      valor: (d: ComparadorTipoInfo) => number | null;
+      formato: (v: number | null) => string;
+    }[] = [
+      {
+        etiqueta: "Sueldo bruto 1.er año",
+        mejor: "mayor",
+        valor: (d) => d.ing[0] ?? null,
+        formato: (v) => pesos(v),
+      },
+      {
+        etiqueta: "Sueldo bruto 4.º año",
+        mejor: "mayor",
+        valor: (d) => d.ing[3] ?? null,
+        formato: (v) => pesos(v),
+      },
+      {
+        etiqueta: "Empleabilidad 1.er año",
+        mejor: "mayor",
+        valor: (d) => d.emp1,
+        formato: (v) => porcentaje(v),
+      },
+      {
+        etiqueta: "Empleabilidad 2.º año",
+        mejor: "mayor",
+        valor: (d) => d.emp2,
+        formato: (v) => porcentaje(v),
+      },
+      {
+        etiqueta: "Duración real",
+        mejor: "menor",
+        valor: (d) => d.dur_real ?? d.dur_formal ?? null,
+        formato: (v) => (v === null ? "s/i" : anosDesdeSemestres(v)),
+      },
+      {
+        etiqueta: "Arancel anual 2026",
+        mejor: "menor",
+        valor: (d) => d.arancel_med,
+        formato: (v) => pesos(v),
+      },
+    ];
+    return defs.map((def) => {
+      const valores = itemsActivos.map((item) => def.valor(item.data));
+      const candidatos = valores.filter(
+        (v): v is number => v !== null && Number.isFinite(v)
+      );
+      let mejorValor: number | null = null;
+      if (itemsActivos.length >= 2 && candidatos.length >= 2) {
+        mejorValor =
+          def.mejor === "mayor" ? Math.max(...candidatos) : Math.min(...candidatos);
+      }
+      return {
+        etiqueta: def.etiqueta,
+        celdas: valores.map((v) => ({
+          texto: def.formato(v),
+          esMejor: mejorValor !== null && v !== null && v === mejorValor,
+        })),
+      };
+    });
   }, [itemsActivos]);
 
   const fraseComparacion = React.useMemo(() => {
@@ -435,14 +501,15 @@ export function Comparador({
               onClick={() => setSelectorAbierto((v) => !v)}
               className="h-9 gap-1.5 bg-card text-xs font-medium"
             >
-              <Plus className="size-3.5 text-blue-700" aria-hidden="true" />
+              <Plus className="size-3.5 text-[#0b63c5]" aria-hidden="true" />
               Agregar carrera ({seleccion.length}/3)
             </Button>
           ) : null}
         </CardHeader>
 
         <CardContent className="space-y-4 px-5 sm:px-6">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Chips de color por carrera: borde y punto del color de su línea */}
+          <div className="flex flex-wrap items-center gap-2">
             {itemsActivos.map((item) => {
               const tiposDisponibles = TIPO_ORDEN.filter((k) =>
                 Boolean(item.carrera.tipos[k])
@@ -450,71 +517,70 @@ export function Comparador({
               return (
                 <div
                   key={item.carrera.slug}
-                  className="flex flex-col justify-between gap-3 rounded-lg border border-border bg-muted/35 p-4"
+                  className="inline-flex max-w-full items-center gap-2 rounded-full border-2 bg-card py-1 pl-3 pr-1.5"
+                  style={{ borderColor: item.color }}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="size-2.5 shrink-0 rounded-full"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <Link
-                          href={`/datos/carreras/${item.carrera.slug}`}
-                          className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-foreground hover:text-blue-700 hover:underline"
-                        >
-                          <span className="truncate">{item.carrera.nombre}</span>
-                          <ArrowUpRight className="size-3.5 shrink-0" aria-hidden="true" />
-                        </Link>
-                      </div>
-                      <p className="mt-0.5 pl-4.5 text-xs text-muted-foreground">
-                        {item.carrera.area}
-                      </p>
-                    </div>
-                    {seleccion.length > 1 ? (
-                      <button
-                        type="button"
-                        onClick={() => quitarCarrera(item.carrera.slug)}
-                        aria-label={`Quitar ${item.carrera.nombre}`}
-                        className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                    aria-hidden="true"
+                  />
+                  <Link
+                    href={`/datos/carreras/${item.carrera.slug}`}
+                    className="inline-flex min-w-0 items-center gap-1 text-sm font-semibold text-foreground hover:text-[#0b63c5] hover:underline"
+                    title={`${item.carrera.nombre} · ${item.carrera.area}`}
+                  >
+                    <span className="max-w-52 truncate sm:max-w-64">
+                      {item.carrera.nombre}
+                    </span>
+                    <ArrowUpRight className="size-3.5 shrink-0" aria-hidden="true" />
+                  </Link>
+                  {tiposDisponibles.length > 1 ? (
+                    <Select
+                      value={item.tipo}
+                      onValueChange={(val) =>
+                        cambiarTipo(item.carrera.slug, val as TipoIesKey)
+                      }
+                    >
+                      <SelectTrigger
+                        aria-label={`Tipo de institución para ${item.carrera.nombre}`}
+                        className="h-6 gap-1 rounded-full border-border bg-card px-2 text-xs shadow-none"
                       >
-                        <X className="size-4" aria-hidden="true" />
-                      </button>
-                    ) : null}
-                  </div>
-
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-muted-foreground">Institución:</span>
-                    {tiposDisponibles.length > 1 ? (
-                      <Select
-                        value={item.tipo}
-                        onValueChange={(val) =>
-                          cambiarTipo(item.carrera.slug, val as TipoIesKey)
-                        }
-                      >
-                        <SelectTrigger
-                          aria-label={`Tipo de institución para ${item.carrera.nombre}`}
-                          className="h-8 w-[150px] bg-card text-xs"
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {tiposDisponibles.map((k) => (
-                            <SelectItem key={k} value={k} className="text-xs">
-                              {TIPO_ETIQUETAS[k].singular} ({TIPO_ETIQUETAS[k].corto})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <Badge variant="secondary" className="bg-card text-xs font-medium">
-                        {TIPO_ETIQUETAS[item.tipo].singular}
-                      </Badge>
-                    )}
-                  </div>
+                        <SelectValue>
+                          <span className="font-medium">
+                            {TIPO_ETIQUETAS[item.tipo].corto}
+                          </span>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tiposDisponibles.map((k) => (
+                          <SelectItem key={k} value={k} className="text-xs">
+                            {TIPO_ETIQUETAS[k].singular} ({TIPO_ETIQUETAS[k].corto})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {TIPO_ETIQUETAS[item.tipo].corto}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => quitarCarrera(item.carrera.slug)}
+                    aria-label={`Quitar ${item.carrera.nombre}`}
+                    className="rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    <X className="size-3.5" aria-hidden="true" />
+                  </button>
                 </div>
               );
             })}
+            {itemsActivos.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Aún no hay carreras seleccionadas.
+              </p>
+            ) : null}
           </div>
 
           {selectorAbierto && seleccion.length < 3 ? (
@@ -539,7 +605,7 @@ export function Comparador({
                           <span className="font-medium text-foreground">{c.nombre}</span>
                           <span className="ml-2 text-xs text-muted-foreground">{c.area}</span>
                         </div>
-                        <span className="text-xs font-medium text-blue-700">Agregar</span>
+                        <span className="text-xs font-medium text-[#0b63c5]">Agregar</span>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -552,79 +618,121 @@ export function Comparador({
 
       {/* Frase resumen clara */}
       {fraseComparacion ? (
-        <div className="rounded-xl border border-blue-200/80 bg-blue-50/60 px-5 py-3.5 text-sm font-medium text-foreground">
+        <div className="rounded-xl border border-[#b9dcff] bg-[#e8f3ff] px-5 py-3.5 text-sm font-medium text-foreground">
           {fraseComparacion}
         </div>
       ) : null}
 
-      {/* KPIs lado a lado */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {itemsActivos.map((item) => (
-          <Card
-            key={`${item.carrera.slug}-${item.tipo}-kpi`}
-            className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0"
-          >
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="size-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <h3 className="text-base font-semibold text-foreground">
-                    {item.carrera.nombre}
-                  </h3>
-                </div>
-                <Badge variant="secondary" className="text-xs font-medium">
-                  {TIPO_ETIQUETAS[item.tipo].corto}
-                </Badge>
-              </div>
+      {/* Tabla comparativa con mejor cifra resaltada */}
+      {itemsActivos.length >= 2 ? (
+        <Card className="gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+          <div className="border-b border-border px-5 pb-3 pt-4 sm:px-6">
+            <h3 className="text-base font-semibold text-foreground">
+              Indicadores lado a lado
+            </h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Sueldos en pesos de {pesosDe} · La mejor cifra de cada fila va
+              resaltada: sueldo y empleabilidad, la más alta; duración y arancel,
+              la más baja.
+            </p>
+          </div>
+          <div className="relative w-full overflow-x-auto">
+            <table className="w-full border-collapse text-left text-sm tabular-nums">
+              <caption className="sr-only">
+                Comparación de indicadores oficiales entre las carreras
+                seleccionadas; la mejor cifra de cada fila está resaltada.
+              </caption>
+              <thead>
+                <tr className="border-b border-border bg-muted/70">
+                  <th
+                    scope="col"
+                    className="sticky left-0 z-10 bg-[#f7f7f4] px-4 py-3 text-xs font-medium text-muted-foreground"
+                  >
+                    Indicador oficial
+                  </th>
+                  {itemsActivos.map((item) => (
+                    <th
+                      key={item.carrera.slug}
+                      scope="col"
+                      className="min-w-44 px-4 py-3 text-xs font-medium text-muted-foreground"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <span
+                          className="size-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: item.color }}
+                          aria-hidden="true"
+                        />
+                        <span className="font-semibold text-foreground">
+                          {item.carrera.nombre}
+                        </span>
+                        <span>({TIPO_ETIQUETAS[item.tipo].corto})</span>
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filasComparacion.map((fila) => (
+                  <tr
+                    key={fila.etiqueta}
+                    className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-muted/40"
+                  >
+                    <th
+                      scope="row"
+                      className="sticky left-0 z-10 bg-card px-4 py-3 text-left text-sm font-medium text-foreground"
+                    >
+                      {fila.etiqueta}
+                    </th>
+                    {fila.celdas.map((celda, idx) => (
+                      <td
+                        key={itemsActivos[idx]?.carrera.slug ?? idx}
+                        className={cn(
+                          "px-4 py-3 text-foreground",
+                          celda.esMejor && "bg-[#e8f3ff] font-semibold"
+                        )}
+                      >
+                        <span className="inline-flex items-center gap-1.5">
+                          {celda.texto}
+                          {celda.esMejor ? (
+                            <>
+                              <Check
+                                className="size-3.5 shrink-0 text-[#0b63c5]"
+                                aria-hidden="true"
+                              />
+                              <span className="sr-only">(mejor cifra)</span>
+                            </>
+                          ) : null}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      ) : itemsActivos.length === 1 ? (
+        <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5">
+            <p className="text-sm font-medium text-foreground">
+              Agrega al menos 2 carreras para comparar.
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectorAbierto(true)}
+              className="h-9 gap-1.5 bg-card text-xs font-medium"
+            >
+              <Plus className="size-3.5 text-[#0b63c5]" aria-hidden="true" />
+              Agregar carrera
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
 
-              <div className="mt-4">
-                <p className="text-xs text-muted-foreground">Sueldo bruto 4.º año</p>
-                <p
-                  className="mt-1 text-3xl font-bold tracking-tight tabular-nums"
-                  style={{ color: item.colorTexto }}
-                >
-                  {pesos(item.data.ing[3] ?? null)}
-                </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">Pesos de {pesosDe}</p>
-              </div>
-
-              <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border/70 pt-4 text-xs">
-                <div>
-                  <dt className="text-muted-foreground">Sueldo 1.er año</dt>
-                  <dd className="mt-0.5 font-semibold text-foreground tabular-nums">
-                    {pesos(item.data.ing[0] ?? null)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground">Empleabilidad 1.er año</dt>
-                  <dd className="mt-0.5 font-semibold text-foreground tabular-nums">
-                    {porcentaje(item.data.emp1)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground">Duración real</dt>
-                  <dd className="mt-0.5 font-semibold text-foreground tabular-nums">
-                    {item.data.dur_real !== null
-                      ? anosDesdeSemestres(item.data.dur_real)
-                      : "Sin dato"}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground">Arancel anual 2026</dt>
-                  <dd className="mt-0.5 font-semibold text-foreground tabular-nums">
-                    {pesos(item.data.arancel_med)}
-                  </dd>
-                </div>
-              </dl>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Gráfico de trayectoria */}
+      {/* Gráfico de trayectoria (solo con 2+ carreras) */}
+      {itemsActivos.length >= 2 ? (
       <Card className="gap-4 rounded-xl border border-border bg-card py-6 shadow-xs ring-0">
         <CardHeader className="flex flex-col gap-3 px-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -635,7 +743,7 @@ export function Comparador({
               Valores oficiales en pesos de {pesosDe} (mifuturo.cl).
             </CardDescription>
           </div>
-          <div className="flex flex-wrap gap-3 text-xs">
+          <div className="flex flex-wrap gap-3 text-xs" aria-label="Leyenda del gráfico">
             {itemsActivos.map((item) => (
               <span
                 key={item.carrera.slug}
@@ -644,6 +752,7 @@ export function Comparador({
                 <span
                   className="inline-block size-2.5 rounded-full"
                   style={{ backgroundColor: item.color }}
+                  aria-hidden="true"
                 />
                 {item.carrera.nombre} ({TIPO_ETIQUETAS[item.tipo].corto})
               </span>
@@ -662,6 +771,7 @@ export function Comparador({
                   nombre: item.carrera.nombre,
                   tipo: item.tipo,
                   color: item.color,
+                  colorTexto: item.colorTexto,
                 }))}
               />
             ) : (
@@ -670,8 +780,10 @@ export function Comparador({
           </div>
         </CardContent>
       </Card>
+      ) : null}
 
       {/* Acciones de compartir y descargar tarjeta */}
+      {itemsActivos.length >= 2 ? (
       <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 sm:px-5">
           <div className="text-xs text-muted-foreground">
@@ -686,7 +798,7 @@ export function Comparador({
               className="h-8 gap-1.5 bg-card text-xs"
             >
               {copiado ? (
-                <Check className="size-3.5 text-emerald-600" aria-hidden="true" />
+                <Check className="size-3.5 text-[#0b63c5]" aria-hidden="true" />
               ) : (
                 <Copy className="size-3.5 text-muted-foreground" aria-hidden="true" />
               )}
@@ -719,6 +831,7 @@ export function Comparador({
           </div>
         </CardContent>
       </Card>
+      ) : null}
     </div>
   );
 }

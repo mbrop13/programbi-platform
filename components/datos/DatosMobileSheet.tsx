@@ -18,8 +18,10 @@ import { cn } from "@/lib/utils";
 
 const MOBILE_DATOS_LINKS = [
   { href: "/datos", label: "Resumen de Datos", exact: true },
-  { href: "/datos/carreras", label: "Carreras y sueldos", exact: true },
+  { href: "/datos/carreras", label: "Carreras y sueldos", exact: false },
   { href: "/datos/inflacion", label: "Inflación (IPC)", exact: false },
+  { href: "/datos/desempleo", label: "Desempleo en Chile", exact: false },
+  { href: "/datos/capacitacion", label: "Capacitación SENCE", exact: false },
   { href: "/datos/carreras/comparar", label: "Comparar carreras", exact: false },
   { href: "/datos/carreras/test", label: "Test vocacional", exact: false },
 ] as const;

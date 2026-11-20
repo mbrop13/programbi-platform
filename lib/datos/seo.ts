@@ -3,6 +3,7 @@ import { ORG_ID, SITE_URL } from "@/lib/seo";
 import { datosTerritorio, FECHA_EDICION, FUENTE_ENE, LICENCIA, PERIODO_ACTUAL, REVISION_DESEMPLEO, type Observacion } from "./desempleo";
 import { periodo, tasa } from "./desempleo-formato";
 import { NACIONAL, rutaTerritorio } from "./regiones";
+import { ajustarDescripcion } from "./seo-carreras";
 
 export type Migaja = { label: string; path: string };
 export type Pregunta = { pregunta: string; respuesta: string };
@@ -42,8 +43,12 @@ export function metaObservatorio(slug: string, nombre: string, esHub = false): M
     "Consulta las 16 regiones, compara trimestres y descarga series oficiales en CSV y Excel.",
     ...SUFIJOS,
   ] : SUFIJOS;
-  const description = opciones.map((opcion) => inicio + opcion).find((texto) => texto.length >= 140 && texto.length <= 155)
-    ?? inicio + "Explora el histórico y descarga los datos oficiales.";
+  // Misma guardia 140–158 y cola nunca preposición/conjunción/artículo que el
+  // resto de /datos: se delega en ajustarDescripcion (frase completa + punto).
+  const description = ajustarDescripcion(
+    opciones.map((opcion) => inicio + opcion),
+    inicio + "Explora el histórico y descarga los datos oficiales del INE en Chile."
+  );
   const url = `${SITE_URL}${path}`;
   const imagen = `${SITE_URL}/datos/desempleo/og/${esHub ? "hub" : slug}?v=${REVISION_DESEMPLEO}`;
   return {

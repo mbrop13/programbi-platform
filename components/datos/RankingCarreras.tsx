@@ -11,6 +11,7 @@ import {
   LayoutGrid,
   Loader2,
   Search,
+  SlidersHorizontal,
   Table2,
   X,
 } from "lucide-react";
@@ -26,14 +27,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { C } from "@/components/datos/viz/tokens";
 import { TIPO_ETIQUETAS, type RankingItem, type TipoIesKey } from "@/lib/datos/carreras-tipos";
 import { entero, mesCorto, normalizarTexto } from "@/lib/datos/formato";
 import { ajustarPorIpc, type PuntoIpc } from "@/lib/datos/ipc";
@@ -113,6 +125,7 @@ export function RankingCarreras({
   const [loadingProgramas, setLoadingProgramas] = React.useState(false);
   const [compareSlugs, setCompareSlugs] = React.useState<string[]>([]);
   const [selectedScatterSlug, setSelectedScatterSlug] = React.useState<string | null>(null);
+  const [sheetFiltrosOpen, setSheetFiltrosOpen] = React.useState(false);
 
   React.useEffect(() => {
     setFiltros(parseFiltrosFromSearchParams(searchParams));
@@ -133,6 +146,7 @@ export function RankingCarreras({
   }, [allRanking]);
 
   const needsPrograms = tieneFiltrosPrograma(filtros);
+  const filtrosActivos = contarFiltrosActivos(filtros);
   React.useEffect(() => {
     if (!needsPrograms) return;
     if (programasByTipo[filtros.tipo]) return;
@@ -351,7 +365,8 @@ export function RankingCarreras({
               <button
                 type="button"
                 onClick={() => updateFiltros({ ...filtros, area: "" })}
-                className="text-xs font-medium text-blue-700 hover:underline"
+                className="text-xs font-medium hover:underline"
+                style={{ color: C.blueText }}
               >
                 Ver todas las áreas
               </button>
@@ -383,11 +398,11 @@ export function RankingCarreras({
           </div>
         </div>
 
-        {/* Barra principal de exploración (ancho completo, sin sidebar apretado) */}
+        {/* Barra de filtros compacta: una fila densa (~48 px) en escritorio;
+            en móvil (<md) los controles viven en el Sheet «Filtros». */}
         <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
-          <CardContent className="space-y-3.5 p-4">
-            {/* Fila 1: Tabs U/IP/CFT + Búsqueda rápida + Vista Tabla/Tarjetas */}
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <CardContent className="p-2.5">
+            <div className="flex flex-wrap items-center gap-2">
               <Tabs
                 value={filtros.tipo}
                 onValueChange={(val) => {
@@ -395,90 +410,43 @@ export function RankingCarreras({
                     updateFiltros({ ...filtros, tipo: val });
                   }
                 }}
+                aria-label="Tipo de institución"
               >
                 <TabsList className="h-9 bg-muted p-1">
-                  <TabsTrigger value="u" className="px-3 text-xs font-medium sm:text-sm">
-                    Universidades
+                  <TabsTrigger value="u" className="px-2 text-xs font-medium">
+                    <span aria-hidden="true">U</span>
+                    <span className="sr-only">Universidades</span>
                   </TabsTrigger>
-                  <TabsTrigger value="ip" className="px-3 text-xs font-medium sm:text-sm">
-                    Institutos (IP)
+                  <TabsTrigger value="ip" className="px-2 text-xs font-medium">
+                    <span aria-hidden="true">IP</span>
+                    <span className="sr-only">Institutos Profesionales</span>
                   </TabsTrigger>
-                  <TabsTrigger value="cft" className="px-3 text-xs font-medium sm:text-sm">
-                    Técnicos (CFT)
+                  <TabsTrigger value="cft" className="px-2 text-xs font-medium">
+                    <span aria-hidden="true">CFT</span>
+                    <span className="sr-only">Centros de Formación Técnica</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
 
-              <div className="flex flex-1 flex-wrap items-center gap-2 md:justify-end">
-                <div className="relative min-w-[200px] flex-1 md:max-w-xs">
-                  <Search
-                    className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  <Input
-                    type="search"
-                    value={busquedaTabla}
-                    onChange={(e) => {
-                      setBusquedaTabla(e.target.value);
-                    }}
-                    placeholder="Filtrar lista por nombre o área..."
-                    aria-label="Filtrar ranking por nombre o área"
-                    className="h-9 bg-background/60 pl-8 text-xs focus-visible:bg-card"
-                  />
-                </div>
-
-                <div
-                  role="group"
-                  aria-label="Cambiar modo de vista"
-                  className="hidden rounded-lg bg-muted p-0.5 sm:inline-flex"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setVista("tabla")}
-                    aria-pressed={vista === "tabla"}
-                    className={cn(
-                      "inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all",
-                      vista === "tabla"
-                        ? "bg-card text-foreground shadow-xs"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <Table2 className="size-3.5" aria-hidden="true" />
-                    Tabla
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setVista("tarjetas")}
-                    aria-pressed={vista === "tarjetas"}
-                    className={cn(
-                      "inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-all",
-                      vista === "tarjetas"
-                        ? "bg-card text-foreground shadow-xs"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <LayoutGrid className="size-3.5" aria-hidden="true" />
-                    Tarjetas
-                  </button>
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleExportCsv}
-                  disabled={filteredRows.length === 0}
-                  className="h-9 gap-1.5 bg-card text-xs font-medium"
-                >
-                  <Download className="size-3.5 text-blue-600" aria-hidden="true" />
-                  <span className="hidden sm:inline">Exportar</span> CSV
-                </Button>
+              <div className="relative min-w-[120px] flex-1 sm:max-w-[150px]">
+                <Search
+                  className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  type="search"
+                  value={busquedaTabla}
+                  onChange={(e) => {
+                    setBusquedaTabla(e.target.value);
+                  }}
+                  placeholder="Buscar por nombre o área…"
+                  aria-label="Filtrar ranking por nombre o área"
+                  className="h-9 bg-background/60 pl-8 text-xs focus-visible:bg-card"
+                />
               </div>
-            </div>
 
-            {/* Fila 2: Área + Orden + Más filtros (Sheet) + Switch IPC + Contador */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 border-t border-border/70 pt-3.5">
-              <div className="flex flex-wrap items-center gap-2">
+              {/* Controles de escritorio (móvil: Sheet «Filtros») */}
+              <div className="hidden items-center gap-2 sm:flex">
                 <Select
                   value={filtros.area || "__all__"}
                   onValueChange={(v) =>
@@ -487,7 +455,7 @@ export function RankingCarreras({
                 >
                   <SelectTrigger
                     aria-label="Filtrar por área"
-                    className="h-9 w-[195px] bg-card text-xs"
+                    className="h-9 w-[135px] bg-card text-xs"
                   >
                     <SelectValue placeholder="Todas las áreas" />
                   </SelectTrigger>
@@ -509,7 +477,7 @@ export function RankingCarreras({
                 >
                   <SelectTrigger
                     aria-label="Ordenar carreras por"
-                    className="h-9 w-[225px] bg-card text-xs"
+                    className="h-9 w-[165px] bg-card text-xs"
                   >
                     <SelectValue />
                   </SelectTrigger>
@@ -533,92 +501,293 @@ export function RankingCarreras({
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <TooltipProvider delayDuration={150}>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      id="toggle-ipc-ranking"
-                      checked={pesosHoy}
-                      onCheckedChange={setPesosHoy}
-                    />
-                    <label
-                      htmlFor="toggle-ipc-ranking"
-                      className="cursor-pointer text-xs font-medium text-foreground"
-                    >
-                      {pesosHoy
-                        ? `Pesos de hoy (${ipcInfo.mesLabel})`
-                        : `Pesos ${mesCorto(pesosDe)}`}
-                    </label>
-                    <Tooltip>
-                      <TooltipTrigger
-                        type="button"
-                        aria-label="Información sobre ajuste por IPC"
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        <Info className="size-3.5" aria-hidden="true" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs leading-snug">
-                        Mi Futuro publica los sueldos en pesos de septiembre de 2025. Activa este
-                        interruptor para ajustarlos automáticamente a pesos actuales con el IPC del
-                        INE.
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </TooltipProvider>
+              <span className="ml-auto text-xs whitespace-nowrap text-muted-foreground tabular-nums">
+                {entero(filteredRows.length)}{" "}
+                {filteredRows.length === 1 ? "carrera" : "carreras"}
+              </span>
 
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {entero(filteredRows.length)}{" "}
-                  {filteredRows.length === 1 ? "carrera" : "carreras"}
-                </span>
-              </div>
+              <ToggleGroup
+                type="single"
+                aria-label="Cambiar modo de vista"
+                value={vista}
+                onValueChange={(v) => {
+                  if (v === "tabla" || v === "tarjetas") setVista(v);
+                }}
+                className="hidden rounded-lg bg-muted p-0.5 lg:inline-flex"
+              >
+                <ToggleGroupItem
+                  value="tabla"
+                  aria-label="Vista de tabla"
+                  className={cn(
+                    "h-8 rounded-md border-0 px-2.5 text-xs font-medium shadow-none transition-all",
+                    vista === "tabla"
+                      ? "bg-card text-foreground shadow-xs"
+                      : "bg-transparent text-muted-foreground hover:bg-transparent hover:text-foreground"
+                  )}
+                >
+                  <Table2 className="size-3.5" aria-hidden="true" />
+                  <span className="sr-only">Tabla</span>
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="tarjetas"
+                  aria-label="Vista de tarjetas"
+                  className={cn(
+                    "h-8 rounded-md border-0 px-2.5 text-xs font-medium shadow-none transition-all",
+                    vista === "tarjetas"
+                      ? "bg-card text-foreground shadow-xs"
+                      : "bg-transparent text-muted-foreground hover:bg-transparent hover:text-foreground"
+                  )}
+                >
+                  <LayoutGrid className="size-3.5" aria-hidden="true" />
+                  <span className="sr-only">Tarjetas</span>
+                </ToggleGroupItem>
+              </ToggleGroup>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleExportCsv}
+                disabled={filteredRows.length === 0}
+                aria-label="Exportar carreras filtradas a CSV"
+                className="h-9 bg-card px-2.5 text-xs font-medium"
+              >
+                <Download className="size-3.5" style={{ color: C.blueText }} aria-hidden="true" />
+                <span className="sr-only">Exportar CSV</span>
+              </Button>
+
+              {/* Botón «Filtros» solo móvil: abre el Sheet con los mismos controles */}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setSheetFiltrosOpen(true)}
+                className="h-9 gap-1.5 bg-card text-xs font-medium sm:hidden"
+              >
+                <SlidersHorizontal className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                Filtros
+                {filtrosActivos > 0 ? (
+                  <Badge className="h-4.5 min-w-4.5 rounded-full px-1.5 text-[10px] font-semibold">
+                    {filtrosActivos}
+                  </Badge>
+                ) : null}
+              </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Sheet móvil de filtros: mismo estado `filtros`, sin duplicar lógica */}
+        <Sheet open={sheetFiltrosOpen} onOpenChange={setSheetFiltrosOpen}>
+          <SheetContent
+            side="right"
+            className="flex w-full flex-col gap-0 bg-card p-0 sm:max-w-md"
+          >
+            <SheetHeader className="border-b border-border px-5 py-4 text-left">
+              <SheetTitle className="text-base font-semibold text-foreground">
+                Filtrar carreras
+              </SheetTitle>
+              <SheetDescription className="text-xs text-muted-foreground">
+                {entero(filteredRows.length)} carreras coinciden con tus criterios actuales.
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="busqueda-sheet-ranking"
+                  className="text-xs font-medium text-muted-foreground"
+                >
+                  Buscar por nombre o área
+                </label>
+                <div className="relative">
+                  <Search
+                    className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <Input
+                    id="busqueda-sheet-ranking"
+                    type="search"
+                    value={busquedaTabla}
+                    onChange={(e) => setBusquedaTabla(e.target.value)}
+                    placeholder="Ej. enfermería, salud…"
+                    className="h-9 bg-card pl-8 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Tipo de institución
+                </span>
+                <ToggleGroup
+                  type="single"
+                  aria-label="Tipo de institución"
+                  value={filtros.tipo}
+                  onValueChange={(v) => {
+                    if (v === "u" || v === "ip" || v === "cft") {
+                      updateFiltros({ ...filtros, tipo: v });
+                    }
+                  }}
+                  className="grid w-full grid-cols-3 gap-1.5"
+                >
+                  {(["u", "ip", "cft"] as const).map((tk) => (
+                    <ToggleGroupItem key={tk} value={tk} className="h-9 px-2 text-xs font-medium">
+                      {TIPO_ETIQUETAS[tk].corto}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Área del conocimiento
+                </span>
+                <Select
+                  value={filtros.area || "__all__"}
+                  onValueChange={(v) =>
+                    updateFiltros({ ...filtros, area: v === "__all__" ? "" : v })
+                  }
+                >
+                  <SelectTrigger
+                    aria-label="Filtrar por área"
+                    className="h-9 w-full bg-card text-xs"
+                  >
+                    <SelectValue placeholder="Todas las áreas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__all__">Todas las áreas</SelectItem>
+                    {areas.map((a) => (
+                      <SelectItem key={a} value={a}>
+                        {a}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="text-xs font-medium text-muted-foreground">Ordenar por</span>
+                <Select
+                  value={filtros.orden}
+                  onValueChange={(v) =>
+                    updateFiltros({ ...filtros, orden: v as OrdenRankingKey })
+                  }
+                >
+                  <SelectTrigger
+                    aria-label="Ordenar carreras por"
+                    className="h-9 w-full bg-card text-xs"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ORDEN_OPCIONES.map((op) => (
+                      <SelectItem key={op.value} value={op.value}>
+                        {op.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="toggle-ipc-ranking-movil"
+                  checked={pesosHoy}
+                  onCheckedChange={setPesosHoy}
+                />
+                <label
+                  htmlFor="toggle-ipc-ranking-movil"
+                  className="cursor-pointer text-xs font-medium text-foreground"
+                >
+                  {pesosHoy
+                    ? `Pesos de hoy (${ipcInfo.mesLabel})`
+                    : `Pesos ${mesCorto(pesosDe)}`}
+                </label>
+              </div>
+
+              {/* Más criterios (región, jornada, arancel, PAES…): mismo componente,
+                  mismo estado; su Sheet se apila sobre este. */}
+              <FiltrosAvanzados
+                filtros={filtros}
+                onChange={updateFiltros}
+                onReset={resetFiltros}
+                areas={areas}
+                regiones={regiones}
+                arancelP95={arancelP95}
+                totalResultados={filteredRows.length}
+              />
+            </div>
+
+            <SheetFooter className="flex-row items-center justify-between gap-2 border-t border-border bg-muted/30 px-5 py-3.5">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={resetFiltros}
+                disabled={filtrosActivos === 0 && busquedaTabla.trim() === ""}
+                className="h-9 gap-1.5 text-xs text-muted-foreground"
+              >
+                Limpiar filtros
+              </Button>
+              <SheetClose
+                render={
+                  <Button type="button" size="sm" className="h-9 px-4 text-xs font-medium" />
+                }
+              >
+                Ver {entero(filteredRows.length)} carreras
+              </SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
 
         <ChipsFiltros filtros={filtros} onChange={updateFiltros} onReset={resetFiltros} />
 
         {loadingProgramas ? (
           <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2.5 text-xs text-muted-foreground shadow-xs">
-            <Loader2 className="size-3.5 animate-spin text-blue-600" aria-hidden="true" />
+            <Loader2 className="size-3.5 animate-spin text-muted-foreground" aria-hidden="true" />
             Aplicando filtros exactos a nivel de programas 2026...
           </div>
         ) : null}
 
         {filteredRows.length === 0 ? (
           <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
-            <CardContent className="p-10 text-center">
+            <CardContent className="flex flex-col items-center gap-2 p-10 text-center">
+              <span
+                className="flex size-10 items-center justify-center rounded-full bg-muted"
+                aria-hidden="true"
+              >
+                <Search className="size-4 text-muted-foreground" />
+              </span>
               <p className="text-sm font-semibold text-foreground">
-                Ninguna carrera en {TIPO_ETIQUETAS[filtros.tipo].plural.toLowerCase()} coincide con
-                estos filtros.
+                Sin resultados con estos filtros
               </p>
-              <p className="mt-1.5 text-xs text-muted-foreground">
-                Prueba limpiar la búsqueda, ampliar el presupuesto de arancel o cambiar el tipo de
-                institución.
+              <p className="max-w-sm text-xs leading-relaxed text-muted-foreground">
+                Ninguna carrera en {TIPO_ETIQUETAS[filtros.tipo].plural.toLowerCase()} coincide con
+                tu búsqueda. Prueba quitar algún filtro, ampliar el presupuesto de arancel o
+                cambiar el tipo de institución.
               </p>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={resetFiltros}
-                className="mt-4 bg-card"
+                className="mt-2 bg-card"
               >
-                Limpiar todos los filtros
+                Limpiar filtros
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <>
-            <TablaRankingCarreras
-              rows={filteredRows}
-              maxP90={filteredRows.reduce((max, row) => Math.max(max, row.p90_5 ?? 0), 1_000_000)}
-              factor={ipcInfo.factor}
-              compareSlugs={compareSlugs}
-              onToggleCompare={toggleCompare}
-              onSelectSlug={setSelectedScatterSlug}
-              vista={vista}
-              interactiveTooltips
-            />
-          </>
+          <TablaRankingCarreras
+            rows={filteredRows}
+            maxP90={filteredRows.reduce((max, row) => Math.max(max, row.p90_5 ?? 0), 1_000_000)}
+            factor={ipcInfo.factor}
+            compareSlugs={compareSlugs}
+            onToggleCompare={toggleCompare}
+            onSelectSlug={setSelectedScatterSlug}
+            vista={vista}
+            interactiveTooltips
+          />
         )}
       </div>
 

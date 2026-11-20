@@ -12,12 +12,14 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { KpiCard } from "@/components/datos/KpiCard";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { MiniCalculadoraRetorno } from "@/components/datos/MiniCalculadoraRetorno";
 import { Percentiles } from "@/components/datos/Percentiles";
 import { PerfilEstudiantes } from "@/components/datos/PerfilEstudiantes";
 import { TablaInstituciones } from "@/components/datos/TablaInstituciones";
+import { RangeBar } from "@/components/datos/viz/RangeBar";
+import { Sparkline } from "@/components/datos/viz/Sparkline";
+import { StatTile } from "@/components/datos/viz/StatTile";
 import { trackEventOnce } from "@/lib/analytics/marketing";
 import {
   TIPO_ETIQUETAS,
@@ -73,6 +75,16 @@ const MeAlcanza = dynamic(
     loading: () => <Skeleton className="h-[380px] w-full rounded-xl" />,
   }
 );
+
+const ANOS_ING = ["1.er", "2.º", "3.er", "4.º", "5.º"] as const;
+
+const CHIPS_SALTO = [
+  { href: "#sueldo", label: "Sueldo" },
+  { href: "#empleabilidad", label: "Empleabilidad" },
+  { href: "#donde-estudiar", label: "Dónde estudiar" },
+  { href: "#arancel", label: "Arancel" },
+  { href: "#faq-datos", label: "FAQ" },
+] as const;
 
 function GraficoEnVista({
   children,
@@ -193,25 +205,55 @@ export function FichaCarreraClient({
 
   const ing4 = esc(data.ing[3]);
   const ing1 = esc(data.ing[0]);
+  const ing5 = esc(data.ing[4]);
+
+  // Banda P10–P90 al 5.º año; si no hay percentiles publicados, rango honesto
+  // de promedios 1.er→5.º año; si tampoco, se omite la banda.
+  const p10 = esc(data.pct.p10_5);
+  const p90 = esc(data.pct.p90_5);
+  const p50 = esc(data.pct.p50_5);
+  const bandaPct = p10 !== null && p90 !== null && p90 > p10;
+  const bandaPromedios = !bandaPct && ing1 !== null && ing5 !== null && ing5 > ing1;
+
+  const puntosIng = data.ing
+    .map((v, i): { ano: string; valor: number | null } => ({
+      ano: ANOS_ING[i] ?? `${i + 1}.º`,
+      valor: esc(v),
+    }))
+    .filter((p): p is { ano: string; valor: number } => p.valor !== null);
+  const sparkData = puntosIng.map((p) => p.valor);
+  const sparkAria = `Sueldo bruto promedio por año de egreso: ${puntosIng
+    .map((p) => `${p.ano} año ${pesos(p.valor)}`)
+    .join(", ")}`;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* Barra de controles: Tipo de institución + Toggle IPC */}
       <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
-        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:px-5">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3 sm:px-4">
           {tiposDisponibles.length > 1 ? (
-            <Tabs
+            <ToggleGroup
+              type="single"
               value={tipoActivo}
-              onValueChange={(val) => setTipoActivo(val as TipoIesKey)}
+              onValueChange={(v) => setTipoActivo((v || tipoActivo) as TipoIesKey)}
+              aria-label="Tipo de institución"
+              className="gap-1 rounded-lg bg-muted p-1"
             >
-              <TabsList className="h-9 bg-muted p-1">
-                {tiposDisponibles.map((t) => (
-                  <TabsTrigger key={t} value={t} className="px-3 text-xs font-medium sm:text-sm">
-                    {TIPO_ETIQUETAS[t].plural}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+              {tiposDisponibles.map((t) => (
+                <ToggleGroupItem
+                  key={t}
+                  value={t}
+                  className={cn(
+                    "h-8 rounded-md border-transparent px-3 text-xs font-medium shadow-none sm:text-sm",
+                    tipoActivo === t
+                      ? "border-transparent bg-card text-[#0b63c5] shadow-xs"
+                      : "border-transparent bg-transparent text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                  )}
+                >
+                  {TIPO_ETIQUETAS[t].plural}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           ) : (
             <Badge
               variant="secondary"
@@ -246,7 +288,7 @@ export function FichaCarreraClient({
               className={cn(
                 "rounded-md px-3 py-1.5 font-medium transition-all",
                 modoPesos === "hoy"
-                  ? "bg-card text-blue-700 shadow-xs"
+                  ? "bg-card text-[#0b63c5] shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -256,55 +298,162 @@ export function FichaCarreraClient({
         </CardContent>
       </Card>
 
-      {/* 4 KPIs principales (unificados, SSR-rendered) */}
-      <section aria-label="Indicadores principales" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard
-          variante="primary"
-          etiqueta="Sueldo bruto 4.º año"
-          valor={pesos(ing4)}
-          delta={
-            data.variacion.yoy_23_24 !== null
-              ? `23→24: ${variacionPorcentual(data.variacion.yoy_23_24)}`
-              : null
-          }
-          subtitulo={`1.er año: ${pesos(ing1)} · ${etiquetaPesos}`}
-        />
-        <KpiCard
-          etiqueta="Empleabilidad 1.er año"
-          valor={porcentaje(data.emp1)}
-          subtitulo={
-            data.emp2 !== null
-              ? `2.º año: ${porcentaje(data.emp2)}`
-              : "Titulados con ingresos ≥ mínimo"
-          }
-        />
-        <KpiCard
-          etiqueta="Duración real promedio"
-          valor={data.dur_real !== null ? anosDesdeSemestres(data.dur_real) : "Sin dato"}
-          subtitulo={
-            data.dur_formal !== null
-              ? `${semestres(data.dur_real)} · formal ${semestres(data.dur_formal)}`
-              : semestres(data.dur_real)
-          }
-        />
-        <KpiCard
-          etiqueta="Arancel anual mediano 2026"
-          valor={pesos(oferta?.arancel?.med ?? null)}
-          subtitulo={
-            oferta
-              ? `${entero(oferta.programas)} programas · ${entero(oferta.instituciones)} inst.`
-              : "Sin oferta 2026 publicada"
-          }
-        />
+      {/* Héroe levels.fyi: el KPI de sueldo aparece UNA sola vez en la ficha.
+          Cifra grande + banda P10–P90 + mini-curva; al lado (móvil debajo) grilla 2×2. */}
+      <section
+        id="sueldo"
+        aria-label="Sueldo y principales indicadores"
+        className="scroll-mt-24"
+      >
+        <div className="grid gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-stretch">
+          <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+            <CardContent className="flex h-full flex-col gap-4 p-4 sm:p-5">
+              <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1.5">
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Sueldo bruto mensual · 4.º año de titulación
+                  </p>
+                  <p className="mt-1.5 text-4xl font-bold tracking-tight text-foreground tabular-nums sm:text-[2.75rem] sm:leading-[1.05]">
+                    {pesos(ing4)}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{etiquetaPesos}</p>
+                </div>
+                {data.variacion.yoy_23_24 !== null ? (
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-md border px-2 py-1 text-[11px] font-medium tabular-nums",
+                      data.variacion.yoy_23_24 >= 0
+                        ? "border-[#0f7b4a]/25 bg-[#0f7b4a]/10 text-[#0f7b4a]"
+                        : "border-[#c2410c]/25 bg-[#c2410c]/10 text-[#c2410c]"
+                    )}
+                  >
+                    23→24: {variacionPorcentual(data.variacion.yoy_23_24)}
+                  </span>
+                ) : null}
+              </div>
+
+              {bandaPct ? (
+                <div>
+                  <RangeBar
+                    min={p10}
+                    max={p90}
+                    mid={p50 ?? undefined}
+                    format={pesos}
+                    labels={["P10", "P90"]}
+                  />
+                  <p className="mt-1.5 text-[11px] text-muted-foreground">
+                    Dispersión al 5.º año: del 10 % que menos gana al 10 % que más.
+                  </p>
+                </div>
+              ) : bandaPromedios ? (
+                <div>
+                  <RangeBar
+                    min={ing1}
+                    max={ing5}
+                    format={pesos}
+                    labels={["1.er año", "5.º año"]}
+                  />
+                  <p className="mt-1.5 text-[11px] text-muted-foreground">
+                    Sin percentiles publicados: rango de promedios del 1.er al 5.º año.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Sin percentiles publicados para este tipo de institución.
+                </p>
+              )}
+
+              {sparkData.length >= 2 ? (
+                <div className="mt-auto flex items-end justify-between gap-3 border-t border-border/70 pt-3">
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-medium text-muted-foreground">
+                      Sueldo promedio por año de egreso
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground tabular-nums">
+                      1.er año {pesos(ing1)} → 5.º año {pesos(ing5)}
+                    </p>
+                  </div>
+                  <Sparkline
+                    data={sparkData}
+                    width={132}
+                    height={36}
+                    lastDot
+                    ariaLabel={sparkAria}
+                  />
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+
+          {/* Grilla 2×2 compacta (en móvil queda debajo de la tarjeta de sueldo) */}
+          <div className="grid grid-cols-2 gap-3">
+            <StatTile
+              label="Empleabilidad 1.er año"
+              value={porcentaje(data.emp1)}
+              sub={
+                data.emp2 !== null
+                  ? `2.º año: ${porcentaje(data.emp2)}`
+                  : "Ingresos ≥ sueldo mínimo"
+              }
+            />
+            <StatTile
+              label="Duración real promedio"
+              value={data.dur_real !== null ? anosDesdeSemestres(data.dur_real) : "s/i"}
+              sub={
+                data.dur_formal !== null
+                  ? `Formal: ${semestres(data.dur_formal)}`
+                  : semestres(data.dur_real)
+              }
+            />
+            <StatTile
+              label="Arancel anual mediano 2026"
+              value={pesos(oferta?.arancel?.med ?? null)}
+              sub={
+                oferta
+                  ? `${entero(oferta.programas)} programas · ${entero(oferta.instituciones)} inst.`
+                  : "Sin oferta 2026 publicada"
+              }
+            />
+            <StatTile
+              label="Retención 1.er año"
+              value={porcentaje(data.retencion.r1)}
+              sub={
+                data.retencion.r2 !== null
+                  ? `2.º año: ${porcentaje(data.retencion.r2)}`
+                  : "Permanencia en la carrera"
+              }
+            />
+          </div>
+        </div>
       </section>
 
+      {/* Chips de salto a las secciones de la ficha */}
+      <nav
+        aria-label="Secciones de la ficha"
+        className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0"
+      >
+        <ul className="flex w-max items-center gap-2 sm:w-auto sm:flex-wrap">
+          {CHIPS_SALTO.map((chip) => (
+            <li key={chip.href}>
+              <a
+                href={chip.href}
+                className="inline-flex items-center whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-[#0b63c5]/50 hover:text-[#0b63c5]"
+              >
+                {chip.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       {/* Curva de ingresos + Percentiles */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         <GraficoEnVista altura="h-[380px]">
           <CurvaIngresos
             ing={data.ing}
             factorIpc={factorIpc}
             etiquetaPesos={etiquetaPesos}
+            pct={data.pct}
           />
         </GraficoEnVista>
         <Percentiles
@@ -314,20 +463,22 @@ export function FichaCarreraClient({
         />
       </div>
 
-      {/* Evolución histórica 2020-2024 */}
-      <GraficoEnVista altura="h-[360px]">
-        <EvolucionYoY
-          evolIng4={data.evol_ing4}
-          evolEmp1={data.evol_emp1}
-          evolEmp2={data.evol_emp2}
-          variacion={data.variacion}
-          factorIpc={factorIpc}
-          etiquetaPesos={etiquetaPesos}
-        />
-      </GraficoEnVista>
+      {/* Evolución histórica 2020-2024 (ingresos y empleabilidad) */}
+      <div id="empleabilidad" className="scroll-mt-24">
+        <GraficoEnVista altura="h-[360px]">
+          <EvolucionYoY
+            evolIng4={data.evol_ing4}
+            evolEmp1={data.evol_emp1}
+            evolEmp2={data.evol_emp2}
+            variacion={data.variacion}
+            factorIpc={factorIpc}
+            etiquetaPesos={etiquetaPesos}
+          />
+        </GraficoEnVista>
+      </div>
 
       {/* Mini calculadora de retorno */}
-      <div id="calculadora-retorno" className="scroll-mt-20">
+      <div id="calculadora-retorno" className="scroll-mt-24">
         <MiniCalculadoraRetorno
           slug={carrera.slug}
           tipo={tipoActivo}
@@ -340,14 +491,16 @@ export function FichaCarreraClient({
       </div>
 
       {/* Tabla de instituciones */}
-      <TablaInstituciones
-        instituciones={institucionesTipo}
-        programas={programasTipo}
-      />
+      <div id="donde-estudiar" className="scroll-mt-24">
+        <TablaInstituciones
+          instituciones={institucionesTipo}
+          programas={programasTipo}
+        />
+      </div>
 
       {/* Oferta 2026: Histograma de aranceles y Me Alcanza PAES */}
       {programasTipo.length > 0 ? (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div id="arancel" className="grid scroll-mt-24 gap-4 sm:gap-6 lg:grid-cols-2">
           <GraficoEnVista altura="h-[380px]">
             <HistogramaAranceles programas={programasTipo} oferta={oferta} />
           </GraficoEnVista>

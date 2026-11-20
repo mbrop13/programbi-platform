@@ -24,8 +24,9 @@ import { guiasDePais, alternatesDeGuia } from "@/lib/guias";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
-import { METADATOS, rutasObservatorio } from "@/lib/datos/desempleo";
+import { METADATOS, REVISION_DESEMPLEO, rutasObservatorio } from "@/lib/datos/desempleo";
 import { datosJovenes, EDAD, fechaIsoDesglose } from "@/lib/datos/desempleo-desgloses";
+import { NACIONAL } from "@/lib/datos/regiones";
 import { esFichaIndexable, getCarreras, getMetaCarreras } from "@/lib/datos/carreras";
 import { PRESET_SLUGS } from "@/lib/datos/presets";
 import { ogUrlDe } from "@/lib/datos/seo-carreras";
@@ -190,17 +191,31 @@ function prioridadPais(base: number, iso: string): number {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: EntradaPosible[] = [
     entrada("/", 1, "weekly"),
-    ...rutasObservatorio().map((path) => ({
-      url: `${SITE_URL}${path}`,
-      lastModified: METADATOS.fetched_at,
-      changeFrequency: "monthly" as const,
-    })),
+    ...rutasObservatorio().map((path) => {
+      // Imagen OG del observatorio: /datos (hub) → og/hub; /datos/desempleo
+      // (nacional) → og/nacional; regiones → og/{slug}. Se deriva el slug desde
+      // la ruta: el último segmento, salvo el hub y la raíz nacional.
+      const segmentos = path.split("/").filter(Boolean);
+      const ultimo = segmentos[segmentos.length - 1];
+      const slug = path === "/datos" ? "hub" : ultimo === "desempleo" ? NACIONAL : ultimo;
+      return {
+        url: `${SITE_URL}${path}`,
+        lastModified: METADATOS.fetched_at,
+        changeFrequency: "monthly" as const,
+        images: [`${SITE_URL}/datos/desempleo/og/${slug}?v=${REVISION_DESEMPLEO}`],
+      };
+    }),
     ...(datosJovenes() ? [{
       url: `${SITE_URL}/datos/desempleo/jovenes`,
       lastModified: fechaIsoDesglose(EDAD.fuente.fecha_actualizacion),
       changeFrequency: "monthly" as const,
+      images: [`${SITE_URL}/datos/desempleo/og/jovenes?v=${REVISION_DESEMPLEO}`],
     }] : []),
-    { url: `${SITE_URL}/datos/capacitacion`, changeFrequency: "yearly" },
+    {
+      url: `${SITE_URL}/datos/capacitacion`,
+      changeFrequency: "yearly",
+      images: [`${SITE_URL}/datos/capacitacion/opengraph-image`],
+    },
     entrada("/empresas", 0.95, "weekly"),
     // Herramientas B2B de autoservicio (diagnóstico de madurez y calculadora de
     // ahorro): páginas propias e indexables, solo en Chile (sin carpeta de país).

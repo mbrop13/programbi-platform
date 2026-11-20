@@ -1,37 +1,65 @@
 .datos {
-  --primary: #0f172a;
+  --primary: #0b63c5;
   --primary-foreground: #fff;
-  --background: #f8f9fb;
-  --foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #475569;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
+  --background: #f3f3f0;
+  --foreground: #171716;
+  --muted: #f7f7f4;
+  --muted-foreground: #5f5e5a;
+  --accent: #f7f7f4;
+  --accent-foreground: #171716;
+  --secondary: #f7f7f4;
+  --secondary-foreground: #171716;
   --card: #fff;
-  --card-foreground: #0f172a;
+  --card-foreground: #171716;
   --popover: #fff;
-  --popover-foreground: #0f172a;
-  --border: #e2e8f0;
-  --input: #cbd5e1;
-  --ring: #2563eb;
-  --chart-1: #2563eb;
-  --chart-2: #0ea5e9;
-  --chart-3: #d97706;
-  --chart-4: #10b981;
-  --chart-5: #64748b;
-  --dato-azul: #1d4ed8;
-  --dato-azul-oscuro: #0f172a;
-  --dato-papel: #f8f9fb;
-  --dato-linea: #e2e8f0;
-  --dato-texto: #475569;
+  --popover-foreground: #171716;
+  --border: #e5e4df;
+  --input: #e5e4df;
+  --ring: #1890FF;
+  --chart-1: #1890FF;
+  --chart-2: #0b3d7a;
+  --chart-3: #f2c811;
+  --chart-4: #0f7b4a;
+  --chart-5: #5f5e5a;
+  --dato-azul: #0b63c5;
+  --dato-azul-oscuro: #0b3d7a;
+  --dato-papel: #f3f3f0;
+  --dato-linea: #e5e4df;
+  --dato-texto: #5f5e5a;
   --dato-radio: .75rem;
   background: var(--dato-papel);
-  color: #0f172a;
+  color: #171716;
   color-scheme: light;
   font-variant-numeric: tabular-nums;
   line-height: 1.6;
+}
+
+/* El layout anida .datos-scope (datos.css) dentro de .datos y aquel redeclara las
+   mismas vars con la paleta slate antigua. Esta regla, de mayor especificidad y sin
+   tocar datos.css, hace que la paleta del brief llegue también a los componentes
+   shadcn (ToggleGroup, Select, Sheet…) usados dentro del observatorio. */
+.datos :global(.datos-scope) {
+  --primary: #0b63c5;
+  --background: #f3f3f0;
+  --foreground: #171716;
+  --muted: #f7f7f4;
+  --muted-foreground: #5f5e5a;
+  --accent: #f7f7f4;
+  --accent-foreground: #171716;
+  --secondary: #f7f7f4;
+  --secondary-foreground: #171716;
+  --card: #fff;
+  --card-foreground: #171716;
+  --popover: #fff;
+  --popover-foreground: #171716;
+  --border: #e5e4df;
+  --input: #e5e4df;
+  --ring: #1890FF;
+  --chart-1: #1890FF;
+  --chart-2: #0b3d7a;
+  --chart-3: #f2c811;
+  --chart-4: #0f7b4a;
+  --chart-5: #5f5e5a;
 }
 
 @layer base {
@@ -71,11 +99,11 @@
   display: flex;
   align-items: center;
   gap: .5rem;
-  color: #265475;
+  color: #0b63c5;
   font-size: .875rem;
   font-weight: 730;
 }
-.sello span { display: inline-grid; place-items: center; background: #e2effb; color: #155e99; border-radius: .35rem; width: 1.6rem; height: 1.6rem; }
+.sello span { display: inline-grid; place-items: center; background: #e8f3ff; color: #0b63c5; border-radius: .35rem; width: 1.6rem; height: 1.6rem; }
 
 .heroes { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; }
 .heroPrincipal, .heroComparacion { min-width: 0; border-radius: var(--dato-radio); border: 1px solid var(--dato-linea); }
@@ -83,36 +111,36 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1.2rem .8rem;
-  background: #eaf4fc;
-  color: #142c43;
+  background: #f7f7f4;
+  color: #171716;
   padding: clamp(1.15rem, 3.2vw, 2.2rem);
 }
 .heroIndicador { min-width: 0; }
-.periodo { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: .875rem; font-weight: 720; color: #365974; }
+.periodo { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: .875rem; font-weight: 720; color: #5f5e5a; }
 .valorHero, .valorHub {
   margin: .22rem 0 .1rem;
   white-space: nowrap;
-  color: #102a42;
+  color: #171716;
   font-size: clamp(3.55rem, 8vw, 5.5rem);
   font-weight: 810;
   line-height: 1;
   letter-spacing: -.08em;
 }
-.valorHero span, .valorHub span { font-size: .55em; font-weight: 720; color: #1264a7; letter-spacing: -.045em; vertical-align: .105em; }
+.valorHero span, .valorHub span { font-size: .55em; font-weight: 720; color: #0b63c5; letter-spacing: -.045em; vertical-align: .105em; }
 .valorHero sup { font-size: .27em; vertical-align: super; letter-spacing: 0; }
 .etiquetaHero { margin: .55rem 0 0; font-weight: 740; }
-.recuento { margin: .16rem 0 0; font-size: .94rem; color: #34536b; }
-.heroFuente { border-top: 1px solid #c7dae9; padding-top: .8rem; grid-column: 1 / -1; }
-.fuente { margin: .55rem 0 0; color: #405970; font-size: .8125rem; }
+.recuento { margin: .16rem 0 0; font-size: .94rem; color: #5f5e5a; }
+.heroFuente { border-top: 1px solid var(--dato-linea); padding-top: .8rem; grid-column: 1 / -1; }
+.fuente { margin: .55rem 0 0; color: #5f5e5a; font-size: .8125rem; }
 .heroFuente .fuente { margin: 0; }
 .fuente a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .miniSerie { margin: 0; min-width: 0; align-self: center; }
-.miniSerie figcaption { margin: 0 0 .1rem; color: #39586e; font-size: .8125rem; font-weight: 680; }
+.miniSerie figcaption { margin: 0 0 .1rem; color: #5f5e5a; font-size: .8125rem; font-weight: 680; }
 .miniSerie svg { display: block; width: 100%; height: auto; overflow: visible; }
-.miniGuia { stroke: #c3d8e9; stroke-dasharray: 3 5; fill: none; }
-.miniLinea { stroke: #1469ad; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.miniPunto { fill: #1264a7; stroke: #fff; stroke-width: 2.75; }
-.miniFechas { display: flex; justify-content: space-between; gap: .5rem; color: #486276; font-size: .76rem; line-height: 1.4; }
+.miniGuia { stroke: #e5e4df; stroke-dasharray: 3 5; fill: none; }
+.miniLinea { stroke: #1890FF; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.miniPunto { fill: #0b63c5; stroke: #fff; stroke-width: 2.75; }
+.miniFechas { display: flex; justify-content: space-between; gap: .5rem; color: #5f5e5a; font-size: .76rem; line-height: 1.4; }
 .heroComparacion {
   display: flex;
   flex-direction: column;
@@ -121,15 +149,92 @@
 }
 .heroComparacion h2 { display: flex; align-items: center; gap: .55rem; font-size: 1rem; letter-spacing: -.015em; }
 .heroComparacion h2 svg { color: var(--dato-azul); flex: none; }
-.valorDelta { margin: .3rem 0 .4rem; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.2; color: #173e60; letter-spacing: -.055em; font-weight: 780; }
+.valorDelta { margin: .3rem 0 .4rem; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.2; color: #171716; letter-spacing: -.055em; font-weight: 780; }
 .parPeriodos { display: flex; flex-wrap: wrap; gap: .5rem 1.05rem; margin: 0; }
 .parPeriodos div { flex: 1 0 auto; min-width: 0; }
 .parPeriodos div + div { border-inline-start: 1px solid var(--dato-linea); padding-inline-start: .9rem; }
 .parPeriodos dt, .heroComparacion > p:not(.valorDelta) { color: var(--dato-texto); font-size: .84rem; }
-.parPeriodos dd { margin: 0; color: #193b57; font-size: 1.02rem; font-weight: 740; }
+.parPeriodos dd { margin: 0; color: #171716; font-size: 1.02rem; font-weight: 740; }
 .heroComparacion > p:not(.valorDelta) { margin: .5rem 0 .75rem; }
-.comparacionPie { display: flex; flex-wrap: wrap; gap: .35rem .7rem; border-top: 1px solid #e1e7ed; padding-top: .65rem; margin-top: auto; font-size: .8rem; color: var(--dato-texto); }
-.comparacionPie strong { color: #123c60; }
+.comparacionPie { display: flex; flex-wrap: wrap; gap: .35rem .7rem; border-top: 1px solid var(--dato-linea); padding-top: .65rem; margin-top: auto; font-size: .8rem; color: var(--dato-texto); }
+.comparacionPie strong { color: #0b63c5; }
+
+/* Deltas con color semántico del brief: más desempleo empeora, así que
+   sube = rojo (#c2410c) y baja = verde (#0f7b4a); plano = gris texto. */
+.heroDelta { margin: .45rem 0 0; font-size: .95rem; font-weight: 730; }
+.deltaSube { color: #c2410c; }
+.deltaBaja { color: #0f7b4a; }
+.deltaPlano { color: #5f5e5a; }
+
+/* Hero nacional: columna de mapa (md vertical en escritorio, mini horizontal en
+   móvil) y columna de top 5 (top 3 en móvil). Las dos variantes del mapa se
+   renderizan en el servidor y el CSS muestra una según el ancho (sin JS, sin CLS). */
+.heroMapa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  min-width: 0;
+  padding: clamp(1rem, 2.4vw, 1.4rem);
+  background: #fff;
+  border: 1px solid var(--dato-linea);
+  border-radius: var(--dato-radio);
+}
+.heroMapaVertical { display: none; align-items: center; justify-content: center; }
+.heroMapaVertical svg { width: auto; height: auto; max-height: 400px; max-width: 100%; }
+.heroMapaHorizontal { display: block; width: 100%; }
+.heroMapaHorizontal svg { display: block; width: 100%; height: auto; max-height: 180px; }
+.heroTop {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(1.15rem, 2.6vw, 1.65rem);
+  background: #fff;
+  border: 1px solid var(--dato-linea);
+  border-radius: var(--dato-radio);
+}
+.heroTop h2 { font-size: 1rem; letter-spacing: -.015em; }
+.topLista { list-style: none; margin: .7rem 0 0; padding: 0; display: grid; gap: .35rem; }
+.topLista li a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .2rem .6rem;
+  align-items: center;
+  padding: .4rem 0;
+  border-bottom: 1px solid var(--dato-linea);
+  color: inherit;
+  text-decoration: none;
+}
+.topLista li a:hover .topNombre { color: var(--dato-azul); }
+.topLista li a > :last-child { grid-column: 1 / -1; }
+.topNombre { display: flex; align-items: center; gap: .5rem; min-width: 0; font-size: .9rem; font-weight: 650; }
+.topPuesto { flex: none; display: inline-grid; place-items: center; width: 1.35rem; height: 1.35rem; border-radius: .35rem; background: #e8f3ff; color: #0b63c5; font-size: .72rem; font-weight: 750; }
+.topCifra { white-space: nowrap; font-size: .95rem; font-weight: 760; color: #171716; }
+.topOpcional { display: none; }
+.topEnlace { display: inline-flex; align-items: center; gap: .3rem; margin-top: auto; padding-top: .8rem; font-size: .88rem; font-weight: 700; }
+
+/* Hero regional: mini-mapa con la región resaltada, puesto n.ª de 16,
+   RangeBar región vs Chile (mid = Chile, «Tú» = región) y sparkline 24 trimestres. */
+.heroPuesto { margin: .5rem 0 0; font-size: .9rem; color: #5f5e5a; }
+.heroPuesto strong { color: #171716; }
+.heroMiniMapa { display: flex; align-items: center; justify-content: center; }
+.heroMiniMapa svg { width: auto; height: auto; max-height: 230px; max-width: 100%; }
+.heroRango { display: grid; gap: .6rem; margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--dato-linea); }
+.heroSubtitulo { font-size: .85rem; font-weight: 720; color: #5f5e5a; }
+.heroTileChile { margin-top: .1rem; }
+.heroEvolucion {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(1.15rem, 2.6vw, 1.65rem);
+  background: #fff;
+  border: 1px solid var(--dato-linea);
+  border-radius: var(--dato-radio);
+}
+.heroEvolucion h2 { font-size: 1rem; letter-spacing: -.015em; }
+.heroSpark { margin: .6rem 0 .2rem; }
+.heroSpark svg { display: block; width: 100%; height: auto; }
 
 .indice { display: flex; flex-wrap: wrap; gap: .45rem .55rem; margin: 1.1rem 0 2.1rem; }
 .indice a {
@@ -138,7 +243,7 @@
   gap: .43rem;
   padding: .49rem .75rem;
   background: #fff;
-  border: 1px solid #d8e1e7;
+  border: 1px solid var(--dato-linea);
   border-radius: .45rem;
   font-size: .85rem;
   font-weight: 680;
@@ -146,7 +251,7 @@
   text-decoration: none;
   transition: background-color .17s, border-color .17s;
 }
-.indice a:hover, .botonClaro:hover { background: #edf6ff; border-color: #9fbad0; }
+.indice a:hover, .botonClaro:hover { background: #e8f3ff; border-color: #b9dcff; }
 .lecturaCorta { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; margin-bottom: 2.8rem; }
 .resumen, .cambios, .seccion, .cardDescarga, .cardCurso {
   padding: clamp(1.2rem, 3.2vw, 2rem);
@@ -155,12 +260,12 @@
   background: #fff;
   min-width: 0;
 }
-.resumen { border-top: 3px solid #367ead; }
+.resumen { border-top: 3px solid #1890FF; }
 .resumen p, .seccion p, .cardDescarga p, .cardCurso p { margin: .65rem 0 0; }
-.resumen p, .cambios li, .lecturaRegional p { color: #2c4355; }
+.resumen p, .cambios li, .lecturaRegional p { color: #171716; }
 .cambios ul { list-style: none; padding: 0; margin: .65rem 0 0; }
 .cambios li { position: relative; margin: 0 0 .5rem; padding-left: 1rem; }
-.cambios li::before { content: ""; position: absolute; left: .12rem; top: .7em; width: .34rem; height: .34rem; border-radius: .15rem; background: #347eb8; }
+.cambios li::before { content: ""; position: absolute; left: .12rem; top: .7em; width: .34rem; height: .34rem; border-radius: .15rem; background: #1890FF; }
 .secundario { color: var(--dato-texto); font-size: .8125rem; }
 .bloque, .seccion, .descargas { margin-bottom: 2.65rem; }
 .tituloSeccion { margin-bottom: .9rem; }
@@ -171,7 +276,7 @@
 .regionesRelacionadas a { display: block; width: fit-content; margin-top: .4rem; }
 
 .descargas { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; }
-.cardCurso { background: #eaf4fc; color: #183e5c; }
+.cardCurso { background: #e8f3ff; color: #0b3d7a; }
 .cardCurso a { display: block; width: fit-content; margin-top: .65rem; font-weight: 700; }
 .acciones { display: flex; flex-wrap: wrap; gap: .5rem; margin: .9rem 0; }
 .botonClaro, .botonPrincipal {
@@ -182,28 +287,28 @@
   gap: .45rem;
   min-height: 2.7rem;
   padding: .52rem .82rem;
-  border: 1px solid #c7d9e8;
+  border: 1px solid var(--dato-linea);
   border-radius: .45rem;
   background: #fff;
-  color: #104f83;
+  color: #0b63c5;
   font-size: .9rem;
   font-weight: 720;
   text-decoration: none;
   cursor: pointer;
   transition: background-color .17s, border-color .17s;
 }
-.botonPrincipal { color: #fff; background: #1264a7; border-color: #1264a7; }
-.botonPrincipal:hover { background: #0e5087; border-color: #0e5087; }
+.botonPrincipal { color: #fff; background: #0b63c5; border-color: #0b63c5; }
+.botonPrincipal:hover { background: #0b3d7a; border-color: #0b3d7a; }
 .copiarAccion { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; margin-top: .65rem; }
-.copiarAccion span { font-size: .88rem; color: #375c74; }
-.detalle { border-top: 1px solid #dbe5ec; padding: .65rem 0; }
-.detalle summary { font-weight: 720; cursor: pointer; color: #173e60; padding: .18rem 0; }
-.codigo { overflow-x: auto; padding: .9rem; margin: .65rem 0 0; border-radius: .5rem; background: #eef4f8; color: #14344c; font-size: .82rem; }
+.copiarAccion span { font-size: .88rem; color: #5f5e5a; }
+.detalle { border-top: 1px solid var(--dato-linea); padding: .65rem 0; }
+.detalle summary { font-weight: 720; cursor: pointer; color: #171716; padding: .18rem 0; }
+.codigo { overflow-x: auto; padding: .9rem; margin: .65rem 0 0; border-radius: .5rem; background: #f7f7f4; color: #171716; font-size: .82rem; }
 .metodoGrid { display: grid; gap: 1.25rem; margin-top: 1.1rem; }
 .definiciones { display: grid; gap: .75rem; margin: .7rem 0 0; }
 .definiciones dt { font-weight: 700; }
 .definiciones dd { color: var(--dato-texto); margin: .12rem 0 0; }
-.cita { background: #eef5fa; padding: 1rem; border-radius: .65rem; overflow-wrap: anywhere; }
+.cita { background: #f7f7f4; padding: 1rem; border-radius: .65rem; overflow-wrap: anywhere; }
 .cita p { font-size: .94rem; }
 .faq { margin-top: .8rem; }
 .masDatos { display: flex; flex-wrap: wrap; gap: .8rem 1.4rem; padding: 1.1rem 0 0; border-top: 1px solid var(--dato-linea); }
@@ -213,9 +318,9 @@
 .tablaScroll { max-height: 57vh; overflow: auto; margin: .65rem 0 .5rem; }
 .tabla { width: 100%; border-collapse: collapse; font-size: .9rem; text-align: right; }
 .tabla caption { text-align: left; color: var(--dato-texto); font-size: .86rem; padding-bottom: .43rem; }
-.tabla th, .tabla td { border-bottom: 1px solid #e1e9ef; padding: .45rem .72rem; }
+.tabla th, .tabla td { border-bottom: 1px solid var(--dato-linea); padding: .45rem .72rem; }
 .tabla :is(th, td):first-child { text-align: left; }
-.tabla thead { position: sticky; top: 0; background: #eaf3fb; }
+.tabla thead { position: sticky; top: 0; background: #e8f3ff; }
 .tabla tbody th { font-weight: 530; }
 
 .hubEncabezado { margin: 1.3rem 0 1.75rem; }
@@ -224,28 +329,39 @@
   display: grid;
   gap: 1.6rem;
   padding: clamp(1.4rem, 4vw, 3rem);
-  border: 1px solid #c7d9e8;
+  border: 1px solid var(--dato-linea);
   border-radius: var(--dato-radio);
-  background: #eaf4fc;
-  color: #142c43;
+  background: #f7f7f4;
+  color: #171716;
 }
 .hubTarjeta h2, .hubTarjeta p { margin-top: .45rem; }
 .hubTarjeta .botonPrincipal { margin-top: 1.15rem; }
-.miniSerieHub { background: #fff; border: 1px solid #c9dce9; border-radius: var(--dato-radio); padding: 1.25rem 1.05rem; }
+.miniSerieHub { background: #fff; border: 1px solid var(--dato-linea); border-radius: var(--dato-radio); padding: 1.25rem 1.05rem; }
 .hubAccesos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.5rem), 1fr)); gap: .75rem; margin: .85rem 0 2.1rem; }
 .hubAccesos a { display: grid; gap: .2rem; border: 1px solid var(--dato-linea); border-radius: var(--dato-radio); background: #fff; padding: 1rem; text-decoration: none; }
-.hubAccesos a:hover { border-color: #9fbad0; }
+.hubAccesos a:hover { border-color: #b9dcff; }
 .hubAccesos svg { width: 1.15rem; height: 1.15rem; margin-bottom: .2rem; }
 .hubAccesos a span { color: var(--dato-texto); font-size: .91rem; }
 
 @media (min-width: 41rem) {
   .contenedor { width: min(100% - 3.25rem, 72rem); padding-top: 2.5rem; }
   .heroPrincipal { grid-template-columns: minmax(12rem, .95fr) minmax(0, 1.05fr); }
+  /* El hero nacional ya no lleva MiniSerie al lado: KPI en una sola columna.
+     El regional sí usa las dos columnas (KPI + mini-mapa). */
+  .heroesNacional .heroPrincipal { grid-template-columns: minmax(0, 1fr); }
   .lecturaCorta, .metodoGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hubTarjeta { grid-template-columns: 1.12fr .88fr; }
 }
 @media (min-width: 56rem) {
   .heroes { grid-template-columns: minmax(0, 2.12fr) minmax(0, 1fr); align-items: stretch; }
+  /* Nacional: 3 columnas KPI · ChileMap md · top 5 (~1fr 1.2fr 1fr).
+     Regional: KPI + mini-mapa · variación 12 m + RangeBar vs Chile · sparkline 24 trimestres. */
+  .heroes.heroesNacional { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem; }
+  .heroes.heroesRegional { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.25fr) minmax(0, 1fr); gap: 1rem; }
+  .heroesRegional .heroPrincipal { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+  .heroMapaVertical { display: flex; }
+  .heroMapaHorizontal { display: none; }
+  .topOpcional { display: block; }
   .descargas { grid-template-columns: minmax(0, 2.12fr) minmax(0, 1fr); }
   .migas { margin-bottom: 2.45rem; }
 }
@@ -253,9 +369,11 @@
   .datos *, .datos *::before, .datos *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
 
-/* La geometría y las tablas están en el HTML. El navegador puede aplazar el
-   cálculo de estilo y layout mientras la sección permanece fuera de vista. */
-@supports (content-visibility: auto) {
-  .bloque, .descargas, .seccion { content-visibility: auto; contain-intrinsic-size: auto 450px; }
-  .bloque[id="regiones"] { contain-intrinsic-size: auto 980px; }
-}
+/* content-visibility: RETIRADO de .bloque/.seccion/.descargas (antes auto con
+   contain-intrinsic-size 450px, y 980px en #regiones). Las alturas reservadas eran
+   menores que las reales y el navegador pintaba bloques blancos de ~1200px en móvil
+   antes de renderizar. El brief permite quitarlo cuando no hay altura real medida:
+   estas secciones ya vienen renderizadas en el servidor (sin islas diferidas que
+   justifiquen aplazar el layout), así que se elimina para garantizar cero bloques
+   blancos. Si más adelante se miden alturas reales, puede reintroducirse con
+   contain-intrinsic-size: auto <altura-real> por sección. */

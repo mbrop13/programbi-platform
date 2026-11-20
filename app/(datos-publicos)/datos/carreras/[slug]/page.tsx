@@ -26,7 +26,9 @@ import {
   getMetaCarreras,
   getProgramasCarrera,
   TIPO_ETIQUETAS,
+  TIPO_ORDEN,
   tipoPrincipalDeCarrera,
+  type TipoIesKey,
 } from "@/lib/datos/carreras";
 import { tituloH1Ficha } from "@/lib/datos/carreras-profesion";
 import { fechaCorta } from "@/lib/datos/formato";
@@ -81,6 +83,20 @@ export default async function FichaCarreraPage({
 
   const instituciones = getInstitucionesCarrera(slug);
   const programas = getProgramasCarrera(slug);
+
+  // Tipo inicial de la ficha: el que MÁS TITULADOS tiene (titulados.t no-null).
+  // Empate → ctx.tipo (prioridad U→IP→CFT de tipoPrincipalDeCarrera).
+  let tipoMasTitulados: TipoIesKey = ctx.tipo;
+  let maxTitulados: number | null = null;
+  for (const k of TIPO_ORDEN) {
+    const d = carrera.tipos[k];
+    const t = d?.titulados.t ?? null;
+    if (t !== null && (maxTitulados === null || t > maxTitulados)) {
+      tipoMasTitulados = k;
+      maxTitulados = t;
+    }
+  }
+
   const resumen = resumenFichaCarrera(carrera, ctx);
   const narrativa = narrativaUnicaFicha(carrera, ctx);
   const faqs = faqsFichaCarrera(carrera, ctx);
@@ -181,10 +197,11 @@ export default async function FichaCarreraPage({
         </header>
       </div>
 
-      {/* Panel interactivo unificado (incluye los 4 KPIs SSR + selector U/IP/CFT + ajuste IPC) */}
+      {/* Panel interactivo unificado (héroe levels.fyi + grilla 2×2 SSR + ToggleGroup U/IP/CFT + ajuste IPC).
+          Abre en el tipo con más titulados; ?tipo= en la URL lo sobreescribe en el cliente. */}
       <FichaCarreraClient
         carrera={carrera}
-        tipoInicial={ctx.tipo}
+        tipoInicial={tipoMasTitulados}
         instituciones={instituciones}
         programas={programas}
         edicion={meta.edicion}
@@ -222,11 +239,13 @@ export default async function FichaCarreraPage({
         siguienteEnRanking={ctx.siguienteEnRanking}
       />
 
-      {/* Preguntas frecuentes */}
-      <FaqDatos
-        faqs={faqs}
-        titulo={`Preguntas frecuentes sobre ${carrera.nombre}`}
-      />
+      {/* Preguntas frecuentes (id del título = destino del chip FAQ) */}
+      <div id="faq-datos" className="scroll-mt-24">
+        <FaqDatos
+          faqs={faqs}
+          titulo={`Preguntas frecuentes sobre ${carrera.nombre}`}
+        />
+      </div>
 
       {/* CTA ProgramBI */}
       <CtaDatos slug={carrera.slug} pagina={`/datos/carreras/${carrera.slug}`} />

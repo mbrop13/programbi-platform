@@ -6,7 +6,7 @@
 }
 .panel {
   background: #fff;
-  border: 1px solid #deded9;
+  border: 1px solid #e5e4df;
   border-radius: 12px;
   padding: clamp(1rem, 3vw, 2rem);
   min-width: 0;
@@ -24,8 +24,11 @@
   max-width: 70ch;
   line-height: 1.6;
 }
+.panel a {
+  color: #0b63c5;
+}
 .subtle {
-  color: #555;
+  color: #5f5e5a;
   font-size: 0.875rem;
 }
 .controls {
@@ -41,27 +44,26 @@
   font-size: 0.875rem;
   font-weight: 600;
 }
-.controls select,
-.controls button,
-.button {
-  min-height: 44px;
-  border: 1px solid #a6a6a0;
-  border-radius: 7px;
-  background: #fff;
-  color: #171716;
-  padding: 0.5rem 0.75rem;
-  font: inherit;
-  cursor: pointer;
+/* Controles shadcn (ToggleGroup/Select/Button): solo ajustes mínimos,
+   sin pisar las utilidades de components/ui. */
+.toggleItem {
+  min-height: 36px;
+  font-variant-numeric: tabular-nums;
 }
-.controls button[aria-pressed="true"],
-.button[aria-pressed="true"] {
-  background: #1469ad;
-  color: white;
-  border-color: #1469ad;
+.checks button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 .controls :focus-visible,
-.button:focus-visible,
-.tableDetails summary:focus-visible {
+.tableDetails summary:focus-visible,
+.table th button:focus-visible {
   outline: 3px solid #1890ff;
   outline-offset: 2px;
 }
@@ -74,21 +76,38 @@
   min-width: 700px;
   height: 340px;
 }
+.chartStatus {
+  height: 340px;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  text-align: center;
+  background: #f7f7f4;
+  border: 1px solid #e5e4df;
+  border-radius: 12px;
+  color: #5f5e5a;
+}
+.endLabels {
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+/* Altura ≈ primer panel cargado (título + controles + gráfico de 340px).
+   El contenedor .interactive reserva la altura de la isla completa. */
 .skeleton {
-  height: 420px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  height: 620px;
+  background: #f7f7f4;
+  border: 1px solid #e5e4df;
   border-radius: 12px;
   display: grid;
   place-items: center;
-  color: #475569;
+  color: #5f5e5a;
 }
 .tableDetails {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e5e4df;
   border-radius: 10px;
   padding: 1rem;
   overflow: auto;
-  background: white;
+  background: #fff;
 }
 .tableDetails summary {
   cursor: pointer;
@@ -105,11 +124,12 @@
   width: 100%;
   font-size: 0.875rem;
   text-align: left;
+  font-variant-numeric: tabular-nums;
 }
 .table th,
 .table td {
   padding: 0.55rem 0.65rem;
-  border-bottom: 1px solid #deded9;
+  border-bottom: 1px solid #e5e4df;
   white-space: nowrap;
 }
 .table th button {
@@ -129,9 +149,10 @@
 .tile {
   padding: 0.75rem;
   border-radius: 7px;
-  border: 1px solid #bbb;
+  border: 1px solid #e5e4df;
   color: #171716;
   font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
 }
 .checks {
   display: flex;
@@ -155,11 +176,14 @@
   }
 }
 
+/* Reserva de altura de la isla diferida ≈ contenido real de los 3 paneles
+   (histórico + compara regiones + compara períodos). Estimación a verificar
+   visualmente en la integración. */
 .interactive {
-  min-height: 2100px;
+  min-height: 2650px;
 }
 @media (max-width: 640px) {
   .interactive {
-    min-height: 3200px;
+    min-height: 3400px;
   }
 }

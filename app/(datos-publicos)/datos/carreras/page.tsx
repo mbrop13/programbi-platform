@@ -4,15 +4,14 @@ import type { Metadata } from "next";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import {
   ArrowUpRight,
-  Building2,
   Calculator,
   Compass,
   GitCompare,
-  GraduationCap,
   Target,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   areasUnicas,
@@ -29,6 +28,7 @@ import {
   entero,
   fechaCorta,
   mesCorto,
+  millonesCorto,
   pesos,
   porcentaje,
   variacionPorcentual,
@@ -68,6 +68,8 @@ import {
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { RankingCarrerasProgresivo } from "@/components/datos/RankingCarrerasProgresivo";
 import { TablaRankingCarreras } from "@/components/datos/TablaRankingCarreras";
+import { InlineBar } from "@/components/datos/viz/InlineBar";
+import { StatTile } from "@/components/datos/viz/StatTile";
 
 export const dynamic = "force-static";
 
@@ -185,6 +187,17 @@ export default function CarrerasHubPage() {
     .filter((r) => r.dur_real !== null && r.dur_real <= 8 && r.ing4 !== null)
     .sort((a, b) => (b.ing4 ?? 0) - (a.ing4 ?? 0))
     .slice(0, 10);
+
+  // Hero: Top 5 mejor pagadas (U), mismas filas ya calculadas para el SSR
+  const top5HeroU = initialTop25U.slice(0, 5);
+  const maxIng4HeroU = top5HeroU[0]?.ing4 ?? 0;
+
+  // «En resumen»: hallazgos derivados solo del ranking/meta ya cargados
+  const mejorPagadaU = initialTop25U[0];
+  const mayorEmpleabilidad = top10Emp[0];
+  const arancelMasBajo = ranking
+    .filter((r) => r.arancel_med !== null && r.arancel_med > 0)
+    .sort((a, b) => (a.arancel_med ?? 0) - (b.arancel_med ?? 0))[0];
 
   const gruposMiniRanking: GrupoMiniRanking[] = [
     {
@@ -311,39 +324,106 @@ export default function CarrerasHubPage() {
                   </Link>
                 ))}
               </div>
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-muted-foreground">Listas:</span>
+                {PRESET_SLUGS.map((slug) => (
+                  <Link
+                    key={slug}
+                    href={`/datos/carreras/${slug}`}
+                    className="rounded-full border border-[#e5e4df] bg-white px-2.5 py-1 font-medium text-[#0b63c5] transition-colors hover:border-[#1890FF] hover:bg-blue-50"
+                  >
+                    {PRESETS_MAP[slug].tituloCorto}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Marco visual editorial */}
-          <div className="relative min-w-0">
-            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border bg-slate-100 shadow-sm">
-              <img
-                src="/images/datos/hero-carreras.jpg"
-                alt="Campus universitario moderno en Chile"
-                className="h-full w-full object-cover"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent"
-              />
-              <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center gap-2">
-                <div className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/95 px-3 py-1.5 text-xs shadow-sm backdrop-blur-xs">
-                  <GraduationCap className="size-3.5 text-blue-600" aria-hidden="true" />
-                  <span className="font-semibold text-slate-900 tabular-nums">
-                    {meta.conteos.genericas_unicas} carreras
-                  </span>
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/95 px-3 py-1.5 text-xs shadow-sm backdrop-blur-xs">
-                  <Building2 className="size-3.5 text-blue-600" aria-hidden="true" />
-                  <span className="font-semibold text-slate-900 tabular-nums">
-                    {entero(meta.conteos.filas_C)}+ programas
-                  </span>
-                </div>
+          {/* Top 5 mejor pagadas (U) — visual del hero, sin foto */}
+          <div className="min-w-0">
+            <div className="rounded-2xl border border-[#e5e4df] bg-white p-4 shadow-xs sm:p-5">
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="text-sm font-semibold text-foreground">
+                  Top 5 mejor pagadas (U)
+                </h2>
+                <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                  Edición {meta.edicion}
+                </span>
               </div>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Ingreso bruto al 4.º año · pesos de {mesCorto(meta.pesos_de)}
+              </p>
+              <ol className="mt-3 space-y-2.5">
+                {top5HeroU.map((r, i) => (
+                  <li key={r.slug} className="space-y-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                        {i + 1}
+                      </span>
+                      <span className="text-sm font-semibold text-foreground tabular-nums">
+                        {pesos(r.ing4)}
+                      </span>
+                    </div>
+                    <InlineBar
+                      value={r.ing4 ?? 0}
+                      max={maxIng4HeroU}
+                      label={r.nombre}
+                      tone="blue"
+                    />
+                  </li>
+                ))}
+              </ol>
+              <Link
+                href="/datos/carreras/mejor-pagadas"
+                className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-[#0b63c5] hover:underline"
+              >
+                Ver ranking completo
+                <ArrowUpRight className="size-3.5" aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </header>
       </div>
+
+      {/* En resumen: 4 hallazgos con cifra grande (datos ya calculados arriba) */}
+      <section aria-labelledby="en-resumen-hub-titulo" className="space-y-3">
+        <div>
+          <h2 id="en-resumen-hub-titulo" className="h2-datos text-foreground">
+            En resumen
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Edición {meta.edicion} · mifuturo.cl (Mineduc).
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {mejorPagadaU && (
+            <StatTile
+              label="Mejor pagada (U)"
+              value={millonesCorto(mejorPagadaU.ing4)}
+              sub={`${mejorPagadaU.nombre} · ingreso al 4.º año`}
+            />
+          )}
+          {mayorEmpleabilidad && (
+            <StatTile
+              label="Mayor empleabilidad"
+              value={porcentaje(mayorEmpleabilidad.emp1)}
+              sub={`${mayorEmpleabilidad.nombre} · 1.er año (≥100 titulados)`}
+            />
+          )}
+          <StatTile
+            label="Carreras genéricas"
+            value={entero(meta.conteos.genericas_unicas)}
+            sub="U, IP y CFT en la base oficial"
+          />
+          {arancelMasBajo && (
+            <StatTile
+              label="Arancel mediano más bajo"
+              value={millonesCorto(arancelMasBajo.arancel_med)}
+              sub={`${arancelMasBajo.nombre} (${TIPO_ETIQUETAS[arancelMasBajo.tipo].corto}) · anual 2026`}
+            />
+          )}
+        </div>
+      </section>
 
       {/* Tira compacta de 4 herramientas rápidas */}
       <section aria-labelledby="herramientas-titulo" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -356,22 +436,22 @@ export default function CarrerasHubPage() {
             <Link
               key={tool.href}
               href={tool.href}
-              className="group flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm"
+              className="group flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm"
             >
               <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-blue-700 transition-colors group-hover:bg-blue-50">
                 <Icon className="size-4" aria-hidden="true" />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-1">
-                  <h3 className="truncate text-sm font-semibold text-foreground group-hover:text-blue-700">
+                <div className="flex items-start justify-between gap-1">
+                  <h3 className="text-sm font-semibold leading-snug text-foreground group-hover:text-blue-700">
                     {tool.titulo}
                   </h3>
                   <ArrowUpRight
-                    className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-700"
+                    className="mt-0.5 size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-700"
                     aria-hidden="true"
                   />
                 </div>
-                <p className="mt-0.5 truncate text-xs text-muted-foreground">{tool.desc}</p>
+                <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{tool.desc}</p>
               </div>
             </Link>
           );
@@ -428,10 +508,8 @@ export default function CarrerasHubPage() {
                 Cada punto es una carrera en universidades según los filtros activos.
               </p>
             </div>
-            <div
-              aria-hidden="true"
-              className="h-[380px] w-full rounded-xl border border-border bg-muted/40"
-            />
+            <Skeleton className="h-[420px] w-full rounded-xl border border-border bg-muted/60" />
+            <p className="sr-only">Cargando mapa sueldo vs empleabilidad</p>
           </section>
         </RankingCarrerasProgresivo>
       </section>

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeftRight,
   Calculator,
   Check,
   ChevronDown,
   Copy,
+  Download,
   ExternalLink,
   Link2,
   Scale,
@@ -14,11 +15,27 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  ReferenceLine,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { toast } from "sonner";
-import { TradingViewIpcChart } from "@/components/datos/charts/TradingViewIpcChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import {
   Collapsible,
   CollapsibleContent,
@@ -42,6 +59,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ChartCard } from "@/components/datos/viz/ChartCard";
+import { RangeBar } from "@/components/datos/viz/RangeBar";
+import { Sparkline } from "@/components/datos/viz/Sparkline";
+import { StatTile } from "@/components/datos/viz/StatTile";
+import { C } from "@/components/datos/viz/tokens";
 import { trackEvent, trackEventOnce } from "@/lib/analytics/marketing";
 import { mesCorto, mesLargo, pesos, variacionPorcentual } from "@/lib/datos/formato";
 import { ajustarPorIpc, variacionIpc, type PuntoIpc } from "@/lib/datos/ipc";
@@ -64,7 +87,47 @@ const REFERENCIAS_COTIDIANAS = [
   { concepto: "Arancel universitario anual", monto: 4_500_000 },
 ] as const;
 
+const MESES_CORTOS_CAL = [
+  "Ene",
+  "Feb",
+  "Mar",
+  "Abr",
+  "May",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dic",
+] as const;
+
 type FrecuenciaMonto = "mensual" | "anual" | "unico";
+type ModoGrafico = "indice" | "mensual" | "doce";
+type RangoKey = "1A" | "5A" | "10A" | "Todo";
+
+/** Rangos de años. Si la serie es más corta que el rango, se muestra todo (sin inventar datos). */
+const RANGOS: readonly { key: RangoKey; label: string; months: number | null }[] = [
+  { key: "1A", label: "1A", months: 12 },
+  { key: "5A", label: "5A", months: 60 },
+  { key: "10A", label: "10A", months: 120 },
+  { key: "Todo", label: "Todo", months: null },
+];
+
+const CHART_CONFIG: ChartConfig = {
+  v: { label: "Índice IPC (2023 = 100)", color: C.blue },
+  mom: { label: "Variación mensual", color: C.blue },
+  yoy: { label: "Inflación 12 meses", color: C.blue },
+};
+
+interface PuntoEnriquecido {
+  m: string;
+  v: number;
+  /** Variación mensual en puntos porcentuales (null si no hay mes anterior en la serie). */
+  mom: number | null;
+  /** Variación interanual en puntos porcentuales (null si falta el mes de un año antes). */
+  yoy: number | null;
+}
 
 function capitalizar(texto: string): string {
   return texto ? texto.charAt(0).toUpperCase() + texto.slice(1) : "";
@@ -87,6 +150,17 @@ function formatearMiles(rawDigits: string): string {
 function parseDigits(val: string): number {
   const limpio = Number(val.replace(/[^\d]/g, ""));
   return Number.isFinite(limpio) && limpio >= 0 ? limpio : 0;
+}
+
+function fmtIndice(val: number): string {
+  return val.toFixed(2).replace(".", ",");
+}
+
+/** Texto compacto de variación mensual para celdas del heatmap (el eje ya indica que son %). */
+function fmtCeldaHeatmap(val: number): string {
+  const abs = Math.abs(val).toFixed(1).replace(".", ",");
+  if (abs === "0,0") return "0,0";
+  return `${val > 0 ? "+" : "−"}${abs}`;
 }
 
 export interface InflacionInteractivaProps {
@@ -127,6 +201,14 @@ export function InflacionInteractiva({
 
   const [copiadoResumen, setCopiadoResumen] = useState<boolean>(false);
 
+  // Gráfico de la serie: pestañas, rangos y carga diferida sin CLS
+  const [modoGrafico, setModoGrafico] = useState<ModoGrafico>("indice");
+  const [rango, setRango] = useState<RangoKey>("Todo");
+  const [graficoVisible, setGraficoVisible] = useState<boolean>(false);
+  const [tablaSerieAbierta, setTablaSerieAbierta] = useState<boolean>(false);
+  const [tablaHeatmapAbierta, setTablaHeatmapAbierta] = useState<boolean>(false);
+  const zonaGraficoRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     trackEventOnce("datos_view:inflacion", "datos_view", { pagina: "inflacion" });
   }, []);
@@ -149,6 +231,39 @@ export function InflacionInteractiva({
       window.removeEventListener("popstate", syncFromUrl);
     };
   }, [serie]);
+
+  // «Ver tabla» del ChartCard enlaza a #ipc-tabla-serie / #ipc-tabla-heatmap: abrir al llegar al ancla
+  useEffect(() => {
+    const revisarAncla = () => {
+      if (window.location.hash === "#ipc-tabla-serie") setTablaSerieAbierta(true);
+      if (window.location.hash === "#ipc-tabla-heatmap") setTablaHeatmapAbierta(true);
+    };
+    revisarAncla();
+    window.addEventListener("hashchange", revisarAncla);
+    return () => window.removeEventListener("hashchange", revisarAncla);
+  }, []);
+
+  // Diferir el montaje del gráfico hasta que se acerque al viewport (skeleton de la misma altura)
+  useEffect(() => {
+    if (graficoVisible) return;
+    const el = zonaGraficoRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setGraficoVisible(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setGraficoVisible(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "240px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [graficoVisible]);
 
   const monto = useMemo(() => parseDigits(montoRaw), [montoRaw]);
   const sueldoAntes = useMemo(() => parseDigits(sueldoAntesRaw), [sueldoAntesRaw]);
@@ -209,6 +324,59 @@ export function InflacionInteractiva({
       ? variacionIpc(puntoHace12.m, ultimoPunto.m, serie)
       : null;
 
+  // Serie enriquecida: variación mensual e interanual calculadas SOLO desde los datos oficiales
+  const enriched = useMemo<PuntoEnriquecido[]>(() => {
+    const porMes = new Map(serie.map((p) => [p.m, p.v]));
+    return serie.map((p, idx) => {
+      const prev = idx > 0 ? serie[idx - 1] : null;
+      const mom = prev && prev.v > 0 ? ((p.v - prev.v) / prev.v) * 100 : null;
+      const prev12 = porMes.get(getMesHace12(p.m));
+      const yoy = prev12 && prev12 > 0 ? ((p.v - prev12) / prev12) * 100 : null;
+      return { m: p.m, v: p.v, mom, yoy };
+    });
+  }, [serie]);
+
+  const spark12 = useMemo(() => serie.slice(-12).map((p) => p.v), [serie]);
+  const sparkMom = useMemo(
+    () => enriched.slice(-13).map((p) => p.mom).filter((x): x is number => x !== null),
+    [enriched]
+  );
+  const sparkIndice = useMemo(() => enriched.map((p) => p.v).slice(-12), [enriched]);
+  const sparkYoy = useMemo(
+    () => enriched.map((p) => p.yoy).filter((x): x is number => x !== null).slice(-12),
+    [enriched]
+  );
+
+  // Ventana temporal del gráfico: rangos mayores que la serie muestran todo (sin inventar)
+  const rangoObj = RANGOS.find((r) => r.key === rango) ?? RANGOS[RANGOS.length - 1];
+  const ventana = useMemo(() => {
+    const n = rangoObj.months;
+    return n !== null && enriched.length > n ? enriched.slice(-n) : enriched;
+  }, [enriched, rangoObj]);
+  const puntosGrafico = useMemo(() => {
+    if (modoGrafico === "indice") return ventana;
+    if (modoGrafico === "mensual") return ventana.filter((p) => p.mom !== null);
+    return ventana.filter((p) => p.yoy !== null);
+  }, [ventana, modoGrafico]);
+
+  const dataKeyGrafico = modoGrafico === "indice" ? "v" : modoGrafico === "mensual" ? "mom" : "yoy";
+  const valoresGrafico = puntosGrafico
+    .map((p) => (modoGrafico === "indice" ? p.v : modoGrafico === "mensual" ? p.mom : p.yoy))
+    .filter((x): x is number => x !== null);
+  const minGrafico = valoresGrafico.length ? Math.min(...valoresGrafico) : 0;
+  const maxGrafico = valoresGrafico.length ? Math.max(...valoresGrafico) : 1;
+  const padGrafico =
+    modoGrafico === "indice"
+      ? Math.max((maxGrafico - minGrafico) * 0.08, 0.5)
+      : Math.max((maxGrafico - minGrafico) * 0.12, 0.2);
+  const yMin =
+    modoGrafico === "indice" ? minGrafico - padGrafico : Math.min(0, minGrafico) - padGrafico;
+  const yMax = maxGrafico + padGrafico;
+
+  const primeroVentana = ventana[0];
+  const ultimoVentana = ventana[ventana.length - 1];
+  const rangoExcedeSerie = rangoObj.months !== null && enriched.length < rangoObj.months;
+
   const notificarCalculo = (tipo = "ipc") => {
     trackEvent("datos_calc", { calculadora: tipo });
   };
@@ -262,59 +430,45 @@ export function InflacionInteractiva({
     }
   };
 
+  const descargarCsvSerie = () => {
+    const filas = [
+      "mes,periodo,indice_ipc_base_2023_100,variacion_mensual_pct,inflacion_12_meses_pct",
+      ...enriched.map(
+        (p) =>
+          `${p.m},"${capitalizar(mesLargo(p.m))}",${p.v.toFixed(2)},${
+            p.mom !== null ? p.mom.toFixed(2) : ""
+          },${p.yoy !== null ? p.yoy.toFixed(2) : ""}`
+      ),
+    ];
+    const blob = new Blob([filas.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ipc-chile-ine-serie.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    trackEvent("datos_download", { formato: "csv", recurso: "ipc-chile" });
+    toast.success("Archivo CSV descargado");
+  };
+
   const variacionSube = (variacion ?? 0) > 0;
   const variacionBaja = (variacion ?? 0) < 0;
 
+  // Banda comparativa honesta para RangeBar (tu reajuste vs IPC del período, en %)
+  const rangoSueldoMin = comparacionSueldo
+    ? Math.min(0, comparacionSueldo.varNominal, comparacionSueldo.varIpc) * 100
+    : 0;
+  const rangoSueldoMax = comparacionSueldo
+    ? Math.max(0, comparacionSueldo.varNominal, comparacionSueldo.varIpc) * 100
+    : 0;
+  const hayBandaSueldo = rangoSueldoMax - rangoSueldoMin > 1e-9;
+
   return (
-    <div className="space-y-8">
-      {/* KPIs resumen de la serie oficial */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
-          <CardContent className="p-5">
-            <p className="text-xs font-medium text-muted-foreground">Inflación 12 meses</p>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-blue-700 tabular-nums sm:text-3xl">
-              {var12Meses !== null ? variacionPorcentual(var12Meses) : "—"}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {puntoHace12 && ultimoPunto
-                ? `${mesCorto(puntoHace12.m)} → ${mesCorto(ultimoPunto.m)} · INE oficial`
-                : "Variación interanual del IPC"}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
-          <CardContent className="p-5">
-            <p className="text-xs font-medium text-muted-foreground">
-              Última variación mensual
-            </p>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground tabular-nums sm:text-3xl">
-              {varUltimoTramo !== null ? variacionPorcentual(varUltimoTramo) : "—"}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {penultimoPunto && ultimoPunto
-                ? `${mesCorto(penultimoPunto.m)} → ${mesCorto(ultimoPunto.m)}`
-                : "Referencia oficial del INE"}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
-          <CardContent className="p-5">
-            <p className="text-xs font-medium text-muted-foreground">Índice IPC actual</p>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground tabular-nums sm:text-3xl">
-              {ultimoPunto ? ultimoPunto.v.toFixed(2).replace(".", ",") : "—"}
-              <span className="ml-1.5 text-sm font-normal text-muted-foreground">pts</span>
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {ultimoPunto ? `${capitalizar(mesLargo(ultimoPunto.m))} · Base 2023 = 100` : ""}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Herramienta principal con 3 modos */}
-      <Card className="gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+    <div className="space-y-6">
+      {/* PRIMER PLIEGUE: calculadora protagonista + sparkline 12 meses a la derecha */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] xl:gap-6">
+        {/* Herramienta principal con 3 modos (ajustar es el tab visible por defecto) */}
+        <Card className="gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
         <Tabs value={tabActiva} onValueChange={setTabActiva} className="gap-0">
           <div className="border-b border-border bg-muted/35 px-4 pt-4 pb-3 sm:px-6">
             <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-lg bg-muted p-1 sm:w-fit">
@@ -343,7 +497,7 @@ export function InflacionInteractiva({
           </div>
 
           {/* TAB 1: AJUSTAR UN MONTO */}
-          <TabsContent value="ajustar" className="p-5 sm:p-7">
+          <TabsContent value="ajustar" className="p-5 sm:p-6">
             <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
               <div className="space-y-5">
                 <div className="space-y-2">
@@ -490,7 +644,7 @@ export function InflacionInteractiva({
                     href="https://calculadoraipc.ine.cl"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 font-medium text-blue-700 hover:underline"
+                    className="inline-flex items-center gap-1 font-medium text-[#0b63c5] hover:underline"
                   >
                     ¿Necesitas fechas anteriores? Ir al INE
                     <ExternalLink className="size-3.5" aria-hidden="true" />
@@ -510,7 +664,7 @@ export function InflacionInteractiva({
                         variant="secondary"
                         className={cn(
                           "h-auto gap-1 rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums",
-                          variacionSube && "border border-blue-200/80 bg-blue-50 text-blue-700",
+                          variacionSube && "border border-blue-200/80 bg-blue-50 text-[#0b63c5]",
                           variacionBaja && "border border-emerald-200/80 bg-emerald-50 text-emerald-800"
                         )}
                       >
@@ -649,7 +803,7 @@ export function InflacionInteractiva({
           </TabsContent>
 
           {/* TAB 2: ¿MI SUELDO LE GANÓ A LA INFLACIÓN? */}
-          <TabsContent value="sueldo" className="p-5 sm:p-7">
+          <TabsContent value="sueldo" className="p-5 sm:p-6">
             <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
               <div className="space-y-5">
                 <div>
@@ -824,10 +978,37 @@ export function InflacionInteractiva({
                         <p className="mt-0.5 text-[11px] text-muted-foreground">
                           De {pesos(sueldoAntes)} a {pesos(sueldoHoy)}
                         </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
+                        </div>
+                        </div>
+
+                        {/* Banda comparativa: tu reajuste nominal vs inflación del período */}
+                        <div className="rounded-lg border border-border bg-card p-3.5">
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                        Tu reajuste vs inflación del período
+                        </p>
+                        {hayBandaSueldo ? (
+                        <div className="mt-2">
+                          <RangeBar
+                            min={rangoSueldoMin}
+                            max={rangoSueldoMax}
+                            mid={comparacionSueldo.varIpc * 100}
+                            you={comparacionSueldo.varNominal * 100}
+                            format={(v) => variacionPorcentual(v / 100)}
+                            labels={["Tu reajuste", "IPC"]}
+                          />
+                        </div>
+                        ) : (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Sin variación en el período: tu sueldo y el IPC se mantuvieron iguales.
+                        </p>
+                        )}
+                        <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                        Si «Tu reajuste» queda por encima del «IPC», ganaste poder de compra; si
+                        queda por debajo, lo perdiste.
+                        </p>
+                        </div>
+                        </div>
+                        ) : (
                   <p className="text-sm text-muted-foreground">
                     Ingresa ambos sueldos para ver si tu remuneración superó la inflación del período.
                   </p>
@@ -837,7 +1018,7 @@ export function InflacionInteractiva({
           </TabsContent>
 
           {/* TAB 3: EJEMPLOS COTIDIANOS */}
-          <TabsContent value="referencias" className="p-5 sm:p-7">
+          <TabsContent value="referencias" className="p-5 sm:p-6">
             <div className="space-y-4">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <div>
@@ -856,7 +1037,7 @@ export function InflacionInteractiva({
                 ) : null}
               </div>
 
-              <div className="overflow-hidden rounded-lg border border-border">
+              <div className="overflow-x-auto rounded-lg border border-border">
                 <Table className="tabular-nums">
                   <TableHeader className="bg-muted/60">
                     <TableRow className="hover:bg-muted/60">
@@ -895,7 +1076,7 @@ export function InflacionInteractiva({
                                 setTabActiva("ajustar");
                                 notificarCalculo("ipc_preset");
                               }}
-                              className="text-xs font-medium text-blue-700 hover:text-blue-800"
+                              className="text-xs font-medium text-[#0b63c5] hover:text-[#0b63c5]"
                             >
                               Usar
                             </Button>
@@ -909,10 +1090,622 @@ export function InflacionInteractiva({
             </div>
           </TabsContent>
         </Tabs>
-      </Card>
+        </Card>
 
-      {/* Gráfico interactivo TradingView Lightweight Charts */}
-      <TradingViewIpcChart serie={serie} />
+        {/* Sparkline 12 meses del índice (SVG puro, altura reservada: sin CLS) */}
+        <div className="flex flex-col justify-between gap-4 rounded-xl border border-border bg-white p-5 shadow-xs">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-sm font-semibold text-foreground">IPC últimos 12 meses</h2>
+              <span className="text-xs text-muted-foreground">Base 2023 = 100</span>
+            </div>
+            {spark12.length >= 2 && ultimoPunto ? (
+              <div className="w-full [&>svg]:h-auto [&>svg]:w-full">
+                <Sparkline
+                  data={spark12}
+                  width={300}
+                  height={92}
+                  lastDot
+                  ariaLabel={`Índice IPC de ${mesLargo(serie[serie.length - spark12.length].m)} a ${mesLargo(ultimoPunto.m)}`}
+                />
+              </div>
+            ) : (
+              <div className="flex h-[92px] items-center justify-center rounded-lg bg-[#f7f7f4] text-xs text-muted-foreground">
+                Serie insuficiente para graficar
+              </div>
+            )}
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <p className="text-2xl font-bold tracking-tight text-foreground tabular-nums">
+                {ultimoPunto ? fmtIndice(ultimoPunto.v) : "—"}
+                <span className="ml-1.5 text-sm font-normal text-muted-foreground">pts</span>
+              </p>
+              {var12Meses !== null ? (
+                <Badge
+                  variant="secondary"
+                  className="h-auto gap-1 rounded-md border border-blue-200/80 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-[#0b63c5] tabular-nums"
+                >
+                  {var12Meses > 0 ? (
+                    <TrendingUp className="size-3" aria-hidden="true" />
+                  ) : var12Meses < 0 ? (
+                    <TrendingDown className="size-3" aria-hidden="true" />
+                  ) : null}
+                  {variacionPorcentual(var12Meses)} en 12m
+                </Badge>
+              ) : null}
+            </div>
+          </div>
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {puntoHace12 && ultimoPunto
+              ? `${capitalizar(mesCorto(puntoHace12.m))} → ${capitalizar(mesCorto(ultimoPunto.m))} · Variación interanual del índice oficial del INE.`
+              : "Variación interanual del índice oficial del INE."}
+          </p>
+        </div>
+      </div>
+
+      {/* KPIs compactos de la serie oficial (bajo la calculadora) */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <StatTile
+          label="Inflación 12 meses"
+          value={var12Meses !== null ? variacionPorcentual(var12Meses) : "—"}
+          sub={
+            puntoHace12 && ultimoPunto
+              ? `${mesCorto(puntoHace12.m)} → ${mesCorto(ultimoPunto.m)} · INE`
+              : "Variación interanual del IPC"
+          }
+          spark={sparkYoy.length >= 2 ? sparkYoy : undefined}
+        />
+        <StatTile
+          label="Última variación mensual"
+          value={varUltimoTramo !== null ? variacionPorcentual(varUltimoTramo) : "—"}
+          sub={
+            penultimoPunto && ultimoPunto
+              ? `${mesCorto(penultimoPunto.m)} → ${mesCorto(ultimoPunto.m)}`
+              : "Referencia oficial del INE"
+          }
+          spark={sparkMom.length >= 2 ? sparkMom : undefined}
+        />
+        <StatTile
+          label="Índice IPC actual"
+          value={ultimoPunto ? `${fmtIndice(ultimoPunto.v)} pts` : "—"}
+          sub={ultimoPunto ? `${capitalizar(mesLargo(ultimoPunto.m))} · Base 2023 = 100` : undefined}
+          spark={sparkIndice.length >= 2 ? sparkIndice : undefined}
+        />
+      </div>
+
+      {/* ChartCard OWID: serie mensual con rangos y pestañas */}
+      <ChartCard
+        title="¿Cómo ha evolucionado el IPC en Chile?"
+        subtitle={
+          primeroVentana && ultimoVentana
+            ? `Serie mensual INE · Base 2023 = 100 · ${capitalizar(mesCorto(primeroVentana.m))} a ${capitalizar(mesCorto(ultimoVentana.m))} (${ventana.length} meses)`
+            : "Serie mensual INE · Base 2023 = 100"
+        }
+        source="INE"
+        license="CC BY-SA 4.0"
+        tableId="ipc-tabla-serie"
+        actions={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={descargarCsvSerie}
+            className="h-8 gap-1.5 bg-white text-xs font-medium"
+          >
+            <Download className="size-3.5 text-muted-foreground" aria-hidden="true" />
+            Descargar CSV
+          </Button>
+        }
+      >
+        <div className="space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <ToggleGroup
+              type="single"
+              value={modoGrafico}
+              onValueChange={(val) => {
+                if (val === "indice" || val === "mensual" || val === "doce") {
+                  setModoGrafico(val);
+                }
+              }}
+              aria-label="Pestaña del gráfico IPC"
+              className="gap-1 rounded-lg bg-muted p-1"
+            >
+              <ToggleGroupItem value="indice" className="h-7 rounded-md px-2.5 text-xs font-medium">
+                Índice
+              </ToggleGroupItem>
+              <ToggleGroupItem value="mensual" className="h-7 rounded-md px-2.5 text-xs font-medium">
+                Var. mensual
+              </ToggleGroupItem>
+              <ToggleGroupItem value="doce" className="h-7 rounded-md px-2.5 text-xs font-medium">
+                12 meses
+              </ToggleGroupItem>
+            </ToggleGroup>
+
+            <ToggleGroup
+              type="single"
+              value={rango}
+              onValueChange={(val) => {
+                if (val === "1A" || val === "5A" || val === "10A" || val === "Todo") {
+                  setRango(val);
+                }
+              }}
+              aria-label="Rango de años del gráfico IPC"
+              className="gap-1 rounded-lg border border-border bg-white p-0.5"
+            >
+              {RANGOS.map((r) => (
+                <ToggleGroupItem
+                  key={r.key}
+                  value={r.key}
+                  className="h-7 rounded-md border-0 px-2.5 text-xs font-medium shadow-none"
+                >
+                  {r.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
+
+          <p className="min-h-4 text-xs text-muted-foreground">
+            {rangoExcedeSerie
+              ? `Rango ${rangoObj.label}: la serie oficial disponible cubre ${enriched.length} meses, por lo que se muestra el período completo.`
+              : modoGrafico === "mensual"
+                ? "Barras azules: meses con alza de precios; verdes: meses con baja (deflación)."
+                : " "}
+          </p>
+
+          {/* Altura fija reservada: el skeleton y el gráfico ocupan exactamente lo mismo (sin CLS) */}
+          <div ref={zonaGraficoRef} className="h-[300px] w-full sm:h-[340px]">
+            {graficoVisible && puntosGrafico.length > 0 ? (
+              <ChartContainer config={CHART_CONFIG} className="h-full w-full">
+                {modoGrafico === "mensual" ? (
+                  <BarChart data={puntosGrafico} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                    <CartesianGrid stroke={C.line} strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="m"
+                      tickFormatter={(m: string) => capitalizar(mesCorto(m))}
+                      interval="preserveStartEnd"
+                      minTickGap={26}
+                      tick={{ fontSize: 11, fill: C.mute }}
+                      tickLine={false}
+                      axisLine={{ stroke: C.line }}
+                    />
+                    <YAxis
+                      domain={[yMin, yMax]}
+                      width={48}
+                      tickFormatter={(v: number) => variacionPorcentual(v / 100)}
+                      tick={{ fontSize: 11, fill: C.mute }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <ReferenceLine y={0} stroke={C.line} />
+                    <ChartTooltip
+                      cursor={{ fill: "rgba(24, 144, 255, 0.06)" }}
+                      content={
+                        <ChartTooltipContent
+                          labelFormatter={(label) => capitalizar(mesLargo(String(label)))}
+                          formatter={(value) => variacionPorcentual(value / 100)}
+                        />
+                      }
+                    />
+                    <Bar dataKey="mom" maxBarSize={26} radius={2}>
+                      {puntosGrafico.map((p) => (
+                        <Cell
+                          key={p.m}
+                          fill={
+                            (p.mom ?? 0) > 0.001
+                              ? C.blue
+                              : (p.mom ?? 0) < -0.001
+                                ? C.up
+                                : C.mute
+                          }
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                ) : (
+                  <LineChart data={puntosGrafico} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                    <CartesianGrid stroke={C.line} strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="m"
+                      tickFormatter={(m: string) => capitalizar(mesCorto(m))}
+                      interval="preserveStartEnd"
+                      minTickGap={26}
+                      tick={{ fontSize: 11, fill: C.mute }}
+                      tickLine={false}
+                      axisLine={{ stroke: C.line }}
+                    />
+                    <YAxis
+                      domain={[yMin, yMax]}
+                      width={48}
+                      tickFormatter={(v: number) =>
+                        modoGrafico === "indice" ? fmtIndice(v) : variacionPorcentual(v / 100)
+                      }
+                      tick={{ fontSize: 11, fill: C.mute }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <ChartTooltip
+                      cursor={{ stroke: C.line }}
+                      content={
+                        <ChartTooltipContent
+                          labelFormatter={(label) => capitalizar(mesLargo(String(label)))}
+                          formatter={(value) =>
+                            modoGrafico === "indice"
+                              ? `${fmtIndice(value)} pts`
+                              : variacionPorcentual(value / 100)
+                          }
+                        />
+                      }
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey={dataKeyGrafico}
+                      stroke={C.blue}
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4, fill: C.blue, stroke: "#ffffff", strokeWidth: 2 }}
+                    />
+                  </LineChart>
+                )}
+              </ChartContainer>
+            ) : (
+              <div
+                aria-hidden="true"
+                className="h-full w-full animate-pulse rounded-lg border border-[#e5e4df] bg-[#f7f7f4]"
+              />
+            )}
+          </div>
+          <p className="sr-only">
+            Gráfico de la serie mensual del IPC. La alternativa accesible es la tabla de la serie
+            disponible bajo el gráfico («Ver tabla»).
+          </p>
+
+          {/* Alternativa en tabla de la serie completa (objetivo del enlace «Ver tabla» del ChartCard) */}
+          <details
+            id="ipc-tabla-serie"
+            open={tablaSerieAbierta}
+            className="group rounded-lg border border-border bg-white"
+          >
+            <summary
+              onClick={(e) => {
+                e.preventDefault();
+                setTablaSerieAbierta((v) => !v);
+              }}
+              className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-xs font-semibold text-foreground select-none hover:bg-muted/40"
+            >
+              <span className="inline-flex items-center gap-1.5">
+                <Table2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                Ver tabla de la serie ({enriched.length} meses)
+              </span>
+              <ChevronDown
+                className={cn(
+                  "size-3.5 shrink-0 text-muted-foreground transition-transform duration-150",
+                  tablaSerieAbierta && "rotate-180"
+                )}
+                aria-hidden="true"
+              />
+            </summary>
+            <div className="max-h-[400px] overflow-auto border-t border-border/70">
+              <Table className="tabular-nums">
+                <TableHeader className="sticky top-0 bg-muted/80">
+                  <TableRow className="hover:bg-muted/80">
+                    <TableHead>Período</TableHead>
+                    <TableHead className="text-right">Índice IPC</TableHead>
+                    <TableHead className="text-right">Var. mensual</TableHead>
+                    <TableHead className="text-right">Inflación 12m</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...enriched].reverse().map((row) => (
+                    <TableRow key={row.m}>
+                      <TableCell className="font-medium text-foreground">
+                        {capitalizar(mesLargo(row.m))}
+                      </TableCell>
+                      <TableCell className="text-right font-semibold text-foreground">
+                        {fmtIndice(row.v)}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right font-medium",
+                          row.mom !== null && row.mom < 0
+                            ? "text-emerald-700"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {row.mom !== null ? variacionPorcentual(row.mom / 100) : "—"}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {row.yoy !== null ? variacionPorcentual(row.yoy / 100) : "—"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </details>
+        </div>
+      </ChartCard>
+
+      {/* Heatmap año × mes de la variación mensual (escala secuencial azul documentada) */}
+      <ChartCard
+        title="¿En qué meses subieron más los precios?"
+        subtitle={
+          enriched.length > 0
+            ? `Variación mensual del IPC (%) · año × mes · ${capitalizar(mesCorto(enriched[0].m))} a ${capitalizar(mesCorto(enriched[enriched.length - 1].m))}`
+            : "Variación mensual del IPC (%) · año × mes"
+        }
+        source="INE"
+        license="CC BY-SA 4.0"
+        tableId="ipc-tabla-heatmap"
+      >
+        <HeatmapIpc
+          enriched={enriched}
+          tablaAbierta={tablaHeatmapAbierta}
+          onToggleTabla={() => setTablaHeatmapAbierta((v) => !v)}
+        />
+      </ChartCard>
+    </div>
+  );
+}
+
+/**
+ * Heatmap año × mes de la variación mensual del IPC.
+ * Escala SECUENCIAL azul (C.scale) por magnitud |variación| en 5 tramos hasta el máximo
+ * observado de la serie; el signo se lee en cada celda. Los meses con deflación
+ * (variación negativa) se distinguen con borde verde discontinuo, no con otro color de relleno.
+ * Escala sola: las filas se generan desde los años presentes en la serie (hoy 3 parciales;
+ * cuando llegue la serie oficial larga aparecerán todos los años automáticamente).
+ */
+function HeatmapIpc({
+  enriched,
+  tablaAbierta,
+  onToggleTabla,
+}: {
+  enriched: PuntoEnriquecido[];
+  tablaAbierta: boolean;
+  onToggleTabla: () => void;
+}) {
+  const porMes = useMemo(() => new Map(enriched.map((p) => [p.m, p])), [enriched]);
+  const anos = useMemo(() => {
+    const set = new Set<number>();
+    for (const p of enriched) {
+      const y = Number(p.m.slice(0, 4));
+      if (Number.isFinite(y)) set.add(y);
+    }
+    return [...set].sort((a, b) => a - b);
+  }, [enriched]);
+  const maxAbs = useMemo(() => {
+    let max = 0;
+    for (const p of enriched) {
+      if (p.mom !== null) max = Math.max(max, Math.abs(p.mom));
+    }
+    return max > 0 ? max : 1;
+  }, [enriched]);
+
+  if (enriched.length === 0 || anos.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Aún no hay datos suficientes para construir el mapa de calor mensual.
+      </p>
+    );
+  }
+
+  const LABEL_W = 46;
+  const CELL = 46;
+  const GAP = 4;
+  const HEADER_H = 22;
+  const ROW_H = CELL + GAP;
+  const width = LABEL_W + 12 * (CELL + GAP);
+  const height = HEADER_H + anos.length * ROW_H;
+
+  const tramoCelda = (mom: number): number =>
+    Math.min(4, Math.floor((Math.abs(mom) / maxAbs) * 5));
+  const colorCelda = (mom: number): string => C.scale[tramoCelda(mom)];
+  const textoCelda = (mom: number): string => (tramoCelda(mom) >= 4 ? "#ffffff" : C.ink);
+
+  return (
+    <div className="space-y-3">
+      <div className="overflow-x-auto">
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          role="img"
+          aria-label={`Mapa de calor de la variación mensual del IPC por año y mes, de ${anos[0]} a ${anos[anos.length - 1]}. Escala secuencial azul por magnitud; los meses con deflación llevan borde verde discontinuo. La tabla bajo el gráfico contiene los mismos valores.`}
+          className="h-auto w-full min-w-[560px] max-w-[760px]"
+          style={{ fontVariantNumeric: "tabular-nums" }}
+        >
+          {MESES_CORTOS_CAL.map((mes, i) => (
+            <text
+              key={mes}
+              x={LABEL_W + i * (CELL + GAP) + CELL / 2}
+              y={HEADER_H - 8}
+              textAnchor="middle"
+              fontSize={11}
+              fill={C.mute}
+            >
+              {mes}
+            </text>
+          ))}
+          {anos.map((ano, row) => (
+            <g key={ano}>
+              <text
+                x={LABEL_W - 10}
+                y={HEADER_H + row * ROW_H + CELL / 2}
+                textAnchor="end"
+                dominantBaseline="central"
+                fontSize={12}
+                fontWeight={600}
+                fill={C.ink}
+              >
+                {ano}
+              </text>
+              {MESES_CORTOS_CAL.map((_, i) => {
+                const key = `${ano}-${String(i + 1).padStart(2, "0")}`;
+                const punto = porMes.get(key);
+                const x = LABEL_W + i * (CELL + GAP);
+                const y = HEADER_H + row * ROW_H;
+                if (!punto) {
+                  return (
+                    <rect
+                      key={key}
+                      x={x}
+                      y={y}
+                      width={CELL}
+                      height={CELL}
+                      rx={6}
+                      fill="none"
+                      stroke={C.line}
+                      strokeDasharray="2 3"
+                      opacity={0.7}
+                    />
+                  );
+                }
+                if (punto.mom === null) {
+                  return (
+                    <g key={key}>
+                      <title>{`${capitalizar(mesLargo(key))}: sin variación calculable (primer mes de la serie disponible)`}</title>
+                      <rect x={x} y={y} width={CELL} height={CELL} rx={6} fill={C.scale[0]} />
+                      <text
+                        x={x + CELL / 2}
+                        y={y + CELL / 2}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fontSize={9}
+                        fill={C.mute}
+                      >
+                        s/d
+                      </text>
+                    </g>
+                  );
+                }
+                const deflacion = punto.mom < 0;
+                return (
+                  <g key={key}>
+                    <title>{`${capitalizar(mesLargo(key))}: ${variacionPorcentual(punto.mom / 100)} mensual${deflacion ? " (deflación)" : ""}`}</title>
+                    <rect
+                      x={x}
+                      y={y}
+                      width={CELL}
+                      height={CELL}
+                      rx={6}
+                      fill={colorCelda(punto.mom)}
+                      stroke={deflacion ? C.up : "none"}
+                      strokeWidth={deflacion ? 1.5 : 0}
+                      strokeDasharray={deflacion ? "3 2" : undefined}
+                    />
+                    <text
+                      x={x + CELL / 2}
+                      y={y + CELL / 2}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fontSize={11}
+                      fontWeight={500}
+                      fill={textoCelda(punto.mom)}
+                    >
+                      {fmtCeldaHeatmap(punto.mom)}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          ))}
+        </svg>
+      </div>
+
+      {/* Leyenda y documentación de la escala */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="font-medium text-foreground">Magnitud mensual:</span>
+          {C.scale.map((color, i) => (
+            <span
+              key={color}
+              aria-hidden="true"
+              className="inline-block size-4 rounded-sm border border-black/5"
+              style={{ backgroundColor: color }}
+              title={`Tramo ${i + 1} de 5`}
+            />
+          ))}
+          <span className="tabular-nums">
+            menor → mayor (máx. {maxAbs.toFixed(1).replace(".", ",")} %)
+          </span>
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            aria-hidden="true"
+            className="inline-block size-4 rounded-sm border-[1.5px] border-dashed bg-[#e8f3ff]"
+            style={{ borderColor: C.up }}
+          />
+          Deflación (variación negativa)
+        </span>
+      </div>
+      <p className="max-w-[68ch] text-xs leading-relaxed text-muted-foreground">
+        Escala secuencial azul por magnitud de la variación mensual (5 tramos hasta el máximo
+        observado de la serie); el signo se muestra en cada celda. Los meses con deflación se
+        marcan con borde verde discontinuo. Las celdas punteadas sin relleno son meses aún no
+        publicados; «s/d» es el primer mes de la serie disponible, sin mes anterior con qué
+        compararlo.
+      </p>
+
+      {/* Alternativa en tabla del heatmap */}
+      <details
+        id="ipc-tabla-heatmap"
+        open={tablaAbierta}
+        className="group rounded-lg border border-border bg-white"
+      >
+        <summary
+          onClick={(e) => {
+            e.preventDefault();
+            onToggleTabla();
+          }}
+          className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-xs font-semibold text-foreground select-none hover:bg-muted/40"
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <Table2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
+            Ver tabla del mapa de calor
+          </span>
+          <ChevronDown
+            className={cn(
+              "size-3.5 shrink-0 text-muted-foreground transition-transform duration-150",
+              tablaAbierta && "rotate-180"
+            )}
+            aria-hidden="true"
+          />
+        </summary>
+        <div className="overflow-x-auto border-t border-border/70">
+          <Table className="tabular-nums">
+            <TableHeader className="bg-muted/60">
+              <TableRow className="hover:bg-muted/60">
+                <TableHead>Año</TableHead>
+                {MESES_CORTOS_CAL.map((mes) => (
+                  <TableHead key={mes} className="text-right">
+                    {mes}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {anos.map((ano) => (
+                <TableRow key={ano}>
+                  <TableCell className="font-medium text-foreground">{ano}</TableCell>
+                  {MESES_CORTOS_CAL.map((_, i) => {
+                    const key = `${ano}-${String(i + 1).padStart(2, "0")}`;
+                    const punto = porMes.get(key);
+                    const mom = punto?.mom ?? null;
+                    return (
+                      <TableCell
+                        key={key}
+                        className={cn(
+                          "text-right",
+                          mom !== null && mom < 0 ? "text-emerald-700" : "text-muted-foreground"
+                        )}
+                      >
+                        {mom !== null ? variacionPorcentual(mom / 100) : "—"}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </details>
     </div>
   );
 }

@@ -173,7 +173,7 @@ export function resumenFichaCarrera(carrera: CarreraRecord, ctx: ContextoCompara
   }
   if (data.emp1 !== null) {
     frases.push(
-      `En ${tipoLabel}, ocupa el puesto ${posicionTipo} de ${totalTipo} carreras evaluadas por ingreso al 4.º año${diffMedianaAreaPct !== null && medianaArea !== null ? ` (${diffMedianaAreaPct >= 0 ? `+${diffMedianaAreaPct}` : `${diffMedianaAreaPct}`} % frente a la mediana del área ${carrera.area}, de ${pesos(medianaArea)})` : ""}, con una empleabilidad al 1.er año de ${porcentaje(data.emp1)}.`
+      `En ${tipoLabel}, ocupa el puesto ${posicionTipo} de ${totalTipo} carreras evaluadas por ingreso al 4.º año${diffMedianaAreaPct !== null && diffMedianaAreaPct !== 0 && medianaArea !== null ? ` (${diffMedianaAreaPct >= 0 ? `+${diffMedianaAreaPct}` : `${diffMedianaAreaPct}`} % frente a la mediana del área ${carrera.area}, de ${pesos(medianaArea)})` : ""}, con una empleabilidad al 1.er año de ${porcentaje(data.emp1)}.`
     );
   }
   if (data.pct.p10_5 !== null && data.pct.p90_5 !== null) {

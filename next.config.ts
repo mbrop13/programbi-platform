@@ -1,6 +1,25 @@
 import type { NextConfig } from "next";
 import path from "path";
 import regionesDatos from "./lib/datos/regiones-catalogo.json";
+import ogRewrites from "./lib/datos/og-rewrites.json";
+
+/**
+ * Puente OG: Next 16 sirve los `opengraph-image` (file convention) con sufijo
+ * hash, pero ogUrlDe/sitemap apuntan a la URL limpia. `scripts/gen-og-rewrites.cjs`
+ * (prebuild) genera lib/datos/og-rewrites.json con el mapeo desde el manifest
+ * del build anterior (hashes content-hash estables). Aquí se consumen como
+ * rewrites afterFiles para que la URL limpia resuelva a la ruta con hash.
+ */
+function ogBridgeRewrites(): { source: string; destination: string }[] {
+  const out = [...(ogRewrites.static ?? [])];
+  if (ogRewrites.slugHash) {
+    out.push({
+      source: "/datos/carreras/:slug/opengraph-image",
+      destination: `/datos/carreras/:slug/opengraph-image-${ogRewrites.slugHash}`,
+    });
+  }
+  return out;
+}
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -56,6 +75,13 @@ const nextConfig: NextConfig = {
         hostname: "i.pravatar.cc",
       },
     ],
+  },
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      afterFiles: ogBridgeRewrites(),
+      fallback: [],
+    };
   },
   async redirects() {
     // ── FUENTE ÚNICA DE REDIRECCIONES ─────────────────────────────────────
@@ -771,6 +797,25 @@ const nextConfig: NextConfig = {
           {
             key: "Cache-Control",
             value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        // OG de /datos: caché immutable (las URLs llevan ?v=edicion o sufijo hash).
+        source: "/datos/:path*/opengraph-image:pathSuffix(-[0-9a-z]{6})?",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/datos/desempleo/og/:territorio*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },

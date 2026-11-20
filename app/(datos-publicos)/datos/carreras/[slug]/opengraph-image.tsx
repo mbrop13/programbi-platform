@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { loadLogoDataUrl } from "@/lib/og/assets";
+import { OG_HEADERS, renderOgCard, type OgBarra } from "@/lib/datos/og-card";
 import {
   getCarrera,
   getCarreras,
@@ -7,7 +9,6 @@ import {
   tipoPrincipalDeCarrera,
 } from "@/lib/datos/carreras";
 import { pesos, porcentaje, semestres } from "@/lib/datos/formato";
-import { loadLogoDataUrl } from "@/lib/og/assets";
 
 export const dynamic = "force-static";
 export const alt = "Sueldo y empleabilidad de carrera en Chile | ProgramBI";
@@ -36,161 +37,35 @@ export default async function Image({
   const emp1 = principal?.data.emp1 ?? null;
   const durReal = principal?.data.dur_real ?? null;
 
+  // Curva real de ingresos 1.º→5.º año (solo puntos publicados en el JSON).
+  const barras: OgBarra[] = (principal?.data.ing ?? [])
+    .map((v, i) => ({ v, i }))
+    .filter((x): x is { v: number; i: number } => x.v !== null)
+    .map(({ v, i }) => ({
+      label: `${i + 1}.º año`,
+      valor: v,
+      valorTexto: pesos(v),
+    }));
+
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: 1200,
-          height: 630,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          background: "#f7f7f4",
-          color: "#171716",
-          padding: "52px 64px",
-          fontFamily: "sans-serif",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={logoSrc}
-            alt="ProgramBI"
-            width={180}
-            height={46}
-            style={{ objectFit: "contain" }}
-          />
-          <div
-            style={{
-              display: "flex",
-              fontSize: 18,
-              fontWeight: 700,
-              padding: "8px 18px",
-              borderRadius: 999,
-              background: "#e9f4ff",
-              color: "#1890ff",
-            }}
-          >
-            {tipoLabel} · Edición {meta.edicion}
-          </div>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div style={{ fontSize: 22, fontWeight: 600, color: "#5c5c58" }}>
-            {area}
-          </div>
-          <div
-            style={{
-              fontSize: nombre.length > 38 ? 44 : 54,
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-              lineHeight: 1.08,
-            }}
-          >
-            {nombre}
-          </div>
-
-          <div style={{ display: "flex", gap: 22, marginTop: 14 }}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                background: "#ffffff",
-                border: "1px solid #e2e2dc",
-                borderTop: "4px solid #1890ff",
-                borderRadius: 16,
-                padding: "20px 28px",
-                minWidth: 320,
-              }}
-            >
-              <span style={{ fontSize: 16, color: "#5c5c58" }}>
-                Ingreso bruto 4.º año
-              </span>
-              <span
-                style={{
-                  fontSize: 42,
-                  fontWeight: 800,
-                  color: "#1890ff",
-                  marginTop: 6,
-                }}
-              >
-                {pesos(ing4)}
-              </span>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                background: "#ffffff",
-                border: "1px solid #e2e2dc",
-                borderRadius: 16,
-                padding: "20px 28px",
-                minWidth: 260,
-              }}
-            >
-              <span style={{ fontSize: 16, color: "#5c5c58" }}>
-                Empleabilidad 1.er año
-              </span>
-              <span
-                style={{
-                  fontSize: 42,
-                  fontWeight: 800,
-                  color: "#171716",
-                  marginTop: 6,
-                }}
-              >
-                {porcentaje(emp1)}
-              </span>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                background: "#ffffff",
-                border: "1px solid #e2e2dc",
-                borderRadius: 16,
-                padding: "20px 28px",
-                minWidth: 240,
-              }}
-            >
-              <span style={{ fontSize: 16, color: "#5c5c58" }}>
-                Duración real
-              </span>
-              <span
-                style={{
-                  fontSize: 38,
-                  fontWeight: 800,
-                  color: "#171716",
-                  marginTop: 8,
-                }}
-              >
-                {semestres(durReal)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            fontSize: 18,
-            color: "#5c5c58",
-          }}
-        >
-          <span>Fuente: mifuturo.cl (Mineduc) · Pesos sep-2025</span>
-          <span>programbi.com/datos/carreras</span>
-        </div>
-      </div>
-    ),
-    size
+    renderOgCard({
+      titulo: nombre,
+      cifra: pesos(ing4),
+      cifraLabel: "ingreso bruto 4.º año",
+      subtitulo: `${area} · Empleabilidad 1.er año: ${porcentaje(emp1)} · Duración real: ${semestres(durReal)}`,
+      badge: `${tipoLabel} · Edición ${meta.edicion}`,
+      miniVisual:
+        barras.length > 0
+          ? {
+              tipo: "barras",
+              caption: `Ingreso bruto por año de titulación · pesos ${meta.pesos_de}`,
+              barras,
+            }
+          : undefined,
+      logoSrc,
+      fuente: "Fuente: mifuturo.cl (Mineduc)",
+      urlCorta: `programbi.com/datos/carreras/${slug}`,
+    }),
+    { width: 1200, height: 630, headers: OG_HEADERS }
   );
 }

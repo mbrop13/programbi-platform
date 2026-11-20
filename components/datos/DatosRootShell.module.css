@@ -1,15 +1,25 @@
 .body {
   margin: 0;
-  color: #0f172a;
-  background: #f8f9fb;
+  color: #171716;
+  background: #f3f3f0;
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .main {
-  min-height: calc(100vh - 64px);
-  background: #f8f9fb;
+  /* Header 65px (64 + borde) + subnav 45px (44 + borde) = 110px fijos (sin CLS). */
+  min-height: calc(100vh - 110px);
+  /* El skip-link aterriza bajo la pila sticky, no tapado por ella. */
+  scroll-margin-top: 7.5rem;
+  background: #f3f3f0;
+}
+
+/* Compatibilidad de anclas: la pila sticky mide 110px y Observatorio.module.css
+   solo reserva 6rem. Esta regla (mayor especificidad, sin tocar ese archivo)
+   reserva 7.5rem para todo [id] dentro del ámbito global .datos-scope. */
+.main :global(.datos-scope) :where([id]) {
+  scroll-margin-top: 7.5rem;
 }
 
 .skip {
@@ -19,9 +29,9 @@
   z-index: 100;
   padding: 10px 14px;
   border-radius: 8px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #e5e4df;
   background: #ffffff;
-  color: #0f172a;
+  color: #171716;
   font-size: 13px;
   font-weight: 600;
   transform: translateY(-160%);
@@ -29,13 +39,17 @@
 .skip:focus {
   transform: translateY(0);
 }
+.skip:focus-visible {
+  outline: 2px solid #0b63c5;
+  outline-offset: 2px;
+}
 
 .header {
   position: sticky;
   top: 0;
   z-index: 40;
-  border-bottom: 1px solid #e2e8f0;
-  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid #e5e4df;
+  background: rgba(243, 243, 240, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -47,7 +61,8 @@
   justify-content: space-between;
   gap: 20px;
   max-width: 1280px;
-  min-height: 64px;
+  /* Altura fija 64px: la subnav se apila debajo con top: 64px (sin CLS). */
+  height: 64px;
   margin: auto;
   padding: 0 24px;
 }
@@ -66,59 +81,116 @@
 }
 .logo img {
   display: block;
-  width: 132px;
+  width: 136px;
   height: auto;
 }
 
 .divider {
   width: 1px;
   height: 20px;
-  background: #e2e8f0;
+  background: #e5e4df;
 }
 
 .sectionTag {
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: #5f5e5a;
   text-decoration: none;
   white-space: nowrap;
   transition: color 0.15s ease;
 }
 .sectionTag:hover {
-  color: #0f172a;
+  color: #171716;
 }
 
 .desktopNav {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 24px;
   flex: 1;
 }
 
+/* Links principales del sitio (réplica visual del Navbar de marketing). */
+.siteLink {
+  color: #5f5e5a;
+  font-size: 14.5px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+.siteLink:hover {
+  color: #171716;
+}
+
+/* Subnav sticky de /datos (5 secciones vía DatosNavLinks). */
+.subnav {
+  position: sticky;
+  top: 64px;
+  z-index: 30;
+  border-bottom: 1px solid #e5e4df;
+  background: #f7f7f4;
+}
+
+.subnavInner {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 1280px;
+  height: 44px;
+  margin: auto;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.subnavInner::-webkit-scrollbar {
+  display: none;
+}
+
+/* Consumidas por DatosNavLinks: NO borrar/renombrar. */
 .navLink,
 .navLinkActive {
-  padding: 6px 12px;
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
   font-size: 13.5px;
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .navLink {
-  color: #475569;
+  color: #5f5e5a;
 }
 .navLink:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #f3f3f0;
+  color: #171716;
 }
 
 .navLinkActive {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: rgba(11, 99, 197, 0.08);
+  color: #0b63c5;
   font-weight: 600;
+}
+
+.navLink:focus-visible,
+.navLinkActive:focus-visible,
+.siteLink:focus-visible,
+.subtleLink:focus-visible,
+.account:focus-visible,
+.sectionTag:focus-visible,
+.mobileLink:focus-visible,
+.mobileLinkActive:focus-visible {
+  outline: 2px solid #0b63c5;
+  outline-offset: 2px;
 }
 
 .actions {
@@ -131,33 +203,33 @@
 .subtleLink {
   padding: 7px 12px;
   border-radius: 8px;
-  color: #475569;
+  color: #5f5e5a;
   font-size: 13.5px;
   font-weight: 500;
   text-decoration: none;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 .subtleLink:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #f7f7f4;
+  color: #171716;
 }
 
 .account {
   flex-shrink: 0;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 7px 14px;
+  border: 1px solid #e5e4df;
+  border-radius: 999px;
+  padding: 8px 16px;
   background: #ffffff;
-  color: #0f172a;
-  font-size: 13.5px;
+  color: #171716;
+  font-size: 14px;
   font-weight: 500;
   text-decoration: none;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 2px rgb(23 23 22 / 0.04);
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 .account:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: #f7f7f4;
+  border-color: #d8d7d0;
 }
 
 .mobileMenu {
@@ -166,6 +238,7 @@
   margin-left: auto;
 }
 
+/* Consumidas por DatosNavLinks (modo mobile): NO borrar/renombrar. */
 .mobileLink,
 .mobileLinkActive {
   padding: 9px 12px;
@@ -174,23 +247,23 @@
   text-decoration: none;
 }
 .mobileLink {
-  color: #334155;
+  color: #5f5e5a;
   font-weight: 500;
 }
 .mobileLink:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #f7f7f4;
+  color: #171716;
 }
 .mobileLinkActive {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: rgba(11, 99, 197, 0.08);
+  color: #0b63c5;
   font-weight: 600;
 }
 
 .footer {
   margin-top: 64px;
-  border-top: 1px solid #e2e8f0;
-  background: #ffffff;
+  border-top: 1px solid #e5e4df;
+  background: #f7f7f4;
 }
 .footerInner {
   box-sizing: border-box;
@@ -206,12 +279,12 @@
 }
 .footerBrand img {
   display: block;
-  width: 132px;
+  width: 136px;
   height: auto;
 }
 .footerBrand p {
   margin: 14px 0 0;
-  color: #64748b;
+  color: #5f5e5a;
   font-size: 13.5px;
   line-height: 1.6;
 }
@@ -223,17 +296,23 @@
 }
 .footer nav strong {
   margin-bottom: 4px;
-  color: #0f172a;
+  color: #171716;
   font-size: 13px;
   font-weight: 600;
 }
 .footer a {
-  color: #475569;
+  color: #0b63c5;
   text-decoration: none;
   transition: color 0.15s ease;
 }
 .footer a:hover {
-  color: #0f172a;
+  color: #0a4f9e;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.footer a:focus-visible {
+  outline: 2px solid #0b63c5;
+  outline-offset: 2px;
 }
 
 @media (max-width: 1024px) {
@@ -248,6 +327,9 @@
 
 @media (max-width: 640px) {
   .headerInner {
+    padding: 0 16px;
+  }
+  .subnavInner {
     padding: 0 16px;
   }
   .divider,
