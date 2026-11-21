@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 /**
  * Enlaces de entrada a las landings de nicho de la fase 5.
@@ -38,88 +37,103 @@ const OBJETIVOS = [
 
 /**
  * Fichas que van primero en la home, con el anchor exacto por el que compiten:
- * «curso power bi» y «curso de análisis de datos». El resto de enlaces del
+ * "curso power bi" y "curso de análisis de datos". El resto de enlaces del
  * bloque se mantiene; estos solo se anteponen. En /cursos no hacen falta
  * porque el catálogo ya muestra esas dos fichas arriba.
  */
 const CURSOS_PRINCIPALES = [
-  { href: "/cursos/power-bi", title: "Curso de Power BI en vivo" },
-  { href: "/cursos/analisis-de-datos", title: "Curso de análisis de datos" },
+  {
+    href: "/cursos/power-bi",
+    title: "Curso de Power BI en vivo",
+    detail: "Modelado DAX, Power Query y tableros ejecutivos en clases en directo.",
+  },
+  {
+    href: "/cursos/analisis-de-datos",
+    title: "Curso de análisis de datos",
+    detail: "Ruta integral con Power BI, SQL Server y Python desde fundamentos.",
+  },
 ] as const;
 
 type Contexto = "home" | "cursos";
 
-/** Cuatro tarjetas de objetivo, para la home y el catálogo. */
+/** Bloque de rutas por objetivo: dos caminos principales + cuatro objetivos en lista editorial. */
 export function ObjetivosCursos({ contexto = "home" }: { contexto?: Contexto }) {
   return (
     <section
       aria-labelledby="cursos-por-objetivo"
-      className="cv-auto border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
+      className="home-scope cv-auto border-t border-[var(--h-border)] bg-[var(--h-bg)] py-16 lg:py-20"
     >
-      <div className="mx-auto max-w-[1400px]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-          Cursos por objetivo
-        </p>
-        <h2
-          id="cursos-por-objetivo"
-          className="mt-3 max-w-[28ch] text-balance text-2xl font-bold tracking-tight text-ink sm:text-3xl"
-        >
-          {contexto === "cursos"
-            ? "Elige por el problema que quieres resolver"
-            : "No todos llegan por el mismo motivo"}
-        </h2>
-        <p className="mt-4 max-w-[62ch] text-sm leading-relaxed text-mute">
-          Cuatro rutas armadas según lo que necesitas hacer en el trabajo, no según la
-          herramienta de moda. Cada una enlaza a la ficha o al programa que corresponde.
-        </p>
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="grid gap-4 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-7">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--h-subtle)]">
+              Cursos por objetivo
+            </p>
+            <h2
+              id="cursos-por-objetivo"
+              className="mt-2.5 max-w-[26ch] text-balance text-2xl font-bold tracking-tight text-[var(--h-ink)] sm:text-3xl"
+            >
+              {contexto === "cursos"
+                ? "Elige por el problema que quieres resolver"
+                : "No todos llegan por el mismo motivo"}
+            </h2>
+          </div>
+          <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--h-muted)] lg:col-span-5">
+            Cuatro rutas armadas según lo que necesitas hacer en el trabajo, no según la herramienta
+            de moda. Cada una enlaza a la ficha o al programa que corresponde.
+          </p>
+        </div>
 
         {contexto === "home" ? (
-          <nav
-            aria-label="Cursos principales"
-            className="mt-6 flex flex-wrap items-baseline gap-x-6 gap-y-2 border-t border-line pt-5"
-          >
-            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-              Cursos principales
-            </span>
-            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink">
-              {CURSOS_PRINCIPALES.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="inline-flex items-center gap-1.5 no-underline underline-offset-4 hover:underline"
-                  >
+          <nav aria-label="Cursos principales" className="mt-8 grid gap-4 md:grid-cols-2">
+            {CURSOS_PRINCIPALES.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group flex min-h-[44px] flex-col justify-between gap-3 rounded-xl border border-[var(--h-border-strong)] bg-[var(--h-surface)] p-5 no-underline transition-colors hover:border-[var(--h-ink)] sm:flex-row sm:items-center sm:p-6"
+              >
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--h-accent)]">
+                    Programa principal
+                  </span>
+                  <span className="mt-1 block text-lg font-bold tracking-tight text-[var(--h-ink)]">
                     {item.title}
-                    <ArrowRight size={14} className="text-mute" aria-hidden />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                  </span>
+                  <span className="mt-1 block text-sm text-[var(--h-muted)]">{item.detail}</span>
+                </div>
+                <span className="shrink-0 text-sm font-semibold text-[var(--h-ink)] underline-offset-4 group-hover:text-[var(--h-accent)] group-hover:underline">
+                  Ver programa
+                </span>
+              </Link>
+            ))}
           </nav>
         ) : null}
 
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-          {OBJETIVOS.map((item) => (
-            <li key={item.href}>
+        <ol className="mt-10 grid grid-cols-1 border-t border-[var(--h-border)] md:grid-cols-2 md:gap-x-10">
+          {OBJETIVOS.map((item, idx) => (
+            <li key={item.href} className="border-b border-[var(--h-border)]">
               <Link
                 href={item.href}
-                className="group flex h-full flex-col rounded-2xl border border-line bg-paper p-5 no-underline transition-colors hover:border-ink/25"
+                className="group flex min-h-[44px] items-start gap-4 py-5 no-underline"
               >
-                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-faint">
-                  {item.kicker}
+                <span className="mt-0.5 shrink-0 font-mono text-xs font-semibold tabular-nums text-[var(--h-accent)]">
+                  {String(idx + 1).padStart(2, "0")}
                 </span>
-                <span className="mt-1.5 flex items-start justify-between gap-3 text-base font-semibold leading-snug text-ink">
-                  {item.title}
-                  <ArrowRight
-                    size={15}
-                    className="mt-1 shrink-0 text-mute transition-transform group-hover:translate-x-0.5"
-                    aria-hidden
-                  />
-                </span>
-                <span className="mt-2 text-sm leading-relaxed text-mute">{item.text}</span>
+                <div className="min-w-0 flex-1">
+                  <span className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--h-subtle)]">
+                    {item.kicker}
+                  </span>
+                  <span className="mt-1 block text-base font-bold leading-snug text-[var(--h-ink)] transition-colors group-hover:text-[var(--h-accent)]">
+                    {item.title}
+                  </span>
+                  <span className="mt-1.5 block text-sm leading-relaxed text-[var(--h-muted)]">
+                    {item.text}
+                  </span>
+                </div>
               </Link>
             </li>
           ))}
-        </ul>
+        </ol>
       </div>
     </section>
   );
@@ -149,7 +163,7 @@ const RECURSOS = [
   {
     href: "/sueldos-analista-datos-chile",
     title: "Sueldos analista de datos en Chile",
-    text: "Benchmark salarial referencial por rol y calculadora Bruto ↔ Líquido.",
+    text: "Benchmark salarial referencial por rol y calculadora Bruto a Líquido.",
   },
   {
     href: "/versus",
@@ -208,43 +222,42 @@ const RECURSOS = [
   },
 ] as const;
 
-/** Bloque de recursos. `contexto` cambia solo el encabezado. */
+/** Directorio editorial de recursos. `contexto` cambia solo el encabezado. */
 export function RecursosDatos({ contexto = "home" }: { contexto?: Contexto }) {
   return (
     <section
       aria-labelledby="recursos-datos"
-      className="cv-auto border-t border-line bg-canvas px-4 py-14 sm:px-6 lg:px-8 lg:py-16"
+      className="home-scope cv-auto border-t border-[var(--h-border)] bg-[var(--h-wash)] py-14 lg:py-16"
     >
-      <div className="mx-auto max-w-[1400px]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-          Para decidir con datos
-        </p>
-        <h2
-          id="recursos-datos"
-          className="mt-3 max-w-[30ch] text-balance text-2xl font-bold tracking-tight text-ink sm:text-3xl"
-        >
-          {contexto === "cursos"
-            ? "Compara, consulta y sigue con tu carrera"
-            : "Plantillas, herramientas gratuitas y comparativas"}
-        </h2>
-        <p className="mt-4 max-w-[62ch] text-sm leading-relaxed text-mute">
-          Recursos gratuitos para practicar con datasets reales, simular el PL-300, comparar
-          herramientas o resolver dudas sobre el programa.
-        </p>
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="grid gap-4 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-7">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--h-subtle)]">
+              Para decidir con datos
+            </p>
+            <h2
+              id="recursos-datos"
+              className="mt-2.5 max-w-[30ch] text-balance text-2xl font-bold tracking-tight text-[var(--h-ink)] sm:text-3xl"
+            >
+              {contexto === "cursos"
+                ? "Compara, consulta y sigue con tu carrera"
+                : "Plantillas, herramientas gratuitas y comparativas"}
+            </h2>
+          </div>
+          <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--h-muted)] lg:col-span-5">
+            Recursos gratuitos para practicar con datasets reales, simular el PL-300, comparar
+            herramientas o resolver dudas sobre el programa.
+          </p>
+        </div>
 
-        <ul className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-8 grid grid-cols-1 border-t border-[var(--h-border-strong)] sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3">
           {RECURSOS.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className="group block no-underline">
-                <span className="inline-flex items-start gap-1.5 text-[15px] font-semibold leading-snug text-ink underline-offset-4 group-hover:underline">
+            <li key={item.href} className="border-b border-[var(--h-border)]">
+              <Link href={item.href} className="group block min-h-[44px] py-4 no-underline">
+                <span className="block text-[15px] font-semibold leading-snug text-[var(--h-ink)] underline-offset-4 group-hover:text-[var(--h-accent)] group-hover:underline">
                   {item.title}
-                  <ArrowRight
-                    size={14}
-                    className="mt-1 shrink-0 text-mute transition-transform group-hover:translate-x-0.5"
-                    aria-hidden
-                  />
                 </span>
-                <span className="mt-1 block max-w-[52ch] text-[13px] leading-snug text-mute">
+                <span className="mt-1 block max-w-[52ch] text-[13px] leading-snug text-[var(--h-muted)]">
                   {item.text}
                 </span>
               </Link>

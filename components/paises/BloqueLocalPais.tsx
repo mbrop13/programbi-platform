@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import type { DatosBloqueLocal } from "@/lib/data/contenido-paises";
 import { jsonLdString } from "@/lib/seo";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -27,7 +26,7 @@ type Props = {
  * fichas y guías publicadas.
  *
  * Es un componente de servidor y no calcula nada: recibe el bloque resuelto
- * por `getBloqueLocal`, que a su vez lee precios, horario, cuotas y medios de
+ * por `getBloqueLocal`, que a vez lee precios, horario, cuotas y medios de
  * pago de la fuente única del repo. Por eso WS8 puede sumar su país solo con
  * datos, sin tocar este archivo ni las páginas.
  */
@@ -43,7 +42,8 @@ export default function BloqueLocalPais({
     contexto === "ficha" && bloque.curso
       ? `${bloque.curso.title} en ${bloque.nombre}: precio, horario y pagos`
       : bloque.titulo;
-  const kicker = contexto === "ficha" ? `Ficha local · ${bloque.nombre}` : `Datos de ${bloque.nombre}`;
+  const kicker =
+    contexto === "ficha" ? `Ficha local · ${bloque.nombre}` : `Datos de ${bloque.nombre}`;
 
   const faqJsonLd = conFaq
     ? {
@@ -62,7 +62,7 @@ export default function BloqueLocalPais({
       id={id}
       data-testid="bloque-local-pais"
       aria-labelledby={`${id}-titulo`}
-      className="cv-auto border-t border-line bg-wash/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
+      className="home-scope cv-auto border-t border-[var(--h-border)] bg-[var(--h-wash)] py-16 lg:py-20"
     >
       {faqJsonLd ? (
         <script
@@ -71,56 +71,74 @@ export default function BloqueLocalPais({
         />
       ) : null}
 
-      <div className="mx-auto max-w-[1400px]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">{kicker}</p>
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--h-subtle)]">
+          {kicker}
+        </p>
         <h2
           id={`${id}-titulo`}
-          className="mt-3 max-w-[30ch] text-balance text-2xl font-bold tracking-tight text-ink sm:text-3xl"
+          className="mt-2.5 max-w-[30ch] text-balance text-2xl font-bold tracking-tight text-[var(--h-ink)] sm:text-3xl"
         >
           {titulo}
         </h2>
 
-        <div className="mt-4 max-w-[72ch] space-y-3 text-sm leading-relaxed text-mute sm:text-base">
+        <div className="mt-4 max-w-[72ch] space-y-3 text-sm leading-relaxed text-[var(--h-muted)] sm:text-base">
           {bloque.parrafos.map((parrafo) => (
             <p key={parrafo}>{parrafo}</p>
           ))}
           {contexto === "empresas" ? <p>{bloque.empresas}</p> : null}
         </div>
 
-        <dl className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {bloque.hechos.map((hecho) => (
-            <div
-              key={hecho.clave}
-              className="rounded-2xl border border-line bg-paper p-5"
-              data-hecho={hecho.clave}
-            >
-              <dt className="text-[11px] font-bold uppercase tracking-widest text-mute">
-                {hecho.etiqueta}
-              </dt>
-              <dd className="mt-2 text-lg font-bold tracking-tight text-ink tabular-nums">
-                {hecho.valor}
-              </dd>
-              <dd className="mt-2 text-xs leading-relaxed text-mute">{hecho.detalle}</dd>
-            </div>
-          ))}
-        </dl>
+        <div className="mt-10 overflow-x-auto rounded-xl border border-[var(--h-border)] bg-[var(--h-surface)]">
+          <dl className="grid grid-cols-1 divide-y divide-[var(--h-border)] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-3">
+            {bloque.hechos.map((hecho) => (
+              <div
+                key={hecho.clave}
+                className="border-[var(--h-border)] p-5 sm:border-b lg:[&:nth-last-child(-n+3)]:border-b-0 sm:odd:border-r lg:odd:border-r-0 lg:border-r lg:[&:nth-child(3n)]:border-r-0"
+                data-hecho={hecho.clave}
+              >
+                <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--h-subtle)]">
+                  {hecho.etiqueta}
+                </dt>
+                <dd className="mt-2 text-lg font-bold tracking-tight text-[var(--h-ink)] tabular-nums">
+                  {hecho.valor}
+                </dd>
+                <dd className="mt-2 text-xs leading-relaxed text-[var(--h-muted)]">
+                  {hecho.detalle}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
 
         {conFaq && bloque.faqs.length > 0 ? (
           <div className="mt-12" data-testid="bloque-local-faq">
-            <h3 className="text-lg font-bold tracking-tight text-ink">
+            <h3 className="text-lg font-bold tracking-tight text-[var(--h-ink)]">
               Preguntas frecuentes en {bloque.nombre}
             </h3>
-            <div className="mt-4 divide-y divide-line border-y border-line">
+            <div className="mt-4 divide-y divide-[var(--h-border)] border-y border-[var(--h-border)]">
               {bloque.faqs.map((faq) => (
-                <details key={faq.q} className="group py-4">
-                  <summary className="flex cursor-pointer items-center justify-between gap-6 text-left">
-                    <span className="text-sm font-semibold leading-snug text-ink sm:text-base">
+                <details key={faq.q} className="faq group py-1">
+                  <summary className="flex min-h-[44px] cursor-pointer items-center justify-between gap-6 py-3 text-left">
+                    <span className="text-sm font-semibold leading-snug text-[var(--h-ink)] sm:text-base">
                       {faq.q}
                     </span>
-                    <span className="text-xl leading-none text-faint group-open:hidden">+</span>
-                    <span className="hidden text-xl leading-none text-faint group-open:block">–</span>
+                    <span
+                      className="shrink-0 font-mono text-lg leading-none text-[var(--h-subtle)] group-open:hidden"
+                      aria-hidden
+                    >
+                      +
+                    </span>
+                    <span
+                      className="hidden shrink-0 font-mono text-lg leading-none text-[var(--h-subtle)] group-open:block"
+                      aria-hidden
+                    >
+                      -
+                    </span>
                   </summary>
-                  <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-mute">{faq.a}</p>
+                  <p className="max-w-[70ch] pb-4 text-sm leading-relaxed text-[var(--h-muted)]">
+                    {faq.a}
+                  </p>
                 </details>
               ))}
             </div>
@@ -128,17 +146,19 @@ export default function BloqueLocalPais({
         ) : null}
 
         {conEnlaces ? (
-          <div className="mt-12 grid gap-10 border-t border-line pt-10 lg:grid-cols-2 lg:gap-14">
+          <div className="mt-12 grid gap-10 border-t border-[var(--h-border)] pt-10 lg:grid-cols-2 lg:gap-14">
             <div>
-              <h3 className="text-lg font-bold tracking-tight text-ink">
-                {contexto === "ficha" ? `Otras fichas de ${bloque.nombre}` : `Fichas de curso en ${bloque.nombre}`}
+              <h3 className="text-lg font-bold tracking-tight text-[var(--h-ink)]">
+                {contexto === "ficha"
+                  ? `Otras fichas de ${bloque.nombre}`
+                  : `Fichas de curso en ${bloque.nombre}`}
               </h3>
-              <ul className="mt-4 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
+              <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
                 {bloque.fichas.map((ficha) => (
                   <li key={ficha.href}>
                     <Link
                       href={ficha.href}
-                      className="text-sm leading-snug text-ink no-underline underline-offset-4 hover:text-mute hover:underline"
+                      className="text-sm leading-snug text-[var(--h-ink)] no-underline underline-offset-4 hover:text-[var(--h-accent)] hover:underline"
                     >
                       {ficha.label}
                     </Link>
@@ -147,24 +167,23 @@ export default function BloqueLocalPais({
               </ul>
               <Link
                 href={rutaLocal(iso, "/cursos")}
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline underline-offset-4 hover:underline"
+                className="mt-5 inline-flex min-h-[44px] items-center text-sm font-semibold text-[var(--h-ink)] no-underline underline-offset-4 hover:text-[var(--h-accent)] hover:underline"
               >
                 Ver el catálogo de {bloque.nombre}
-                <ArrowRight size={14} aria-hidden />
               </Link>
             </div>
 
             <div>
-              <h3 className="text-lg font-bold tracking-tight text-ink">
+              <h3 className="text-lg font-bold tracking-tight text-[var(--h-ink)]">
                 Guías de {bloque.nombre}
               </h3>
               {bloque.guias.length > 0 ? (
-                <ul className="mt-4 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
+                <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
                   {bloque.guias.map((guia) => (
                     <li key={guia.href}>
                       <Link
                         href={guia.href}
-                        className="text-sm leading-snug text-ink no-underline underline-offset-4 hover:text-mute hover:underline"
+                        className="text-sm leading-snug text-[var(--h-ink)] no-underline underline-offset-4 hover:text-[var(--h-accent)] hover:underline"
                       >
                         {guia.label}
                       </Link>
@@ -172,16 +191,15 @@ export default function BloqueLocalPais({
                   ))}
                 </ul>
               ) : (
-                <p className="mt-4 text-sm leading-relaxed text-mute">
+                <p className="mt-4 text-sm leading-relaxed text-[var(--h-muted)]">
                   Todavía no hay guías publicadas para {bloque.nombre}.
                 </p>
               )}
               <Link
                 href={bloque.indiceGuias}
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline underline-offset-4 hover:underline"
+                className="mt-5 inline-flex min-h-[44px] items-center text-sm font-semibold text-[var(--h-ink)] no-underline underline-offset-4 hover:text-[var(--h-accent)] hover:underline"
               >
                 Índice de guías de {bloque.nombre}
-                <ArrowRight size={14} aria-hidden />
               </Link>
             </div>
           </div>
