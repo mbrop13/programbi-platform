@@ -61,7 +61,7 @@ export default function CursoShowcaseGuia({
             href={rutaLocal(iso, "/cursos")}
             className="inline-flex min-h-[44px] items-center rounded-lg bg-[var(--g-accent)] px-6 text-sm font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
           >
-            Explorar cursos en vivo
+            Ver cursos en vivo
           </Link>
           <Link
             href={rutaLocal(iso, "/cursos/claude")}

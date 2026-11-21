@@ -100,7 +100,7 @@ export default function GuiaPasoAPasoCursoCard({
 
         <Link
           href={`/registro?from=/guias/${guia.slug}`}
-          className="mt-0.5 inline-flex min-h-[36px] items-center justify-center text-xs font-semibold text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 hover:text-[var(--g-ink)]"
+          className="mt-0.5 inline-flex min-h-[44px] items-center justify-center text-xs font-semibold text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 hover:text-[var(--g-ink)] lg:min-h-[36px]"
         >
           Inscribirme en el curso
         </Link>

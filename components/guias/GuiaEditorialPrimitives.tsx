@@ -179,7 +179,7 @@ export function GuiaCodeShell({
                     aria-selected={selected}
                     onClick={() => setActiveTabId(tab.id)}
                     className={[
-                      "min-h-[32px] rounded px-2.5 py-1 text-xs font-medium transition-colors",
+                      "min-h-[44px] rounded px-2.5 py-1 text-xs font-medium transition-colors sm:min-h-[32px]",
                       selected
                         ? "bg-[var(--g-code-surface)] text-[var(--g-code-ink)]"
                         : "text-[var(--g-code-muted)] hover:text-[var(--g-code-ink)]",

@@ -50,7 +50,7 @@ export default function GuiaCard({
     return (
       <Link
         href={guia.path}
-        className="group flex h-full min-w-0 flex-col no-underline transition-colors focus-visible:outline-none"
+        className="group flex h-full min-w-0 flex-col rounded-xl no-underline transition-colors"
       >
         <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]">
           {preferEditorialImage && guia.guideImage ? (
