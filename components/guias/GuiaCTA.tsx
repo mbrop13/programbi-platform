@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { CalendarDays, Check, Download, FileText, MessageCircle } from "lucide-react";
+import { GuiaToolVisual } from "@/components/guias/GuiaEditorialPrimitives";
+import InicioVigente from "@/components/guias/InicioVigente";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { courses } from "@/lib/data/courses";
 import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
-import InicioVigente from "@/components/guias/InicioVigente";
 import type { InicioGuia } from "@/lib/guias/inicio";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -57,24 +58,27 @@ export default function GuiaCTA({
 
   if (variant === "top") {
     return (
-      <aside className="my-8 flex flex-col justify-between gap-3 rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] px-5 py-4 sm:flex-row sm:items-center">
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--g-muted)]">
-          <CalendarDays size={16} className="shrink-0 text-[var(--g-ink)]" aria-hidden />
-          <span>
-            <strong className="font-semibold text-[var(--g-ink)]">{inicioTexto}</strong> ·{" "}
-            <span className="tabular-nums">{horaLocal}</span>
-          </span>
-        </p>
+      <aside className="my-8 flex flex-col justify-between gap-3 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] px-5 py-4 shadow-[var(--g-card-shadow)] sm:flex-row sm:items-center">
+        <div className="flex items-center gap-3">
+          <GuiaToolVisual tool={course} course={course} size="sm" />
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--g-muted)]">
+            <CalendarDays size={15} className="shrink-0 text-[var(--g-accent)]" aria-hidden />
+            <span>
+              <strong className="font-semibold text-[var(--g-ink)]">{inicioTexto}</strong> ·{" "}
+              <span className="tabular-nums">{horaLocal}</span>
+            </span>
+          </p>
+        </div>
         <div className="flex shrink-0 flex-wrap gap-2">
           <Link
             href={rutaTemario}
-            className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[38px]"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[38px]"
           >
             Temario y precios
           </Link>
           <Link
             href={rutaCurso}
-            className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-[var(--g-accent)] px-4 text-xs font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95 sm:min-h-[38px]"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[var(--g-accent)] px-4 text-xs font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95 sm:min-h-[38px]"
           >
             Ver curso en vivo
           </Link>
@@ -86,16 +90,21 @@ export default function GuiaCTA({
   if (variant === "mid") {
     if (CURSOS_CON_PLANTILLA_BI.has(course)) {
       return (
-        <aside className="my-8 overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] px-5 py-5">
-          <p className="flex items-center gap-2 text-sm font-semibold text-[var(--g-ink)]">
-            <Download size={16} aria-hidden />
-            Plantilla CSV gratis para practicar en {nombreCurso}
-          </p>
-          <p className="mt-1 text-sm leading-relaxed text-[var(--g-muted)]">
-            Descarga nuestro dataset comercial de ejemplo para probar estos cálculos y armar tu tablero paso a paso.
-          </p>
-          <div className="mt-4">
-            <PlantillaDescarga pais={iso} location={`guia:${guiaSlug}`} label="Descargar la plantilla CSV" />
+        <aside className="my-8 overflow-hidden rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] px-5 py-5 shadow-[var(--g-card-shadow)] sm:px-6">
+          <div className="flex items-start gap-3">
+            <GuiaToolVisual tool={course} course={course} size="sm" className="mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="flex items-center gap-2 text-sm font-bold text-[var(--g-ink)]">
+                <Download size={15} className="shrink-0 text-[var(--g-accent)]" aria-hidden />
+                Plantilla CSV gratis para practicar en {nombreCurso}
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-[var(--g-muted)]">
+                Descarga nuestro dataset comercial de ejemplo para probar estos cálculos y armar tu tablero paso a paso.
+              </p>
+              <div className="mt-4">
+                <PlantillaDescarga pais={iso} location={`guia:${guiaSlug}`} label="Descargar la plantilla CSV" />
+              </div>
+            </div>
           </div>
         </aside>
       );
@@ -108,54 +117,64 @@ export default function GuiaCTA({
     ];
 
     return (
-      <aside className="my-8 overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] px-5 py-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
-          Llévalo a la práctica en vivo
-        </p>
-        <p className="mt-1 text-base font-bold text-[var(--g-ink)]">
-          ¿Quieres dominar {nombreCurso} con ejemplos de tu oficina?
-        </p>
-        <ul className="mt-3 space-y-1.5">
-          {beneficios.map((item) => (
-            <li key={item} className="flex items-start gap-2 text-xs leading-relaxed text-[var(--g-muted)]">
-              <Check size={14} className="mt-0.5 shrink-0 text-[var(--g-accent)]" aria-hidden />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Link
-            href={rutaTemario}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-[var(--g-accent)] px-4 text-xs font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95 sm:min-h-[40px]"
-          >
-            <FileText size={14} aria-hidden /> Ver temario y precios (PDF)
-          </Link>
-          <Link
-            href={rutaCurso}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
-          >
-            Ver programa en vivo
-          </Link>
+      <aside className="my-8 overflow-hidden rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] px-5 py-5 shadow-[var(--g-card-shadow)] sm:px-6">
+        <div className="flex items-start gap-3">
+          <GuiaToolVisual tool={course} course={course} size="sm" className="mt-0.5" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
+              Llévalo a la práctica en vivo
+            </p>
+            <p className="mt-1 text-base font-bold text-[var(--g-ink)]">
+              ¿Quieres dominar {nombreCurso} con ejemplos de tu oficina?
+            </p>
+            <ul className="mt-3 space-y-1.5">
+              {beneficios.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-xs leading-relaxed text-[var(--g-muted)]">
+                  <Check size={14} className="mt-0.5 shrink-0 text-[var(--g-ok)]" aria-hidden />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link
+                href={rutaTemario}
+                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl bg-[var(--g-accent)] px-4 text-xs font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95 sm:min-h-[40px]"
+              >
+                <FileText size={14} aria-hidden /> Ver temario y precios (PDF)
+              </Link>
+              <Link
+                href={rutaCurso}
+                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
+              >
+                Ver programa en vivo
+              </Link>
+            </div>
+          </div>
         </div>
       </aside>
     );
   }
 
   return (
-    <aside className="mt-10 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-wash)] px-5 py-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
-        Siguiente paso · Curso en vivo
-      </p>
-      <p className="mt-1.5 text-lg font-bold tracking-tight text-[var(--g-ink)]">
-        {nombreCurso} en vivo por Zoom
-      </p>
-      <p className="mt-1 text-sm tabular-nums text-[var(--g-muted)]">
-        {inicioTexto} · {horaLocal} · {ficha.horasTexto}.
-      </p>
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+    <aside className="mt-10 rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-wash)] px-5 py-6 shadow-[var(--g-card-shadow)] sm:px-6">
+      <div className="flex items-start gap-3">
+        <GuiaToolVisual tool={course} course={course} size="md" className="mt-0.5" />
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
+            Siguiente paso · Curso en vivo
+          </p>
+          <p className="mt-1 text-lg font-bold tracking-tight text-[var(--g-ink)]">
+            {nombreCurso} en vivo por Zoom
+          </p>
+          <p className="mt-1 text-sm tabular-nums text-[var(--g-muted)]">
+            {inicioTexto} · {horaLocal} · {ficha.horasTexto}.
+          </p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
         <Link
           href={rutaTemario}
-          className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg bg-[var(--g-accent)] px-5 text-sm font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
+          className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--g-accent)] px-5 text-sm font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
         >
           <FileText size={15} aria-hidden /> Desbloquear temario y precios
         </Link>
@@ -165,7 +184,7 @@ export default function GuiaCTA({
           course={nombreCurso}
           courseSlug={course}
           country={iso}
-          className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-surface)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-bg)]"
+          className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-bg)]"
         >
           <MessageCircle size={15} aria-hidden />
           Hablar por WhatsApp

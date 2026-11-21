@@ -1,11 +1,12 @@
 /**
  * Tabla comparativa responsive: curso en vivo vs autodidacta vs universidad.
  *
- * En escritorio es una tabla editorial con la columna «curso en vivo» destacada;
- * en mobile se convierte en tarjetas apiladas por criterio, sin scroll horizontal.
+ * En escritorio es una tabla elevada con la columna «curso en vivo» destacada;
+ * en mobile se convierte en tarjetas táctiles apiladas por criterio.
  */
 import Link from "next/link";
 import { FileText } from "lucide-react";
+import { GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
 
 export type FilaComparativa = {
   criterio: string;
@@ -55,7 +56,7 @@ export default function TablaComparativa({
 
       {/* Escritorio */}
       <div
-        className={`hidden overflow-x-auto rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)] sm:block ${
+        className={`hidden overflow-x-auto rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] shadow-[var(--g-card-shadow)] sm:block ${
           embebido ? "" : "mt-4"
         }`}
       >
@@ -65,25 +66,28 @@ export default function TablaComparativa({
             <tr className="bg-[var(--g-wash)]">
               <th
                 scope="col"
-                className="border-b border-[var(--g-border-strong)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]"
+                className="border-b border-[var(--g-border-strong)] px-4 py-3.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]"
               >
                 Criterio
               </th>
               <th
                 scope="col"
-                className="border-b border-[var(--g-border-strong)] bg-[var(--g-accent-soft)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-ink)]"
+                className="border-b border-[var(--g-border-strong)] bg-[var(--g-accent-soft)] px-4 py-3.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-ink)]"
               >
-                Curso en vivo
+                <span className="inline-flex flex-wrap items-center gap-2">
+                  <span>Curso en vivo</span>
+                  <GuiaVisualBadge tone="accent">Recomendado</GuiaVisualBadge>
+                </span>
               </th>
               <th
                 scope="col"
-                className="border-b border-[var(--g-border-strong)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]"
+                className="border-b border-[var(--g-border-strong)] px-4 py-3.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]"
               >
                 Autodidacta
               </th>
               <th
                 scope="col"
-                className="border-b border-[var(--g-border-strong)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]"
+                className="border-b border-[var(--g-border-strong)] px-4 py-3.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]"
               >
                 Universidad
               </th>
@@ -91,20 +95,23 @@ export default function TablaComparativa({
           </thead>
           <tbody>
             {filas.map((fila) => (
-              <tr key={fila.criterio} className="align-top">
+              <tr
+                key={fila.criterio}
+                className="align-top transition-colors even:bg-[var(--g-wash)]/40 hover:bg-[var(--g-wash)]/70"
+              >
                 <th
                   scope="row"
-                  className="border-b border-[var(--g-border)] px-4 py-3 text-sm font-semibold text-[var(--g-ink)]"
+                  className="border-b border-[var(--g-border)] px-4 py-3.5 text-sm font-semibold text-[var(--g-ink)]"
                 >
                   {fila.criterio}
                 </th>
-                <td className="border-b border-[var(--g-border)] bg-[var(--g-accent-soft)] px-4 py-3 font-medium text-[var(--g-ink)]">
+                <td className="border-b border-[var(--g-border)] bg-[var(--g-accent-soft)]/70 px-4 py-3.5 font-medium text-[var(--g-ink)]">
                   {fila.enVivo}
                 </td>
-                <td className="border-b border-[var(--g-border)] px-4 py-3 text-[var(--g-muted)]">
+                <td className="border-b border-[var(--g-border)] px-4 py-3.5 text-[var(--g-muted)]">
                   {fila.autodidacta}
                 </td>
-                <td className="border-b border-[var(--g-border)] px-4 py-3 text-[var(--g-muted)]">
+                <td className="border-b border-[var(--g-border)] px-4 py-3.5 text-[var(--g-muted)]">
                   {fila.universidad}
                 </td>
               </tr>
@@ -113,28 +120,28 @@ export default function TablaComparativa({
         </table>
       </div>
 
-      {/* Mobile: una tarjeta por criterio */}
+      {/* Mobile: una tarjeta táctil por criterio */}
       <ul className={`space-y-3 sm:hidden ${embebido ? "" : "mt-4"}`}>
         {filas.map((fila) => (
           <li
             key={fila.criterio}
-            className="rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)] p-4"
+            className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-4 shadow-[var(--g-card-shadow)]"
           >
             <p className="text-sm font-bold text-[var(--g-ink)]">{fila.criterio}</p>
-            <dl className="mt-2.5 space-y-2 text-sm tabular-nums">
-              <div className="flex gap-3">
-                <dt className="w-24 shrink-0 text-xs font-semibold uppercase tracking-[0.04em] text-[var(--g-accent)]">
-                  En vivo
+            <dl className="mt-3 space-y-2.5 text-sm tabular-nums">
+              <div className="rounded-xl border border-[var(--g-accent)]/20 bg-[var(--g-accent-soft)]/60 px-3 py-2">
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.04em] text-[var(--g-accent)]">
+                  Curso en vivo
                 </dt>
-                <dd className="font-medium text-[var(--g-ink)]">{fila.enVivo}</dd>
+                <dd className="mt-0.5 font-medium text-[var(--g-ink)]">{fila.enVivo}</dd>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 px-1">
                 <dt className="w-24 shrink-0 text-xs font-semibold uppercase tracking-[0.04em] text-[var(--g-subtle)]">
                   Autodidacta
                 </dt>
                 <dd className="text-[var(--g-muted)]">{fila.autodidacta}</dd>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 px-1">
                 <dt className="w-24 shrink-0 text-xs font-semibold uppercase tracking-[0.04em] text-[var(--g-subtle)]">
                   Universidad
                 </dt>
