@@ -134,7 +134,7 @@ export default async function HomePage({
         }
       : null;
   return (
-    <>
+    <div className="home-scope bg-[var(--h-bg)] text-[var(--h-ink)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(homeJsonLd) }} />
       <HeroSection pais={pais} contenido={contenido} proximo={proximo} schedules={schedules} promotions={promotions} />
       <LogoSlider />
@@ -172,6 +172,6 @@ export default async function HomePage({
           tarjetas visibles de «Cursos». */}
       {pais === ISO_CHILE ? <RecursosDatos /> : null}
       <IndicePais pais={pais} />
-    </>
+    </div>
   );
 }

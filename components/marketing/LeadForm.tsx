@@ -4,10 +4,8 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { courses } from "@/lib/data/courses";
 import { leadCourses } from "@/lib/data/site";
-import { contactGallery } from "@/lib/data/images";
 import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
-import CourseImage from "@/components/shared/CourseImage";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { muestraPrecioDirecto } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
@@ -137,186 +135,224 @@ export default function LeadForm() {
   };
 
   return (
-    <section id="cotizar" className="border-t border-line">
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 lg:grid-cols-2">
-        <div className="px-4 py-16 sm:px-6 lg:px-16 lg:py-24">
-          <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cotiza Ahora</h2>
-          <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
+    <section id="cotizar" className="border-t border-[var(--h-border)] bg-[var(--h-bg)] py-16 lg:py-24">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:items-start lg:px-8 xl:gap-14">
+        <div className="lg:col-span-5">
+          <h2 className="text-3xl font-bold tracking-tight text-[var(--h-ink)] sm:text-4xl lg:text-5xl">
+            Cotiza Ahora
+          </h2>
+          <p className="mt-4 max-w-[42ch] text-base leading-relaxed text-[var(--h-muted)]">
             {telefonoOpcional
               ? "Completa tu nombre y correo y abrimos el PDF del temario con fechas en tu horario y detalle del curso."
               : "Completa tus datos y abrimos el PDF de temario y precios con las fechas, los cupos y el detalle del curso."}
           </p>
 
-          {status === "success" ? (
-            <div className="mt-10 max-w-[36rem] rounded-2xl border border-line bg-paper px-5 py-6">
-              <p className="text-base font-semibold text-ink">¡Listo! Abrimos el PDF de temario y precios en una pestaña nueva.</p>
-              <p className="mt-2 text-sm leading-relaxed text-mute">
-                Ahí ves el temario completo, las fechas y el arancel vigente con los descuentos
-                {cuotasPais ? ` y las ${cuotasPais}` : ""}. Los precios de la web ya quedaron desbloqueados en este navegador.
-              </p>
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href={courseBrochureUrl(destSlug, pais)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
-                >
-                  Abrir temario y precios (PDF)
-                </a>
-                <Link
-                  href={pais === "cl" ? `/pago?curso=${destSlug}` : `/pago?curso=${destSlug}&pais=${pais}`}
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-line-strong bg-paper px-6 text-sm font-semibold text-ink transition-colors hover:border-ink/40"
-                >
-                  Ir a Inscripción / Pago →
-                </Link>
-              </div>
-              <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
-                <button
-                  type="button"
-                  onClick={() => setStatus("idle")}
-                  className="font-medium text-ink underline underline-offset-4"
-                >
-                  Cotizar otro programa
-                </button>
-                <Link href="/cursos" className="font-medium text-mute underline underline-offset-4">
-                  Seguir explorando el catálogo →
-                </Link>
-              </div>
-              <p className="mt-4 text-xs text-mute">¿No se abrió la pestaña? Usa el botón «Abrir temario y precios (PDF)».</p>
+          <dl className="mt-8 space-y-4 border-t border-[var(--h-border)] pt-6 text-sm">
+            <div>
+              <dt className="font-semibold text-[var(--h-ink)]">Temario por módulo</dt>
+              <dd className="mt-1 text-[var(--h-muted)]">
+                Contenido detallado de cada nivel y herramientas que se trabajan en clase.
+              </dd>
             </div>
-          ) : (
-            <form onSubmit={onSubmit} className="relative mt-10 max-w-[36rem] space-y-5" noValidate>
-              <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0">
-                <label htmlFor="lead-website">Sitio web</label>
-                <input
-                  id="lead-website"
-                  name="_website"
-                  type="text"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  value={honeypot}
-                  onChange={(e) => setHoneypot(e.target.value)}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <Field id="name" label="Nombre" value={name} onChange={setName} error={errors.name} autoComplete="name" />
-                <Field
-                  id="email"
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={setEmail}
-                  error={errors.email}
-                  autoComplete="email"
-                />
-              </div>
-              <Field
-                id="whatsapp"
-                label={telefonoOpcional ? "Teléfono / WhatsApp (opcional)" : "WhatsApp"}
-                value={whatsapp}
-                onChange={setWhatsapp}
-                error={errors.whatsapp}
-                autoComplete="tel"
-                helper={
-                  telefonoOpcional
-                    ? "En EE.UU. te respondemos por email; agrégalo solo si prefieres WhatsApp."
-                    : "Incluye código de país. Chile: +56 9..."
-                }
-              />
-
-              <fieldset className="flex flex-col gap-2">
-                <legend className="text-sm font-medium text-ink">Programa</legend>
-                <p className="text-xs text-mute">Puedes elegir más de uno.</p>
-                <div className="flex flex-wrap gap-2">
-                  {leadCourses.map((c) => {
-                    const on = selected.includes(c);
-                    return (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => toggleCourse(c)}
-                        aria-pressed={on}
-                        className={`rounded-md border px-3 py-2 text-sm font-semibold transition-colors ${
-                          on
-                            ? "border-ink bg-ink text-canvas"
-                            : "border-line-strong bg-paper text-ink hover:border-ink/40"
-                        }`}
-                      >
-                        {c}
-                      </button>
-                    );
-                  })}
-                </div>
-                {errors.course ? <p className="text-sm text-ink">{errors.course}</p> : null}
-              </fieldset>
-
-              <div className="flex flex-col gap-2">
-                <label htmlFor="message" className="text-sm font-medium text-ink">
-                  Mensaje <span className="font-normal text-mute">(opcional)</span>
-                </label>
-                <textarea
-                  id="message"
-                  rows={4}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="rounded-xl border border-line-strong bg-paper px-3 py-3 text-base text-ink"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="flex items-start gap-3 text-sm text-ink">
-                  <input
-                    type="checkbox"
-                    checked={privacy}
-                    onChange={(e) => setPrivacy(e.target.checked)}
-                    className="mt-1 size-4 accent-ink"
-                  />
-                  <span>
-                    Acepto la{" "}
-                    <Link href="/privacidad" className="underline underline-offset-2">
-                      política de privacidad
-                    </Link>{" "}
-                    y que ProgramBI me contacte sobre el programa elegido.
-                  </span>
-                </label>
-                {errors.privacy ? <p className="text-sm text-ink">{errors.privacy}</p> : null}
-              </div>
-
-              {errors.form ? <p className="text-sm text-ink">{errors.form}</p> : null}
-
-              <button
-                type="submit"
-                disabled={sending}
-                className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-8 text-base font-semibold text-canvas transition-transform active:scale-[0.98] disabled:opacity-60"
-              >
-                {sending ? "Abriendo temario y precios…" : "Ver temario y precios (PDF) →"}
-              </button>
-            </form>
-          )}
+            <div>
+              <dt className="font-semibold text-[var(--h-ink)]">Fechas y horarios en vivo</dt>
+              <dd className="mt-1 text-[var(--h-muted)]">
+                Próximas cohortes disponibles y duración total del programa elegido.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-[var(--h-ink)]">Arancel y medios de pago</dt>
+              <dd className="mt-1 text-[var(--h-muted)]">
+                Valores vigentes en tu país{cuotasPais ? `, incluyendo ${cuotasPais}` : ""}.
+              </dd>
+            </div>
+          </dl>
         </div>
 
-        <div className="grid min-h-[520px] grid-cols-2 grid-rows-2 gap-2 bg-canvas p-4 lg:min-h-full lg:p-6">
-          {contactGallery.map((item, i) => (
-            <div
-              key={item.url}
-              className={`relative overflow-hidden rounded-[22px] border border-line ${
-                item.tall ? "row-span-2" : ""
-              }`}
-            >
-              <CourseImage
-                src={item.url}
-                alt={item.label}
-                fill
-                sizes={i === 0 ? "(max-width: 1024px) 50vw, 28vw" : "(max-width: 1024px) 50vw, 22vw"}
-                className={`object-cover ${item.object}`}
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent px-3 py-3">
-                <p className="text-sm font-semibold text-canvas">{item.label}</p>
-                <p className="text-[11px] text-canvas/80">{item.subtitle}</p>
+        <div className="lg:col-span-7">
+          <div className="rounded-2xl border border-[var(--h-border-strong)] bg-[var(--h-surface)] p-6 sm:p-8">
+            {status === "success" ? (
+              <div className="py-2">
+                <h3 className="text-xl font-bold tracking-tight text-[var(--h-ink)]">
+                  Abrimos el PDF de temario y precios en una pestaña nueva.
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--h-muted)] sm:text-base">
+                  Ahí ves el temario completo, las fechas y el arancel vigente con los descuentos
+                  {cuotasPais ? ` y las ${cuotasPais}` : ""}. Los precios de la web ya quedaron desbloqueados en este navegador.
+                </p>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href={courseBrochureUrl(destSlug, pais)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-[var(--h-ink)] px-6 py-2.5 text-sm font-semibold text-[var(--h-surface)] transition-opacity hover:opacity-90 active:opacity-80"
+                  >
+                    Abrir temario y precios (PDF)
+                  </a>
+                  <Link
+                    href={pais === "cl" ? `/pago?curso=${destSlug}` : `/pago?curso=${destSlug}&pais=${pais}`}
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-[var(--h-border-strong)] bg-[var(--h-surface)] px-6 py-2.5 text-sm font-semibold text-[var(--h-ink)] transition-colors hover:bg-[var(--h-wash)]"
+                  >
+                    Ir a inscripción y pago
+                  </Link>
+                </div>
+                <div className="mt-5 flex flex-wrap items-center gap-5 text-sm">
+                  <button
+                    type="button"
+                    onClick={() => setStatus("idle")}
+                    className="inline-flex min-h-[44px] items-center font-medium text-[var(--h-ink)] underline underline-offset-4"
+                  >
+                    Cotizar otro programa
+                  </button>
+                  <Link
+                    href="/cursos"
+                    className="inline-flex min-h-[44px] items-center font-medium text-[var(--h-muted)] underline underline-offset-4 hover:text-[var(--h-ink)]"
+                  >
+                    Ver catálogo de cursos
+                  </Link>
+                </div>
+                <p className="mt-3 text-xs text-[var(--h-subtle)]">
+                  ¿No se abrió la pestaña? Usa el botón «Abrir temario y precios (PDF)».
+                </p>
               </div>
-            </div>
-          ))}
+            ) : (
+              <form onSubmit={onSubmit} className="relative space-y-5" noValidate>
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0"
+                >
+                  <label htmlFor="lead-website">Sitio web</label>
+                  <input
+                    id="lead-website"
+                    name="_website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <Field
+                    id="name"
+                    label="Nombre"
+                    placeholder="Tu nombre"
+                    value={name}
+                    onChange={setName}
+                    error={errors.name}
+                    autoComplete="name"
+                  />
+                  <Field
+                    id="email"
+                    label="Email"
+                    type="email"
+                    placeholder="nombre@correo.com"
+                    value={email}
+                    onChange={setEmail}
+                    error={errors.email}
+                    autoComplete="email"
+                  />
+                </div>
+
+                <Field
+                  id="whatsapp"
+                  label={telefonoOpcional ? "Teléfono o WhatsApp (opcional)" : "WhatsApp"}
+                  placeholder={telefonoOpcional ? "Opcional, con código de país" : "+56 9 1234 5678"}
+                  value={whatsapp}
+                  onChange={setWhatsapp}
+                  error={errors.whatsapp}
+                  autoComplete="tel"
+                  helper={
+                    telefonoOpcional
+                      ? "En EE.UU. te respondemos por email; agrégalo solo si prefieres WhatsApp."
+                      : "Incluye código de país. Chile: +56 9..."
+                  }
+                />
+
+                <fieldset className="flex flex-col gap-2">
+                  <legend className="text-sm font-medium text-[var(--h-ink)]">Programa</legend>
+                  <p className="text-xs text-[var(--h-muted)]">Puedes elegir más de uno.</p>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {leadCourses.map((c) => {
+                      const on = selected.includes(c);
+                      return (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => toggleCourse(c)}
+                          aria-pressed={on}
+                          className={`min-h-[44px] rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors ${
+                            on
+                              ? "border-[var(--h-ink)] bg-[var(--h-ink)] text-[var(--h-surface)]"
+                              : "border-[var(--h-border-strong)] bg-[var(--h-surface)] text-[var(--h-ink)] hover:bg-[var(--h-wash)]"
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {errors.course ? (
+                    <p role="alert" className="text-sm font-medium text-[var(--danger)]">
+                      {errors.course}
+                    </p>
+                  ) : null}
+                </fieldset>
+
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="message" className="text-sm font-medium text-[var(--h-ink)]">
+                    Mensaje <span className="font-normal text-[var(--h-muted)]">(opcional)</span>
+                  </label>
+                  <textarea
+                    id="message"
+                    rows={3}
+                    placeholder="Cuéntanos tu nivel actual o qué objetivo buscas con el curso"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="min-h-[88px] rounded-xl border border-[var(--h-border-strong)] bg-[var(--h-surface)] px-3.5 py-3 text-base text-[var(--h-ink)] placeholder:text-[var(--h-subtle)]"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="flex min-h-[44px] cursor-pointer items-start gap-3 py-1 text-sm text-[var(--h-ink)]">
+                    <input
+                      type="checkbox"
+                      checked={privacy}
+                      onChange={(e) => setPrivacy(e.target.checked)}
+                      className="mt-0.5 size-5 shrink-0 accent-[var(--h-ink)]"
+                    />
+                    <span>
+                      Acepto la{" "}
+                      <Link href="/privacidad" className="underline underline-offset-2">
+                        política de privacidad
+                      </Link>{" "}
+                      y que ProgramBI me contacte sobre el programa elegido.
+                    </span>
+                  </label>
+                  {errors.privacy ? (
+                    <p role="alert" className="text-sm font-medium text-[var(--danger)]">
+                      {errors.privacy}
+                    </p>
+                  ) : null}
+                </div>
+
+                {errors.form ? (
+                  <p role="alert" className="text-sm font-medium text-[var(--danger)]">
+                    {errors.form}
+                  </p>
+                ) : null}
+
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="inline-flex min-h-[44px] w-full items-center justify-center rounded-lg bg-[var(--h-ink)] px-7 py-3 text-base font-semibold text-[var(--h-surface)] transition-opacity hover:opacity-90 active:opacity-80 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                >
+                  {sending ? "Abriendo temario y precios..." : "Ver temario y precios (PDF)"}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
     </section>
@@ -326,6 +362,7 @@ export default function LeadForm() {
 function Field({
   id,
   label,
+  placeholder,
   value,
   onChange,
   error,
@@ -335,6 +372,7 @@ function Field({
 }: {
   id: string;
   label: string;
+  placeholder?: string;
   value: string;
   onChange: (v: string) => void;
   error?: string;
@@ -344,19 +382,25 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm font-medium text-ink">
+      <label htmlFor={id} className="text-sm font-medium text-[var(--h-ink)]">
         {label}
       </label>
       <input
         id={id}
         type={type}
+        placeholder={placeholder}
         value={value}
         autoComplete={autoComplete}
+        aria-invalid={error ? "true" : undefined}
         onChange={(e) => onChange(e.target.value)}
-        className="h-12 rounded-xl border border-line-strong bg-paper px-3 text-base text-ink placeholder:text-faint"
+        className="min-h-[44px] rounded-xl border border-[var(--h-border-strong)] bg-[var(--h-surface)] px-3.5 py-2.5 text-base text-[var(--h-ink)] placeholder:text-[var(--h-subtle)]"
       />
-      {helper ? <p className="text-xs text-mute">{helper}</p> : null}
-      {error ? <p className="text-sm text-ink">{error}</p> : null}
+      {helper ? <p className="text-xs text-[var(--h-muted)]">{helper}</p> : null}
+      {error ? (
+        <p role="alert" className="text-sm font-medium text-[var(--danger)]">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
