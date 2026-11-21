@@ -32,19 +32,22 @@ export default function CopyButton({
 
   const estiloBase =
     variant === "dark"
-      ? "border-white/20 bg-white/10 text-white hover:bg-white/20"
-      : "border-line-strong bg-canvas text-ink hover:bg-wash";
+      ? "border-[var(--g-code-border)] bg-[var(--g-code-bg)] text-[var(--g-code-ink)] hover:border-[var(--g-code-muted)]"
+      : "border-[var(--g-border-strong)] bg-[var(--g-bg)] text-[var(--g-ink)] hover:bg-[var(--g-wash)]";
 
   return (
     <button
       type="button"
       onClick={copiar}
       aria-live="polite"
-      className={`inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-semibold transition-colors ${
-        copiado ? "border-emerald-600/40 bg-emerald-600/15 text-emerald-700 dark:text-emerald-300" : estiloBase
+      aria-label={copiado ? "Copiado" : label}
+      className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-md border px-3 text-xs font-medium transition-colors sm:min-h-[32px] ${
+        copiado
+          ? "border-[var(--g-accent)] bg-[var(--g-accent-soft)] text-[var(--g-accent)]"
+          : estiloBase
       }`}
     >
-      {copiado ? <Check size={12} aria-hidden /> : <Copy size={12} aria-hidden />}
+      {copiado ? <Check size={13} aria-hidden /> : <Copy size={13} aria-hidden />}
       <span>{copiado ? "Copiado" : label}</span>
     </button>
   );

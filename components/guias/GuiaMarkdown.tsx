@@ -1,14 +1,29 @@
 import type { ReactElement } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Sparkles, Terminal } from "lucide-react";
 import CopyButton from "@/components/guias/CopyButton";
+import { GuiaCodeShell } from "@/components/guias/GuiaEditorialPrimitives";
 import { slugAncla, textoDeNodos } from "@/lib/guias/anclas";
 
 function esPromptEstructurado(texto: string): boolean {
   const limpio = texto.trim();
-  return /^(?:Contexto:|Rol:|Prompt:|Instrucci[oó]n:|===|\d\.\s*(?:Rol|Contexto|Tarea))/i.test(limpio) ||
-    (/(?:Contexto:|Tarea:|Formato:)/i.test(limpio) && /(?:Restricciones:|Tono:|Criterio:|Rol:)/i.test(limpio));
+  return (
+    /^(?:Contexto:|Rol:|Prompt:|Instrucci[oó]n:|===|\d\.\s*(?:Rol|Contexto|Tarea))/i.test(limpio) ||
+    (/(?:Contexto:|Tarea:|Formato:)/i.test(limpio) && /(?:Restricciones:|Tono:|Criterio:|Rol:)/i.test(limpio))
+  );
+}
+
+function normalizarLenguaje(clase?: string): string | undefined {
+  const raw = (clase || "").replace(/^language-/, "").trim().toLowerCase();
+  if (!raw) return undefined;
+  const mapa: Record<string, string> = {
+    py: "python",
+    sh: "bash",
+    shell: "bash",
+    powerquery: "m",
+    pq: "m",
+  };
+  return mapa[raw] || raw;
 }
 
 function etiquetaLenguaje(clase?: string): string {
@@ -19,6 +34,7 @@ function etiquetaLenguaje(clase?: string): string {
     python: "Python",
     py: "Python",
     excel: "Fórmula Excel",
+    m: "Power Query (M)",
     prompt: "Prompt",
     bash: "Terminal",
     sh: "Terminal",
@@ -30,182 +46,133 @@ function etiquetaLenguaje(clase?: string): string {
 
 /**
  * Cuerpo Markdown de la guía, con bloques de prompts copiables en 1 clic,
- * fragmentos de código con etiqueta de lenguaje, tablas legibles y anclas
- * para el índice lateral. Renderiza en el servidor salvo el botón de copiar.
+ * fragmentos de código con resaltado sintáctico vía `GuiaCodeShell`, tablas
+ * envueltas en `.guias-table-wrap` y anclas para el índice lateral.
  */
 export default function GuiaMarkdown({ content }: { content: string }) {
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
-        h1: ({ children }) => {
-          const id = slugAncla(textoDeNodos(children));
-          return (
-            <h2
-              id={id || undefined}
-              className="mt-10 scroll-mt-24 text-2xl font-bold tracking-tight text-ink first:mt-0"
-            >
-              {children}
-            </h2>
-          );
-        },
-        h2: ({ children }) => {
-          const id = slugAncla(textoDeNodos(children));
-          return (
-            <h2
-              id={id || undefined}
-              className="mt-10 scroll-mt-24 text-2xl font-bold tracking-tight text-ink first:mt-0"
-            >
-              {children}
-            </h2>
-          );
-        },
-        h3: ({ children }) => {
-          const id = slugAncla(textoDeNodos(children));
-          return (
-            <h3
-              id={id || undefined}
-              className="mt-8 scroll-mt-24 text-xl font-bold tracking-tight text-ink first:mt-0"
-            >
-              {children}
-            </h3>
-          );
-        },
-        h4: ({ children }) => {
-          const id = slugAncla(textoDeNodos(children));
-          return (
-            <h4
-              id={id || undefined}
-              className="mt-8 scroll-mt-24 text-lg font-bold tracking-tight text-ink first:mt-0"
-            >
-              {children}
-            </h4>
-          );
-        },
-        h5: ({ children }) => {
-          const id = slugAncla(textoDeNodos(children));
-          return (
-            <h2
-              id={id || undefined}
-              className="mt-10 scroll-mt-24 border-b border-line/70 pb-2 text-xl font-bold tracking-tight text-ink first:mt-0 sm:text-2xl"
-            >
-              {children}
-            </h2>
-          );
-        },
-        h6: ({ children }) => {
-          const id = slugAncla(textoDeNodos(children));
-          return (
-            <h3
-              id={id || undefined}
-              className="mt-8 scroll-mt-24 text-lg font-bold tracking-tight text-ink first:mt-0"
-            >
-              {children}
-            </h3>
-          );
-        },
-        p: ({ children }) => <p className="mt-4 leading-relaxed text-mute first:mt-0">{children}</p>,
-        ul: ({ children }) => <ul className="mt-4 list-disc space-y-2 pl-5 text-mute">{children}</ul>,
-        ol: ({ children }) => <ol className="mt-4 list-decimal space-y-2 pl-5 text-mute">{children}</ol>,
-        li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-        strong: ({ children }) => <strong className="font-semibold text-ink">{children}</strong>,
-        a: ({ href, children }) => (
-          <a
-            href={href}
-            target={href?.startsWith("http") && !href.includes("programbi.com") ? "_blank" : undefined}
-            rel={href?.startsWith("http") && !href.includes("programbi.com") ? "noopener noreferrer" : undefined}
-            className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink"
-          >
-            {children}
-          </a>
-        ),
-        blockquote: ({ children }) => {
-          const textoPlano = textoDeNodos(children).replace(/\s+\n/g, "\n").trim();
-          if (esPromptEstructurado(textoPlano)) {
+    <div className="guias-prose">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h1: ({ children }) => {
+            const id = slugAncla(textoDeNodos(children));
+            return <h2 id={id || undefined}>{children}</h2>;
+          },
+          h2: ({ children }) => {
+            const id = slugAncla(textoDeNodos(children));
+            return <h2 id={id || undefined}>{children}</h2>;
+          },
+          h3: ({ children }) => {
+            const id = slugAncla(textoDeNodos(children));
+            return <h3 id={id || undefined}>{children}</h3>;
+          },
+          h4: ({ children }) => {
+            const id = slugAncla(textoDeNodos(children));
             return (
-              <div className="my-6 overflow-hidden rounded-2xl border border-[#D97757]/40 bg-paper shadow-sm">
-                <div className="flex items-center justify-between gap-2 border-b border-[#D97757]/20 bg-[#D97757]/10 px-4 py-2.5">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#9A3F20]">
-                    <Sparkles size={13} aria-hidden /> Prompt listo para copiar
-                  </span>
-                  <CopyButton text={textoPlano} label="Copiar prompt" />
-                </div>
-                <blockquote className="space-y-2 px-4 py-4 text-sm leading-relaxed text-ink">
-                  {children}
-                </blockquote>
-              </div>
-            );
-          }
-          return (
-            <blockquote className="my-6 rounded-r-2xl border-l-4 border-ink bg-wash/70 px-5 py-4 text-sm leading-relaxed text-ink">
-              {children}
-            </blockquote>
-          );
-        },
-        pre: ({ children }) => {
-          const childEl = children as ReactElement<{ className?: string; children?: unknown }> | undefined;
-          const className = childEl?.props?.className;
-          const textoPlano = textoDeNodos(childEl?.props?.children ?? children).trim();
-          const etiqueta = etiquetaLenguaje(className);
-          const esPrompt = (className || "").includes("prompt") || esPromptEstructurado(textoPlano);
-
-          return (
-            <div className="my-6 overflow-hidden rounded-2xl border border-line-strong bg-[#171716] text-[#F7F7F4] shadow-sm">
-              <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-2">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white/75">
-                  {esPrompt ? <Sparkles size={12} className="text-[#D97757]" aria-hidden /> : <Terminal size={12} aria-hidden />}
-                  {esPrompt ? "Prompt de ejemplo" : etiqueta}
-                </span>
-                <CopyButton text={textoPlano} label={esPrompt ? "Copiar prompt" : "Copiar"} variant="dark" />
-              </div>
-              <pre className="overflow-x-auto px-4 py-3.5 text-[13px] leading-relaxed text-[#F7F7F4]">
+              <h4
+                id={id || undefined}
+                className="mt-7 scroll-mt-24 text-base font-semibold tracking-tight text-[var(--g-ink)] first:mt-0"
+              >
                 {children}
-              </pre>
-            </div>
-          );
-        },
-        code: ({ children, className }) =>
-          className ? (
-            <code className="font-mono text-[13px] text-inherit">{children}</code>
-          ) : (
-            <code className="rounded-md border border-line bg-wash px-1.5 py-0.5 font-mono text-[13px] text-ink">
+              </h4>
+            );
+          },
+          h5: ({ children }) => {
+            const id = slugAncla(textoDeNodos(children));
+            return (
+              <h2
+                id={id || undefined}
+                className="border-b border-[var(--g-border)] pb-2"
+              >
+                {children}
+              </h2>
+            );
+          },
+          h6: ({ children }) => {
+            const id = slugAncla(textoDeNodos(children));
+            return <h3 id={id || undefined}>{children}</h3>;
+          },
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target={href?.startsWith("http") && !href.includes("programbi.com") ? "_blank" : undefined}
+              rel={href?.startsWith("http") && !href.includes("programbi.com") ? "noopener noreferrer" : undefined}
+            >
               {children}
-            </code>
+            </a>
           ),
-        img: ({ src, alt }) => (
-          <figure className="my-6 overflow-hidden rounded-2xl border border-line bg-paper shadow-sm">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={typeof src === "string" ? src : ""}
-              alt={alt || ""}
-              loading="lazy"
-              className="h-auto w-full object-cover"
-            />
-            {alt ? (
-              <figcaption className="border-t border-line bg-wash/50 px-4 py-2 text-xs text-mute">
-                {alt}
-              </figcaption>
-            ) : null}
-          </figure>
-        ),
-        table: ({ children }) => (
-          <div className="my-6 overflow-x-auto rounded-2xl border border-line bg-paper shadow-sm">
-            <table className="w-full border-collapse text-left text-sm">{children}</table>
-          </div>
-        ),
-        thead: ({ children }) => <thead className="bg-wash">{children}</thead>,
-        th: ({ children }) => (
-          <th className="border-b border-line px-3.5 py-2.5 text-xs font-bold uppercase tracking-wide text-ink">
-            {children}
-          </th>
-        ),
-        td: ({ children }) => (
-          <td className="border-b border-line px-3.5 py-2.5 align-top text-mute">{children}</td>
-        ),
-        hr: () => <hr className="my-8 border-line" />,
-      }}
-    >
-      {content}
-    </ReactMarkdown>
+          blockquote: ({ children }) => {
+            const textoPlano = textoDeNodos(children).replace(/\s+\n/g, "\n").trim();
+            if (esPromptEstructurado(textoPlano)) {
+              return (
+                <div className="my-6 overflow-hidden rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-surface)]">
+                  <div className="flex items-center justify-between gap-2 border-b border-[var(--g-border)] bg-[var(--g-wash)] px-4 py-2">
+                    <span className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
+                      Prompt listo para copiar
+                    </span>
+                    <CopyButton text={textoPlano} label="Copiar prompt" variant="paper" />
+                  </div>
+                  <blockquote className="!m-0 !rounded-none !border-0 !bg-transparent px-4 py-3.5 text-sm leading-relaxed text-[var(--g-ink)]">
+                    {children}
+                  </blockquote>
+                </div>
+              );
+            }
+            return <blockquote>{children}</blockquote>;
+          },
+          pre: ({ children }) => {
+            const childEl = children as ReactElement<{ className?: string; children?: unknown }> | undefined;
+            const className = childEl?.props?.className;
+            const textoPlano = textoDeNodos(childEl?.props?.children ?? children).trim();
+            const esPrompt = (className || "").includes("prompt") || esPromptEstructurado(textoPlano);
+            const title = esPrompt ? "Prompt de ejemplo" : etiquetaLenguaje(className);
+            const language = normalizarLenguaje(className);
+
+            return (
+              <GuiaCodeShell
+                code={textoPlano}
+                language={language}
+                title={title}
+                copyLabel={esPrompt ? "Copiar prompt" : "Copiar"}
+              />
+            );
+          },
+          code: ({ children, className }) =>
+            className ? (
+              <code className="font-mono text-[13px] text-inherit">{children}</code>
+            ) : (
+              <code>{children}</code>
+            ),
+          img: ({ src, alt }) => (
+            <figure className="my-6 overflow-hidden rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={typeof src === "string" ? src : ""}
+                alt={alt || ""}
+                width={1200}
+                height={750}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[16/10] h-auto w-full bg-[var(--g-wash)] object-contain"
+              />
+              {alt ? (
+                <figcaption className="border-t border-[var(--g-border)] bg-[var(--g-wash)] px-4 py-2 text-xs text-[var(--g-muted)]">
+                  {alt}
+                </figcaption>
+              ) : null}
+            </figure>
+          ),
+          table: ({ children }) => (
+            <div className="guias-table-wrap">
+              <table>{children}</table>
+            </div>
+          ),
+          hr: () => <hr className="my-8 border-[var(--g-border)]" />,
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
   );
 }
