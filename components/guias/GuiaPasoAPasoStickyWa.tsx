@@ -38,7 +38,7 @@ export default function GuiaPasoAPasoStickyWa({
       aria-label="Clase gratis por WhatsApp"
       aria-hidden={!visible}
       inert={!visible}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--g-border-strong)] bg-[var(--g-surface)] px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--g-border-strong)] bg-[var(--g-surface)] px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[var(--g-card-shadow)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
@@ -51,7 +51,7 @@ export default function GuiaPasoAPasoStickyWa({
           country="cl"
           ctaPosition="guia_paso_a_paso_sticky_mobile"
           customText={waText}
-          className="inline-flex min-h-[44px] min-w-0 flex-1 items-center justify-center rounded-md bg-[var(--g-ink)] px-4 text-sm font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
+          className="inline-flex min-h-[44px] min-w-0 flex-1 items-center justify-center rounded-xl bg-[var(--g-ink)] px-4 text-sm font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
         >
           <span className="truncate">Clase gratis por WhatsApp</span>
         </WhatsAppCta>
@@ -59,7 +59,7 @@ export default function GuiaPasoAPasoStickyWa({
           type="button"
           onClick={() => setCerrada(true)}
           aria-label="Cerrar barra de clase gratis por WhatsApp"
-          className="inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-md border border-[var(--g-border)] bg-[var(--g-bg)] text-sm font-medium text-[var(--g-muted)] transition-colors hover:bg-[var(--g-wash)] hover:text-[var(--g-ink)]"
+          className="inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-xl border border-[var(--g-border)] bg-[var(--g-bg)] text-sm font-medium text-[var(--g-muted)] transition-colors hover:bg-[var(--g-wash)] hover:text-[var(--g-ink)]"
         >
           <span aria-hidden="true">×</span>
         </button>
