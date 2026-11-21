@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CalendarClock, CreditCard, MapPin } from "lucide-react";
+import { ArrowRight, CalendarClock, CreditCard } from "lucide-react";
 import { getPais, ISO_CHILE, muestraPrecioDirecto, normalizarPais } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
@@ -9,8 +9,6 @@ import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { getFichaPais } from "@/lib/data/contenido-paises/fichas";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
 import { courseBrochurePath } from "@/lib/pricing-gate";
-import { rutaLocal } from "@/lib/paises/rutas";
-import { vecinosDe } from "@/lib/paises/vecinos";
 import { faqDePais } from "@/lib/faq/contenido";
 import { guiasDePais, indiceGuias } from "@/lib/guias";
 import { esGuiaPublicada } from "@/lib/guias/relacionadas";
@@ -110,7 +108,6 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
     )
     .slice(0, 3);
 
-  const vecinos = vecinosDe(iso).slice(0, 3);
   // Estados Unidos publica el monto en la ficha, sin pasar por el PDF.
   const precioDirecto = muestraPrecioDirecto(iso) ? precioVenta(iso, curso.slug, promotions) : null;
 
@@ -306,56 +303,6 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
             </div>
           </aside>
         </div>
-
-        {vecinos.length > 0 ? (
-          <div className="mt-12 border-t border-line pt-8">
-            <h3 id="bloque-pais-vecinos" className="text-lg font-bold tracking-tight text-ink">
-              El mismo curso en otros mercados
-            </h3>
-            <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-mute">
-              La ficha cambia de moneda, horario y medios de pago según el país.
-              Estas son las versiones con temario, precios y hora local de los mercados vecinos.
-            </p>
-            <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {vecinos.map((vecino) => {
-                const horarioVecino = horarioLocal(vecino.iso, { inicio, fin });
-                const guiaVecina = guiaLocalDeCurso(vecino.iso, curso.slug);
-                return (
-                  <li key={vecino.iso} className="rounded-2xl border border-line bg-paper p-5">
-                    <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-mute">
-                      <MapPin size={12} aria-hidden /> {vecino.nombre}
-                    </p>
-                    <Link
-                      href={rutaLocal(vecino.iso, `/cursos/${curso.slug}`)}
-                      className="mt-2 inline-flex items-start gap-1.5 text-sm font-semibold leading-snug text-ink no-underline underline-offset-4 hover:underline"
-                    >
-                      {nombreCurso} en {vecino.nombre}
-                      <ArrowRight size={13} className="mt-0.5 shrink-0" aria-hidden />
-                    </Link>
-                    <p className="mt-2 text-xs leading-relaxed text-faint tabular-nums">
-                      {horarioVecino.inicio} a {horarioVecino.fin} ({etiquetaHoraLocal(vecino.iso)})
-                    </p>
-                    <Link
-                      href={courseBrochurePath(curso.slug, vecino.iso)}
-                      className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-ink no-underline underline-offset-4 hover:underline"
-                    >
-                      Ver temario y precios en {vecino.nombre}
-                      <ArrowRight size={12} aria-hidden />
-                    </Link>
-                    {guiaVecina ? (
-                      <Link
-                        href={guiaVecina.path}
-                        className="mt-3 inline-block text-xs font-medium text-mute no-underline underline-offset-4 hover:text-ink hover:underline"
-                      >
-                        Guía de {nombreCurso} en {vecino.nombre}
-                      </Link>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ) : null}
 
         {contenido && contenido.referencias.length > 0 ? (
           <div className="mt-10 border-t border-line pt-6">

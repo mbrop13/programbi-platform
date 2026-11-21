@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, FileText } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 import {
   courseBrochureUrl,
@@ -12,7 +12,6 @@ import {
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
 import { trackLeadSubmit, trackTemario } from "@/lib/analytics/marketing";
-import { textoCuotas } from "@/config/cuotas";
 import { muestraPrecioDirecto } from "@/config/paises";
 
 export type BrochureGateFormProps = {
@@ -42,8 +41,6 @@ export type BrochureGateFormProps = {
 };
 
 export const BROCHURE_GATE_HEADING = "Descarga el temario con precios";
-export const BROCHURE_GATE_SUBHEADING =
-  "Completa tus datos y abre al instante el temario con el arancel de tu país, las fechas con horario local y la malla completa.";
 
 export function phoneCodeFor(iso: string): string {
   const country = COUNTRIES.find((item) => item.iso === iso);
@@ -83,23 +80,6 @@ function splitDialCode(raw: string, fallbackCode: string): { code: string; rest:
   return { code: fallbackCode, rest: raw.trim() };
 }
 
-function includesDe(pais: string): string[] {
-  if (muestraPrecioDirecto(pais)) {
-    return [
-      "Temario y detalle del curso para presentar a tu empleador",
-      "Próximas fechas y horarios convertidos a EE.UU.",
-      "Malla curricular completa módulo a módulo y profesores",
-    ];
-  }
-  return [
-    textoCuotas(pais)
-      ? `Arancel vigente en tu moneda, becas y ${textoCuotas(pais)}`
-      : "Arancel vigente en tu moneda y becas",
-    "Próximas fechas y horarios convertidos a tu país",
-    "Malla curricular completa módulo a módulo y profesores",
-  ];
-}
-
 const labelClass = "mb-1 block text-xs font-semibold tracking-wide text-ink/80 uppercase";
 const inputClass =
   "h-11 w-full rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint";
@@ -131,11 +111,6 @@ export function BrochureGateForm({
   const soloEmail = muestraPrecioDirecto(pais);
   const resolvedHeading =
     heading ?? (soloEmail ? "Descarga el temario (PDF)" : BROCHURE_GATE_HEADING);
-  const resolvedSubheading =
-    subheading ??
-    (soloEmail
-      ? "Ingresa tu nombre y correo para abrir al instante el PDF con la malla completa, fechas en tu horario y detalle del curso."
-      : BROCHURE_GATE_SUBHEADING);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -291,16 +266,7 @@ export function BrochureGateForm({
       ) : null}
 
       <h3 className="text-xl font-bold leading-snug tracking-tight text-ink">{resolvedHeading}</h3>
-      <p className="mt-1.5 text-sm leading-snug text-mute">{resolvedSubheading}</p>
-
-      <ul className="mt-3 space-y-1.5">
-        {includesDe(pais).map((item) => (
-          <li key={item} className="flex items-start gap-2 text-[13px] font-medium text-ink">
-            <Check size={15} strokeWidth={2.4} className="mt-0.5 shrink-0 text-ink" aria-hidden />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
+      {subheading ? <p className="mt-1.5 text-sm leading-snug text-mute">{subheading}</p> : null}
 
       <div className="mt-4 space-y-3">
         <div>
@@ -395,7 +361,7 @@ export function BrochureGateForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-3 inline-flex h-12 min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-ink px-5 text-[15px] font-bold text-canvas shadow-md transition-transform active:scale-[0.98] disabled:opacity-70"
+        className="mt-3 inline-flex h-12 min-h-[48px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-ink px-5 text-[15px] font-bold text-canvas shadow-md transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
       >
         <FileText size={18} aria-hidden /> {buttonLabel} <ArrowRight size={18} aria-hidden />
       </button>

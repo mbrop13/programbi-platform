@@ -1,88 +1,86 @@
-import Link from "next/link";
-import { ArrowRight, Check, Linkedin } from "lucide-react";
+import { Linkedin } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
-import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
+import { mentors } from "@/lib/data/mentors";
 import { inicialesDe } from "./iniciales";
 
 /**
- * Bloque «Tu profesor» de la ficha de curso (marketing y país).
+ * Bloque «Nuestro equipo» de la ficha de curso (marketing y país).
  *
- * El profesor sale de `miembroPorCurso`, la misma fuente que usa el
- * `instructor` del JSON-LD, para que la página y el schema nunca se contradigan.
- * Solo pinta datos que existen en `lib/data/mentors.ts`.
+ * Muestra a los profesores reales de `lib/data/mentors.ts` en una grilla
+ * ordenada de tres columnas.
  */
-export default function TuProfesor({ cursoSlug }: { cursoSlug: string }) {
-  const miembro = miembroPorCurso(cursoSlug);
-  const perfil = rutaPerfil(miembro.slug);
+export default function TuProfesor() {
+  const equipo = [...mentors].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
     <section
       className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
-      aria-labelledby="tu-profesor"
+      aria-labelledby="nuestro-equipo"
     >
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[26px] border border-line bg-wash lg:col-span-4">
-          {miembro.imageUrl ? (
-            <CourseImage
-              src={miembro.imageUrl}
-              alt={`${miembro.nombre}, profesor de ProgramBI`}
-              fill
-              sizes="(max-width: 1024px) 100vw, 33vw"
-              className="object-cover object-[center_18%]"
-            />
-          ) : (
-            <span
-              className="absolute inset-0 flex items-center justify-center font-display text-5xl font-black text-faint"
-              aria-hidden="true"
+      <div className="mx-auto max-w-[1400px]">
+        <h2
+          id="nuestro-equipo"
+          className="text-2xl font-bold tracking-tight text-ink sm:text-3xl"
+        >
+          Nuestro equipo
+        </h2>
+
+        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {equipo.map((mentor) => (
+            <article
+              key={mentor.name}
+              className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface"
             >
-              {inicialesDe(miembro.nombre)}
-            </span>
-          )}
-        </div>
+              <div className="overflow-hidden bg-wash">
+                {mentor.imageUrl ? (
+                  <CourseImage
+                    src={mentor.imageUrl}
+                    alt={`${mentor.name}, ${mentor.role}`}
+                    width={640}
+                    height={480}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="aspect-[4/3] w-full object-cover object-top"
+                  />
+                ) : (
+                  <div
+                    className="flex aspect-[4/3] w-full items-center justify-center font-display text-4xl font-black text-faint"
+                    aria-hidden="true"
+                  >
+                    {inicialesDe(mentor.name)}
+                  </div>
+                )}
+              </div>
 
-        <div className="lg:col-span-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-faint">Tu profesor</p>
-          <h2 id="tu-profesor" className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-            <Link href={perfil} className="text-ink no-underline hover:underline">
-              {miembro.nombre}
-            </Link>
-          </h2>
-          <p className="mt-1 text-sm font-semibold text-mute">
-            {miembro.cargo}
-            {miembro.rol ? <span className="font-normal text-faint"> · {miembro.rol}</span> : null}
-          </p>
+              <div className="flex flex-1 flex-col p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-bold tracking-tight text-ink">
+                      {mentor.name}
+                    </h3>
+                    <p className="mt-0.5 text-sm font-semibold text-mute">
+                      {mentor.role}
+                    </p>
+                  </div>
 
-          {miembro.credenciales.length > 0 ? (
-            <ul className="mt-5 space-y-2">
-              {miembro.credenciales.slice(0, 2).map((credencial) => (
-                <li key={credencial} className="flex items-start gap-2 text-sm leading-relaxed text-mute">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-ink" aria-hidden="true" />
-                  <span>{credencial}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
+                  {mentor.linkedinUrl ? (
+                    <a
+                      href={mentor.linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border text-mute transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                      aria-label={`LinkedIn de ${mentor.name}`}
+                    >
+                      <Linkedin className="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  ) : null}
+                </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Link
-              href={perfil}
-              className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-canvas no-underline transition-opacity hover:opacity-90"
-            >
-              Ver perfil completo
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-            {miembro.linkedinUrl ? (
-              <a
-                href={miembro.linkedinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-4 py-2 text-sm font-semibold text-ink no-underline transition-colors hover:border-ink/30"
-              >
-                <Linkedin className="h-4 w-4" aria-hidden="true" />
-                LinkedIn
-              </a>
-            ) : null}
-          </div>
+                <p className="mt-3 text-sm leading-relaxed text-mute">
+                  {mentor.founderBio ?? mentor.credentials.join(" ")}
+                </p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
