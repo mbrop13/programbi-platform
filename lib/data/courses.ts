@@ -1,5 +1,5 @@
 // Course data that matches the current ProgramBI website exactly
-import { PRECIOS_CLP } from "@/config/pricing";
+import { esCursoConPrecio, PRECIOS_CLP, PRECIOS_LISTA_CLP } from "@/config/pricing";
 export interface CourseLevel {
   name: string;             // e.g. "Básico", "Intermedio", "Avanzado"
   price?: number;           // price in CLP
@@ -33,7 +33,7 @@ export interface Course {
   originalPrice?: number; // Total original price if applicable
 }
 
-export const courses: Course[] = [
+const rawCourses: Course[] = [
   {
     slug: "analisis-de-datos",
     title: "Análisis de Datos",
@@ -1101,6 +1101,19 @@ export const courses: Course[] = [
     ],
   },
 ];
+
+export const courses: Course[] = rawCourses.map((course) => {
+  if (!esCursoConPrecio(course.slug)) return course;
+  const listPrice = PRECIOS_LISTA_CLP[course.slug];
+  return {
+    ...course,
+    originalPrice: course.originalPrice ?? listPrice,
+    levels: course.levels?.map((level) => ({
+      ...level,
+      originalPrice: level.originalPrice ?? listPrice,
+    })),
+  };
+});
 
 export const COURSE_NAV_GROUPS = [
   { id: "herramientas", label: "Herramientas", slugs: ["excel", "access", "sql-server", "power-bi", "python"] },
