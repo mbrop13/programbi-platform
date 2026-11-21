@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, BarChart3, Code2, Database } from "lucide-react";
+import { BarChart3, Code2, Database } from "lucide-react";
 import PowerBiCanvas from "@/components/marketing/HeroPowerBi";
 import {
   getDemoPais,
@@ -18,15 +18,15 @@ type Editores = typeof import("@/components/marketing/HeroEditors");
 type Tab = (typeof HERO_TABS)[number];
 
 const ICONOS = { bi: BarChart3, sql: Database, python: Code2 } as const;
-const ROTACION_MS = 9000;
+const ARCHIVOS: Record<HeroTabId, string> = {
+  bi: "ventas_ejecutivo.pbix",
+  sql: "consulta_ventas.sql",
+  python: "analisis_ventas.py",
+};
 
 /**
- * Panel del hero: una vitrina de tres cursos. La pestaña activa muestra la
- * herramienta en uso y, pegada debajo, la franja con su próxima cohorte.
- *
- * Power BI va en el primer render (HTML del servidor, sin esperar JS). Los
- * editores de SQL y Python se cargan en reposo, fuera del camino crítico.
- * `children` es la miniatura del profesor, que flota sobre la esquina.
+ * Showcase interactivo del hero: alterna entre Power BI, SQL Server y Python
+ * con una barra inferior integrada que muestra el próximo inicio del curso.
  */
 export default function HeroPreview({
   cursos,
@@ -38,11 +38,12 @@ export default function HeroPreview({
   const pais = usePaisRuta();
   const demo = useMemo(() => getDemoPais(pais), [pais]);
   const [active, setActive] = useState<HeroTabId>("bi");
-  const [cambios, setCambios] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [hover, setHover] = useState(false);
-  const [conMovimiento, setConMovimiento] = useState(false);
   const [editores, setEditores] = useState<Editores | null>(null);
+  const tabRefs = useRef<Record<HeroTabId, HTMLButtonElement | null>>({
+    bi: null,
+    sql: null,
+    python: null,
+  });
 
   useEffect(() => {
     let alive = true;
@@ -51,10 +52,9 @@ export default function HeroPreview({
         if (alive) setEditores(mod);
       });
     };
-    setConMovimiento(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const ric = window.requestIdleCallback?.bind(window);
     if (ric) {
-      const id = ric(load, { timeout: 1800 });
+      const id = ric(load, { timeout: 1500 });
       return () => {
         alive = false;
         window.cancelIdleCallback?.(id);
@@ -67,173 +67,138 @@ export default function HeroPreview({
     };
   }, []);
 
-  // Solo rota cuando el siguiente panel ya está descargado y nadie lo mira de cerca.
-  const rotando = conMovimiento && !paused && !hover && editores !== null;
-
-  useEffect(() => {
-    if (!rotando) return;
-    const t = window.setTimeout(() => {
-      setActive((cur) => HERO_TABS[(HERO_TABS.findIndex((x) => x.id === cur) + 1) % HERO_TABS.length].id);
-      setCambios((n) => n + 1);
-    }, ROTACION_MS);
-    return () => window.clearTimeout(t);
-  }, [rotando, active]);
-
-  const select = (id: HeroTabId) => {
-    setActive(id);
-    setCambios((n) => n + 1);
-    setPaused(true);
+  const handleTabKeyDown = (e: KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const delta = e.key === "ArrowRight" ? 1 : -1;
+    const nextIndex = (currentIndex + delta + HERO_TABS.length) % HERO_TABS.length;
+    const nextTab = HERO_TABS[nextIndex];
+    setActive(nextTab.id);
+    tabRefs.current[nextTab.id]?.focus();
   };
 
   const current = HERO_TABS.find((t) => t.id === active)!;
-  const file = active === "python" ? "ventas.py" : active === "sql" ? "consulta.sql" : demo.pbix;
-  // El primer render no se anima: es el contenido que define el LCP del hero.
-  const entrada = cambios > 0 ? "animate-fade-in" : "";
+  const activeFile = ARCHIVOS[active];
 
   return (
-    <div
-      className="relative w-full"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div className="pointer-events-none absolute -inset-8 rounded-[50px] bg-gradient-to-tr from-ink/10 via-ink/0 to-ink/8 blur-3xl" />
-
-      <div className="relative">
+    <div className="flex w-full flex-col overflow-hidden rounded-2xl border border-border-strong bg-surface shadow-[0_24px_60px_-24px_rgba(17,24,39,0.16)] dark:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.65)]">
+      {/* Cabecera limpia con selector de herramientas */}
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-surface px-3 sm:px-4">
         <div
-          className="relative flex w-full flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_30px_90px_-20px_rgba(23,23,22,0.28)] ring-1 ring-ink/5 sm:rounded-[26px]"
-          onPointerDown={() => setPaused(true)}
+          role="tablist"
+          aria-label="Herramientas del programa"
+          className="flex items-center gap-1"
         >
-          <div className="flex h-11 shrink-0 items-center justify-between border-b border-line bg-canvas px-4">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <div className="flex shrink-0 gap-1.5">
-                <i className="size-3 rounded-full bg-[#ff5f57]" />
-                <i className="size-3 rounded-full bg-[#febc2e]" />
-                <i className="size-3 rounded-full bg-[#28c840]" />
-              </div>
-              <div className="ml-3 hidden min-w-0 items-center gap-2 text-xs font-medium text-mute sm:flex">
-                <span className="truncate font-semibold text-ink">{file}</span>
-                <span className="text-faint">—</span>
-                <span className="text-[11px] text-faint">{current.title}</span>
-              </div>
-            </div>
-            <span className="shrink-0 text-[11px] text-faint">Clase en vivo</span>
-          </div>
-
-          <div className="relative h-[min(350px,46vh)] bg-canvas sm:h-[min(430px,48vh)]">
-            <div key={active} className={`absolute inset-0 ${entrada}`}>
-              {active === "bi" ? (
-                <PowerBiCanvas demo={demo} />
-              ) : !editores ? (
-                <Cargando />
-              ) : active === "python" ? (
-                <editores.PythonEditor demo={demo} onOpenSql={() => select("sql")} />
-              ) : (
-                <editores.SqlEditor demo={demo} />
-              )}
-            </div>
-          </div>
-
-          <BarraCurso tab={current} curso={cursos[active]} entrada={entrada} />
+          {HERO_TABS.map((tab, idx) => {
+            const Icon = ICONOS[tab.id];
+            const isActive = tab.id === active;
+            return (
+              <button
+                key={tab.id}
+                ref={(el) => {
+                  tabRefs.current[tab.id] = el;
+                }}
+                id={`hero-tab-${tab.id}`}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`hero-panel-${tab.id}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => setActive(tab.id)}
+                onKeyDown={(e) => handleTabKeyDown(e, idx)}
+                className={`inline-flex min-h-[44px] items-center gap-1.5 border-b-2 px-2.5 text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#0b63c5] sm:px-3.5 sm:text-sm ${
+                  isActive
+                    ? "border-[#0b63c5] font-semibold text-text-primary dark:border-[#60a5fa]"
+                    : "border-transparent font-medium text-text-muted hover:text-text-primary"
+                }`}
+              >
+                <Icon size={15} strokeWidth={isActive ? 2.2 : 1.8} className="shrink-0" aria-hidden="true" />
+                <span>{tab.title}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {children ? (
-          <div className="pointer-events-none absolute -right-1.5 bottom-[80px] sm:-right-3 sm:bottom-[90px]">
-            {children}
-          </div>
-        ) : null}
+        <span className="hidden truncate font-mono text-[11px] font-medium text-text-muted sm:inline">
+          {activeFile}
+        </span>
       </div>
 
+      {/* Viewport con respiración real */}
       <div
-        role="tablist"
-        aria-label="Cursos del panel"
-        className="relative mt-3 grid grid-cols-3 gap-1 rounded-2xl border border-line bg-paper/80 p-1"
+        id={`hero-panel-${active}`}
+        role="tabpanel"
+        aria-labelledby={`hero-tab-${active}`}
+        className="flex min-h-[420px] flex-col sm:min-h-[465px]"
       >
-        {HERO_TABS.map((tab) => {
-          const Icon = ICONOS[tab.id];
-          const isActive = tab.id === active;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => select(tab.id)}
-              className={`relative flex min-h-12 items-center justify-center gap-1.5 overflow-hidden rounded-xl px-1.5 text-[13px] font-semibold transition-colors sm:gap-2 sm:px-2 sm:text-sm ${
-                isActive
-                  ? "bg-ink text-paper shadow-[0_8px_20px_-10px_rgba(23,23,22,0.7)]"
-                  : "text-mute hover:bg-wash hover:text-ink"
-              }`}
-            >
-              <Icon size={17} strokeWidth={isActive ? 2.2 : 1.8} className="shrink-0" />
-              <span className="truncate">{tab.title}</span>
-              {isActive && rotando ? (
-                <span className="absolute inset-x-0 bottom-0 h-[3px] bg-white/15">
-                  <span key={`${tab.id}-${cambios}`} className="hero-tab-progress block h-full bg-white/75" />
-                </span>
-              ) : null}
-            </button>
-          );
-        })}
+        {active === "bi" ? (
+          <PowerBiCanvas demo={demo} />
+        ) : !editores ? (
+          <Cargando file={activeFile} />
+        ) : active === "python" ? (
+          <editores.PythonEditor demo={demo} onOpenSql={() => setActive("sql")} />
+        ) : (
+          <editores.SqlEditor demo={demo} />
+        )}
       </div>
+
+      {/* Barra inferior integrada */}
+      <BarraCurso tab={current} curso={cursos[active]}>
+        {children}
+      </BarraCurso>
     </div>
   );
 }
 
-/** Franja de venta: el curso de la pestaña activa, su próxima cohorte y el botón. */
-function BarraCurso({ tab, curso, entrada }: { tab: Tab; curso: HeroCurso; entrada: string }) {
-  const Icon = ICONOS[tab.id];
+/** Barra inferior del showcase: profesor en vivo, próxima fecha, descuento y CTA. */
+function BarraCurso({
+  tab,
+  curso,
+  children,
+}: {
+  tab: Tab;
+  curso: HeroCurso;
+  children?: ReactNode;
+}) {
   const detalle = curso.inicio
     ? [`Inicia ${curso.inicio}`, curso.dias, curso.hora].filter(Boolean).join(" · ")
-    : `${curso.horas} h en vivo · Cupos abiertos, consulta fecha`;
-  // En el teléfono no cabe la línea completa: fecha y hora de inicio.
-  const corto = curso.inicio
-    ? [`Inicia ${curso.inicio}`, curso.hora?.split(" ")[0]].filter(Boolean).join(" · ")
-    : `${curso.horas} h · Consulta fecha`;
+    : `${curso.horas} h en vivo · Cupos abiertos`;
 
   return (
-    <Link
-      href={curso.href}
-      onClick={() => trackCourseCardClick(tab.slug, "home_hero_panel")}
-      className="group/bar flex h-[68px] shrink-0 items-center gap-3 bg-ink px-3.5 text-paper no-underline sm:h-[78px] sm:gap-4 sm:px-5"
-    >
-      <span key={tab.id} className={`flex min-w-0 flex-1 items-center gap-3 sm:gap-4 ${entrada}`}>
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/10 sm:size-11">
-          <Icon size={19} strokeWidth={2} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-2.5">
-            <span className="truncate text-[15px] font-semibold tracking-tight sm:text-[17px]">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-[#111214] px-4 py-3 text-[#f4f4f6] dark:bg-[#17181d] sm:flex-nowrap sm:px-5 sm:py-3.5">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        {children}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="truncate text-sm font-semibold tracking-tight text-white sm:text-[15px]">
               Curso {tab.title}
             </span>
             {curso.descuento > 0 ? (
-              <span className="hidden shrink-0 rounded-full bg-white/12 px-2 py-0.5 text-[11px] font-semibold ring-1 ring-white/15 sm:inline">
-                {curso.descuento}% de descuento
+              <span className="inline-flex shrink-0 items-center rounded-md bg-white/12 px-2 py-0.5 text-[11px] font-semibold text-white tabular-nums">
+                {curso.descuento}% dto.
               </span>
             ) : null}
-          </span>
-          <span className="mt-0.5 block truncate text-xs text-paper/65 sm:hidden">{corto}</span>
-          <span className="mt-0.5 hidden truncate text-[13px] text-paper/65 sm:block">{detalle}</span>
-        </span>
-      </span>
-      <span className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-paper px-4 text-sm font-semibold text-ink transition-colors group-hover/bar:bg-white">
+          </div>
+          <p className="mt-0.5 truncate text-xs text-[#b4b7c0] tabular-nums">{detalle}</p>
+        </div>
+      </div>
+
+      <Link
+        href={curso.href}
+        onClick={() => trackCourseCardClick(tab.slug, "home_hero_panel")}
+        className="inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-[#111214] no-underline transition-colors hover:bg-[#eff0f2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#60a5fa]"
+      >
         Ver curso
-        <ArrowRight
-          size={15}
-          className="shrink-0 transition-transform group-hover/bar:translate-x-0.5"
-          aria-hidden
-        />
-      </span>
-    </Link>
+      </Link>
+    </div>
   );
 }
 
-/** Solo se ve si alguien cambia de pestaña antes de que carguen los editores. */
-function Cargando() {
+function Cargando({ file }: { file: string }) {
   return (
-    <div className="flex h-full flex-col gap-2.5 bg-paper p-5" aria-hidden>
-      {[62, 78, 40, 70, 54, 84, 46].map((w, i) => (
-        <span key={i} className="h-3 animate-pulse rounded-full bg-wash" style={{ width: `${w}%` }} />
-      ))}
+    <div className="flex flex-1 flex-col justify-between bg-[#101116] p-4 font-mono text-xs text-[#9ca3af]">
+      <span>Cargando {file}...</span>
+      <span className="text-[11px] text-[#636b7f]">Preparando entorno interactivo</span>
     </div>
   );
 }
