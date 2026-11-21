@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageCircle, X } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 
 export default function GuiaPasoAPasoStickyWa({
@@ -39,7 +38,7 @@ export default function GuiaPasoAPasoStickyWa({
       aria-label="Clase gratis por WhatsApp"
       aria-hidden={!visible}
       inert={!visible}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-10px_30px_rgba(23,23,22,0.08)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--g-border-strong)] bg-[var(--g-surface)] px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
@@ -52,18 +51,17 @@ export default function GuiaPasoAPasoStickyWa({
           country="cl"
           ctaPosition="guia_paso_a_paso_sticky_mobile"
           customText={waText}
-          className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-canvas no-underline"
+          className="inline-flex min-h-[44px] min-w-0 flex-1 items-center justify-center rounded-md bg-[var(--g-ink)] px-4 text-sm font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
         >
-          <MessageCircle size={16} className="shrink-0" aria-hidden />
           <span className="truncate">Clase gratis por WhatsApp</span>
         </WhatsAppCta>
         <button
           type="button"
           onClick={() => setCerrada(true)}
-          aria-label="Cerrar botón de WhatsApp"
-          className="inline-flex h-11 w-10 shrink-0 items-center justify-center rounded-full text-mute transition-colors hover:bg-wash hover:text-ink"
+          aria-label="Cerrar barra de clase gratis por WhatsApp"
+          className="inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-md border border-[var(--g-border)] bg-[var(--g-bg)] text-sm font-medium text-[var(--g-muted)] transition-colors hover:bg-[var(--g-wash)] hover:text-[var(--g-ink)]"
         >
-          <X size={18} aria-hidden />
+          <span aria-hidden="true">×</span>
         </button>
       </div>
     </div>
