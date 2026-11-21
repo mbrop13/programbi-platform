@@ -114,7 +114,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                 type="button"
                 aria-pressed={selected}
                 onClick={() => setPage(v.id)}
-                className={`min-h-[40px] rounded-md px-2.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] sm:min-h-[28px] ${
+                className={`min-h-[44px] rounded-md px-2.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] sm:min-h-[32px] ${
                   selected
                     ? "bg-[#eff0f2] text-[#111214] dark:bg-[#252730] dark:text-white"
                     : "text-[#525866] hover:text-[#111214] dark:text-[#9ca3af] dark:hover:text-white"

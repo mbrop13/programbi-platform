@@ -181,8 +181,8 @@ export default function LeadForm() {
                 <CourseImage
                   src="/images/courses/galeria/power-bi/01.webp"
                   alt="Dashboard de producción y costos desarrollado en Power BI durante las clases en vivo"
-                  width={1280}
-                  height={676}
+                  width={1000}
+                  height={528}
                   sizes="(max-width: 1024px) 100vw, 40vw"
                   className="h-full w-full object-cover object-center"
                 />
