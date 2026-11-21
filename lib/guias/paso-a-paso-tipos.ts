@@ -7,14 +7,22 @@ export type HerramientaGuia =
   | "Power BI"
   | "Power Automate"
   | "SQL"
-  | "Python";
+  | "Python"
+  | "IA"
+  | "Google Sheets"
+  | "Carrera";
 
 export type CursoGuiaSlug =
   | "excel"
   | "power-bi"
   | "power-automate"
   | "sql-server"
-  | "python";
+  | "python"
+  | "ia-productividad"
+  | "analisis-de-datos"
+  | "copilot"
+  | "claude"
+  | "machine-learning";
 
 export type IconoPaso =
   | "database"
@@ -42,7 +50,10 @@ export interface BloqueCodigo {
     | "python"
     | "sql"
     | "json"
-    | "power-automate";
+    | "power-automate"
+    | "prompt"
+    | "sheets"
+    | "bash";
   /** Código principal (para Excel siempre en español con `;`). */
   codigo: string;
   /** Versión alternativa en inglés (para fórmulas de Excel con `,`). */
@@ -94,6 +105,8 @@ export interface SeccionGuia {
     titulo: string;
     texto: string;
   };
+  /** Caja «Verifica el resultado» al final de pasos que usan IA. */
+  verificaResultado?: string;
 }
 
 export interface ErrorComunGuia {
@@ -129,8 +142,14 @@ export interface GuiaPasoAPaso {
   published: string;
   /** Duración ISO 8601 para `HowTo.totalTime`, p. ej. `PT20M`. */
   totalTimeIso: string;
-  /** `true` en guías insignia (#13 a #16), exige ≥ 2.000 palabras útiles. */
+  /** `true` en guías insignia, exige ≥ 2.000 palabras útiles. */
   esInsignia?: boolean;
+  /** Marca guías que usan IA (activa aviso de privacidad de datos sensibles si aplica). */
+  esGuiaIA?: boolean;
+  /** Aviso específico de privacidad y anonimización para guías de IA. */
+  avisoPrivacidad?: string;
+  /** `true` en guías conceptuales o comparativas donde no aplica schema `HowTo`. */
+  omitirHowTo?: boolean;
   en30Segundos: {
     queLogras: string;
     herramienta: string;

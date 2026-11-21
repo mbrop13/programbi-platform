@@ -14,7 +14,16 @@ import {
 import { rutaLocal } from "@/lib/paises/rutas";
 
 const TODOS = "todos";
-const HERRAMIENTAS_ORDEN = ["Excel", "Power BI", "Power Automate", "SQL", "Python"];
+const HERRAMIENTAS_ORDEN = [
+  "IA",
+  "Excel",
+  "Power BI",
+  "Power Automate",
+  "SQL",
+  "Python",
+  "Google Sheets",
+  "Carrera",
+];
 const NIVELES_ORDEN = ["Básico", "Intermedio", "Avanzado"];
 
 /** Lee los filtros de la URL. Solo se llama en efectos, nunca en SSR. */

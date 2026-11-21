@@ -2,12 +2,14 @@ import Link from "next/link";
 import {
   AlertTriangle,
   ArrowRight,
+  CheckCircle2,
   Clock,
   ExternalLink,
   FileDown,
   Info,
   Lightbulb,
   MessageCircle,
+  ShieldAlert,
 } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import CapturaPendiente from "@/components/guias/CapturaPendiente";
@@ -103,6 +105,9 @@ function construirToc(guia: GuiaPasoAPaso): ItemTocPasoAPaso[] {
   return items;
 }
 
+const AVISO_PRIVACIDAD_ESTANDAR =
+  "No subas datos personales ni sensibles (RUT, sueldos con nombre, correos o bases reales de clientes) a herramientas de IA sin un contrato empresarial aprobado. Anonimiza nombres, reemplaza identificadores por códigos ficticios y trabaja sobre muestras agregadas.";
+
 export default function GuiaPasoAPasoLayout({
   guia,
   relacionadasMap,
@@ -111,6 +116,12 @@ export default function GuiaPasoAPasoLayout({
   relacionadasMap: Record<string, RelacionadaResumen>;
 }) {
   const curso = datosCursoParaGuia(guia.curso);
+  const cursoSecundarioData = guia.cursoSecundario
+    ? datosCursoParaGuia(guia.cursoSecundario)
+    : null;
+  const cursoSecundario = cursoSecundarioData
+    ? { slug: cursoSecundarioData.slug, nombre: cursoSecundarioData.nombre }
+    : null;
   const lecturaMin = tiempoLecturaPasoAPaso(guia);
   const actualizado = fechaActualizado(guia.updated);
   const tocItems = construirToc(guia);
@@ -258,6 +269,25 @@ export default function GuiaPasoAPasoLayout({
                 ) : null}
               </section>
 
+              {guia.esGuiaIA || guia.avisoPrivacidad ? (
+                <div
+                  role="note"
+                  className="mt-4 flex items-start gap-2.5 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3.5 text-sm leading-relaxed text-ink"
+                >
+                  <ShieldAlert
+                    size={17}
+                    className="mt-0.5 shrink-0 text-amber-700"
+                    aria-hidden
+                  />
+                  <div>
+                    <p className="font-semibold">Aviso de privacidad y anonimización</p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-mute">
+                      {guia.avisoPrivacidad || AVISO_PRIVACIDAD_ESTANDAR}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
               {/* 6) Paso a paso (+ 7) Tabla comparativa dentro de su sección) */}
               <div className="mt-10 space-y-10">
                 {guia.secciones.map((sec, idx) => (
@@ -363,6 +393,22 @@ export default function GuiaPasoAPasoLayout({
                           ))}
                         </div>
                       ) : null}
+
+                      {sec.verificaResultado ? (
+                        <div className="mt-5 flex items-start gap-2.5 rounded-2xl border border-emerald-600/25 bg-emerald-600/10 px-4 py-3.5 text-sm leading-relaxed text-ink">
+                          <CheckCircle2
+                            size={17}
+                            className="mt-0.5 shrink-0 text-emerald-700"
+                            aria-hidden
+                          />
+                          <div>
+                            <p className="font-semibold">Verifica el resultado</p>
+                            <p className="mt-0.5 text-xs leading-relaxed text-mute">
+                              {sec.verificaResultado}
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
                     </section>
 
                     {idx === insertMobileCardAfterIdx ? (
@@ -370,6 +416,7 @@ export default function GuiaPasoAPasoLayout({
                         <GuiaPasoAPasoCursoCard
                           guia={guia}
                           curso={curso}
+                          cursoSecundario={cursoSecundario}
                           ctaPosition="guia_paso_a_paso_inline_mobile"
                         />
                       </div>
@@ -546,6 +593,7 @@ export default function GuiaPasoAPasoLayout({
                 <GuiaPasoAPasoCursoCard
                   guia={guia}
                   curso={curso}
+                  cursoSecundario={cursoSecundario}
                   ctaPosition="guia_paso_a_paso_final_mobile"
                 />
               </div>
@@ -610,6 +658,7 @@ export default function GuiaPasoAPasoLayout({
               <GuiaPasoAPasoCursoCard
                 guia={guia}
                 curso={curso}
+                cursoSecundario={cursoSecundario}
                 sticky
                 ctaPosition="guia_paso_a_paso_lateral"
               />

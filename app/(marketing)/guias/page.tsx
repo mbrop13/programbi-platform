@@ -70,6 +70,36 @@ export default function GuiasIndexPage() {
 
   const canonical = absoluteUrl("/guias");
 
+  const bloqueIaDatos = [
+    {
+      href: "/guias/como-usar-claude-para-analisis-de-datos",
+      tituloFallback: "Claude para análisis de datos",
+      descripcionFallback: "Análisis de archivos, limpieza, fórmulas y validación paso a paso.",
+    },
+    {
+      href: "/guias/chatgpt-para-analisis-de-datos",
+      tituloFallback: "ChatGPT para análisis de datos",
+      descripcionFallback: "Sube planillas, genera gráficos y revisa cálculos con prompts.",
+    },
+    {
+      href: "/guias/gemini-para-analisis-de-datos",
+      tituloFallback: "Gemini para análisis de datos",
+      descripcionFallback: "Trabajo con Google Sheets, Excel y análisis asistido.",
+    },
+    {
+      href: "/guias/claude-vs-chatgpt-analisis-de-datos",
+      tituloFallback: "Claude vs ChatGPT para datos",
+      descripcionFallback: "Comparativa práctica para elegir herramienta según tu flujo.",
+    },
+  ].map((item) => {
+    const tarjeta = tarjetas.find((t) => t.path === item.href);
+    return {
+      href: item.href,
+      titulo: tarjeta?.h1 ?? item.tituloFallback,
+      descripcion: tarjeta?.description ?? item.descripcionFallback,
+    };
+  });
+
   // CollectionPage + ItemList: el hub es un índice, no un artículo. Ayuda a
   // que buscadores y asistentes entiendan que estas son las guías publicadas.
   const jsonLd = {
@@ -125,6 +155,39 @@ export default function GuiasIndexPage() {
         <div className="mt-8">
           <GuiasHub guias={tarjetas} paises={paises} cursos={cursos} />
         </div>
+
+        <section
+          aria-labelledby="ia-analisis-datos"
+          className="mt-12 rounded-[26px] border border-line-strong bg-paper px-5 py-6"
+        >
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+            Rutas recomendadas
+          </p>
+          <h2 id="ia-analisis-datos" className="mt-1 text-xl font-bold tracking-tight text-ink">
+            IA para análisis de datos
+          </h2>
+          <p className="mt-1 max-w-[70ch] text-sm leading-relaxed text-mute">
+            Guías y comparativas para trabajar con Claude, ChatGPT y Gemini sobre planillas, tablas y reportes reales.
+          </p>
+          <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {bloqueIaDatos.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="flex h-full flex-col rounded-2xl border border-line bg-canvas p-4 no-underline transition-colors hover:border-ink/35"
+                >
+                  <span className="text-sm font-bold leading-snug text-ink">{item.titulo}</span>
+                  <span className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-mute">
+                    {item.descripcion}
+                  </span>
+                  <span className="mt-auto inline-flex items-center gap-1 pt-3 text-xs font-semibold text-ink">
+                    Leer guía <ArrowRight size={12} aria-hidden />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <section
           aria-labelledby="guia-destacada"

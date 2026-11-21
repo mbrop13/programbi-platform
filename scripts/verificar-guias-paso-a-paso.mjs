@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Auditoría integral de las 20 guías paso a paso + mejora de power-bi-vs-excel.
+ * Auditoría integral de las guías paso a paso (Tanda 1 + Tanda 2) + power-bi-vs-excel.
  * Valida SEO, conteo de palabras, solapamiento de shingles de 8 palabras (<10%),
  * capturas en CAPTURAS.md, ausencia de datos inventados/credenciales,
- * enlaces externos e internos, endpoints mindicador/BCCh y sintaxis de código.
+ * prompts y verificación IA, enlaces externos e internos, endpoints mindicador/BCCh y sintaxis de código.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -22,13 +22,18 @@ const OUT_JSON = process.argv.includes("--out")
 const NO_NET = process.argv.includes("--no-net");
 
 const INSIGNIA = new Set([
+  // Tanda 1
   "automatizar-reportes-con-power-bi",
   "automatizar-excel-con-power-query",
   "enviar-reportes-automaticos-con-power-automate",
   "dashboard-de-ventas-en-power-bi-paso-a-paso",
+  // Tanda 2
+  "chatgpt-para-analisis-de-datos",
+  "ia-para-excel-chatgpt-claude-gemini",
+  "ia-para-power-bi-dax",
+  "python-para-analisis-de-datos",
+  "consultas-sql-ejemplos",
 ]);
-// Nota: el Súper Prompt §2 indica "2.000 en las insignia (#13 a #16)", aunque #13, #14 y #16 llevan marca INSIGNIA.
-// Exigimos >=2000 en #13, #14, #15 y #16 para cumplir ambos criterios sin margen de error.
 
 function loadTsGuia(filePath) {
   const source = readFileSync(filePath, "utf8");
@@ -83,12 +88,14 @@ function extractPlainTextFromGuia(g) {
     ...g.requisitos.lista,
     g.requisitos.compatibilidadMacWeb,
     g.requisitos.avisoEducativo || "",
+    g.avisoPrivacidad || "",
   ];
   for (const s of g.secciones) {
     parts.push(s.titulo, ...s.parrafos);
     if (s.lista) parts.push(...s.lista);
     if (s.listaOrdenada) parts.push(...s.listaOrdenada);
     if (s.alerta) parts.push(s.alerta.titulo, s.alerta.texto);
+    if (s.verificaResultado) parts.push(s.verificaResultado);
     if (s.tabla) {
       if (s.tabla.caption) parts.push(s.tabla.caption);
       parts.push(...s.tabla.encabezados, ...s.tabla.filas.flat());
@@ -207,6 +214,7 @@ async function main() {
     legacyGuias.filter((g) => g.path.startsWith("/guias/")).map((g) => g.slug)
   );
   const newSlugs = new Set(guias.map((g) => g.slug));
+  const indexSource = readFileSync(join(DIR_PASO, "index.ts"), "utf8");
   const vsExcel = parseMarkdownFile(PATH_VS_EXCEL);
 
   const errors = [];
@@ -246,7 +254,12 @@ async function main() {
       }
     }
     if (!hasTable) errors.push(`${g.slug}: missing comparison table`);
-    if (howToSteps.length < 3) errors.push(`${g.slug}: howToSteps=${howToSteps.length} < 3`);
+    if (!g.omitirHowTo && howToSteps.length < 3) {
+      errors.push(`${g.slug}: howToSteps=${howToSteps.length} < 3`);
+    }
+    if (!indexSource.includes(`./${g.slug}`)) {
+      errors.push(`${g.slug}: missing import/export in content/guias/paso-a-paso/index.ts`);
+    }
     if (g.erroresComunes.length < 3 || g.erroresComunes.length > 6) {
       errors.push(`${g.slug}: erroresComunes=${g.erroresComunes.length}`);
     }
@@ -259,6 +272,29 @@ async function main() {
     for (const r of g.relacionadas) {
       if (r === g.slug || (!newSlugs.has(r) && !rootLegacySlugs.has(r))) {
         errors.push(`${g.slug}: invalid relacionada "${r}"`);
+      }
+    }
+    for (const extra of g.enlacesInternosExtra || []) {
+      if (extra.href.startsWith("/guias/")) {
+        const targetSlug = extra.href.slice("/guias/".length);
+        if (targetSlug && !newSlugs.has(targetSlug) && !rootLegacySlugs.has(targetSlug)) {
+          errors.push(`${g.slug}: invalid enlacesInternosExtra href "${extra.href}"`);
+        }
+      }
+    }
+    if (g.esGuiaIA) {
+      const promptBlocks = codes.filter((c) => c.lenguaje === "prompt").length;
+      const verificaCount = g.secciones.filter((s) => Boolean(s.verificaResultado)).length;
+      if (promptBlocks < 5) {
+        errors.push(`${g.slug}: esGuiaIA has only ${promptBlocks} prompt blocks (< 5)`);
+      }
+      if (verificaCount < 1) {
+        errors.push(`${g.slug}: esGuiaIA missing verificaResultado box`);
+      }
+    }
+    for (const ext of g.enlacesExternos || []) {
+      if (/support\.microsoft\.com|Web_Services\/index_EN\.htm/i.test(ext.url)) {
+        errors.push(`${g.slug}: blocked/broken official URL pattern (${ext.url})`);
       }
     }
 
@@ -313,7 +349,11 @@ async function main() {
     if (/(?:169|338|349|249)[.,]000\b/.test(rawTs)) {
       errors.push(`${g.slug}: hardcoded course price detected`);
     }
-    if (g.slug === "liquidacion-de-sueldo-en-excel-chile" && !g.requisitos.avisoEducativo) {
+    if (
+      (g.slug === "liquidacion-de-sueldo-en-excel-chile" ||
+        g.slug === "calcular-finiquito-chile-excel") &&
+      !g.requisitos.avisoEducativo
+    ) {
       errors.push(`${g.slug}: missing avisoEducativo`);
     }
 

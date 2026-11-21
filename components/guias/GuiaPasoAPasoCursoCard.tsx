@@ -7,11 +7,13 @@ import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
 export default function GuiaPasoAPasoCursoCard({
   guia,
   curso,
+  cursoSecundario = null,
   sticky = false,
   ctaPosition = "guia_paso_a_paso_lateral",
 }: {
   guia: Pick<GuiaPasoAPaso, "slug" | "h1" | "curso">;
   curso: DatosCursoGuia;
+  cursoSecundario?: { slug: string; nombre: string } | null;
   sticky?: boolean;
   ctaPosition?: string;
 }) {
@@ -93,6 +95,15 @@ export default function GuiaPasoAPasoCursoCard({
           Ver el curso
           <ArrowRight size={13} aria-hidden />
         </Link>
+
+        {cursoSecundario ? (
+          <Link
+            href={`/cursos/${cursoSecundario.slug}`}
+            className="mt-0.5 text-center text-xs font-medium text-mute underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink"
+          >
+            También te sirve: Curso de {cursoSecundario.nombre}
+          </Link>
+        ) : null}
 
         <Link
           href={`/registro?from=/guias/${guia.slug}`}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Sparkles } from "lucide-react";
 import type { BloqueCodigo } from "@/lib/guias/paso-a-paso-tipos";
 
 const ETIQUETA_LENGUAJE: Record<BloqueCodigo["lenguaje"], string> = {
@@ -13,12 +13,16 @@ const ETIQUETA_LENGUAJE: Record<BloqueCodigo["lenguaje"], string> = {
   sql: "SQL Server",
   json: "JSON",
   "power-automate": "Power Automate",
+  prompt: "Prompt listo para copiar",
+  sheets: "Google Sheets",
+  bash: "Terminal",
 };
 
 export default function GuiaPasoAPasoCodeBlock({ bloque }: { bloque: BloqueCodigo }) {
   const [idioma, setIdioma] = useState<"es" | "en">("es");
   const [copiado, setCopiado] = useState(false);
 
+  const esPrompt = bloque.lenguaje === "prompt";
   const tieneEn = Boolean(bloque.codigoEn && bloque.codigoEn.trim().length > 0);
   const codigoActivo = idioma === "en" && bloque.codigoEn ? bloque.codigoEn : bloque.codigo;
   const lineas = codigoActivo.split("\n");
@@ -34,10 +38,25 @@ export default function GuiaPasoAPasoCodeBlock({ bloque }: { bloque: BloqueCodig
   };
 
   return (
-    <div className="my-5 overflow-hidden rounded-2xl border border-line-strong bg-paper shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-wash/70 px-4 py-2.5">
+    <div
+      className={`my-5 overflow-hidden rounded-2xl border bg-paper shadow-sm ${
+        esPrompt ? "border-amber-500/40" : "border-line-strong"
+      }`}
+    >
+      <div
+        className={`flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2.5 ${
+          esPrompt
+            ? "border-amber-500/25 bg-amber-500/10"
+            : "border-line bg-wash/70"
+        }`}
+      >
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span className="inline-flex items-center rounded-md bg-ink px-2 py-0.5 text-[11px] font-bold tracking-wide text-canvas">
+          <span
+            className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-bold tracking-wide ${
+              esPrompt ? "bg-amber-700 text-white" : "bg-ink text-canvas"
+            }`}
+          >
+            {esPrompt ? <Sparkles size={11} aria-hidden /> : null}
             {ETIQUETA_LENGUAJE[bloque.lenguaje]}
           </span>
           <span className="truncate text-xs font-semibold text-ink">{bloque.titulo}</span>

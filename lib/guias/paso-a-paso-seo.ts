@@ -30,6 +30,8 @@ export function contarPalabrasGuiaPasoAPaso(guia: GuiaPasoAPaso): number {
   total += contarPalabrasTexto(guia.requisitos.avisoEducativo);
   for (const item of guia.requisitos.lista) total += contarPalabrasTexto(item);
 
+  total += contarPalabrasTexto(guia.avisoPrivacidad);
+
   for (const sec of guia.secciones) {
     total += contarPalabrasTexto(sec.titulo);
     for (const p of sec.parrafos) total += contarPalabrasTexto(p);
@@ -39,6 +41,7 @@ export function contarPalabrasGuiaPasoAPaso(guia: GuiaPasoAPaso): number {
       total += contarPalabrasTexto(sec.alerta.titulo);
       total += contarPalabrasTexto(sec.alerta.texto);
     }
+    total += contarPalabrasTexto(sec.verificaResultado);
     if (sec.tabla) {
       total += contarPalabrasTexto(sec.tabla.caption);
       for (const h of sec.tabla.encabezados) total += contarPalabrasTexto(h);
@@ -230,8 +233,14 @@ export function jsonLdDeGuiaPasoAPaso(guia: GuiaPasoAPaso) {
     ],
   };
 
+  const graph: Record<string, unknown>[] = [techArticle];
+  if (!guia.omitirHowTo && howToSteps.length > 0) {
+    graph.push(howTo);
+  }
+  graph.push(faqPage, breadcrumbList);
+
   return {
     "@context": "https://schema.org",
-    "@graph": [techArticle, howTo, faqPage, breadcrumbList],
+    "@graph": graph,
   };
 }

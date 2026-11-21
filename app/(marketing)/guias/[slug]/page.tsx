@@ -6,9 +6,54 @@ import GuiaPasoAPasoLayout, {
 } from "@/components/guias/GuiaPasoAPasoLayout";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { GUIAS_PASO_A_PASO, guiaPasoAPasoPorSlug } from "@/content/guias/paso-a-paso";
-import { guiaPorPath, guiasRaiz } from "@/lib/guias";
+import { guiaPorPath, guiasRaiz, type Guia } from "@/lib/guias";
 import { metadataDeGuia } from "@/lib/guias/metadata";
 import { metadataDeGuiaPasoAPaso } from "@/lib/guias/paso-a-paso-seo";
+
+const ENLACES_VUELTA_LEGACY: Record<string, readonly string[]> = {
+  "como-usar-claude-para-analisis-de-datos": [
+    "chatgpt-para-analisis-de-datos",
+    "gemini-para-analisis-de-datos",
+    "ia-para-excel-chatgpt-claude-gemini",
+  ],
+  "claude-vs-chatgpt-analisis-de-datos": [
+    "chatgpt-para-analisis-de-datos",
+    "gemini-para-analisis-de-datos",
+    "chatgpt-vs-gemini-vs-copilot",
+  ],
+  "como-usar-copilot-en-excel": [
+    "copilot-en-power-bi",
+    "prompts-para-excel",
+    "copilot-studio-crear-agente",
+  ],
+  "funciones-dax-mas-importantes": [
+    "ia-para-power-bi-dax",
+    "copilot-en-power-bi",
+  ],
+  "power-bi-vs-excel": [
+    "licencias-power-bi-precio-chile",
+    "google-sheets-vs-excel",
+  ],
+};
+
+function pasoAPasoComoGuiaMinima(
+  paso: NonNullable<ReturnType<typeof guiaPasoAPasoPorSlug>>
+): Guia {
+  return {
+    source: `content/guias/paso-a-paso/${paso.slug}`,
+    slug: paso.slug,
+    path: `/guias/${paso.slug}`,
+    country: "cl",
+    lang: "es-CL",
+    title: paso.title,
+    description: paso.meta,
+    h1: paso.h1,
+    updated: paso.updated,
+    course: paso.curso,
+    body: "",
+    faqs: paso.faqs,
+  };
+}
 
 export const revalidate = false;
 export const dynamicParams = false;
@@ -87,9 +132,21 @@ export default async function GuiaRootPage({ params }: { params: Promise<Params>
 
   const guia = guiaDe(slug);
   if (!guia) notFound();
-  const relacionadas = guiasRaiz().filter(
-    (otra) => otra.path !== guia.path && otra.country === guia.country
+  const extraSlugs = ENLACES_VUELTA_LEGACY[guia.slug] ?? [];
+  const extraGuias: Guia[] = [];
+  const extraPaths = new Set<string>();
+  for (const extraSlug of extraSlugs) {
+    const pasoExtra = guiaPasoAPasoPorSlug(extraSlug);
+    if (pasoExtra) {
+      const minima = pasoAPasoComoGuiaMinima(pasoExtra);
+      extraGuias.push(minima);
+      extraPaths.add(minima.path);
+    }
+  }
+  const relacionadasBase = guiasRaiz().filter(
+    (otra) => otra.path !== guia.path && otra.country === guia.country && !extraPaths.has(otra.path)
   );
+  const relacionadas = [...extraGuias, ...relacionadasBase];
   const ocultarTestimonios = guia.slug === "power-bi-vs-excel";
 
   return (
