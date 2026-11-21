@@ -86,8 +86,8 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
   if (isBrochure) return null;
 
   return (
-    <footer className="border-t border-line bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-label="Pie de página">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
+    <footer className="border-t border-border bg-surface px-4 py-12 sm:px-6 lg:px-8 xl:px-10" aria-label="Pie de página">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <Link href={hrefLocal("/")} className="relative block h-8 w-[148px]" aria-label="ProgramBI">
             <Image
@@ -99,40 +99,40 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               className="h-8 w-[148px] object-contain object-left"
             />
           </Link>
-          <p className="mt-4 max-w-[28rem] text-sm leading-relaxed text-mute">
+          <p className="mt-4 max-w-[28rem] text-sm leading-relaxed text-text-secondary">
             {pais === ISO_CHILE
               ? "Centro de capacitaciones en análisis de datos. Santiago, Chile."
               : "Centro de capacitaciones en análisis de datos."}
           </p>
           {pais !== ISO_CHILE && getPais(pais).contacto.ciudad ? (
-            <p className="mt-2 text-sm text-mute">{getPais(pais).contacto.ciudad}</p>
+            <p className="mt-2 text-sm text-text-secondary">{getPais(pais).contacto.ciudad}</p>
           ) : null}
         </div>
 
-        <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Sitio">
+        <nav className="flex flex-col gap-3 text-sm font-medium text-text-primary" aria-label="Sitio">
           {companyLinks.map((item) => (
-            <Link key={item.href} href={hrefIndexable(item.href)} className="no-underline hover:text-mute">
+            <Link key={item.href} href={hrefIndexable(item.href)} className="no-underline transition-colors hover:text-text-secondary">
               {item.label === "Registrarse" ? etiquetaBoton(pais, item.label) : item.label}
             </Link>
           ))}
           {pais === ISO_CHILE ? (
-            <Link href="/datos" className="no-underline hover:text-mute">
+            <Link href="/datos" className="no-underline transition-colors hover:text-text-secondary">
               Datos de Chile
             </Link>
           ) : null}
           {GUIAS_POR_PAIS.has(pais) && esRutaIndexablePais(pais, "/guias") ? (
             <Link
               href={pais === ISO_CHILE ? "/guias" : `/${pais}/guias`}
-              className="no-underline hover:text-mute"
+              className="no-underline transition-colors hover:text-text-secondary"
             >
               Guías prácticas
             </Link>
           ) : null}
         </nav>
 
-        <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Cursos">
+        <nav className="flex flex-col gap-3 text-sm font-medium text-text-primary" aria-label="Cursos">
           {CURSOS_PRIORITARIOS.map((item) => (
-            <Link key={item.href} href={hrefIndexable(item.href)} className="no-underline hover:text-mute">
+            <Link key={item.href} href={hrefIndexable(item.href)} className="no-underline transition-colors hover:text-text-secondary">
               {item.label}
             </Link>
           ))}
@@ -142,39 +142,39 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               <Link
                 key={course.slug}
                 href={hrefIndexable(`/cursos/${course.slug}`)}
-                className="no-underline hover:text-mute"
+                className="no-underline transition-colors hover:text-text-secondary"
               >
                 {course.title}
               </Link>
             ))}
-          <Link href={hrefIndexable("/cursos/machine-learning")} className="no-underline hover:text-mute">
+          <Link href={hrefIndexable("/cursos/machine-learning")} className="no-underline transition-colors hover:text-text-secondary">
             Machine Learning
           </Link>
-          <Link href={hrefIndexable("/cursos/mercado-financiero")} className="no-underline hover:text-mute">
+          <Link href={hrefIndexable("/cursos/mercado-financiero")} className="no-underline transition-colors hover:text-text-secondary">
             Mercado financiero
           </Link>
-          <Link href={hrefIndexable("/empresas")} className="no-underline hover:text-mute">
+          <Link href={hrefIndexable("/empresas")} className="no-underline transition-colors hover:text-text-secondary">
             Power BI para empresas
           </Link>
         </nav>
 
-        <div className="flex flex-col gap-3 text-sm text-mute">
+        <div className="flex flex-col gap-3 text-sm text-text-secondary">
           {socialLinks.map((social) => (
-            <a key={social.name} href={social.href} target="_blank" rel="noopener noreferrer">
+            <a key={social.name} href={social.href} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-text-primary">
               {social.name}
             </a>
           ))}
-          <a href="mailto:contacto@programbi.cl">contacto@programbi.cl</a>
-          <a href={whatsappHref({ page: "/", country: pais, intent: "general" })} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-          <Link href="/privacidad" className="no-underline">
+          <a href="mailto:contacto@programbi.cl" className="transition-colors hover:text-text-primary">contacto@programbi.cl</a>
+          <a href={whatsappHref({ page: "/", country: pais, intent: "general" })} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-text-primary">WhatsApp</a>
+          <Link href="/privacidad" className="no-underline transition-colors hover:text-text-primary">
             Privacidad
           </Link>
-          <Link href="/terminos" className="no-underline">
+          <Link href="/terminos" className="no-underline transition-colors hover:text-text-primary">
             Términos
           </Link>
         </div>
       </div>
-      <p className="mx-auto mt-12 max-w-[1400px] text-xs text-faint">
+      <p className="mx-auto mt-12 max-w-[1440px] text-xs text-text-muted">
         ProgramBI SPA · {pais === ISO_CHILE ? "Chile" : getPais(pais).nombre}
       </p>
     </footer>

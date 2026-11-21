@@ -338,11 +338,11 @@ export default function Navbar() {
           isHidden ? "-translate-y-full" : "translate-y-0"
         } ${
           isScrolled || isMobileOpen
-            ? "border-b border-line bg-canvas/85 shadow-xs backdrop-blur-xl"
+            ? "border-b border-border bg-bg/90 shadow-xs backdrop-blur-xl"
             : "border-b border-transparent bg-transparent"
         }`}
       >
-        <div className="relative mx-auto flex h-full max-w-[1400px] items-center px-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto flex h-full max-w-[1440px] items-center px-4 sm:px-6 lg:px-8 xl:px-10">
           <Link href={hrefLocal("/")} className="relative z-10 h-8 w-[150px] shrink-0" aria-label="ProgramBI">
             <Image
               src="/images/logo-nav.webp"
@@ -354,7 +354,7 @@ export default function Navbar() {
             />
           </Link>
 
-          <nav className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-5 text-[14.5px] font-medium text-mute lg:flex xl:gap-7" aria-label="Principal">
+          <nav className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-5 text-[14.5px] font-medium text-text-secondary lg:flex xl:gap-7" aria-label="Principal">
             {navLinks.map((link) =>
               link.hasMega ? (
                 <div
@@ -363,30 +363,30 @@ export default function Navbar() {
                   onMouseEnter={handleMegaEnter}
                   onMouseLeave={handleMegaLeave}
                 >
-                  <Link href={hrefNav(link.href)} className="inline-flex items-center gap-1 transition-colors hover:text-ink no-underline">
+                  <Link href={hrefNav(link.href)} className="inline-flex items-center gap-1 transition-colors hover:text-text-primary no-underline">
                     {link.label}
                     <ChevronDown size={14} className={isMegaOpen ? "rotate-180" : ""} />
                   </Link>
 
                   {isMegaOpen ? (
                       <div
-                        className="absolute top-[calc(100%+14px)] left-1/2 w-[680px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-line bg-paper shadow-[0_25px_80px_rgba(23,23,22,0.10)]"
+                        className="absolute top-[calc(100%+14px)] left-1/2 w-[680px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-border bg-surface shadow-[0_25px_80px_rgba(17,24,39,0.10)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.45)]"
                         onMouseEnter={handleMegaEnter}
                         onMouseLeave={handleMegaLeave}
                       >
                         <div className="grid grid-cols-3 gap-6 px-5 py-5">
                           {courseGroups.map((group) => (
                             <div key={group.id}>
-                              <p className="text-xs font-semibold text-mute">{group.label}</p>
+                              <p className="text-xs font-semibold text-text-secondary">{group.label}</p>
                               <ul className="mt-2">
                                 {group.items.map((course) => (
                                   <li key={course.slug}>
                                     <Link
                                       href={hrefLocal(`/cursos/${course.slug}`)}
                                       onClick={() => setIsMegaOpen(false)}
-                                      className="flex items-center gap-2.5 rounded-md px-1.5 py-2 no-underline transition-colors hover:bg-wash"
+                                      className="flex items-center gap-2.5 rounded-md px-1.5 py-2 no-underline transition-colors hover:bg-surface-hover"
                                     >
-                                      <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-md border border-line bg-wash">
+                                      <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-md border border-border bg-surface-hover">
                                         <Image
                                           src={course.imageUrl}
                                           alt={course.title}
@@ -396,7 +396,7 @@ export default function Navbar() {
                                         />
                                       </span>
                                       <span className="min-w-0 flex-1">
-                                        <span className="block line-clamp-2 text-sm font-semibold leading-tight text-ink">
+                                        <span className="block line-clamp-2 text-sm font-semibold leading-tight text-text-primary">
                                           {course.title}
                                         </span>
                                       </span>
@@ -407,11 +407,11 @@ export default function Navbar() {
                             </div>
                           ))}
                         </div>
-                        <div className="border-t border-line px-5 py-3">
+                        <div className="border-t border-border px-5 py-3">
                           <Link
                             href={hrefLocal("/cursos")}
                             onClick={() => setIsMegaOpen(false)}
-                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-primary no-underline transition-colors hover:text-text-secondary"
                           >
                             Ver todos los cursos <ArrowRight size={14} />
                           </Link>
@@ -426,14 +426,14 @@ export default function Navbar() {
                   onMouseEnter={handleRecursosEnter}
                   onMouseLeave={handleRecursosLeave}
                 >
-                  <Link href={hrefNav(link.href)} className="inline-flex items-center gap-1 transition-colors hover:text-ink no-underline">
+                  <Link href={hrefNav(link.href)} className="inline-flex items-center gap-1 transition-colors hover:text-text-primary no-underline">
                     {link.label}
                     <ChevronDown size={14} className={isRecursosOpen ? "rotate-180" : ""} />
                   </Link>
 
                   {isRecursosOpen ? (
                     <div
-                      className="absolute top-[calc(100%+14px)] left-1/2 w-[340px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-line bg-paper p-2.5 shadow-[0_25px_80px_rgba(23,23,22,0.10)]"
+                      className="absolute top-[calc(100%+14px)] left-1/2 w-[340px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-border bg-surface p-2.5 shadow-[0_25px_80px_rgba(17,24,39,0.10)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.45)]"
                       onMouseEnter={handleRecursosEnter}
                       onMouseLeave={handleRecursosLeave}
                     >
@@ -443,12 +443,12 @@ export default function Navbar() {
                             <Link
                               href={hrefNav(item.href)}
                               onClick={() => setIsRecursosOpen(false)}
-                              className="block rounded-xl px-3 py-2.5 no-underline transition-colors hover:bg-wash"
+                              className="block rounded-xl px-3 py-2.5 no-underline transition-colors hover:bg-surface-hover"
                             >
-                              <span className="block text-sm font-semibold leading-tight text-ink">
+                              <span className="block text-sm font-semibold leading-tight text-text-primary">
                                 {item.label}
                               </span>
-                              <span className="mt-0.5 block text-xs leading-snug text-mute">
+                              <span className="mt-0.5 block text-xs leading-snug text-text-secondary">
                                 {item.desc}
                               </span>
                             </Link>
@@ -459,7 +459,7 @@ export default function Navbar() {
                   ) : null}
                 </div>
               ) : (
-                <Link key={link.href} href={hrefNav(link.href)} className="transition-colors hover:text-ink no-underline">
+                <Link key={link.href} href={hrefNav(link.href)} className="transition-colors hover:text-text-primary no-underline">
                   {link.label}
                 </Link>
               )
@@ -468,14 +468,14 @@ export default function Navbar() {
 
           <div className="relative z-10 ml-auto flex items-center justify-end gap-3 lg:min-w-[17.5rem]">
             {loading ? (
-              <div className="hidden h-10 w-28 rounded-full bg-surface sm:block" />
+              <div className="hidden h-10 w-28 rounded-full bg-surface-hover sm:block" />
             ) : user ? (
               <div className="relative hidden sm:block" onMouseEnter={handleUserMenuEnter} onMouseLeave={handleUserMenuLeave}>
                 <button
                   type="button"
-                  className="inline-flex h-10 items-center gap-2 rounded-full border border-line bg-paper px-2 pr-3 text-sm font-semibold text-ink"
+                  className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-2 pr-3 text-sm font-semibold text-text-primary transition-colors hover:bg-surface-hover"
                 >
-                  <span className="flex size-7 items-center justify-center rounded-full bg-ink text-[11px] font-bold text-canvas">
+                  <span className="flex size-7 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-accent-foreground">
                     {getInitials(user.user_metadata?.full_name || user.email || "")}
                   </span>
                   <span className="max-w-[90px] truncate">
@@ -484,23 +484,23 @@ export default function Navbar() {
                 </button>
 
                 {isUserMenuOpen ? (
-                    <div className="absolute right-0 top-[calc(100%+8px)] w-[240px] overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_16px_40px_rgba(23,23,22,0.08)]">
-                      <div className="border-b border-line px-4 py-3">
-                        <p className="truncate text-xs text-mute">{user.email}</p>
+                    <div className="absolute right-0 top-[calc(100%+8px)] w-[240px] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_16px_40px_rgba(17,24,39,0.08)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.45)]">
+                      <div className="border-b border-border px-4 py-3">
+                        <p className="truncate text-xs text-text-secondary">{user.email}</p>
                       </div>
                       <div className="p-1.5">
                         <Link
                           href="/comunidad/cursos"
-                          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-ink no-underline hover:bg-surface"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-text-primary no-underline transition-colors hover:bg-surface-hover"
                         >
-                          <LayoutDashboard className="h-4 w-4 text-mute" />
+                          <LayoutDashboard className="h-4 w-4 text-text-secondary" />
                           Comunidad
                         </Link>
                         <Link
                           href="/referidos/app"
-                          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-ink no-underline hover:bg-surface"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-text-primary no-underline transition-colors hover:bg-surface-hover"
                         >
-                          <Handshake className="h-4 w-4 text-mute" />
+                          <Handshake className="h-4 w-4 text-text-secondary" />
                           Referidos
                         </Link>
                         <button
@@ -509,9 +509,9 @@ export default function Navbar() {
                             setIsUserMenuOpen(false);
                             setProfileModal({ isOpen: true, tab: "profile" });
                           }}
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-surface"
+                          className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-text-primary transition-colors hover:bg-surface-hover"
                         >
-                          <UserCircle className="h-4 w-4 text-mute" />
+                          <UserCircle className="h-4 w-4 text-text-secondary" />
                           Ver perfil
                         </button>
                         <button
@@ -520,9 +520,9 @@ export default function Navbar() {
                             setIsUserMenuOpen(false);
                             setProfileModal({ isOpen: true, tab: "settings" });
                           }}
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-surface"
+                          className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-text-primary transition-colors hover:bg-surface-hover"
                         >
-                          <Settings className="h-4 w-4 text-mute" />
+                          <Settings className="h-4 w-4 text-text-secondary" />
                           Ajustes
                         </button>
                         <button
@@ -531,26 +531,26 @@ export default function Navbar() {
                             setIsUserMenuOpen(false);
                             setIsSupportModalOpen(true);
                           }}
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-surface"
+                          className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-text-primary transition-colors hover:bg-surface-hover"
                         >
-                          <LifeBuoy className="h-4 w-4 text-mute" />
+                          <LifeBuoy className="h-4 w-4 text-text-secondary" />
                           Soporte
                         </button>
                         {isAdmin && (
                           <Link
                             href="/comunidad/admin"
-                            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-ink no-underline hover:bg-surface"
+                            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-text-primary no-underline transition-colors hover:bg-surface-hover"
                           >
-                            <ShieldAlert className="h-4 w-4 text-mute" />
+                            <ShieldAlert className="h-4 w-4 text-text-secondary" />
                             Panel Admin
                           </Link>
                         )}
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-surface"
+                          className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-text-primary transition-colors hover:bg-surface-hover"
                         >
-                          <LogOut className="h-4 w-4 text-mute" />
+                          <LogOut className="h-4 w-4 text-text-secondary" />
                           Cerrar sesión
                         </button>
                       </div>
@@ -561,7 +561,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setAuthModal({ isOpen: true, tab: "login" })}
-                className="hidden h-10 items-center px-1 text-[14.5px] font-medium text-mute transition-colors hover:text-ink sm:inline-flex"
+                className="hidden h-10 cursor-pointer items-center px-1 text-[14.5px] font-medium text-text-secondary transition-colors hover:text-text-primary sm:inline-flex"
               >
                 Iniciar sesión
               </button>
@@ -575,7 +575,7 @@ export default function Navbar() {
                   trackNavRegistro(pathname);
                   setAuthModal({ isOpen: true, tab: "register" });
                 }}
-                className="hidden h-10 items-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas transition-transform active:scale-95 sm:inline-flex"
+                className="hidden h-10 cursor-pointer items-center rounded-full bg-accent px-6 text-[14.5px] font-semibold text-accent-foreground transition-transform active:scale-95 sm:inline-flex"
               >
                 {etiquetaBoton(paisNav, "Registrarse")}
               </button>
@@ -583,7 +583,7 @@ export default function Navbar() {
 
             <button
               type="button"
-              className="inline-flex size-10 items-center justify-center rounded-full text-ink lg:hidden"
+              className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full text-text-primary transition-colors hover:bg-surface-hover lg:hidden"
               onClick={() => setIsMobileOpen((v) => !v)}
               aria-expanded={isMobileOpen}
               aria-controls="mobile-nav"
@@ -595,8 +595,8 @@ export default function Navbar() {
         </div>
 
         {isNewsletter && (
-          <div className="border-t border-line bg-canvas">
-            <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="border-t border-border bg-bg">
+            <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-10">
               <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
                 <button
                   type="button"
@@ -604,8 +604,8 @@ export default function Navbar() {
                     setNlActiveCategory("all");
                     window.dispatchEvent(new CustomEvent("nl-category", { detail: "all" }));
                   }}
-                  className={`px-4 py-2.5 text-[11px] font-semibold tracking-[0.12em] whitespace-nowrap ${
-                    nlActiveCategory === "all" ? "text-ink" : "text-faint"
+                  className={`min-h-[44px] cursor-pointer px-4 py-2.5 text-[11px] font-semibold tracking-[0.12em] whitespace-nowrap transition-colors ${
+                    nlActiveCategory === "all" ? "text-text-primary" : "text-text-muted hover:text-text-primary"
                   }`}
                 >
                   TODOS
@@ -618,8 +618,8 @@ export default function Navbar() {
                       setNlActiveCategory(cat.slug);
                       window.dispatchEvent(new CustomEvent("nl-category", { detail: cat.slug }));
                     }}
-                    className={`px-4 py-2.5 text-[11px] font-semibold tracking-[0.12em] whitespace-nowrap ${
-                      nlActiveCategory === cat.slug ? "text-ink" : "text-faint"
+                    className={`min-h-[44px] cursor-pointer px-4 py-2.5 text-[11px] font-semibold tracking-[0.12em] whitespace-nowrap transition-colors ${
+                      nlActiveCategory === cat.slug ? "text-text-primary" : "text-text-muted hover:text-text-primary"
                     }`}
                   >
                     {cat.name.toUpperCase()}
@@ -633,38 +633,38 @@ export default function Navbar() {
         {isMobileOpen ? (
           <div
             id="mobile-nav"
-            className="absolute inset-x-0 top-[72px] max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-b border-line bg-canvas px-4 py-5 lg:hidden"
+            className="absolute inset-x-0 top-[72px] max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-b border-border bg-bg px-4 py-5 lg:hidden"
           >
             <nav className="flex flex-col" aria-label="Móvil">
               {navLinks.map((link) =>
                 link.hasMega ? (
-                  <div key={link.href} className="border-b border-line py-1">
+                  <div key={link.href} className="border-b border-border py-1">
                     <button
                       type="button"
                       onClick={() => setIsMobileCoursesOpen((v) => !v)}
                       aria-expanded={isMobileCoursesOpen}
-                      className="flex w-full items-center justify-between py-3 text-left"
+                      className="flex min-h-[44px] w-full cursor-pointer items-center justify-between py-3 text-left"
                     >
-                      <span className="text-lg font-medium text-ink">Cursos</span>
+                      <span className="text-lg font-medium text-text-primary">Cursos</span>
                       <ChevronDown
                         size={18}
-                        className={`text-mute transition-transform ${isMobileCoursesOpen ? "rotate-180" : ""}`}
+                        className={`text-text-secondary transition-transform ${isMobileCoursesOpen ? "rotate-180" : ""}`}
                       />
                     </button>
                     {isMobileCoursesOpen ? (
                       <div className="pb-3">
                         {courseGroups.map((group) => (
                           <div key={group.id} className="mt-3 first:mt-0">
-                            <p className="px-1 text-xs font-semibold text-faint">{group.label}</p>
+                            <p className="px-1 text-xs font-semibold text-text-muted">{group.label}</p>
                             <ul className="mt-1">
                               {group.items.map((course) => (
                                 <li key={course.slug}>
                                   <Link
                                     href={hrefLocal(`/cursos/${course.slug}`)}
                                     onClick={() => setIsMobileOpen(false)}
-                                    className="block rounded-md px-1 py-2.5 no-underline"
+                                    className="flex min-h-[44px] items-center rounded-md px-1 py-2.5 no-underline transition-colors hover:bg-surface-hover"
                                   >
-                                    <span className="text-[15px] font-medium text-ink">{course.title}</span>
+                                    <span className="text-[15px] font-medium text-text-primary">{course.title}</span>
                                   </Link>
                                 </li>
                               ))}
@@ -674,7 +674,7 @@ export default function Navbar() {
                         <Link
                           href={hrefLocal("/cursos")}
                           onClick={() => setIsMobileOpen(false)}
-                          className="mt-2 inline-flex items-center gap-1.5 px-1 py-2 text-sm font-semibold text-ink no-underline"
+                          className="mt-2 inline-flex min-h-[44px] items-center gap-1.5 px-1 py-2 text-sm font-semibold text-text-primary no-underline"
                         >
                           Ver todos los cursos <ArrowRight size={14} />
                         </Link>
@@ -682,17 +682,17 @@ export default function Navbar() {
                     ) : null}
                   </div>
                 ) : link.hasRecursos ? (
-                  <div key={link.href} className="border-b border-line py-1">
+                  <div key={link.href} className="border-b border-border py-1">
                     <button
                       type="button"
                       onClick={() => setIsMobileRecursosOpen((v) => !v)}
                       aria-expanded={isMobileRecursosOpen}
-                      className="flex w-full items-center justify-between py-3 text-left"
+                      className="flex min-h-[44px] w-full cursor-pointer items-center justify-between py-3 text-left"
                     >
-                      <span className="text-lg font-medium text-ink">{link.label}</span>
+                      <span className="text-lg font-medium text-text-primary">{link.label}</span>
                       <ChevronDown
                         size={18}
-                        className={`text-mute transition-transform ${isMobileRecursosOpen ? "rotate-180" : ""}`}
+                        className={`text-text-secondary transition-transform ${isMobileRecursosOpen ? "rotate-180" : ""}`}
                       />
                     </button>
                     {isMobileRecursosOpen ? (
@@ -703,10 +703,10 @@ export default function Navbar() {
                               <Link
                                 href={hrefNav(item.href)}
                                 onClick={() => setIsMobileOpen(false)}
-                                className="block rounded-md px-1 py-2 no-underline"
+                                className="block min-h-[44px] rounded-md px-1 py-2 no-underline transition-colors hover:bg-surface-hover"
                               >
-                                <span className="block text-[15px] font-medium text-ink">{item.label}</span>
-                                <span className="block text-xs text-mute">{item.desc}</span>
+                                <span className="block text-[15px] font-medium text-text-primary">{item.label}</span>
+                                <span className="block text-xs text-text-secondary">{item.desc}</span>
                               </Link>
                             </li>
                           ))}
@@ -719,7 +719,7 @@ export default function Navbar() {
                     key={link.href}
                     href={hrefNav(link.href)}
                     onClick={() => setIsMobileOpen(false)}
-                    className="border-b border-line py-3 text-lg font-medium text-ink no-underline"
+                    className="flex min-h-[44px] items-center border-b border-border py-3 text-lg font-medium text-text-primary no-underline"
                   >
                     {link.label}
                   </Link>
@@ -732,14 +732,14 @@ export default function Navbar() {
                     <Link
                       href="/comunidad/cursos"
                       onClick={() => setIsMobileOpen(false)}
-                      className="py-3 text-lg font-medium text-ink no-underline"
+                      className="flex min-h-[44px] items-center py-3 text-lg font-medium text-text-primary no-underline"
                     >
                       Campus
                     </Link>
                     <Link
                       href="/referidos/app"
                       onClick={() => setIsMobileOpen(false)}
-                      className="py-3 text-lg font-medium text-ink no-underline"
+                      className="flex min-h-[44px] items-center py-3 text-lg font-medium text-text-primary no-underline"
                     >
                       Referidos
                     </Link>
@@ -749,14 +749,14 @@ export default function Navbar() {
                         setIsMobileOpen(false);
                         setProfileModal({ isOpen: true, tab: "profile" });
                       }}
-                      className="py-3 text-left text-lg font-medium text-ink"
+                      className="min-h-[44px] cursor-pointer py-3 text-left text-lg font-medium text-text-primary"
                     >
                       Perfil
                     </button>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="py-3 text-left text-lg font-medium text-ink"
+                      className="min-h-[44px] cursor-pointer py-3 text-left text-lg font-medium text-text-primary"
                     >
                       Cerrar sesión
                     </button>
@@ -768,7 +768,7 @@ export default function Navbar() {
                       setIsMobileOpen(false);
                       setAuthModal({ isOpen: true, tab: "login" });
                     }}
-                    className="py-3 text-left text-lg font-medium text-ink"
+                    className="min-h-[44px] cursor-pointer py-3 text-left text-lg font-medium text-text-primary"
                   >
                     Iniciar sesión
                   </button>
@@ -783,7 +783,7 @@ export default function Navbar() {
                       setIsMobileOpen(false);
                       setAuthModal({ isOpen: true, tab: "register" });
                     }}
-                    className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas"
+                    className="mt-2 inline-flex h-12 min-h-[44px] w-full cursor-pointer items-center justify-center rounded-full bg-accent px-6 text-[14.5px] font-semibold text-accent-foreground"
                   >
                     {etiquetaBoton(paisNav, "Registrarse")}
                   </button>
