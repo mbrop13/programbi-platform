@@ -13,11 +13,6 @@ const CLAVE_CIERRE = "programbi:guia-sticky:cerrado";
 /**
  * Barra fija inferior para mobile. Aparece recién cuando el usuario avanzó en
  * la guía y desaparece cuando entra el footer, para no taparlo.
- *
- * - `position: fixed` + alto reservado en el artículo (`pb-28`) = cero CLS.
- * - Un solo listener de scroll limitado con requestAnimationFrame.
- * - Sin `backdrop-blur`: sobre contenido que scrollea es caro en móviles.
- * - `inert` + `aria-hidden` cuando está oculta, y botón de cierre accesible.
  */
 export default function GuiaStickyCta({
   iso,
@@ -95,14 +90,14 @@ export default function GuiaStickyCta({
       data-testid="guia-sticky-cta"
       aria-hidden={!visible}
       inert={!visible}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-10px_30px_rgba(23,23,22,0.08)] transition-transform duration-200 ease-out motion-reduce:transition-none md:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--g-border-strong)] bg-[var(--g-surface)] px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 transition-transform duration-200 ease-out motion-reduce:transition-none md:hidden ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
       <div className="flex items-stretch gap-2">
         <Link
           href={ruta}
-          className="inline-flex h-12 flex-1 items-center justify-center rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
+          className="inline-flex h-12 flex-1 items-center justify-center rounded-lg bg-[var(--g-accent)] text-sm font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
         >
           Inscribirme
         </Link>
@@ -117,7 +112,7 @@ export default function GuiaStickyCta({
               ? "Hola, vengo de la guía Power BI vs Excel y quiero la clase gratis del curso de Power BI [power-bi-vs-excel]"
               : undefined
           }
-          className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-semibold text-ink no-underline"
+          className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-bg)] text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
         >
           <MessageCircle size={16} aria-hidden />
           {esVsExcel ? "Clase gratis" : "WhatsApp"}
@@ -126,7 +121,7 @@ export default function GuiaStickyCta({
           type="button"
           onClick={cerrar}
           aria-label="Cerrar la barra de inscripción"
-          className="inline-flex h-12 w-10 shrink-0 items-center justify-center rounded-full text-mute transition-colors hover:bg-wash hover:text-ink motion-reduce:transition-none"
+          className="inline-flex h-12 w-11 shrink-0 items-center justify-center rounded-lg text-[var(--g-muted)] transition-colors hover:bg-[var(--g-wash)] hover:text-[var(--g-ink)] motion-reduce:transition-none"
         >
           <X size={18} aria-hidden />
         </button>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, CalendarDays, Clock, MessageCircle, MonitorPlay } from "lucide-react";
+import { CalendarDays, Clock, MessageCircle } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
@@ -41,85 +41,87 @@ export default function Bloque30Segundos({
     <section
       data-testid="en-30-segundos"
       aria-labelledby="en-30-segundos"
-      className="mt-8 overflow-hidden rounded-[26px] border border-line-strong bg-paper shadow-sm"
+      className="mt-8 overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)]"
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line px-5 py-3">
-        <h2 id="en-30-segundos" className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[var(--g-border)] px-5 py-3">
+        <h2
+          id="en-30-segundos"
+          className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]"
+        >
           En 30 segundos
         </h2>
-        <p className="text-xs text-faint">
+        <p className="text-xs text-[var(--g-muted)]">
           {nombreCurso} · en vivo por Zoom · {lugar}
         </p>
       </div>
 
-      <dl className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-paper px-5 py-4">
-          <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
-            <BadgeCheck size={13} aria-hidden /> Precio y temario
+      <dl className="grid grid-cols-1 gap-px bg-[var(--g-border)] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="bg-[var(--g-surface)] px-5 py-4">
+          <dt className="text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]">
+            Precio y temario
           </dt>
           <dd className="mt-1.5">
             {etiquetaDescuento ? (
-              <span className="block text-lg font-bold tracking-tight text-ink">
+              <span className="block text-base font-bold tabular-nums tracking-tight text-[var(--g-ink)]">
                 {etiquetaDescuento}
               </span>
             ) : null}
             <Link
               href={rutaTemario}
-              className={
-                etiquetaDescuento
-                  ? "mt-0.5 inline-block text-xs font-semibold leading-snug text-ink underline underline-offset-4 hover:text-mute"
-                  : "text-sm font-bold leading-snug text-ink no-underline hover:underline"
-              }
+              className="mt-0.5 inline-flex min-h-[44px] items-center text-sm font-semibold leading-snug text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:decoration-[var(--g-accent)] sm:min-h-0"
             >
-              Ver temario y precios (PDF) →
+              Ver temario y precios (PDF)
             </Link>
-            <span className="mt-0.5 block text-xs text-mute">
+            <span className="mt-0.5 block text-xs text-[var(--g-muted)]">
               {curso.porNivel ? "por nivel · " : ""}
               {textoCuotas(iso) || "pago único con tarjeta"}
             </span>
           </dd>
         </div>
 
-        <div className="bg-paper px-5 py-4">
-          <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
-            <Clock size={13} aria-hidden /> Duración
+        <div className="bg-[var(--g-surface)] px-5 py-4">
+          <dt className="text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]">
+            Duración
           </dt>
           <dd className="mt-1.5">
-            <span className="text-lg font-bold tracking-tight text-ink">{curso.horasTexto}</span>
-            <span className="mt-0.5 block text-xs text-mute">dos clases por semana, en vivo</span>
-          </dd>
-        </div>
-
-        <div className="bg-paper px-5 py-4">
-          <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
-            <CalendarDays size={13} aria-hidden /> Horario
-          </dt>
-          <dd className="mt-1.5">
-            <span className="text-lg font-bold tracking-tight text-ink">
-              {horario.inicio}–{horario.fin}
+            <span className="text-lg font-bold tabular-nums tracking-tight text-[var(--g-ink)]">
+              {curso.horasTexto}
             </span>
-            <span className="mt-0.5 block text-xs text-mute">hora de {lugar}</span>
+            <span className="mt-0.5 block text-xs text-[var(--g-muted)]">dos clases por semana, en vivo</span>
           </dd>
         </div>
 
-        <div className="bg-paper px-5 py-4">
-          <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
-            <MonitorPlay size={13} aria-hidden /> Incluye
+        <div className="bg-[var(--g-surface)] px-5 py-4">
+          <dt className="text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]">
+            Horario
           </dt>
           <dd className="mt-1.5">
-            <span className="text-sm font-bold leading-snug text-ink">En vivo por Zoom</span>
-            <span className="mt-0.5 block text-xs text-mute">Campus virtual con clases y material · certificado al terminar</span>
+            <span className="text-lg font-bold tabular-nums tracking-tight text-[var(--g-ink)]">
+              {horario.inicio} a {horario.fin}
+            </span>
+            <span className="mt-0.5 block text-xs text-[var(--g-muted)]">hora de {lugar}</span>
+          </dd>
+        </div>
+
+        <div className="bg-[var(--g-surface)] px-5 py-4">
+          <dt className="text-xs font-semibold uppercase tracking-[0.05em] text-[var(--g-subtle)]">
+            Incluye
+          </dt>
+          <dd className="mt-1.5">
+            <span className="text-sm font-bold leading-snug text-[var(--g-ink)]">En vivo por Zoom</span>
+            <span className="mt-0.5 block text-xs text-[var(--g-muted)]">
+              Campus virtual con clases y material · certificado al terminar
+            </span>
           </dd>
         </div>
       </dl>
 
-      <div className="flex flex-col gap-2 border-t border-line px-5 py-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-2.5 border-t border-[var(--g-border)] px-5 py-4 sm:flex-row sm:items-center">
         <Link
           href={rutaCurso}
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.99]"
+          className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg bg-[var(--g-accent)] px-5 text-sm font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
         >
           Ver el programa completo
-          <ArrowRight size={15} aria-hidden />
         </Link>
         <WhatsAppCta
           page={rutaCurso}
@@ -127,18 +129,19 @@ export default function Bloque30Segundos({
           course={nombreCurso}
           courseSlug={guia.course}
           country={iso}
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
+          className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
         >
           <MessageCircle size={15} aria-hidden />
           Hablar por WhatsApp
         </WhatsAppCta>
       </div>
 
-      <p className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-5 py-3 text-xs text-mute">
+      <p className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-[var(--g-border)] px-5 py-3 text-xs text-[var(--g-muted)]">
         <span className="inline-flex items-center gap-1.5">
           <CalendarDays size={13} aria-hidden /> Lunes y miércoles o martes y jueves
         </span>
-        <span>
+        <span className="inline-flex items-center gap-1.5">
+          <Clock size={13} aria-hidden />
           <InicioVigente inicio={inicio} prefijo="Próximo inicio: " alterno={OPEN_COHORT_LABEL} />
         </span>
       </p>

@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Layers, ShieldCheck, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import { filasComparativa } from "@/components/guias/comparativa";
 import { encabezadosVisibles } from "@/components/guias/indice";
 import RutaAprendizaje from "@/components/guias/RutaAprendizaje";
@@ -50,17 +50,17 @@ export function elegirVariante(guia: Pick<Guia, "slug" | "visual" | "course" | "
 }
 
 const TARJETAS_FLUJO = [
-  { paso: "1", titulo: "Elige el curso", detalle: "Con clases en vivo por Zoom" },
-  { paso: "2", titulo: "Paga en moneda local", detalle: `O hasta ${CUOTAS_SIN_INTERES} cuotas sin interés` },
-  { paso: "3", titulo: "Entra al campus", detalle: "Zoom, clases y material para practicar durante el curso" },
-  { paso: "4", titulo: "Completa el programa", detalle: "Certificado al terminar" },
+  { paso: "01", titulo: "Elige el curso", detalle: "Con clases en vivo por Zoom" },
+  { paso: "02", titulo: "Paga en moneda local", detalle: `O hasta ${CUOTAS_SIN_INTERES} cuotas sin interés` },
+  { paso: "03", titulo: "Entra al campus", detalle: "Zoom, clases y material para practicar durante el curso" },
+  { paso: "04", titulo: "Completa el programa", detalle: "Certificado al terminar" },
 ];
 
 const BLOQUES_PROMPT_CLAUDE = [
   { num: "01", label: "Rol", detalle: "Quién analiza (control de gestión, finanzas, ventas)" },
   { num: "02", label: "Contexto", detalle: "Planilla, periodo, moneda local y regla de negocio" },
   { num: "03", label: "Tarea", detalle: "Limpiar, calcular variación o proponer fórmula exacta" },
-  { num: "04", label: "Formato + Límite", detalle: "Tabla lista y regla explícita: no inventar cifras" },
+  { num: "04", label: "Formato y límite", detalle: "Tabla lista y regla explícita: no inventar cifras" },
 ];
 
 function FlujoGenerico({ guia }: { guia: Guia }) {
@@ -76,15 +76,18 @@ function FlujoGenerico({ guia }: { guia: Guia }) {
 
   return (
     <div>
-      <p className="text-sm font-semibold text-ink">{titulo}</p>
+      <p className="text-sm font-semibold text-[var(--g-ink)]">{titulo}</p>
       <ol className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {TARJETAS_FLUJO.map((item) => (
-          <li key={item.paso} className="rounded-2xl border border-line bg-canvas p-4">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-ink text-xs font-bold text-canvas">
+          <li
+            key={item.paso}
+            className="rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] p-4"
+          >
+            <span className="font-mono text-xs font-semibold tabular-nums text-[var(--g-accent)]">
               {item.paso}
             </span>
-            <p className="mt-2.5 text-sm font-semibold text-ink">{item.titulo}</p>
-            <p className="mt-1 text-xs leading-relaxed text-mute">{item.detalle}</p>
+            <p className="mt-2 text-sm font-semibold text-[var(--g-ink)]">{item.titulo}</p>
+            <p className="mt-1 text-xs leading-relaxed text-[var(--g-muted)]">{item.detalle}</p>
           </li>
         ))}
       </ol>
@@ -96,24 +99,23 @@ function BloquePromptClaude() {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="inline-flex items-center gap-2 text-sm font-semibold text-ink">
-          <Sparkles size={15} className="text-[#D97757]" aria-hidden />
+        <p className="text-sm font-semibold text-[var(--g-ink)]">
           Anatomía de un prompt profesional para trabajar con datos
         </p>
-        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-600/30 bg-emerald-600/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
-          <ShieldCheck size={12} aria-hidden /> Verificado antes de enviar
+        <span className="rounded-md border border-[var(--g-border-strong)] bg-[var(--g-wash)] px-2.5 py-0.5 text-xs font-medium text-[var(--g-ink)]">
+          Verificado antes de enviar
         </span>
       </div>
       <ol className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {BLOQUES_PROMPT_CLAUDE.map((b) => (
           <li
             key={b.num}
-            className="rounded-2xl border border-line bg-canvas p-4 transition-colors hover:border-[#D97757]/50"
+            className="rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] p-4"
           >
-            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#B84B29]">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider tabular-nums text-[var(--g-accent)]">
               {b.num} · {b.label}
             </span>
-            <p className="mt-1.5 text-xs leading-relaxed text-mute">{b.detalle}</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-[var(--g-muted)]">{b.detalle}</p>
           </li>
         ))}
       </ol>
@@ -123,18 +125,21 @@ function BloquePromptClaude() {
 
 function BloqueDaxContexto() {
   const pilares = [
-    { nombre: "1. Modelo en estrella", detalle: "Tabla de hechos (Ventas) conectada 1→* a dimensiones (Fecha, Cliente, Producto)." },
-    { nombre: "2. Contexto de filtro", detalle: "Los segmentadores y ejes del informe filtran las filas antes de evaluar la medida." },
-    { nombre: "3. CALCULATE + DIVIDE", detalle: "Modifica el contexto con CALCULATE y evita divisiones por cero con DIVIDE." },
+    { nombre: "01. Modelo en estrella", detalle: "Tabla de hechos (Ventas) conectada 1 a muchos a dimensiones (Fecha, Cliente, Producto)." },
+    { nombre: "02. Contexto de filtro", detalle: "Los segmentadores y ejes del informe filtran las filas antes de evaluar la medida." },
+    { nombre: "03. CALCULATE y DIVIDE", detalle: "Modifica el contexto con CALCULATE y evita divisiones por cero con DIVIDE." },
   ];
   return (
     <div>
-      <p className="text-sm font-semibold text-ink">Cómo calcula Power BI cualquier medida DAX en 3 pasos</p>
+      <p className="text-sm font-semibold text-[var(--g-ink)]">Cómo calcula Power BI cualquier medida DAX en 3 pasos</p>
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {pilares.map((pilar) => (
-          <div key={pilar.nombre} className="rounded-2xl border border-line bg-canvas p-4">
-            <p className="text-sm font-bold text-ink">{pilar.nombre}</p>
-            <p className="mt-1.5 text-xs leading-relaxed text-mute">{pilar.detalle}</p>
+          <div
+            key={pilar.nombre}
+            className="rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] p-4"
+          >
+            <p className="text-sm font-bold tabular-nums text-[var(--g-ink)]">{pilar.nombre}</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-[var(--g-muted)]">{pilar.detalle}</p>
           </div>
         ))}
       </div>
@@ -151,19 +156,22 @@ function BloqueBiVsExcel() {
   ];
   return (
     <div>
-      <p className="text-sm font-semibold text-ink">Regla rápida: qué elegir según la tarea de hoy</p>
+      <p className="text-sm font-semibold text-[var(--g-ink)]">Regla rápida: qué elegir según la tarea de hoy</p>
       <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         {casos.map((item) => (
-          <div key={item.caso} className="flex items-start justify-between gap-3 rounded-2xl border border-line bg-canvas px-4 py-3">
+          <div
+            key={item.caso}
+            className="flex items-start justify-between gap-3 rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] px-4 py-3"
+          >
             <div>
-              <p className="text-xs font-semibold text-ink">{item.caso}</p>
-              <p className="mt-0.5 text-[11px] text-mute">{item.nota}</p>
+              <p className="text-xs font-semibold text-[var(--g-ink)]">{item.caso}</p>
+              <p className="mt-0.5 text-xs text-[var(--g-muted)]">{item.nota}</p>
             </div>
             <span
-              className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+              className={`shrink-0 rounded-md border px-2 py-0.5 text-xs font-semibold ${
                 item.ganador === "Power BI"
-                  ? "bg-[#F2C811]/30 text-ink"
-                  : "bg-[#217346]/15 text-[#14532D]"
+                  ? "border-[var(--g-border-strong)] bg-[var(--g-accent-soft)] text-[var(--g-accent)]"
+                  : "border-[var(--g-border)] bg-[var(--g-wash)] text-[var(--g-ink)]"
               }`}
             >
               {item.ganador}
@@ -185,14 +193,17 @@ function PasosDeContenido({ guia }: { guia: Guia }) {
   }
 
   return (
-    <ol className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+    <ol className="divide-y divide-[var(--g-border)] border-y border-[var(--g-border)]">
       {secciones.map((sec, idx) => (
-        <li key={sec.id} className="flex items-start gap-2.5 rounded-2xl border border-line bg-canvas px-3.5 py-3">
-          <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-wash text-[11px] font-bold text-ink">
-            {idx + 1}
-          </span>
-          <a href={`#${sec.id}`} className="text-xs font-medium leading-snug text-ink no-underline hover:underline">
-            {sec.texto}
+        <li key={sec.id}>
+          <a
+            href={`#${sec.id}`}
+            className="flex min-h-[44px] items-baseline gap-3 px-2 py-2.5 text-sm font-medium text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] hover:text-[var(--g-accent)]"
+          >
+            <span className="font-mono text-xs font-semibold tabular-nums text-[var(--g-subtle)]">
+              {String(idx + 1).padStart(2, "0")}
+            </span>
+            <span>{sec.texto}</span>
           </a>
         </li>
       ))}
@@ -242,8 +253,11 @@ function Contenido({ variante, guia, iso }: { variante: VarianteVisual; guia: Gu
             "Un problema real de tu trabajo para llevar a clase",
             "Acceso a las grabaciones si faltas una sesión",
           ].map((item) => (
-            <li key={item} className="flex items-start gap-2 rounded-2xl border border-line bg-canvas px-4 py-3 text-sm text-ink">
-              <Check size={15} className="mt-0.5 shrink-0 text-ink" aria-hidden />
+            <li
+              key={item}
+              className="flex items-start gap-2 rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] px-4 py-3 text-sm text-[var(--g-ink)]"
+            >
+              <Check size={15} className="mt-0.5 shrink-0 text-[var(--g-accent)]" aria-hidden />
               <span>{item}</span>
             </li>
           ))}
@@ -252,22 +266,20 @@ function Contenido({ variante, guia, iso }: { variante: VarianteVisual; guia: Gu
     case "barras":
       return (
         <div className="space-y-3">
-          <p className="text-xs leading-relaxed text-mute">
+          <p className="text-xs leading-relaxed text-[var(--g-muted)]">
             Referencia visual de cómo escalan los cargos cuando sumas SQL, modelado en BI y automatización a tu rol actual.
           </p>
           {[
-            { nivel: "Junior · Excel / Reportes manuales", porcentaje: "35%", color: "bg-line-strong" },
-            { nivel: "Semi-senior · Power BI + SQL Server", porcentaje: "65%", color: "bg-ink" },
-            { nivel: "Senior · Stack completo + Python / IA", porcentaje: "92%", color: "bg-emerald-700" },
+            { nivel: "Junior · Excel / Reportes manuales", porcentaje: "35%", color: "bg-[var(--g-subtle)]" },
+            { nivel: "Semi-senior · Power BI + SQL Server", porcentaje: "65%", color: "bg-[var(--g-ink)]" },
+            { nivel: "Senior · Stack completo + Python / IA", porcentaje: "92%", color: "bg-[var(--g-accent)]" },
           ].map((fila) => (
-            <div key={fila.nivel} className="space-y-1">
-              <div className="flex items-center justify-between text-xs font-medium text-ink">
+            <div key={fila.nivel} className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-medium text-[var(--g-ink)]">
                 <span>{fila.nivel}</span>
-                <span className="inline-flex items-center gap-1 text-mute">
-                  Progresión <ArrowRight size={11} aria-hidden />
-                </span>
+                <span className="tabular-nums text-[var(--g-subtle)]">Progresión</span>
               </div>
-              <div className="h-2.5 overflow-hidden rounded-full bg-wash">
+              <div className="h-2 overflow-hidden rounded-full bg-[var(--g-wash)]">
                 <div className={`h-full rounded-full ${fila.color}`} style={{ width: fila.porcentaje }} />
               </div>
             </div>
@@ -294,13 +306,15 @@ export default function ElementoVisual({ guia }: { guia: Guia }) {
       aria-labelledby="elemento-visual-guia"
       data-testid="elemento-visual"
       data-variante={variante}
-      className="mt-8 rounded-[26px] border border-line-strong bg-paper p-5 shadow-sm"
+      className="mt-8 rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5"
     >
-      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-        <Layers size={13} aria-hidden />
-        <span>Esquema de referencia</span>
-      </div>
-      <h2 id="elemento-visual-guia" className="mt-1.5 text-lg font-bold tracking-tight text-ink">
+      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
+        Esquema de referencia
+      </p>
+      <h2
+        id="elemento-visual-guia"
+        className="mt-1 text-lg font-bold tracking-tight text-[var(--g-ink)]"
+      >
         {titulo}
       </h2>
       <div className="mt-4">
