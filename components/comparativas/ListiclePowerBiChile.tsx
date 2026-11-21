@@ -102,10 +102,10 @@ export default function ListiclePowerBiChile() {
 
   return (
     <GuiaScope>
-      <article className="px-4 pb-28 pt-10 sm:px-6 lg:px-8 lg:pb-20">
+      <article className="pb-28 pt-10 lg:pb-20">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
 
-        <div className="mx-auto max-w-[1120px]">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
           <GuiaBreadcrumbs
             items={[
               { label: "Inicio", href: "/" },

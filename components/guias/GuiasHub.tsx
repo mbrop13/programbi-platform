@@ -509,7 +509,7 @@ export default function GuiasHub({
             </div>
           </div>
         ) : hayFiltros ? (
-          <ul className="grid grid-cols-1 border-t border-[var(--g-border)] md:grid-cols-2 md:gap-x-8">
+          <ul className="grid grid-cols-1 border-t border-[var(--g-border)] md:grid-cols-2 md:gap-x-10 xl:gap-x-14">
             {visibles.map((guia) => (
               <li key={guia.path} className="min-w-0">
                 <GuiaCard guia={guia} variant="row" />
@@ -533,7 +533,7 @@ export default function GuiasHub({
                 </div>
 
                 <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-0">
-                  <div className="min-w-0 lg:col-span-7 lg:border-r lg:border-[var(--g-border)] lg:pr-8">
+                  <div className="min-w-0 lg:col-span-7 lg:border-r lg:border-[var(--g-border)] lg:pr-10">
                     <GuiaCard
                       guia={destacadas[0]}
                       variant="featured"
@@ -541,7 +541,7 @@ export default function GuiasHub({
                       isHero
                     />
                   </div>
-                  <ol className="min-w-0 divide-y divide-[var(--g-border)] lg:col-span-5 lg:pl-8">
+                  <ol className="min-w-0 divide-y divide-[var(--g-border)] lg:col-span-5 lg:pl-10">
                     {destacadas.slice(1, 4).map((guia, idx) => (
                       <li key={`top-${guia.path}`} className="min-w-0">
                         <GuiaCard
@@ -590,7 +590,7 @@ export default function GuiasHub({
                       </Link>
                     </div>
                   </div>
-                  <ul className="grid grid-cols-1 border-t border-[var(--g-border)] md:grid-cols-2 md:gap-x-8">
+                  <ul className="grid grid-cols-1 border-t border-[var(--g-border)] md:grid-cols-2 md:gap-x-10 xl:gap-x-14">
                     {grupo.guias.map((guia) => (
                       <li key={guia.path} className="min-w-0">
                         <GuiaCard guia={guia} variant="row" />

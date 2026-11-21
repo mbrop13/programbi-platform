@@ -76,8 +76,8 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
   return (
     <GuiaScope>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
-      <article className="px-4 pb-28 pt-10 sm:px-6 lg:px-8 lg:pb-20">
-        <div className="mx-auto max-w-[1280px]">
+      <article className="pb-28 pt-10 lg:pb-20">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
           <GuiaBreadcrumbs
             items={[
               { label: "Inicio", href: inicioHref },
@@ -87,13 +87,13 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
           />
 
           <div
-            className={`mt-6 lg:grid lg:gap-10 ${
+            className={`mt-6 lg:grid lg:items-start lg:gap-10 xl:gap-14 ${
               conLateral
-                ? "lg:grid-cols-[200px_minmax(0,1fr)] xl:grid-cols-[200px_minmax(0,68ch)_280px] xl:justify-between"
-                : "lg:grid-cols-[200px_minmax(0,68ch)] lg:gap-12"
+                ? "lg:grid-cols-[336px_minmax(0,1fr)] xl:grid-cols-[376px_minmax(0,1fr)]"
+                : "lg:grid-cols-[240px_minmax(0,1fr)]"
             }`}
           >
-            <div className="min-w-0 max-w-[68ch] lg:col-start-2 lg:row-start-1">
+            <div className="min-w-0 max-w-[840px] lg:col-start-2 lg:row-start-1">
               <h1 className="text-[clamp(1.85rem,3.2vw,2.75rem)] font-bold leading-[1.1] tracking-[-0.03em] text-[var(--g-ink)]">
                 {guia.h1}
               </h1>
@@ -215,21 +215,23 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
               ) : null}
             </div>
 
-            <div className="hidden lg:col-start-1 lg:row-start-1 lg:block">
-              <IndiceGuiaNav items={encabezados} />
-            </div>
-
-            {conLateral ? (
-              <div className="hidden xl:col-start-3 xl:row-start-1 xl:block">
+            <div className="hidden lg:sticky lg:top-24 lg:col-start-1 lg:row-start-1 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:gap-6 lg:overflow-y-auto lg:pr-1">
+              {conLateral ? (
                 <GuiaCursoLateral
                   iso={iso}
                   course={guia.course}
                   inicio={inicio}
                   promotions={promotions}
                   guiaSlug={guia.slug}
+                  sticky={false}
                 />
-              </div>
-            ) : null}
+              ) : null}
+              {encabezados.length >= 3 ? (
+                <div className={conLateral ? "border-t border-[var(--g-border)] pt-5" : undefined}>
+                  <IndiceGuiaNav items={encabezados} sticky={false} />
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </article>

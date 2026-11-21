@@ -3,7 +3,7 @@
 import { GuiaTocNav, type GuiaTocItem } from "@/components/guias/GuiaEditorialPrimitives";
 import type { ItemIndice } from "@/components/guias/indice";
 
-type Props = { items: ItemIndice[] };
+type Props = { items: ItemIndice[]; sticky?: boolean };
 
 function mapTocItems(items: ItemIndice[]): GuiaTocItem[] {
   return items.map((item) => ({
@@ -14,12 +14,12 @@ function mapTocItems(items: ItemIndice[]): GuiaTocItem[] {
 }
 
 /** Versión escritorio: columna fija que acompaña la lectura. */
-export function IndiceGuiaNav({ items }: Props) {
+export function IndiceGuiaNav({ items, sticky = true }: Props) {
   if (items.length < 3) return null;
 
   return (
     <div data-testid="indice-guia" className="hidden lg:block">
-      <GuiaTocNav items={mapTocItems(items)} />
+      <GuiaTocNav items={mapTocItems(items)} sticky={sticky} />
     </div>
   );
 }

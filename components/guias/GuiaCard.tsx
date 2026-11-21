@@ -62,7 +62,7 @@ export default function GuiaCard({
               priority={isHero}
               fetchPriority={isHero ? "high" : undefined}
               loading={isHero ? undefined : "lazy"}
-              sizes="(max-width: 1024px) calc(100vw - 32px), 620px"
+              sizes="(max-width: 1024px) calc(100vw - 32px), 780px"
               className="aspect-[16/10] h-full w-full object-cover"
             />
           ) : imgSrc ? (
@@ -74,7 +74,7 @@ export default function GuiaCard({
               priority={isHero}
               fetchPriority={isHero ? "high" : undefined}
               loading={isHero ? undefined : "lazy"}
-              sizes="(max-width: 1024px) calc(100vw - 32px), 620px"
+              sizes="(max-width: 1024px) calc(100vw - 32px), 780px"
               className="aspect-[16/10] h-full w-full object-cover"
             />
           ) : (
@@ -145,7 +145,7 @@ export default function GuiaCard({
   return (
     <Link
       href={guia.path}
-      className="group flex h-full min-w-0 flex-col justify-between border-b border-[var(--g-border)] py-4 no-underline transition-colors hover:bg-[var(--g-surface)] sm:px-3"
+      className="group flex h-full min-w-0 flex-col justify-between border-b border-[var(--g-border)] py-4 no-underline transition-colors hover:bg-[var(--g-surface)] sm:px-4"
     >
       <div className="min-w-0">
         <p className="text-xs font-medium text-[var(--g-subtle)]">

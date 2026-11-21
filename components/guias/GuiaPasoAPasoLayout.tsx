@@ -127,8 +127,8 @@ export default function GuiaPasoAPasoLayout({
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
 
-      <article className="px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pb-16">
-        <div className="mx-auto max-w-[1320px]">
+      <article className="pb-24 pt-10 lg:pb-16">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
           <GuiaBreadcrumbs
             items={[
               { label: "Inicio", href: "/" },
@@ -138,15 +138,15 @@ export default function GuiaPasoAPasoLayout({
             ]}
           />
 
-          <div className="mt-8 lg:grid lg:grid-cols-[200px_minmax(0,1fr)_270px] lg:gap-8 xl:grid-cols-[220px_minmax(0,68ch)_290px] xl:gap-10">
-            {/* Columna central editorial */}
-            <div className="min-w-0 max-w-[68ch] lg:col-start-2 lg:row-start-1">
+          <div className="mt-8 lg:grid lg:grid-cols-[336px_minmax(0,1fr)] lg:items-start lg:gap-10 xl:grid-cols-[376px_minmax(0,1fr)] xl:gap-14">
+            {/* Columna principal editorial */}
+            <div className="min-w-0 max-w-[840px] lg:col-start-2 lg:row-start-1">
               {/* Cabecera editorial sin eyebrow pill */}
               <header>
                 <h1 className="text-[clamp(1.85rem,3.2vw,2.75rem)] font-bold leading-[1.1] tracking-[-0.03em] text-[var(--g-ink)]">
                   {guia.h1}
                 </h1>
-                <p className="mt-4 max-w-[65ch] text-base leading-[1.65] text-[var(--g-muted)] sm:text-lg">
+                <p className="mt-4 max-w-[72ch] text-base leading-[1.65] text-[var(--g-muted)] sm:text-lg">
                   {guia.subtitle}
                 </p>
                 <div className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 border-y border-[var(--g-border)] py-2.5 text-xs tabular-nums text-[var(--g-subtle)]">
@@ -552,20 +552,19 @@ export default function GuiaPasoAPasoLayout({
               </div>
             </div>
 
-            {/* Rail izquierdo: TOC Desktop */}
-            <div className="hidden lg:col-start-1 lg:row-start-1 lg:block">
-              <GuiaPasoAPasoTocDesktop items={tocItems} />
-            </div>
-
-            {/* Rail derecho: Tarjeta Sticky Curso Desktop */}
-            <div className="hidden lg:col-start-3 lg:row-start-1 lg:block">
+            {/* Rail izquierdo sticky: Curso arriba + En esta guía abajo */}
+            <div className="hidden lg:sticky lg:top-24 lg:col-start-1 lg:row-start-1 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:gap-6 lg:overflow-y-auto lg:pr-1">
               <GuiaPasoAPasoCursoCard
                 guia={guia}
                 curso={curso}
                 cursoSecundario={cursoSecundario}
-                sticky
                 ctaPosition="guia_paso_a_paso_lateral"
               />
+              {tocItems.length > 0 ? (
+                <div className="border-t border-[var(--g-border)] pt-5">
+                  <GuiaPasoAPasoTocDesktop items={tocItems} sticky={false} />
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

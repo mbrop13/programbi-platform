@@ -16,13 +16,20 @@ function mapTocItems(items: ItemTocPasoAPaso[]): GuiaTocItem[] {
   }));
 }
 
-export function GuiaPasoAPasoTocDesktop({ items }: { items: ItemTocPasoAPaso[] }) {
+export function GuiaPasoAPasoTocDesktop({
+  items,
+  sticky = true,
+}: {
+  items: ItemTocPasoAPaso[];
+  sticky?: boolean;
+}) {
   if (items.length === 0) return null;
 
   return (
     <GuiaTocNav
       items={mapTocItems(items)}
       title="En esta guía"
+      sticky={sticky}
       className="hidden lg:block"
     />
   );

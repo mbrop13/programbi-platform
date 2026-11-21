@@ -236,6 +236,7 @@ export interface GuiaTocNavProps {
   title?: string;
   mobileLabel?: string;
   className?: string;
+  sticky?: boolean;
 }
 
 export function GuiaTocNav({
@@ -243,6 +244,7 @@ export function GuiaTocNav({
   title = "En esta guía",
   mobileLabel = "Índice de contenidos",
   className,
+  sticky = true,
 }: GuiaTocNavProps) {
   const [activeId, setActiveId] = useState<string>(items[0]?.id ?? "");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -341,8 +343,11 @@ export function GuiaTocNav({
         )}
       </div>
 
-      {/* Rail sticky en escritorio */}
-      <nav aria-label={title} className="hidden lg:sticky lg:top-24 lg:block">
+      {/* Rail en escritorio */}
+      <nav
+        aria-label={title}
+        className={sticky ? "hidden lg:sticky lg:top-24 lg:block" : "hidden lg:block"}
+      >
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
           {title}
         </p>

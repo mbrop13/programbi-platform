@@ -21,32 +21,48 @@ export default function GuiaPasoAPasoCursoCard({
   return (
     <aside
       aria-label={`Curso de ${curso.nombre}`}
-      className={`rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)] p-5 ${
+      className={`rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)] p-4 sm:p-5 ${
         sticky ? "sticky top-[var(--sticky-below-nav,6rem)]" : ""
       }`}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
-        Clase gratis disponible
-      </p>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
+          Clase gratis disponible
+        </p>
+        {curso.precioFormateado ? (
+          <div className="flex items-baseline gap-1.5 tabular-nums">
+            <span className="text-base font-bold tracking-tight text-[var(--g-ink)]">
+              {curso.precioFormateado}
+            </span>
+            {curso.precioListaFormateado ? (
+              <span className="text-[11px] text-[var(--g-subtle)] line-through">
+                {curso.precioListaFormateado}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
 
-      <h3 className="mt-2 text-base font-bold leading-snug tracking-[-0.015em] text-[var(--g-ink)]">
+      <h3 className="mt-1.5 text-base font-bold leading-snug tracking-[-0.015em] text-[var(--g-ink)]">
         Curso de {curso.nombre}
       </h3>
 
       {curso.descripcionCorta ? (
-        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
+        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
           {curso.descripcionCorta}
         </p>
       ) : null}
 
-      <p className="mt-3 font-mono text-xs tabular-nums text-[var(--g-subtle)]">
-        {curso.horas} horas en vivo
-        {curso.textoCuotas ? ` · ${curso.textoCuotas}` : ""}
-      </p>
+      <div className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1 border-y border-[var(--g-border)] py-2 font-mono text-[11px] tabular-nums text-[var(--g-subtle)]">
+        <span>{curso.horas} horas en vivo</span>
+        {curso.textoCuotas ? (
+          <span className="truncate text-right">{curso.textoCuotas}</span>
+        ) : null}
+      </div>
 
-      <ul className="mt-3 space-y-1.5 border-t border-[var(--g-border)] pt-3 text-xs leading-snug text-[var(--g-muted)]">
+      <ul className="mt-2.5 grid grid-cols-1 gap-x-3 gap-y-1.5 text-xs leading-snug text-[var(--g-muted)] sm:grid-cols-2">
         {curso.temarioBullets.map((item) => (
-          <li key={item} className="flex items-start gap-2">
+          <li key={item} className="flex items-start gap-1.5">
             <span aria-hidden="true" className="font-mono text-[var(--g-subtle)]">
               -
             </span>
@@ -55,20 +71,7 @@ export default function GuiaPasoAPasoCursoCard({
         ))}
       </ul>
 
-      {curso.precioFormateado ? (
-        <div className="mt-4 flex items-baseline gap-2 border-t border-[var(--g-border)] pt-3 tabular-nums">
-          <span className="text-lg font-bold tracking-tight text-[var(--g-ink)]">
-            {curso.precioFormateado}
-          </span>
-          {curso.precioListaFormateado ? (
-            <span className="text-xs text-[var(--g-subtle)] line-through">
-              {curso.precioListaFormateado}
-            </span>
-          ) : null}
-        </div>
-      ) : null}
-
-      <div className="mt-4 flex flex-col gap-2">
+      <div className="mt-3.5 flex flex-col gap-2">
         <WhatsAppCta
           page={`/guias/${guia.slug}`}
           intent="curso"
@@ -82,28 +85,30 @@ export default function GuiaPasoAPasoCursoCard({
           Solicitar clase gratis por WhatsApp
         </WhatsAppCta>
 
-        <Link
-          href={`/cursos/${guia.curso}`}
-          className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
-        >
-          Ver temario del curso
-        </Link>
+        <div className="grid grid-cols-2 gap-2">
+          <Link
+            href={`/cursos/${guia.curso}`}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-3 text-center text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
+          >
+            Ver temario
+          </Link>
+
+          <Link
+            href={`/registro?from=/guias/${guia.slug}`}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-[var(--g-border)] bg-[var(--g-wash)] px-3 text-center text-xs font-semibold text-[var(--g-accent)] no-underline transition-colors hover:border-[var(--g-border-strong)] hover:text-[var(--g-ink)]"
+          >
+            Inscribirme
+          </Link>
+        </div>
 
         {cursoSecundario ? (
           <Link
             href={`/cursos/${cursoSecundario.slug}`}
-            className="mt-1 text-center text-xs font-medium text-[var(--g-muted)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-ink)]"
+            className="mt-0.5 inline-flex min-h-[36px] items-center justify-center text-center text-xs font-medium text-[var(--g-muted)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-ink)]"
           >
             También te sirve: Curso de {cursoSecundario.nombre}
           </Link>
         ) : null}
-
-        <Link
-          href={`/registro?from=/guias/${guia.slug}`}
-          className="mt-0.5 inline-flex min-h-[44px] items-center justify-center text-xs font-semibold text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 hover:text-[var(--g-ink)] lg:min-h-[36px]"
-        >
-          Inscribirme en el curso
-        </Link>
       </div>
     </aside>
   );
