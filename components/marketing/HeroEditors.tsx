@@ -12,27 +12,34 @@ function ActivityBar({
   onChange: (id: string) => void;
 }) {
   const items = [
-    { id: "files", Icon: Files },
-    { id: "search", Icon: Search },
-    { id: "git", Icon: GitBranch },
-    { id: "debug", Icon: Bug },
-    { id: "ext", Icon: Puzzle },
+    { id: "files", label: "Archivos", Icon: Files },
+    { id: "search", label: "Buscar", Icon: Search },
+    { id: "git", label: "Control de versiones", Icon: GitBranch },
+    { id: "debug", label: "Ejecución", Icon: Bug },
+    { id: "ext", label: "Extensiones", Icon: Puzzle },
   ] as const;
+
   return (
-    <div className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-line bg-wash py-2 text-mute">
-      {items.map(({ id, Icon }) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => onChange(id)}
-          className={`flex size-12 items-center justify-center ${
-            current === id ? "border-l-2 border-ink text-ink" : "border-l-2 border-transparent hover:text-ink"
-          }`}
-          aria-label={id}
-        >
-          <Icon size={18} strokeWidth={current === id ? 2.2 : 1.8} />
-        </button>
-      ))}
+    <div className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-[var(--h-border)] bg-[var(--h-wash)] py-2 text-[var(--h-subtle)]">
+      {items.map(({ id, label, Icon }) => {
+        const active = current === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            onClick={() => onChange(id)}
+            aria-pressed={active}
+            className={`flex size-11 items-center justify-center border-l-2 transition-colors ${
+              active
+                ? "border-[var(--h-accent)] text-[var(--h-ink)]"
+                : "border-transparent hover:text-[var(--h-ink)]"
+            }`}
+            aria-label={label}
+          >
+            <Icon size={17} strokeWidth={active ? 2.1 : 1.7} aria-hidden />
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -47,43 +54,49 @@ function Sidebar({
   onFile: (name: string) => void;
 }) {
   const files = ["ventas.py", "consulta.sql", "data/ventas.csv"];
+
   return (
-    <div className="hidden w-[138px] shrink-0 flex-col border-r border-line bg-canvas px-2 py-2 sm:flex">
+    <div className="hidden w-[144px] shrink-0 flex-col border-r border-[var(--h-border)] bg-[var(--h-bg)] px-2 py-2.5 sm:flex">
       {panel === "search" ? (
         <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Search</p>
+          <label htmlFor="hero-editor-search" className="mb-2 px-1 text-[11px] font-semibold text-[var(--h-subtle)]">
+            Buscar
+          </label>
           <input
+            id="hero-editor-search"
             type="search"
             placeholder="Buscar"
-            className="mb-2 w-full border border-line bg-paper px-1.5 py-1 font-mono text-[11px] text-ink outline-none"
+            className="mb-2 w-full rounded border border-[var(--h-border-strong)] bg-[var(--h-surface)] px-2 py-1 font-mono text-[11px] text-[var(--h-ink)]"
           />
-          <p className="px-1 text-[10px] text-mute">groupby · ventas.py:6</p>
+          <p className="px-1 text-[10px] text-[var(--h-muted)]">groupby · ventas.py:6</p>
         </>
       ) : panel === "git" ? (
         <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Source Control</p>
-          <p className="px-1 text-[11px] text-mute">0 cambios</p>
+          <p className="mb-2 px-1 text-[11px] font-semibold text-[var(--h-subtle)]">Control</p>
+          <p className="px-1 text-[11px] text-[var(--h-muted)]">0 cambios</p>
         </>
       ) : panel === "debug" ? (
         <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Run</p>
-          <p className="px-1 text-[11px] text-mute">Python: ventas.py</p>
+          <p className="mb-2 px-1 text-[11px] font-semibold text-[var(--h-subtle)]">Ejecución</p>
+          <p className="px-1 text-[11px] text-[var(--h-muted)]">Python: ventas.py</p>
         </>
       ) : panel === "ext" ? (
         <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Extensions</p>
-          <p className="px-1 text-[11px] text-mute">Python · Jupyter · Pylance</p>
+          <p className="mb-2 px-1 text-[11px] font-semibold text-[var(--h-subtle)]">Extensiones</p>
+          <p className="px-1 text-[11px] text-[var(--h-muted)]">Python · Jupyter · Pylance</p>
         </>
       ) : (
         <>
-          <p className="mb-2 px-1 text-[10px] font-semibold tracking-wider text-faint uppercase">Explorer</p>
+          <p className="mb-1.5 px-1.5 text-[11px] font-semibold text-[var(--h-subtle)]">Archivos</p>
           {files.map((name) => (
             <button
               key={name}
               type="button"
               onClick={() => onFile(name)}
-              className={`min-h-12 w-full truncate px-1.5 py-2 text-left font-mono text-[11px] ${
-                name === activeFile ? "bg-wash text-ink" : "text-mute hover:text-ink"
+              className={`min-h-11 w-full truncate rounded px-1.5 py-2 text-left font-mono text-[11px] transition-colors ${
+                name === activeFile
+                  ? "bg-[var(--h-accent-soft)] font-medium text-[var(--h-accent)]"
+                  : "text-[var(--h-muted)] hover:bg-[var(--h-wash)] hover:text-[var(--h-ink)]"
               }`}
             >
               {name}
@@ -102,7 +115,7 @@ export function PythonEditor({ demo, onOpenSql }: { demo: DemoPais; onOpenSql: (
   const line = 10;
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full bg-[var(--h-surface)] text-[var(--h-ink)]">
       <ActivityBar current={panel} onChange={setPanel} />
       <Sidebar
         panel={panel}
@@ -112,45 +125,49 @@ export function PythonEditor({ demo, onOpenSql }: { demo: DemoPais; onOpenSql: (
           else setFile(name);
         }}
       />
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper">
-        <div className="flex min-h-12 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[var(--h-surface)]">
+        <div className="flex min-h-11 shrink-0 items-center justify-between border-b border-[var(--h-border)] bg-[var(--h-bg)] px-2">
           <div className="flex items-center">
             {(["ventas.py", file === "data/ventas.csv" ? "ventas.csv" : null] as const)
               .filter(Boolean)
-              .map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setFile(tab === "ventas.csv" ? "data/ventas.csv" : "ventas.py")}
-                  className={`min-h-12 min-w-12 px-2 py-1 font-mono text-[11px] ${
-                    (file === "ventas.py" && tab === "ventas.py") ||
-                    (file === "data/ventas.csv" && tab === "ventas.csv")
-                      ? "border-b-2 border-ink text-ink"
-                      : "text-mute"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
+              .map((tab) => {
+                const isTabActive =
+                  (file === "ventas.py" && tab === "ventas.py") ||
+                  (file === "data/ventas.csv" && tab === "ventas.csv");
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setFile(tab === "ventas.csv" ? "data/ventas.csv" : "ventas.py")}
+                    className={`min-h-11 min-w-11 border-b-2 px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                      isTabActive
+                        ? "border-[var(--h-accent)] font-medium text-[var(--h-ink)]"
+                        : "border-transparent text-[var(--h-muted)] hover:text-[var(--h-ink)]"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
           </div>
           <button
             type="button"
             onClick={() => setRan(true)}
-            className="mr-1 inline-flex min-h-12 items-center gap-1 px-3 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
+            className="mr-1 inline-flex min-h-11 items-center gap-1.5 rounded px-3 py-1 font-mono text-[11px] font-semibold text-[var(--h-accent)] transition-colors hover:bg-[var(--h-accent-soft)]"
           >
-            <Play size={12} fill="currentColor" />
+            <Play size={12} fill="currentColor" aria-hidden />
             Ejecutar
           </button>
         </div>
 
         <div className="min-h-0 flex-1 overflow-hidden">
           {file === "data/ventas.csv" ? (
-            <table className="w-full font-mono text-[11px]">
-              <thead className="text-left text-mute">
-                <tr className="border-b border-line">
-                  <th className="px-3 py-1.5 font-medium">mes</th>
-                  <th className="px-3 py-1.5 font-medium">region</th>
-                  <th className="px-3 py-1.5 font-medium">monto</th>
+            <table className="w-full font-mono text-[11px] tabular-nums">
+              <thead className="text-left text-[var(--h-subtle)]">
+                <tr className="border-b border-[var(--h-border)]">
+                  <th className="px-3 py-2 font-medium">mes</th>
+                  <th className="px-3 py-2 font-medium">region</th>
+                  <th className="px-3 py-2 font-medium">monto</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,9 +177,9 @@ export function PythonEditor({ demo, onOpenSql }: { demo: DemoPais; onOpenSql: (
                   ["Mar", demo.cortas[2], "7.150.000"],
                   ["Abr", demo.cortas[0], "21.800.000"],
                 ].map((row, rowIdx) => (
-                  <tr key={`${row[0]}-${rowIdx}`} className="border-b border-line/60">
+                  <tr key={`${row[0]}-${rowIdx}`} className="border-b border-[var(--h-border)]">
                     {row.map((c, colIdx) => (
-                      <td key={`${row[0]}-${colIdx}`} className="px-3 py-1">
+                      <td key={`${row[0]}-${colIdx}`} className="px-3 py-1.5 text-[var(--h-ink)]">
                         {c}
                       </td>
                     ))}
@@ -171,7 +188,7 @@ export function PythonEditor({ demo, onOpenSql }: { demo: DemoPais; onOpenSql: (
               </tbody>
             </table>
           ) : (
-            <pre className="h-full overflow-hidden px-3 py-2.5 font-mono text-[11px] leading-[1.7] sm:text-[12px]">
+            <pre className="h-full overflow-hidden px-3 py-3 font-mono text-[11px] leading-[1.7] sm:text-[12px]">
               <CodeLine n={1}>
                 <Kw>import</Kw> pandas <Kw>as</Kw> pd
               </CodeLine>
@@ -206,26 +223,26 @@ export function PythonEditor({ demo, onOpenSql }: { demo: DemoPais; onOpenSql: (
         </div>
 
         {ran && file === "ventas.py" && (
-          <div className="flex h-[38%] shrink-0 flex-col border-t border-line bg-canvas">
-            <div className="flex items-center gap-2 border-b border-line px-3 py-1 text-[10px] font-medium text-mute">
-              <Terminal size={12} />
+          <div className="flex h-[38%] shrink-0 flex-col border-t border-[var(--h-border)] bg-[var(--h-bg)]">
+            <div className="flex items-center gap-2 border-b border-[var(--h-border)] px-3 py-1 text-[10px] font-medium text-[var(--h-muted)]">
+              <Terminal size={12} aria-hidden />
               Output
-              <span className="ml-auto text-faint">Figure(1)</span>
+              <span className="ml-auto text-[var(--h-subtle)]">Figure(1)</span>
             </div>
             <div className="flex min-h-0 flex-1 items-end gap-1 px-4 py-2">
               {[42, 55, 48, 70, 62, 84, 76, 92].map((h, i) => (
                 <div key={MONTHS[i]} className="flex flex-1 flex-col items-center justify-end gap-0.5">
-                  <div className="w-full bg-[#118DFF]" style={{ height: `${h}%` }} />
-                  <span className="text-[8px] text-faint">{MONTHS[i]}</span>
+                  <div className="w-full rounded-t-[2px] bg-[var(--h-accent)]" style={{ height: `${h}%` }} />
+                  <span className="text-[8px] text-[var(--h-subtle)]">{MONTHS[i]}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        <div className="flex h-6 shrink-0 items-center justify-between border-t border-line bg-wash px-3 font-mono text-[10px] text-mute">
+        <div className="flex h-7 shrink-0 items-center justify-between border-t border-[var(--h-border)] bg-[var(--h-wash)] px-3 font-mono text-[10px] text-[var(--h-muted)]">
           <span>Python 3.12.8</span>
-          <span>UTF-8 · Ln {line}, Col 1</span>
+          <span className="tabular-nums">UTF-8 · Ln {line}, Col 1</span>
         </div>
       </div>
     </div>
@@ -255,26 +272,28 @@ export function SqlEditor({ demo }: { demo: DemoPais }) {
     window.setTimeout(() => {
       setRunning(false);
       setShow(true);
-    }, 420);
+    }, 320);
   };
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full bg-[var(--h-surface)] text-[var(--h-ink)]">
       <ActivityBar current={panel} onChange={setPanel} />
       <Sidebar panel={panel} activeFile="consulta.sql" onFile={() => undefined} />
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper">
-        <div className="flex min-h-12 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
-          <span className="border-b-2 border-ink px-2 py-1 font-mono text-[11px] text-ink">consulta.sql</span>
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[var(--h-surface)]">
+        <div className="flex min-h-11 shrink-0 items-center justify-between border-b border-[var(--h-border)] bg-[var(--h-bg)] px-2">
+          <span className="border-b-2 border-[var(--h-accent)] px-2.5 py-2 font-mono text-[11px] font-medium text-[var(--h-ink)]">
+            consulta.sql
+          </span>
           <button
             type="button"
             onClick={run}
-            className="mr-1 inline-flex min-h-12 items-center gap-1 px-3 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
+            className="mr-1 inline-flex min-h-11 items-center gap-1.5 rounded px-3 py-1 font-mono text-[11px] font-semibold text-[var(--h-accent)] transition-colors hover:bg-[var(--h-accent-soft)]"
           >
-            <Play size={12} fill="currentColor" />
+            <Play size={12} fill="currentColor" aria-hidden />
             {running ? "Ejecutando…" : "Ejecutar"}
           </button>
         </div>
-        <pre className="min-h-0 flex-[0.9] overflow-hidden px-3 py-2 font-mono text-[11px] leading-[1.7] sm:text-[12px]">
+        <pre className="min-h-0 flex-[0.9] overflow-hidden px-3 py-2.5 font-mono text-[11px] leading-[1.7] sm:text-[12px]">
           <CodeLine n={1}>
             <Kw>SELECT</Kw> c.region, <Fn>SUM</Fn>(v.monto) <Kw>AS</Kw> total
           </CodeLine>
@@ -294,19 +313,23 @@ export function SqlEditor({ demo }: { demo: DemoPais }) {
             <Kw>ORDER BY</Kw> total <Kw>DESC</Kw>;
           </CodeLine>
         </pre>
-        <div className="flex min-h-0 flex-1 flex-col border-t border-line bg-canvas">
-          <div className="flex items-center justify-between border-b border-line px-3 py-1 font-mono text-[10px] text-mute">
-            <span>{running ? "Running…" : show ? `Results · ${rows.length} rows` : "Messages"}</span>
-            <button type="button" onClick={() => setSortDesc((s) => !s)} className="hover:text-ink">
+        <div className="flex min-h-0 flex-1 flex-col border-t border-[var(--h-border)] bg-[var(--h-bg)]">
+          <div className="flex items-center justify-between border-b border-[var(--h-border)] px-3 py-1.5 font-mono text-[10px] text-[var(--h-muted)]">
+            <span>{running ? "Ejecutando…" : show ? `Resultados · ${rows.length} filas` : "Mensajes"}</span>
+            <button
+              type="button"
+              onClick={() => setSortDesc((s) => !s)}
+              className="font-medium text-[var(--h-ink)] hover:text-[var(--h-accent)]"
+            >
               Orden: {sortDesc ? "DESC" : "ASC"}
             </button>
           </div>
           {show && !running && (
-            <table className="w-full font-mono text-[10px] sm:text-[11px]">
-              <thead className="text-left text-mute">
-                <tr className="border-b border-line">
-                  <th className="px-3 py-1 font-medium">region</th>
-                  <th className="px-3 py-1 font-medium">total</th>
+            <table className="w-full font-mono text-[10px] tabular-nums sm:text-[11px]">
+              <thead className="text-left text-[var(--h-subtle)]">
+                <tr className="border-b border-[var(--h-border)]">
+                  <th className="px-3 py-1.5 font-medium">region</th>
+                  <th className="px-3 py-1.5 font-medium">total</th>
                 </tr>
               </thead>
               <tbody>
@@ -314,10 +337,12 @@ export function SqlEditor({ demo }: { demo: DemoPais }) {
                   <tr
                     key={row[0]}
                     onClick={() => setSel(i)}
-                    className={`cursor-pointer border-b border-line/60 ${sel === i ? "bg-wash" : "hover:bg-paper"}`}
+                    className={`cursor-pointer border-b border-[var(--h-border)] last:border-b-0 ${
+                      sel === i ? "bg-[var(--h-accent-soft)]" : "hover:bg-[var(--h-wash)]"
+                    }`}
                   >
-                    <td className="px-3 py-1 text-ink">{row[0]}</td>
-                    <td className="px-3 py-1 text-ink">{row[1]}</td>
+                    <td className="px-3 py-1.5 text-[var(--h-ink)]">{row[0]}</td>
+                    <td className="px-3 py-1.5 text-[var(--h-ink)]">{row[1]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -333,33 +358,25 @@ function CodeLine({
   n,
   children,
   active,
-  onClick,
 }: {
   n: number;
   children?: React.ReactNode;
   active?: boolean;
-  onClick?: () => void;
 }) {
   return (
-    <div
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onClick={onClick}
-      onKeyDown={onClick ? (e) => e.key === "Enter" && onClick() : undefined}
-      className={`flex w-full gap-3 text-left ${active ? "bg-wash" : ""} ${onClick ? "cursor-pointer" : ""}`}
-    >
-      <span className="w-4 shrink-0 text-right text-faint select-none">{n}</span>
+    <div className={`flex w-full gap-3 text-left ${active ? "bg-[var(--h-wash)]" : ""}`}>
+      <span className="w-4 shrink-0 text-right tabular-nums text-[var(--h-subtle)] select-none">{n}</span>
       <span>{children}</span>
     </div>
   );
 }
 
 function Kw({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#0451a5]">{children}</span>;
+  return <span className="font-medium text-[#0b63c5] dark:text-[#60a5fa]">{children}</span>;
 }
 function Str({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#a31515]">{children}</span>;
+  return <span className="text-[#9f1239] dark:text-[#fda4af]">{children}</span>;
 }
 function Fn({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#795e26]">{children}</span>;
+  return <span className="text-[#7c4d00] dark:text-[#fcd34d]">{children}</span>;
 }
