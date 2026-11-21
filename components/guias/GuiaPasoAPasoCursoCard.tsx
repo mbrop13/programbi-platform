@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight, Check, MessageCircle } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import type { DatosCursoGuia } from "@/lib/guias/paso-a-paso-curso";
 import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
@@ -22,51 +21,47 @@ export default function GuiaPasoAPasoCursoCard({
   return (
     <aside
       aria-label={`Curso de ${curso.nombre}`}
-      className={`overflow-hidden rounded-2xl border border-line-strong bg-paper p-5 shadow-sm ${
+      className={`rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)] p-5 ${
         sticky ? "sticky top-[var(--sticky-below-nav,6rem)]" : ""
       }`}
     >
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="inline-flex items-center rounded-full bg-ink px-2.5 py-0.5 text-[11px] font-bold text-canvas">
-          Clase gratis
-        </span>
-        {curso.textoCuotas ? (
-          <span className="inline-flex items-center rounded-full border border-line-strong bg-wash px-2.5 py-0.5 text-[11px] font-semibold text-ink">
-            {curso.textoCuotas}
-          </span>
-        ) : null}
-      </div>
+      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
+        Clase gratis disponible
+      </p>
 
-      <h3 className="mt-3 text-base font-bold leading-snug tracking-tight text-ink">
-        ¿Te gustaría aprender a hacer esto y mucho más?
+      <h3 className="mt-2 text-base font-bold leading-snug tracking-[-0.015em] text-[var(--g-ink)]">
+        Curso de {curso.nombre}
       </h3>
 
       {curso.descripcionCorta ? (
-        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-mute">
+        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
           {curso.descripcionCorta}
         </p>
       ) : null}
 
-      <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.14em] text-mute">
-        Curso de {curso.nombre} ({curso.horas}h en vivo)
+      <p className="mt-3 font-mono text-xs tabular-nums text-[var(--g-subtle)]">
+        {curso.horas} horas en vivo
+        {curso.textoCuotas ? ` · ${curso.textoCuotas}` : ""}
       </p>
 
-      <ul className="mt-2 space-y-1.5 text-xs leading-snug text-ink">
+      <ul className="mt-3 space-y-1.5 border-t border-[var(--g-border)] pt-3 text-xs leading-snug text-[var(--g-muted)]">
         {curso.temarioBullets.map((item) => (
           <li key={item} className="flex items-start gap-2">
-            <Check size={14} className="mt-0.5 shrink-0 text-ink" aria-hidden />
+            <span aria-hidden="true" className="font-mono text-[var(--g-subtle)]">
+              -
+            </span>
             <span>{item}</span>
           </li>
         ))}
       </ul>
 
       {curso.precioFormateado ? (
-        <div className="mt-4 flex items-baseline gap-2 border-t border-line pt-3">
-          <span className="text-lg font-bold tracking-tight text-ink">
+        <div className="mt-4 flex items-baseline gap-2 border-t border-[var(--g-border)] pt-3 tabular-nums">
+          <span className="text-lg font-bold tracking-tight text-[var(--g-ink)]">
             {curso.precioFormateado}
           </span>
           {curso.precioListaFormateado ? (
-            <span className="text-xs text-faint line-through">
+            <span className="text-xs text-[var(--g-subtle)] line-through">
               {curso.precioListaFormateado}
             </span>
           ) : null}
@@ -82,24 +77,22 @@ export default function GuiaPasoAPasoCursoCard({
           country="cl"
           ctaPosition={ctaPosition}
           customText={waText}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ink px-4 text-center text-xs font-semibold text-canvas no-underline transition-transform active:scale-[0.99]"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-md bg-[var(--g-ink)] px-4 text-center text-xs font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
         >
-          <MessageCircle size={15} aria-hidden />
-          Quiero mi clase gratis
+          Solicitar clase gratis por WhatsApp
         </WhatsAppCta>
 
         <Link
           href={`/cursos/${guia.curso}`}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-line-strong bg-canvas px-4 text-xs font-semibold text-ink no-underline hover:bg-wash"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
         >
-          Ver el curso
-          <ArrowRight size={13} aria-hidden />
+          Ver temario del curso
         </Link>
 
         {cursoSecundario ? (
           <Link
             href={`/cursos/${cursoSecundario.slug}`}
-            className="mt-0.5 text-center text-xs font-medium text-mute underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink"
+            className="mt-1 text-center text-xs font-medium text-[var(--g-muted)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-ink)]"
           >
             También te sirve: Curso de {cursoSecundario.nombre}
           </Link>
@@ -107,7 +100,7 @@ export default function GuiaPasoAPasoCursoCard({
 
         <Link
           href={`/registro?from=/guias/${guia.slug}`}
-          className="mt-0.5 inline-flex h-8 items-center justify-center text-xs font-semibold text-ink underline underline-offset-4 hover:text-mute"
+          className="mt-0.5 inline-flex min-h-[36px] items-center justify-center text-xs font-semibold text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 hover:text-[var(--g-ink)]"
         >
           Inscribirme en el curso
         </Link>
