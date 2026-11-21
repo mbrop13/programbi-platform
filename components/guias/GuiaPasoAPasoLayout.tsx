@@ -4,7 +4,10 @@ import CapturaPendiente from "@/components/guias/CapturaPendiente";
 import {
   GuiaBreadcrumbs,
   GuiaEditorialNote,
+  GuiaReadingProgress,
   GuiaScope,
+  GuiaToolVisual,
+  GuiaVisualBadge,
 } from "@/components/guias/GuiaEditorialPrimitives";
 import GuiaPasoAPasoCodeBlock from "@/components/guias/GuiaPasoAPasoCodeBlock";
 import GuiaPasoAPasoCursoCard from "@/components/guias/GuiaPasoAPasoCursoCard";
@@ -14,6 +17,8 @@ import GuiaPasoAPasoStickyWa from "@/components/guias/GuiaPasoAPasoStickyWa";
 import {
   GuiaPasoAPasoTocDesktop,
   GuiaPasoAPasoTocMobile,
+  GuiaPasoProgressWidget,
+  GuiaPasoStepHeader,
   type ItemTocPasoAPaso,
 } from "@/components/guias/GuiaPasoAPasoToc";
 import { datosCursoParaGuia } from "@/lib/guias/paso-a-paso-curso";
@@ -35,7 +40,7 @@ export interface RelacionadaResumen {
 
 function TablaRender({ tabla }: { tabla: TablaGuia }) {
   return (
-    <div className="guias-table-wrap my-6 overflow-x-auto rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)]">
+    <div className="guias-table-wrap my-6 overflow-x-auto rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] shadow-[var(--g-card-shadow)]">
       <table className="w-full min-w-[420px] border-collapse text-left text-sm">
         {tabla.caption ? (
           <caption className="border-b border-[var(--g-border)] bg-[var(--g-wash)] px-4 py-2.5 text-left text-xs font-semibold text-[var(--g-muted)]">
@@ -118,70 +123,104 @@ export default function GuiaPasoAPasoLayout({
   const lecturaMin = tiempoLecturaPasoAPaso(guia);
   const actualizado = fechaActualizado(guia.updated);
   const tocItems = construirToc(guia);
+  const stepIds = guia.secciones.map((s) => s.id);
   const jsonLd = jsonLdDeGuiaPasoAPaso(guia);
 
   return (
     <GuiaScope>
+      <GuiaReadingProgress />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
 
-      <article className="pb-24 pt-10 lg:pb-16">
+      <article className="pb-24 pt-8 lg:pb-16 lg:pt-10">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
-          <GuiaBreadcrumbs
-            items={[
-              { label: "Inicio", href: "/" },
-              { label: "Guías", href: "/guias" },
-              { label: curso.nombre, href: `/cursos/${guia.curso}` },
-              { label: guia.h1 },
-            ]}
-          />
-
-          <div className="mt-8 lg:grid lg:grid-cols-[336px_minmax(0,1fr)] lg:items-start lg:gap-10 xl:grid-cols-[376px_minmax(0,1fr)] xl:gap-14">
+          <div className="lg:grid lg:grid-cols-[336px_minmax(0,1fr)] lg:items-start lg:gap-10 xl:grid-cols-[376px_minmax(0,1fr)] xl:gap-14">
             {/* Columna principal editorial */}
             <div className="min-w-0 max-w-[840px] lg:col-start-2 lg:row-start-1">
-              {/* Cabecera editorial sin eyebrow pill */}
-              <header>
-                <h1 className="text-[clamp(1.85rem,3.2vw,2.75rem)] font-bold leading-[1.1] tracking-[-0.03em] text-[var(--g-ink)]">
+              {/* Hero Card visual de la guía */}
+              <header className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-6 shadow-[var(--g-card-shadow)] sm:p-8 lg:p-9">
+                <GuiaBreadcrumbs
+                  items={[
+                    { label: "Inicio", href: "/" },
+                    { label: "Guías", href: "/guias" },
+                    { label: curso.nombre, href: `/cursos/${guia.curso}` },
+                    { label: guia.h1 },
+                  ]}
+                />
+
+                <h1 className="mt-5 text-[clamp(1.85rem,3.2vw,2.75rem)] font-bold leading-[1.1] tracking-[-0.03em] text-[var(--g-ink)]">
                   {guia.h1}
                 </h1>
+
                 <p className="mt-4 max-w-[72ch] text-base leading-[1.65] text-[var(--g-muted)] sm:text-lg">
                   {guia.subtitle}
                 </p>
-                <div className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 border-y border-[var(--g-border)] py-2.5 text-xs tabular-nums text-[var(--g-subtle)]">
-                  <span className="font-medium text-[var(--g-ink)]">{guia.herramienta}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>Nivel {guia.nivel}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{lecturaMin} min de lectura</span>
-                  <span aria-hidden="true">·</span>
-                  <span>Actualizado el {actualizado}</span>
+
+                {/* Tira de metadatos visuales */}
+                <div className="mt-5 flex flex-wrap items-center gap-2.5 border-t border-[var(--g-border)] pt-4">
+                  <div className="flex items-center gap-2">
+                    <GuiaToolVisual tool={guia.herramienta} course={guia.curso} size="sm" />
+                    <GuiaVisualBadge tone="accent">{guia.herramienta}</GuiaVisualBadge>
+                  </div>
+                  <GuiaVisualBadge tone="neutral">Nivel {guia.nivel}</GuiaVisualBadge>
+                  <GuiaVisualBadge tone="neutral">{lecturaMin} min de lectura</GuiaVisualBadge>
+                  <GuiaVisualBadge tone="neutral">Actualizado {actualizado}</GuiaVisualBadge>
+                </div>
+
+                {/* Panel visual "En 30 segundos" */}
+                <div className="mt-6 rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]/70 p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
+                      En 30 segundos
+                    </span>
+                    <span className="font-mono text-xs text-[var(--g-subtle)]">
+                      {guia.en30Segundos.herramienta} · {guia.en30Segundos.tiempo}
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-base font-semibold leading-snug text-[var(--g-ink)]">
+                    {guia.en30Segundos.queLogras}
+                  </p>
+
+                  <ul className="mt-3.5 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
+                    {guia.en30Segundos.bullets.map((bullet) => (
+                      <li
+                        key={bullet}
+                        className="flex items-start gap-2 text-sm leading-relaxed text-[var(--g-muted)]"
+                      >
+                        <svg
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          aria-hidden="true"
+                          className="mt-1 h-3.5 w-3.5 shrink-0 text-[var(--g-accent)]"
+                        >
+                          <path
+                            d="M3.5 8.5l3 3 6-6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.75"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </header>
 
-              {/* Resumen ejecutivo en 30 segundos */}
-              <GuiaEditorialNote label="En 30 segundos" tone="neutral" className="mt-6">
-                <p className="font-semibold text-[var(--g-ink)]">
-                  {guia.en30Segundos.queLogras}
-                </p>
-                <p className="text-xs text-[var(--g-subtle)]">
-                  <strong className="text-[var(--g-ink)]">Herramienta:</strong>{" "}
-                  {guia.en30Segundos.herramienta} ·{" "}
-                  <strong className="text-[var(--g-ink)]">Tiempo estimado:</strong>{" "}
-                  {guia.en30Segundos.tiempo}
-                </p>
-                <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-[var(--g-muted)]">
-                  {guia.en30Segundos.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </GuiaEditorialNote>
-
-              {/* TOC móvil */}
+              {/* TOC móvil y progreso móvil */}
               <GuiaPasoAPasoTocMobile items={tocItems} />
+              <GuiaPasoProgressWidget
+                slug={guia.slug}
+                stepIds={stepIds}
+                className="mt-4 lg:hidden"
+              />
 
-              {/* Ruta paso a paso */}
+              {/* Mapa visual de pasos interactivo */}
               <GuiaPasoAPasoRuta pasos={guia.rutaVisual} />
 
               {/* Prerrequisitos */}
@@ -190,27 +229,52 @@ export default function GuiaPasoAPasoLayout({
                 aria-labelledby="lo-que-necesitas-titulo"
                 className="mt-10 scroll-mt-24"
               >
-                <GuiaEditorialNote label="Prerrequisitos" tone="neutral" className="my-0">
-                  <h2
-                    id="lo-que-necesitas-titulo"
-                    className="text-lg font-bold tracking-[-0.015em] text-[var(--g-ink)]"
-                  >
-                    Lo que necesitas
-                  </h2>
-                  <p className="text-sm text-[var(--g-muted)]">
+                <div className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 shadow-[var(--g-card-shadow)] sm:p-7">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2
+                      id="lo-que-necesitas-titulo"
+                      className="text-lg font-bold tracking-[-0.015em] text-[var(--g-ink)] sm:text-xl"
+                    >
+                      Lo que necesitas
+                    </h2>
+                    <GuiaVisualBadge tone="neutral">Prerrequisitos</GuiaVisualBadge>
+                  </div>
+
+                  <p className="mt-3 text-sm text-[var(--g-muted)]">
                     <strong className="text-[var(--g-ink)]">Versión recomendada:</strong>{" "}
                     {guia.requisitos.version}
                   </p>
-                  <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-[var(--g-muted)]">
+
+                  <ul className="mt-3 space-y-2">
                     {guia.requisitos.lista.map((req) => (
-                      <li key={req}>{req}</li>
+                      <li
+                        key={req}
+                        className="flex items-start gap-2.5 text-sm leading-relaxed text-[var(--g-muted)]"
+                      >
+                        <svg
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          aria-hidden="true"
+                          className="mt-1 h-3.5 w-3.5 shrink-0 text-[var(--g-accent)]"
+                        >
+                          <path
+                            d="M3.5 8.5l3 3 6-6.5"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span>{req}</span>
+                      </li>
                     ))}
                   </ul>
-                  <p className="text-xs leading-relaxed text-[var(--g-subtle)]">
+
+                  <p className="mt-4 rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]/60 px-3.5 py-2.5 text-xs leading-relaxed text-[var(--g-muted)]">
                     <strong className="text-[var(--g-ink)]">Mac y Web:</strong>{" "}
                     {guia.requisitos.compatibilidadMacWeb}
                   </p>
-                </GuiaEditorialNote>
+                </div>
 
                 {guia.requisitos.avisoEducativo ? (
                   <GuiaEditorialNote label="Nota de compatibilidad" tone="caution" className="mt-4">
@@ -229,8 +293,8 @@ export default function GuiaPasoAPasoLayout({
                 </GuiaEditorialNote>
               ) : null}
 
-              {/* Secciones paso a paso */}
-              <div className="mt-10 space-y-10">
+              {/* Tarjetas de Paso Interactivas */}
+              <div className="mt-10 space-y-6">
                 {guia.secciones.map((sec, idx) => {
                   const numeroPaso = String(idx + 1).padStart(2, "0");
                   return (
@@ -238,19 +302,16 @@ export default function GuiaPasoAPasoLayout({
                       key={sec.id}
                       id={sec.id}
                       aria-labelledby={`${sec.id}-titulo`}
-                      className="scroll-mt-24 border-t border-[var(--g-border)] pt-8"
+                      className="scroll-mt-24 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 shadow-[var(--g-card-shadow)] sm:p-7"
                     >
-                      <p className="mb-1.5 font-mono text-xs font-medium tabular-nums text-[var(--g-subtle)]">
-                        {numeroPaso}
-                      </p>
-                      <h2
-                        id={`${sec.id}-titulo`}
-                        className="text-xl font-bold tracking-[-0.02em] text-[var(--g-ink)] sm:text-2xl"
-                      >
-                        {sec.titulo}
-                      </h2>
+                      <GuiaPasoStepHeader
+                        slug={guia.slug}
+                        stepId={sec.id}
+                        numeroPaso={numeroPaso}
+                        titulo={sec.titulo}
+                      />
 
-                      <div className="mt-3 space-y-3 text-base leading-[1.7] text-[var(--g-muted)]">
+                      <div className="mt-4 space-y-3 text-base leading-[1.7] text-[var(--g-muted)]">
                         {sec.parrafos.map((p, pIdx) => (
                           <p key={pIdx}>{p}</p>
                         ))}
@@ -279,8 +340,8 @@ export default function GuiaPasoAPasoLayout({
                             sec.alerta.tipo === "warning"
                               ? "caution"
                               : sec.alerta.tipo === "tip"
-                                ? "accent"
-                                : "neutral"
+                                ? "success"
+                                : "accent"
                           }
                         >
                           <p>{sec.alerta.texto}</p>
@@ -293,7 +354,13 @@ export default function GuiaPasoAPasoLayout({
 
                       {sec.tabla ? <TablaRender tabla={sec.tabla} /> : null}
 
-                      {sec.captura ? <CapturaPendiente captura={sec.captura} /> : null}
+                      {sec.captura ? (
+                        <CapturaPendiente
+                          captura={sec.captura}
+                          herramienta={guia.herramienta}
+                          curso={guia.curso}
+                        />
+                      ) : null}
 
                       {sec.subsecciones && sec.subsecciones.length > 0 ? (
                         <div className="mt-6 space-y-6">
@@ -301,7 +368,7 @@ export default function GuiaPasoAPasoLayout({
                             <div
                               key={sub.id}
                               id={sub.id}
-                              className="scroll-mt-24 border-l-2 border-[var(--g-border-strong)] pl-4"
+                              className="scroll-mt-24 rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]/45 p-4 sm:p-5"
                             >
                               <h3 className="text-lg font-bold tracking-[-0.015em] text-[var(--g-ink)]">
                                 {sub.titulo}
@@ -322,14 +389,20 @@ export default function GuiaPasoAPasoLayout({
                                 <GuiaPasoAPasoCodeBlock bloque={sub.codigo} />
                               ) : null}
                               {sub.tabla ? <TablaRender tabla={sub.tabla} /> : null}
-                              {sub.captura ? <CapturaPendiente captura={sub.captura} /> : null}
+                              {sub.captura ? (
+                                <CapturaPendiente
+                                  captura={sub.captura}
+                                  herramienta={guia.herramienta}
+                                  curso={guia.curso}
+                                />
+                              ) : null}
                             </div>
                           ))}
                         </div>
                       ) : null}
 
                       {sec.verificaResultado ? (
-                        <GuiaEditorialNote label="Verifica el resultado" tone="accent">
+                        <GuiaEditorialNote label="Verifica tu resultado" tone="success">
                           <p>{sec.verificaResultado}</p>
                         </GuiaEditorialNote>
                       ) : null}
@@ -345,24 +418,49 @@ export default function GuiaPasoAPasoLayout({
                   aria-labelledby="errores-comunes-titulo"
                   className="mt-12 scroll-mt-24 border-t border-[var(--g-border)] pt-8"
                 >
-                  <h2
-                    id="errores-comunes-titulo"
-                    className="text-2xl font-bold tracking-[-0.02em] text-[var(--g-ink)]"
-                  >
-                    Errores comunes y cómo resolverlos
-                  </h2>
-                  <div className="mt-5 divide-y divide-[var(--g-border)] rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)]">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2
+                      id="errores-comunes-titulo"
+                      className="text-2xl font-bold tracking-[-0.02em] text-[var(--g-ink)]"
+                    >
+                      Errores comunes y cómo resolverlos
+                    </h2>
+                    <GuiaVisualBadge tone="warn">Diagnóstico rápido</GuiaVisualBadge>
+                  </div>
+
+                  <div className="mt-5 space-y-3.5">
                     {guia.erroresComunes.map((item) => (
-                      <div key={item.error} className="p-4">
-                        <p className="text-sm font-bold text-[var(--g-ink)]">{item.error}</p>
-                        <p className="mt-1 text-sm leading-relaxed text-[var(--g-muted)]">
-                          <strong className="text-[var(--g-ink)]">Causa:</strong> {item.causa}
-                        </p>
-                        <p className="mt-1 text-sm leading-relaxed text-[var(--g-muted)]">
-                          <strong className="text-[var(--g-ink)]">Solución:</strong>{" "}
-                          {item.solucion}
-                        </p>
-                      </div>
+                      <article
+                        key={item.error}
+                        className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 shadow-[var(--g-card-shadow)]"
+                      >
+                        <div className="flex flex-wrap items-start gap-2.5">
+                          <GuiaVisualBadge tone="warn">Problema</GuiaVisualBadge>
+                          <h3 className="text-base font-bold leading-snug text-[var(--g-ink)]">
+                            {item.error}
+                          </h3>
+                        </div>
+
+                        <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <div className="rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]/65 p-3.5">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
+                              Causa
+                            </p>
+                            <p className="mt-1 text-sm leading-relaxed text-[var(--g-muted)]">
+                              {item.causa}
+                            </p>
+                          </div>
+
+                          <div className="rounded-xl border border-[var(--g-ok)]/25 bg-[var(--g-ok-soft)]/55 p-3.5">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--g-ok)]">
+                              Cómo resolverlo
+                            </p>
+                            <p className="mt-1 text-sm leading-relaxed text-[var(--g-ink)]">
+                              {item.solucion}
+                            </p>
+                          </div>
+                        </div>
+                      </article>
                     ))}
                   </div>
                 </section>
@@ -375,20 +473,23 @@ export default function GuiaPasoAPasoLayout({
                 aria-labelledby="descarga-plantilla-titulo"
                 className="mt-10 scroll-mt-24"
               >
-                <GuiaEditorialNote label="Plantilla descargable" tone="neutral" className="my-0">
+                <div className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 shadow-[var(--g-card-shadow)] sm:p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
+                      Plantilla descargable
+                    </span>
+                    <GuiaVisualBadge tone="neutral">Próximamente</GuiaVisualBadge>
+                  </div>
                   <h2
                     id="descarga-plantilla-titulo"
-                    className="text-lg font-bold tracking-[-0.015em] text-[var(--g-ink)]"
+                    className="mt-2 text-lg font-bold tracking-[-0.015em] text-[var(--g-ink)]"
                   >
                     {guia.plantilla.titulo}
                   </h2>
-                  <p className="text-sm leading-relaxed text-[var(--g-muted)]">
+                  <p className="mt-1.5 text-sm leading-relaxed text-[var(--g-muted)]">
                     {guia.plantilla.descripcion}
                   </p>
-                  <p className="font-mono text-xs text-[var(--g-subtle)]">
-                    Próximamente disponible para descarga.
-                  </p>
-                </GuiaEditorialNote>
+                </div>
               </section>
 
               {/* Preguntas frecuentes */}
@@ -429,18 +530,18 @@ export default function GuiaPasoAPasoLayout({
                   ) : null}
 
                   {guia.enlacesInternosExtra && guia.enlacesInternosExtra.length > 0 ? (
-                    <ul className="mt-4 divide-y divide-[var(--g-border)] border-y border-[var(--g-border)]">
+                    <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                       {guia.enlacesInternosExtra.map((int) => (
                         <li key={int.href}>
                           <Link
                             href={int.href}
-                            className="group block py-3 no-underline transition-colors hover:bg-[var(--g-surface)] sm:px-2"
+                            className="group block rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] p-4 no-underline shadow-[var(--g-card-shadow)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--g-accent)]"
                           >
                             <span className="block text-sm font-semibold text-[var(--g-ink)] transition-colors group-hover:text-[var(--g-accent)]">
                               {int.label}
                             </span>
                             {int.descripcion ? (
-                              <span className="mt-0.5 block text-xs text-[var(--g-muted)]">
+                              <span className="mt-1 block text-xs leading-relaxed text-[var(--g-muted)]">
                                 {int.descripcion}
                               </span>
                             ) : null}
@@ -452,7 +553,7 @@ export default function GuiaPasoAPasoLayout({
                 </section>
               ) : null}
 
-              {/* Guías relacionadas */}
+              {/* Guías relacionadas (3 tarjetas visuales) */}
               <nav
                 aria-labelledby="guias-relacionadas-titulo"
                 className="mt-10 border-t border-[var(--g-border)] pt-8"
@@ -463,34 +564,51 @@ export default function GuiaPasoAPasoLayout({
                 >
                   Guías relacionadas
                 </h2>
-                <ol className="mt-4 divide-y divide-[var(--g-border)] border-y border-[var(--g-border)]">
-                  {guia.relacionadas.map((relSlug, relIdx) => {
+                <ol className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                  {guia.relacionadas.map((relSlug) => {
                     const rel = relacionadasMap[relSlug];
                     return (
-                      <li key={relSlug}>
+                      <li key={relSlug} className="min-w-0">
                         <Link
                           href={`/guias/${relSlug}`}
-                          className="group flex min-h-[44px] items-baseline gap-4 py-3.5 no-underline transition-colors hover:bg-[var(--g-surface)] sm:px-2"
+                          className="group flex h-full min-h-[44px] flex-col justify-between rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 no-underline shadow-[var(--g-card-shadow)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--g-accent)] hover:shadow-[var(--g-card-shadow-hover)]"
                         >
-                          <span className="shrink-0 font-mono text-xs font-medium tabular-nums text-[var(--g-subtle)]">
-                            {String(relIdx + 1).padStart(2, "0")}
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <span className="block text-sm font-semibold leading-snug text-[var(--g-ink)] transition-colors group-hover:text-[var(--g-accent)]">
+                          <div>
+                            <div className="flex items-center justify-between gap-2">
+                              <GuiaToolVisual tool={rel?.herramienta} size="sm" />
+                              {rel?.nivel ? (
+                                <GuiaVisualBadge tone="neutral">{rel.nivel}</GuiaVisualBadge>
+                              ) : null}
+                            </div>
+
+                            <span className="mt-3.5 block text-sm font-bold leading-snug text-[var(--g-ink)] transition-colors group-hover:text-[var(--g-accent)]">
                               {rel?.h1 ?? relSlug.replace(/-/g, " ")}
                             </span>
+
                             {rel?.subtitle ? (
-                              <span className="mt-0.5 block line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
+                              <span className="mt-1.5 block line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
                                 {rel.subtitle}
                               </span>
                             ) : null}
-                            {rel?.herramienta ? (
-                              <span className="mt-1 block font-mono text-[11px] text-[var(--g-subtle)]">
-                                {rel.herramienta}
-                                {rel.nivel ? ` · ${rel.nivel}` : ""}
-                              </span>
-                            ) : null}
                           </div>
+
+                          <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--g-accent)]">
+                            <span>Leer guía</span>
+                            <svg
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              aria-hidden="true"
+                              className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+                            >
+                              <path
+                                d="M3.5 8h9M8.5 4l4 4-4 4"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </span>
                         </Link>
                       </li>
                     );
@@ -509,7 +627,7 @@ export default function GuiaPasoAPasoLayout({
               </div>
 
               {/* Cierre de curso en escritorio */}
-              <div className="mt-10 hidden rounded-lg border border-[var(--g-border)] bg-[var(--g-surface)] p-6 lg:flex lg:items-center lg:justify-between lg:gap-6">
+              <div className="mt-10 hidden rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-6 shadow-[var(--g-card-shadow)] lg:flex lg:items-center lg:justify-between lg:gap-6">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
                     Clase gratis disponible
@@ -532,13 +650,13 @@ export default function GuiaPasoAPasoLayout({
                     country="cl"
                     ctaPosition="guia_paso_a_paso_final_desktop"
                     customText={`Hola, vengo de la guía ${guia.h1} y quiero la clase gratis del curso de ${curso.nombre} [${guia.slug}]`}
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-md bg-[var(--g-ink)] px-5 text-xs font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[var(--g-ink)] px-5 text-xs font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
                   >
                     Solicitar clase gratis
                   </WhatsAppCta>
                   <Link
                     href={`/cursos/${guia.curso}`}
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
                   >
                     Ver temario del curso
                   </Link>
@@ -552,14 +670,15 @@ export default function GuiaPasoAPasoLayout({
               </div>
             </div>
 
-            {/* Rail izquierdo sticky: Curso arriba + En esta guía abajo */}
-            <div className="hidden lg:sticky lg:top-24 lg:col-start-1 lg:row-start-1 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:gap-6 lg:overflow-y-auto lg:pr-1">
+            {/* Rail izquierdo sticky: Curso arriba + Progreso medio + En esta guía abajo */}
+            <div className="hidden lg:sticky lg:top-24 lg:col-start-1 lg:row-start-1 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:gap-5 lg:overflow-y-auto lg:pr-1">
               <GuiaPasoAPasoCursoCard
                 guia={guia}
                 curso={curso}
                 cursoSecundario={cursoSecundario}
                 ctaPosition="guia_paso_a_paso_lateral"
               />
+              <GuiaPasoProgressWidget slug={guia.slug} stepIds={stepIds} />
               {tocItems.length > 0 ? (
                 <div className="border-t border-[var(--g-border)] pt-5">
                   <GuiaPasoAPasoTocDesktop items={tocItems} sticky={false} />
