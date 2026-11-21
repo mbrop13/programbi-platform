@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { courses } from "@/lib/data/courses";
 import { leadCourses } from "@/lib/data/site";
-import { contactGallery } from "@/lib/data/images";
 import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import CourseImage from "@/components/shared/CourseImage";
@@ -38,6 +37,23 @@ function slugDelPrograma(titulo: string | undefined): string {
   return courseSlugMap[titulo] || courses.find((curso) => curso.title === titulo)?.slug || "power-bi";
 }
 
+function CheckIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M3.5 8.5 6.5 11.5 12.5 4.5" />
+    </svg>
+  );
+}
+
 export default function LeadForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -57,14 +73,21 @@ export default function LeadForm() {
 
   const toggleCourse = (c: string) => {
     setSelected((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
+    if (errors.course) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.course;
+        return next;
+      });
+    }
   };
 
   const validate = () => {
     const next: Record<string, string> = {};
     if (!name.trim()) next.name = "Escribe tu nombre.";
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "Escribe un email válido.";
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "Escribe un correo electrónico válido.";
     if (!telefonoOpcional && (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8)) {
-      next.whatsapp = "Escribe tu WhatsApp.";
+      next.whatsapp = "Escribe tu WhatsApp con código de país.";
     }
     if (selected.length === 0) next.course = "Elige al menos un programa.";
     if (!privacy) next.privacy = "Debes aceptar la política de privacidad.";
@@ -137,186 +160,273 @@ export default function LeadForm() {
   };
 
   return (
-    <section id="cotizar" className="border-t border-line">
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 lg:grid-cols-2">
-        <div className="px-4 py-16 sm:px-6 lg:px-16 lg:py-24">
-          <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cotiza Ahora</h2>
-          <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
-            {telefonoOpcional
-              ? "Completa tu nombre y correo y abrimos el PDF del temario con fechas en tu horario y detalle del curso."
-              : "Completa tus datos y abrimos el PDF de temario y precios con las fechas, los cupos y el detalle del curso."}
-          </p>
+    <section id="cotizar" className="border-t border-border bg-bg">
+      <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8 lg:py-24 xl:px-10">
+        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 xl:gap-14">
+          <div className="lg:col-span-5">
+            <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+              Cotiza ahora
+            </h2>
+            <p className="mt-2 text-lg font-medium text-text-primary">
+              Recibe temario, fechas y valores
+            </p>
+            <p className="mt-3 max-w-[34rem] text-[15px] leading-relaxed text-text-secondary">
+              {telefonoOpcional
+                ? "Completa tu nombre y correo para abrir el brochure PDF del programa con fechas en tu horario."
+                : "Selecciona el programa que te interesa y abre al instante el brochure PDF con fechas, cupos y valores."}
+            </p>
 
-          {status === "success" ? (
-            <div className="mt-10 max-w-[36rem] rounded-2xl border border-line bg-paper px-5 py-6">
-              <p className="text-base font-semibold text-ink">¡Listo! Abrimos el PDF de temario y precios en una pestaña nueva.</p>
-              <p className="mt-2 text-sm leading-relaxed text-mute">
-                Ahí ves el temario completo, las fechas y el arancel vigente con los descuentos
-                {cuotasPais ? ` y las ${cuotasPais}` : ""}. Los precios de la web ya quedaron desbloqueados en este navegador.
-              </p>
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href={courseBrochureUrl(destSlug, pais)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
-                >
-                  Abrir temario y precios (PDF)
-                </a>
-                <Link
-                  href={pais === "cl" ? `/pago?curso=${destSlug}` : `/pago?curso=${destSlug}&pais=${pais}`}
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-line-strong bg-paper px-6 text-sm font-semibold text-ink transition-colors hover:border-ink/40"
-                >
-                  Ir a Inscripción / Pago →
-                </Link>
-              </div>
-              <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
-                <button
-                  type="button"
-                  onClick={() => setStatus("idle")}
-                  className="font-medium text-ink underline underline-offset-4"
-                >
-                  Cotizar otro programa
-                </button>
-                <Link href="/cursos" className="font-medium text-mute underline underline-offset-4">
-                  Seguir explorando el catálogo →
-                </Link>
-              </div>
-              <p className="mt-4 text-xs text-mute">¿No se abrió la pestaña? Usa el botón «Abrir temario y precios (PDF)».</p>
-            </div>
-          ) : (
-            <form onSubmit={onSubmit} className="relative mt-10 max-w-[36rem] space-y-5" noValidate>
-              <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0">
-                <label htmlFor="lead-website">Sitio web</label>
-                <input
-                  id="lead-website"
-                  name="_website"
-                  type="text"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  value={honeypot}
-                  onChange={(e) => setHoneypot(e.target.value)}
+            <figure className="mt-7 overflow-hidden rounded-2xl border border-border bg-surface">
+              <div className="aspect-[16/9] w-full overflow-hidden bg-bg">
+                <CourseImage
+                  src="/images/courses/galeria/power-bi/01.webp"
+                  alt="Dashboard de producción y costos desarrollado en Power BI durante las clases en vivo"
+                  width={1280}
+                  height={676}
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="h-full w-full object-cover object-center"
                 />
               </div>
+              <figcaption className="flex items-center justify-between gap-3 border-t border-border bg-surface px-4 py-3 text-xs text-text-secondary">
+                <span className="font-medium text-text-primary">Proyecto en vivo: Power BI</span>
+                <span className="text-text-muted">Tablero de producción y costos</span>
+              </figcaption>
+            </figure>
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <Field id="name" label="Nombre" value={name} onChange={setName} error={errors.name} autoComplete="name" />
-                <Field
-                  id="email"
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={setEmail}
-                  error={errors.email}
-                  autoComplete="email"
-                />
-              </div>
-              <Field
-                id="whatsapp"
-                label={telefonoOpcional ? "Teléfono / WhatsApp (opcional)" : "WhatsApp"}
-                value={whatsapp}
-                onChange={setWhatsapp}
-                error={errors.whatsapp}
-                autoComplete="tel"
-                helper={
-                  telefonoOpcional
-                    ? "En EE.UU. te respondemos por email; agrégalo solo si prefieres WhatsApp."
-                    : "Incluye código de país. Chile: +56 9..."
-                }
-              />
+            <ul className="mt-7 divide-y divide-border border-y border-border text-sm leading-relaxed text-text-secondary">
+              <li className="py-3.5">
+                <span className="font-medium text-text-primary">Brochure PDF al instante:</span>{" "}
+                se abre en una nueva pestaña con el temario completo del programa elegido.
+              </li>
+              <li className="py-3.5">
+                <span className="font-medium text-text-primary">Fechas en vivo y formas de pago:</span>{" "}
+                horarios locales, próximos inicios{cuotasPais ? ` y ${cuotasPais}` : ""}.
+              </li>
+              <li className="py-3.5">
+                <span className="font-medium text-text-primary">Respuesta directa de nuestro equipo:</span>{" "}
+                resolvemos tus dudas por el canal que indiques, sin llamadas invasivas.
+              </li>
+            </ul>
+          </div>
 
-              <fieldset className="flex flex-col gap-2">
-                <legend className="text-sm font-medium text-ink">Programa</legend>
-                <p className="text-xs text-mute">Puedes elegir más de uno.</p>
-                <div className="flex flex-wrap gap-2">
-                  {leadCourses.map((c) => {
-                    const on = selected.includes(c);
-                    return (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => toggleCourse(c)}
-                        aria-pressed={on}
-                        className={`rounded-md border px-3 py-2 text-sm font-semibold transition-colors ${
-                          on
-                            ? "border-ink bg-ink text-canvas"
-                            : "border-line-strong bg-paper text-ink hover:border-ink/40"
-                        }`}
-                      >
-                        {c}
-                      </button>
-                    );
-                  })}
+          <div className="lg:col-span-7">
+            <div className="rounded-2xl border border-border-strong bg-surface p-6 shadow-[0_18px_48px_-24px_rgba(17,24,39,0.10)] dark:shadow-[0_18px_48px_-24px_rgba(0,0,0,0.45)] sm:p-8 lg:p-9">
+              {status === "success" ? (
+                <div className="space-y-6">
+                  <div className="flex items-start gap-3.5">
+                    <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border border-[#0b63c5]/30 bg-[#0b63c5]/[0.08] text-[#0b63c5] dark:border-[#60a5fa]/35 dark:bg-[#60a5fa]/[0.14] dark:text-[#60a5fa]">
+                      <CheckIcon className="size-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold tracking-tight text-text-primary">
+                        Solicitud enviada, temario abierto
+                      </h3>
+                      <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
+                        Abrimos el brochure PDF con el temario completo, las fechas en vivo y los valores vigentes
+                        {cuotasPais ? ` incluyendo ${cuotasPais}` : ""}. Los precios del sitio quedaron desbloqueados en este navegador.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <a
+                      href={courseBrochureUrl(destSlug, pais)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-[46px] cursor-pointer items-center justify-center rounded-xl bg-text-primary px-6 text-sm font-medium text-surface transition-opacity hover:opacity-92 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa]"
+                    >
+                      Abrir temario y precios (PDF)
+                    </a>
+                    <Link
+                      href={pais === "cl" ? `/pago?curso=${destSlug}` : `/pago?curso=${destSlug}&pais=${pais}`}
+                      className="inline-flex min-h-[46px] cursor-pointer items-center justify-center rounded-xl border border-border-strong bg-bg/70 px-6 text-sm font-medium text-text-primary transition-colors hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa]"
+                    >
+                      Ir a inscripción y pago
+                    </Link>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-5 border-t border-border pt-4 text-sm">
+                    <button
+                      type="button"
+                      onClick={() => setStatus("idle")}
+                      className="inline-flex min-h-[44px] cursor-pointer items-center font-medium text-text-primary underline underline-offset-4 hover:text-[#0b63c5] dark:hover:text-[#60a5fa] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa]"
+                    >
+                      Cotizar otro programa
+                    </button>
+                    <Link
+                      href="/cursos"
+                      className="inline-flex min-h-[44px] cursor-pointer items-center font-medium text-text-secondary underline underline-offset-4 hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa]"
+                    >
+                      Ver catálogo de cursos
+                    </Link>
+                  </div>
+
+                  <p className="text-xs text-text-muted">
+                    Si el navegador bloqueó la pestaña emergente, usa el botón &ldquo;Abrir temario y precios (PDF)&rdquo;.
+                  </p>
                 </div>
-                {errors.course ? <p className="text-sm text-ink">{errors.course}</p> : null}
-              </fieldset>
+              ) : (
+                <form onSubmit={onSubmit} className="relative space-y-6" noValidate>
+                  <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0">
+                    <label htmlFor="lead-website">Sitio web</label>
+                    <input
+                      id="lead-website"
+                      name="_website"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypot}
+                      onChange={(e) => setHoneypot(e.target.value)}
+                    />
+                  </div>
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="message" className="text-sm font-medium text-ink">
-                  Mensaje <span className="font-normal text-mute">(opcional)</span>
-                </label>
-                <textarea
-                  id="message"
-                  rows={4}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="rounded-xl border border-line-strong bg-paper px-3 py-3 text-base text-ink"
-                />
-              </div>
+                  <fieldset className="space-y-3">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <legend className="text-sm font-semibold text-text-primary">
+                        1. Selecciona tu programa
+                      </legend>
+                      <span className="tabular-nums text-xs text-text-muted">
+                        {selected.length > 0
+                          ? `${selected.length} ${selected.length === 1 ? "programa seleccionado" : "programas seleccionados"}`
+                          : "Puedes elegir uno o más"}
+                      </span>
+                    </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="flex items-start gap-3 text-sm text-ink">
-                  <input
-                    type="checkbox"
-                    checked={privacy}
-                    onChange={(e) => setPrivacy(e.target.checked)}
-                    className="mt-1 size-4 accent-ink"
-                  />
-                  <span>
-                    Acepto la{" "}
-                    <Link href="/privacidad" className="underline underline-offset-2">
-                      política de privacidad
-                    </Link>{" "}
-                    y que ProgramBI me contacte sobre el programa elegido.
-                  </span>
-                </label>
-                {errors.privacy ? <p className="text-sm text-ink">{errors.privacy}</p> : null}
-              </div>
+                    <div className="flex flex-wrap gap-2">
+                      {leadCourses.map((c) => {
+                        const on = selected.includes(c);
+                        return (
+                          <button
+                            key={c}
+                            type="button"
+                            onClick={() => toggleCourse(c)}
+                            aria-pressed={on}
+                            className={`inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa] sm:min-h-[38px] ${
+                              on
+                                ? "border-[#0b63c5] bg-[#0b63c5]/[0.08] text-text-primary dark:border-[#60a5fa] dark:bg-[#60a5fa]/[0.14]"
+                                : "border-border bg-bg/70 text-text-primary hover:border-border-strong hover:bg-surface-hover"
+                            }`}
+                          >
+                            {on ? (
+                              <CheckIcon className="size-3.5 shrink-0 text-[#0b63c5] dark:text-[#60a5fa]" />
+                            ) : null}
+                            <span>{c}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
 
-              {errors.form ? <p className="text-sm text-ink">{errors.form}</p> : null}
+                    {errors.course ? (
+                      <p role="alert" className="text-sm font-medium text-danger">
+                        {errors.course}
+                      </p>
+                    ) : null}
+                  </fieldset>
 
-              <button
-                type="submit"
-                disabled={sending}
-                className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-8 text-base font-semibold text-canvas transition-transform active:scale-[0.98] disabled:opacity-60"
-              >
-                {sending ? "Abriendo temario y precios…" : "Ver temario y precios (PDF) →"}
-              </button>
-            </form>
-          )}
-        </div>
+                  <div className="space-y-4 border-t border-border pt-6">
+                    <p className="text-sm font-semibold text-text-primary">
+                      2. Tus datos de contacto
+                    </p>
 
-        <div className="grid min-h-[520px] grid-cols-2 grid-rows-2 gap-2 bg-canvas p-4 lg:min-h-full lg:p-6">
-          {contactGallery.map((item, i) => (
-            <div
-              key={item.url}
-              className={`relative overflow-hidden rounded-[22px] border border-line ${
-                item.tall ? "row-span-2" : ""
-              }`}
-            >
-              <CourseImage
-                src={item.url}
-                alt={item.label}
-                fill
-                sizes={i === 0 ? "(max-width: 1024px) 50vw, 28vw" : "(max-width: 1024px) 50vw, 22vw"}
-                className={`object-cover ${item.object}`}
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent px-3 py-3">
-                <p className="text-sm font-semibold text-canvas">{item.label}</p>
-                <p className="text-[11px] text-canvas/80">{item.subtitle}</p>
-              </div>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <Field
+                        id="name"
+                        label="Nombre"
+                        placeholder="Tu nombre"
+                        value={name}
+                        onChange={setName}
+                        error={errors.name}
+                        autoComplete="name"
+                      />
+                      <Field
+                        id="email"
+                        label="Correo electrónico"
+                        type="email"
+                        placeholder="nombre@correo.com"
+                        value={email}
+                        onChange={setEmail}
+                        error={errors.email}
+                        autoComplete="email"
+                      />
+                    </div>
+
+                    <Field
+                      id="whatsapp"
+                      label={telefonoOpcional ? "WhatsApp (opcional)" : "WhatsApp"}
+                      placeholder="+56 9 ..."
+                      value={whatsapp}
+                      onChange={setWhatsapp}
+                      error={errors.whatsapp}
+                      autoComplete="tel"
+                      helper={
+                        telefonoOpcional
+                          ? "En EE.UU. te respondemos por correo; agrégalo solo si prefieres WhatsApp."
+                          : "Incluye código de país, por ejemplo +56 9 ..."
+                      }
+                    />
+
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="message" className="text-sm font-medium text-text-primary">
+                        Mensaje <span className="font-normal text-text-muted">(opcional)</span>
+                      </label>
+                      <textarea
+                        id="message"
+                        rows={3}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Cuéntanos tu nivel actual o qué necesitas consultar"
+                        className="w-full rounded-xl border border-border-strong bg-bg/60 px-3.5 py-2.5 text-[15px] text-text-primary placeholder:text-text-muted transition-colors focus:bg-surface focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 border-t border-border pt-5">
+                    <label className="flex min-h-[44px] cursor-pointer items-start gap-3 py-1 text-sm leading-relaxed text-text-secondary">
+                      <input
+                        type="checkbox"
+                        checked={privacy}
+                        onChange={(e) => setPrivacy(e.target.checked)}
+                        aria-invalid={Boolean(errors.privacy)}
+                        className="mt-0.5 size-4 shrink-0 cursor-pointer rounded border-border-strong accent-[#0b63c5] dark:accent-[#60a5fa] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa]"
+                      />
+                      <span>
+                        Acepto la{" "}
+                        <Link
+                          href="/privacidad"
+                          className="font-medium text-text-primary underline underline-offset-2 hover:text-[#0b63c5] dark:hover:text-[#60a5fa]"
+                        >
+                          política de privacidad
+                        </Link>{" "}
+                        y que ProgramBI me envíe la información del programa elegido.
+                      </span>
+                    </label>
+                    {errors.privacy ? (
+                      <p role="alert" className="text-sm font-medium text-danger">
+                        {errors.privacy}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  {errors.form ? (
+                    <p
+                      role="alert"
+                      className="rounded-xl border border-danger/30 bg-destructive-soft px-4 py-3 text-sm font-medium text-danger"
+                    >
+                      {errors.form}
+                    </p>
+                  ) : null}
+
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="inline-flex min-h-[50px] w-full cursor-pointer items-center justify-center rounded-xl bg-text-primary px-6 text-[15px] font-medium text-surface transition-opacity hover:opacity-92 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa]"
+                  >
+                    {sending ? "Enviando solicitud..." : "Recibir temario y valores"}
+                  </button>
+                </form>
+              )}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
@@ -329,6 +439,7 @@ function Field({
   value,
   onChange,
   error,
+  placeholder,
   type = "text",
   autoComplete,
   helper,
@@ -338,25 +449,36 @@ function Field({
   value: string;
   onChange: (v: string) => void;
   error?: string;
+  placeholder?: string;
   type?: string;
   autoComplete?: string;
   helper?: string;
 }) {
+  const errorId = error ? `${id}-error` : undefined;
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm font-medium text-ink">
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={id} className="text-sm font-medium text-text-primary">
         {label}
       </label>
       <input
         id={id}
         type={type}
         value={value}
+        placeholder={placeholder}
         autoComplete={autoComplete}
+        aria-invalid={Boolean(error)}
+        aria-describedby={errorId}
         onChange={(e) => onChange(e.target.value)}
-        className="h-12 rounded-xl border border-line-strong bg-paper px-3 text-base text-ink placeholder:text-faint"
+        className={`min-h-[46px] rounded-xl border bg-bg/60 px-3.5 text-[15px] text-text-primary placeholder:text-text-muted transition-colors focus:bg-surface focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa] ${
+          error ? "border-danger" : "border-border-strong"
+        }`}
       />
-      {helper ? <p className="text-xs text-mute">{helper}</p> : null}
-      {error ? <p className="text-sm text-ink">{error}</p> : null}
+      {helper ? <p className="text-xs text-text-muted">{helper}</p> : null}
+      {error ? (
+        <p id={errorId} role="alert" className="text-sm font-medium text-danger">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
