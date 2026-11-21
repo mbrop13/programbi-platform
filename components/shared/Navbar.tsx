@@ -40,7 +40,7 @@ const navLinks: Array<{
   { href: "/plantillas", label: "Recursos", hasRecursos: true },
   { href: "/empresas", label: "Empresas" },
   ...(COMUNIDAD_PUBLICA ? [{ href: "/comunidad", label: "Comunidad" }] : []),
-  { href: "/blog", label: "Blog" },
+  { href: "/guias", label: "Guías" },
 ];
 
 const RECURSOS_LINKS = [
@@ -118,6 +118,9 @@ export default function Navbar() {
     return esRutaIndexablePais(paisNav, base) ? hrefLocal(href) : href;
   };
   const isNewsletter = pathname?.startsWith("/blog");
+  const isGuidesActive = Boolean(
+    pathname && (pathname.startsWith("/guias") || /^\/[a-z]{2}\/guias(\/|$)/.test(pathname)),
+  );
 
   const [nlCategories, setNlCategories] = useState<
     { id: string; slug: string; name: string }[]
@@ -459,7 +462,14 @@ export default function Navbar() {
                   ) : null}
                 </div>
               ) : (
-                <Link key={link.href} href={hrefNav(link.href)} className="transition-colors hover:text-text-primary no-underline">
+                <Link
+                  key={link.href}
+                  href={hrefNav(link.href)}
+                  aria-current={link.href === "/guias" && isGuidesActive ? "page" : undefined}
+                  className={`transition-colors hover:text-text-primary no-underline ${
+                    link.href === "/guias" && isGuidesActive ? "font-semibold text-text-primary" : ""
+                  }`}
+                >
                   {link.label}
                 </Link>
               )
@@ -719,7 +729,12 @@ export default function Navbar() {
                     key={link.href}
                     href={hrefNav(link.href)}
                     onClick={() => setIsMobileOpen(false)}
-                    className="flex min-h-[44px] items-center border-b border-border py-3 text-lg font-medium text-text-primary no-underline"
+                    aria-current={link.href === "/guias" && isGuidesActive ? "page" : undefined}
+                    className={`flex min-h-[44px] items-center border-b border-border py-3 text-lg no-underline ${
+                      link.href === "/guias" && isGuidesActive
+                        ? "font-semibold text-text-primary"
+                        : "font-medium text-text-primary"
+                    }`}
                   >
                     {link.label}
                   </Link>

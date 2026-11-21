@@ -45,7 +45,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
     })
     .join(" ");
 
-  const donutRadius = 42;
+  const donutRadius = 52;
   const donutCircumference = 2 * Math.PI * donutRadius;
   const totalPct = data.channels.reduce((acc, c) => acc + c.pct, 0) || 100;
 
@@ -282,8 +282,8 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                   Distribución por canal
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="relative size-24 shrink-0">
-                    <svg viewBox="0 0 120 120" className="size-full -rotate-90" aria-hidden="true">
+                  <div className="relative size-24 shrink-0 sm:size-[104px]">
+                    <svg viewBox="0 0 132 132" className="size-full -rotate-90" aria-hidden="true">
                       {(() => {
                         let offset = 0;
                         return data.channels.map((c) => {
@@ -298,12 +298,12 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                           return (
                             <circle
                               key={c.name}
-                              cx="60"
-                              cy="60"
+                              cx="66"
+                              cy="66"
                               r={donutRadius}
                               fill="none"
                               stroke={CHANNEL_COLORS[c.name] ?? c.color}
-                              strokeWidth={isSelected ? 18 : 15}
+                              strokeWidth={isSelected ? 12 : 10}
                               strokeDasharray={`${dash} ${gap}`}
                               strokeDashoffset={-currentOffset}
                               opacity={dimmed ? 0.35 : 1}
@@ -312,14 +312,14 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                         });
                       })()}
                     </svg>
-                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-[13px] font-bold text-[#111214] tabular-nums dark:text-[#f4f4f6]">
+                    <div className="pointer-events-none absolute inset-[18%] flex flex-col items-center justify-center text-center">
+                      <span className="text-[8.5px] font-medium leading-none tracking-wider text-[#525866] uppercase dark:text-[#9ca3af]">
+                        {channel ?? "Total"}
+                      </span>
+                      <span className="mt-0.5 text-[10.5px] font-semibold leading-tight tracking-tight text-[#111214] tabular-nums dark:text-[#f4f4f6] sm:text-[11px]">
                         {channel
                           ? `${data.channels.find((c) => c.name === channel)?.pct ?? 100}%`
                           : data.ingresos}
-                      </span>
-                      <span className="text-[10px] text-[#525866] dark:text-[#9ca3af]">
-                        {channel ?? "Total"}
                       </span>
                     </div>
                   </div>

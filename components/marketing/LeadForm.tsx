@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { courses } from "@/lib/data/courses";
 import { leadCourses } from "@/lib/data/site";
+import { contactGallery } from "@/lib/data/images";
 import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import CourseImage from "@/components/shared/CourseImage";
@@ -54,6 +55,29 @@ function CheckIcon({ className = "size-4" }: { className?: string }) {
   );
 }
 
+function ChevronIcon({
+  direction,
+  className = "size-4",
+}: {
+  direction: "prev" | "next";
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d={direction === "prev" ? "M10 3.5 5.5 8 10 12.5" : "M6 3.5 10.5 8 6 12.5"} />
+    </svg>
+  );
+}
+
 export default function LeadForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -65,11 +89,20 @@ export default function LeadForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
+  const [activePhoto, setActivePhoto] = useState(0);
   const formLoadedAt = useRef(Date.now());
   const pais = usePaisRuta();
   const telefonoOpcional = muestraPrecioDirecto(pais);
   const cuotasPais = textoCuotas(pais);
   const destSlug = slugDelPrograma(selected[0]);
+  const currentPhoto = contactGallery[activePhoto];
+
+  const prevPhoto = () => {
+    setActivePhoto((prev) => (prev === 0 ? contactGallery.length - 1 : prev - 1));
+  };
+  const nextPhoto = () => {
+    setActivePhoto((prev) => (prev === contactGallery.length - 1 ? 0 : prev + 1));
+  };
 
   const toggleCourse = (c: string) => {
     setSelected((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
@@ -176,37 +209,74 @@ export default function LeadForm() {
                 : "Selecciona el programa que te interesa y abre al instante el brochure PDF con fechas, cupos y valores."}
             </p>
 
-            <figure className="mt-7 overflow-hidden rounded-2xl border border-border bg-surface">
-              <div className="aspect-[16/9] w-full overflow-hidden bg-bg">
-                <CourseImage
-                  src="/images/courses/galeria/power-bi/01.webp"
-                  alt="Dashboard de producción y costos desarrollado en Power BI durante las clases en vivo"
-                  width={1000}
-                  height={528}
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                  className="h-full w-full object-cover object-center"
-                />
-              </div>
-              <figcaption className="flex items-center justify-between gap-3 border-t border-border bg-surface px-4 py-3 text-xs text-text-secondary">
-                <span className="font-medium text-text-primary">Proyecto en vivo: Power BI</span>
-                <span className="text-text-muted">Tablero de producción y costos</span>
-              </figcaption>
-            </figure>
+            <div className="mt-7">
+              <figure className="overflow-hidden rounded-2xl border border-border bg-surface">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#f0f1f4] dark:bg-[#181920]">
+                  <CourseImage
+                    src={currentPhoto.url}
+                    alt={`Clases presenciales ProgramBI: ${currentPhoto.label} - ${currentPhoto.subtitle}`}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                    className={currentPhoto.tall ? "object-contain" : `object-cover ${currentPhoto.object}`}
+                  />
+                </div>
+                <figcaption className="flex items-center justify-between gap-3 border-t border-border bg-surface px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-text-primary">{currentPhoto.label}</p>
+                    <p className="truncate text-xs text-text-secondary">{currentPhoto.subtitle}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <span className="mr-1 text-xs font-medium text-text-muted tabular-nums">
+                      {String(activePhoto + 1).padStart(2, "0")} / {String(contactGallery.length).padStart(2, "0")}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={prevPhoto}
+                      aria-label="Foto anterior"
+                      className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg border border-border bg-bg/70 text-text-primary transition-colors hover:border-border-strong hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa] sm:min-h-[36px] sm:min-w-[36px]"
+                    >
+                      <ChevronIcon direction="prev" className="size-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={nextPhoto}
+                      aria-label="Siguiente foto"
+                      className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg border border-border bg-bg/70 text-text-primary transition-colors hover:border-border-strong hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:focus-visible:outline-[#60a5fa] sm:min-h-[36px] sm:min-w-[36px]"
+                    >
+                      <ChevronIcon direction="next" className="size-4" />
+                    </button>
+                  </div>
+                </figcaption>
+              </figure>
 
-            <ul className="mt-7 divide-y divide-border border-y border-border text-sm leading-relaxed text-text-secondary">
-              <li className="py-3.5">
-                <span className="font-medium text-text-primary">Brochure PDF al instante:</span>{" "}
-                se abre en una nueva pestaña con el temario completo del programa elegido.
-              </li>
-              <li className="py-3.5">
-                <span className="font-medium text-text-primary">Fechas en vivo y formas de pago:</span>{" "}
-                horarios locales, próximos inicios{cuotasPais ? ` y ${cuotasPais}` : ""}.
-              </li>
-              <li className="py-3.5">
-                <span className="font-medium text-text-primary">Respuesta directa de nuestro equipo:</span>{" "}
-                resolvemos tus dudas por el canal que indiques, sin llamadas invasivas.
-              </li>
-            </ul>
+              <div className="mt-3 grid grid-cols-3 gap-2.5" role="group" aria-label="Galería de clases presenciales">
+                {contactGallery.map((item, idx) => {
+                  const isActive = idx === activePhoto;
+                  return (
+                    <button
+                      key={item.url}
+                      type="button"
+                      onClick={() => setActivePhoto(idx)}
+                      aria-pressed={isActive}
+                      aria-label={`Ver foto ${idx + 1}: ${item.label} (${item.subtitle})`}
+                      className={`group relative aspect-[16/10] min-h-[44px] w-full cursor-pointer overflow-hidden rounded-xl border-2 bg-[#f0f1f4] transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5] dark:bg-[#181920] dark:focus-visible:outline-[#60a5fa] ${
+                        isActive
+                          ? "border-[#0b63c5] dark:border-[#60a5fa]"
+                          : "border-border opacity-75 hover:border-border-strong hover:opacity-100"
+                      }`}
+                    >
+                      <CourseImage
+                        src={item.url}
+                        alt=""
+                        fill
+                        sizes="(max-width: 1024px) 30vw, 14vw"
+                        className={item.tall ? "object-cover object-[center_35%]" : `object-cover ${item.object}`}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-7">
