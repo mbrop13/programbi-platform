@@ -17,6 +17,7 @@ export default function WhatsAppCta({
   courseSlug,
   country,
   ctaPosition = "course_detail_inline",
+  customText,
   children,
   className,
 }: {
@@ -30,6 +31,8 @@ export default function WhatsAppCta({
   country?: string | null;
   /** Posición del CTA para GA4 (cta_position). Opcional: no cambia el copy. */
   ctaPosition?: string;
+  /** Mensaje personalizado prellenado en WhatsApp. */
+  customText?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -40,6 +43,7 @@ export default function WhatsAppCta({
     intent,
     course,
     country: resolvedCountry,
+    customText,
   });
   const [href, setHref] = useState(base);
 

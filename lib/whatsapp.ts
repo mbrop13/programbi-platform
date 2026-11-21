@@ -46,15 +46,20 @@ export function whatsappHref(opts: {
   /** ISO del país ("cl", "ar"…) o su nombre. Se incluye en el mensaje precargado. */
   country?: string | null;
   extra?: string;
+  /** Mensaje exacto prellenado (si viene definido y no vacío, reemplaza la plantilla por defecto). */
+  customText?: string;
 }): string {
   const page = opts.page || "/";
   const countryName = whatsappCountryName(opts.country);
   const course = opts.course?.trim();
   const ref = courseSlugFromPage(page);
   const origin = countryName ? `soy de ${countryName} y vengo de ${page}.` : `vengo de ${page}.`;
+  const custom = opts.customText?.trim();
 
   let text: string;
-  if (opts.intent === "curso" || opts.intent === "fechas") {
+  if (custom) {
+    text = custom;
+  } else if (opts.intent === "curso" || opts.intent === "fechas") {
     // Mensaje exacto del plan P6:
     // "Hola, quiero info del curso {curso} desde {país} [ref:{slug}]"
     const subject = course

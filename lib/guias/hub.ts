@@ -17,6 +17,8 @@ export type Filtros = {
   pais: string;
   curso: string;
   q: string;
+  herramienta?: string;
+  nivel?: string;
 };
 
 /**
@@ -41,6 +43,8 @@ export type TarjetaGuia = {
   accentColor?: string;
   readingMinutes?: number;
   guideImage?: string;
+  herramienta?: string;
+  nivel?: string;
 };
 
 export type GrupoCurso = {
@@ -73,9 +77,15 @@ export function filtrarGuias(guias: TarjetaGuia[], filtros: Filtros): TarjetaGui
   return guias.filter((guia) => {
     if (filtros.pais !== "todos" && guia.country !== filtros.pais) return false;
     if (filtros.curso !== "todos" && guia.course !== filtros.curso) return false;
+    if (filtros.herramienta && filtros.herramienta !== "todos" && guia.herramienta !== filtros.herramienta) {
+      return false;
+    }
+    if (filtros.nivel && filtros.nivel !== "todos" && guia.nivel !== filtros.nivel) {
+      return false;
+    }
     if (palabras.length === 0) return true;
     const texto = normalizar(
-      `${guia.h1} ${guia.title} ${guia.description} ${guia.courseName} ${guia.course} ${guia.countryName}`
+      `${guia.h1} ${guia.title} ${guia.description} ${guia.courseName} ${guia.course} ${guia.countryName} ${guia.herramienta ?? ""} ${guia.nivel ?? ""}`
     );
     return palabras.every((palabra) => texto.includes(palabra));
   });

@@ -14,12 +14,22 @@ import {
 import { rutaLocal } from "@/lib/paises/rutas";
 
 const TODOS = "todos";
+const HERRAMIENTAS_ORDEN = ["Excel", "Power BI", "Power Automate", "SQL", "Python"];
+const NIVELES_ORDEN = ["Básico", "Intermedio", "Avanzado"];
 
 /** Lee los filtros de la URL. Solo se llama en efectos, nunca en SSR. */
-function leerFiltros(mostrarPais: boolean, paises: Opcion[], cursos: Opcion[]) {
+function leerFiltros(
+  mostrarPais: boolean,
+  paises: Opcion[],
+  cursos: Opcion[],
+  herramientas: string[],
+  niveles: string[]
+) {
   const params = new URLSearchParams(window.location.search);
   const paisUrl = params.get("pais");
   const cursoUrl = params.get("curso");
+  const herramientaUrl = params.get("herramienta");
+  const nivelUrl = params.get("nivel");
   return {
     pais:
       mostrarPais &&
@@ -30,6 +40,14 @@ function leerFiltros(mostrarPais: boolean, paises: Opcion[], cursos: Opcion[]) {
     curso:
       cursoUrl && (cursoUrl === TODOS || cursos.some((opcion) => opcion.valor === cursoUrl))
         ? cursoUrl
+        : TODOS,
+    herramienta:
+      herramientaUrl && (herramientaUrl === TODOS || herramientas.includes(herramientaUrl))
+        ? herramientaUrl
+        : TODOS,
+    nivel:
+      nivelUrl && (nivelUrl === TODOS || niveles.includes(nivelUrl))
+        ? nivelUrl
         : TODOS,
     texto: params.get("q") ?? "",
   };
@@ -121,25 +139,49 @@ export default function GuiasHub({
   const [texto, setTexto] = useState("");
   const [pais, setPais] = useState(TODOS);
   const [curso, setCurso] = useState(TODOS);
+  const [herramienta, setHerramienta] = useState(TODOS);
+  const [nivel, setNivel] = useState(TODOS);
   const [listo, setListo] = useState(false);
 
+  const herramientasDisponibles = useMemo(() => {
+    const presentes = new Set(guias.map((g) => g.herramienta).filter((h): h is string => Boolean(h)));
+    return HERRAMIENTAS_ORDEN.filter((h) => presentes.has(h));
+  }, [guias]);
+
+  const nivelesDisponibles = useMemo(() => {
+    const presentes = new Set(guias.map((g) => g.nivel).filter((n): n is string => Boolean(n)));
+    return NIVELES_ORDEN.filter((n) => presentes.has(n));
+  }, [guias]);
+
   useEffect(() => {
-    const iniciales = leerFiltros(mostrarPais, paises, cursos);
+    const iniciales = leerFiltros(
+      mostrarPais,
+      paises,
+      cursos,
+      herramientasDisponibles,
+      nivelesDisponibles
+    );
     setPais(iniciales.pais);
     setCurso(iniciales.curso);
+    setHerramienta(iniciales.herramienta);
+    setNivel(iniciales.nivel);
     setTexto(iniciales.texto);
     setListo(true);
-  }, [mostrarPais, paises, cursos]);
+  }, [mostrarPais, paises, cursos, herramientasDisponibles, nivelesDisponibles]);
 
   useEffect(() => {
     if (!listo) return;
     const url = new URL(window.location.href);
     url.searchParams.delete("pais");
     url.searchParams.delete("curso");
+    url.searchParams.delete("herramienta");
+    url.searchParams.delete("nivel");
     url.searchParams.delete("q");
 
     if (mostrarPais && pais !== TODOS) url.searchParams.set("pais", pais);
     if (curso !== TODOS) url.searchParams.set("curso", curso);
+    if (herramienta !== TODOS) url.searchParams.set("herramienta", herramienta);
+    if (nivel !== TODOS) url.searchParams.set("nivel", nivel);
     if (texto.trim()) url.searchParams.set("q", texto.trim());
 
     // Se conserva el state de Next: reemplazarlo por null rompe su historial.
@@ -148,23 +190,39 @@ export default function GuiasHub({
       "",
       `${url.pathname}${url.search}${url.hash}`
     );
-  }, [listo, mostrarPais, pais, curso, texto]);
+  }, [listo, mostrarPais, pais, curso, herramienta, nivel, texto]);
 
   useEffect(() => {
     if (!listo) return;
     function alVolver() {
-      const filtros = leerFiltros(mostrarPais, paises, cursos);
+      const filtros = leerFiltros(
+        mostrarPais,
+        paises,
+        cursos,
+        herramientasDisponibles,
+        nivelesDisponibles
+      );
       setPais(filtros.pais);
       setCurso(filtros.curso);
+      setHerramienta(filtros.herramienta);
+      setNivel(filtros.nivel);
       setTexto(filtros.texto);
     }
     window.addEventListener("popstate", alVolver);
     return () => window.removeEventListener("popstate", alVolver);
-  }, [listo, mostrarPais, paises, cursos]);
+  }, [listo, mostrarPais, paises, cursos, herramientasDisponibles, nivelesDisponibles]);
 
-  const visibles = useMemo(() => filtrarGuias(guias, { pais, curso, q: texto }), [guias, pais, curso, texto]);
+  const visibles = useMemo(
+    () => filtrarGuias(guias, { pais, curso, herramienta, nivel, q: texto }),
+    [guias, pais, curso, herramienta, nivel, texto]
+  );
   const grupos = useMemo(() => agruparPorCurso(visibles, cursos), [visibles, cursos]);
-  const hayFiltros = texto.trim() !== "" || (mostrarPais && pais !== TODOS) || curso !== TODOS;
+  const hayFiltros =
+    texto.trim() !== "" ||
+    (mostrarPais && pais !== TODOS) ||
+    curso !== TODOS ||
+    herramienta !== TODOS ||
+    nivel !== TODOS;
 
   const destacadas = useMemo(() => {
     const prioridades = [
@@ -225,6 +283,8 @@ export default function GuiasHub({
     setTexto("");
     setPais(TODOS);
     setCurso(TODOS);
+    setHerramienta(TODOS);
+    setNivel(TODOS);
   }
 
   return (
@@ -312,6 +372,50 @@ export default function GuiasHub({
             ))}
           </FilaChips>
         </fieldset>
+
+        {herramientasDisponibles.length > 0 ? (
+          <fieldset className="mt-3 min-w-0 border-0 p-0">
+            <legend className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+              Filtrar por herramienta
+            </legend>
+            <FilaChips activo={herramienta}>
+              <Chip activo={herramienta === TODOS} onClick={() => setHerramienta(TODOS)}>
+                Todas
+              </Chip>
+              {herramientasDisponibles.map((item) => (
+                <Chip
+                  key={item}
+                  activo={herramienta === item}
+                  onClick={() => setHerramienta(item)}
+                >
+                  {item}
+                </Chip>
+              ))}
+            </FilaChips>
+          </fieldset>
+        ) : null}
+
+        {nivelesDisponibles.length > 0 ? (
+          <fieldset className="mt-3 min-w-0 border-0 p-0">
+            <legend className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+              Filtrar por nivel
+            </legend>
+            <FilaChips activo={nivel}>
+              <Chip activo={nivel === TODOS} onClick={() => setNivel(TODOS)}>
+                Todos
+              </Chip>
+              {nivelesDisponibles.map((item) => (
+                <Chip
+                  key={item}
+                  activo={nivel === item}
+                  onClick={() => setNivel(item)}
+                >
+                  {item}
+                </Chip>
+              ))}
+            </FilaChips>
+          </fieldset>
+        ) : null}
       </form>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">

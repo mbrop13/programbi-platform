@@ -1,0 +1,8 @@
+# Inventario de capturas — `dolar-observado-en-excel-automatico`
+
+| ID | Paso | Qué mostrar | Alt |
+| :--- | :--- | :--- | :--- |
+| `dolar-observado-en-excel-automatico-paso-1` | Paso 1 (Método 1) | Editor avanzado de Power Query en Excel con el código M conectado a `mindicador.cl/api/dolar` y la vista previa de la tabla con columnas `Fecha` (tipo fecha) y `DolarObservado` (número decimal). | Editor avanzado de Power Query en Excel mostrando el código M conectado a mindicador.cl y la vista previa con columnas Fecha y DolarObservado |
+| `dolar-observado-en-excel-automatico-paso-2` | Paso 2 (Método 2) | Panel Administrar parámetros con `pUsuario` y `pClave` junto a la tabla resultante de la serie `F073.TCO.PRE.Z.D` del Banco Central sin filas `NaN`. | Panel de Administrar parámetros en Power Query mostrando pUsuario y pClave junto a la consulta filtrada sin valores NaN de la API del Banco Central |
+| `dolar-observado-en-excel-automatico-paso-3` | Paso 3 (Método 3) | Barra de fórmulas de Excel para Windows mostrando `=VALOR(TEXTOANTES(TEXTODESPUES(SERVICIOWEB("https://mindicador.cl/api/dolar");"""valor"":");"}"))` y el resultado numérico en la celda. | Barra de fórmulas de Excel en Windows mostrando la función SERVICIOWEB combinada con TEXTOANTES y TEXTODESPUES devolviendo el valor numérico del dólar |
+| `dolar-observado-en-excel-automatico-paso-4` | Paso 4 | Cuadro Propiedades de conexión con "Actualizar al abrir el archivo" marcado y hoja de facturas usando `BUSCARX` con quinto argumento `-1` sobre una fecha de fin de semana. | Ventana de Propiedades de conexión en Excel con la opción Actualizar al abrir el archivo marcada, y hoja de cálculo aplicando BUSCARX con -1 sobre una factura en fin de semana |

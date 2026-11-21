@@ -19,6 +19,7 @@ import { TESTIMONIOS_PUBLICADOS } from "@/lib/data/testimonials";
 import { SITE_ACTUALIZADO, lastmodDe } from "@/lib/seo/lastmod";
 import { PAISES_CARPETA, esIndexable, esIsoPais } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
+import { GUIAS_PASO_A_PASO } from "@/content/guias/paso-a-paso";
 import { PLANTILLAS } from "@/lib/data/plantillas";
 import { guiasDePais, alternatesDeGuia } from "@/lib/guias";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
@@ -392,6 +393,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ),
   ];
 
+  const pasoAPasoPages: EntradaPosible[] = GUIAS_PASO_A_PASO.map((g) =>
+    entrada(`/guias/${g.slug}`, 0.75, "monthly", g.updated)
+  );
+
   return uniqueEntries([
     ...staticPages,
     ...coursePages,
@@ -401,6 +406,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...comparativaPaisPages,
     ...listiclePages,
     ...guidePages,
+    ...pasoAPasoPages,
     ...guideIndexPages,
     ...datosCarrerasPages,
   ]);

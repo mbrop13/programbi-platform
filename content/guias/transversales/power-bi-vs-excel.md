@@ -1,12 +1,12 @@
 ---
-title: Power BI vs Excel: diferencias y cuándo usar cada uno
-description: Comparativa práctica de Power BI y Excel: qué hace cada uno, límites, costos y cuándo conviene pasar a Power BI. Con ejemplos.
-h1: Power BI vs Excel: qué los diferencia y cuándo conviene cada uno
+title: Power BI vs Excel: para qué sirve cada uno y cuándo usarlo
+description: Qué es Power BI, para qué sirve y en qué se diferencia de Excel: tabla comparativa, ventajas y desventajas, y cuándo conviene cada uno en tu trabajo.
+h1: Power BI vs Excel: diferencias, para qué sirve cada uno y cuándo usarlos
 country: transversal
 lang: es
 slug: power-bi-vs-excel
 path: /guias/power-bi-vs-excel
-updated: 2026-11-04
+updated: 2026-11-21
 course: power-bi
 url_curso: https://www.programbi.com/cursos/power-bi
 sources:
@@ -17,94 +17,118 @@ sources:
 nota_hermes: |
   ELEMENTO VISUAL: comparativa Power BI vs Excel según flujo de trabajo y reporte recurrente.
 ---
-La pregunta «¿Power BI o Excel?» tiene una respuesta corta que casi nadie da: **los dos**. Excel no va a desaparecer de tu trabajo, y Power BI no es «un Excel más bonito». Son herramientas para momentos distintos del mismo proceso. Esta guía te ayuda a decidir cuál usar en cada caso y cómo pasar de uno a otro sin perder lo que ya sabes.
+**En 30 segundos**
+
+- **Excel** es ideal para pensar con datos: presupuestos, simulaciones rápidas, cálculos por celda y reportes puntuales que el destinatario necesita editar.
+- **Power BI** es ideal para automatizar y distribuir: conecta múltiples fuentes, limpia datos con reglas repetibles y publica tableros interactivos en la web.
+- **No compiten, se complementan:** la mayoría de las empresas usan Excel para capturar o simular cifras y Power BI para consolidarlas y compartirlas sin rehacer archivos cada semana.
 
 <!-- CTA-TOP -->
 
-##### La diferencia de fondo
+## ¿Qué es Power BI y para qué sirve?
 
-**Excel** es una hoja de cálculo: una cuadrícula flexible donde puedes escribir, calcular, simular y anotar en cualquier celda. Es ideal para análisis puntuales, presupuestos, escenarios y trabajo «a mano».
+Power BI es la plataforma de inteligencia de negocios de Microsoft diseñada para conectar múltiples fuentes de datos, transformarlas automáticamente mediante Power Query, organizarlas en un modelo relacional y publicar informes interactivos en la nube. Sirve para reemplazar reportes manuales repetitivos y ofrecer cifras actualizadas con filtros dinámicos y permisos por usuario.
 
-**Power BI** es una herramienta de inteligencia de negocios: conecta fuentes de datos, las transforma con reglas que se repiten solas, las organiza en un modelo y las presenta en informes interactivos que se comparten en la web. Es ideal para reportes recurrentes que muchas personas consultan.
+A diferencia de una hoja de cálculo tradicional, donde los datos, las fórmulas y los gráficos suelen convivir en la misma cuadrícula, Power BI separa estrictamente las capas de trabajo: primero extrae y limpia, luego modela las relaciones y medidas en DAX, y finalmente visualiza los indicadores para que cualquier persona del equipo explore los números sin riesgo de borrar una fórmula.
 
-Dicho simple: Excel es para **pensar con datos**; Power BI es para **que muchos vean los mismos datos, actualizados, sin que tú los rehagas**.
+## Ventajas y desventajas de Power BI
 
-##### Comparación punto por punto
+Antes de migrar todos tus archivos, conviene mirar con honestidad qué ganas y qué sacrificas al pasar de planillas a Power BI:
+
+| Dimensión | Ventajas de Power BI | Desventajas o límites de Power BI |
+|---|---|---|
+| Rendimiento y volumen | Comprime millones de filas en memoria y responde rápido al filtrar | En equipos con poca RAM puede volverse lento durante el desarrollo |
+| Automatización | Refresca múltiples fuentes (ERP, SQL, Excel, APIs) con actualización programada | Requiere puerta de enlace (Gateway) si los datos están en servidores locales |
+| Distribución y seguridad | Un enlace web único con seguridad a nivel de fila (RLS) por usuario | Compartir de forma privada exige licencias de pago en la organización |
+| Flexibilidad de edición | Evita que terceros rompan fórmulas o alteren cifras manualmente | No sirve para escribir notas celda por celda ni simular escenarios «a mano» |
+| Curva de aprendizaje | Comparte el mismo Power Query que ya existe en Excel moderno | Modelado en estrella y lenguaje DAX toman tiempo para dominarse bien |
+| Sistema operativo | Visualización web multiplataforma (Windows, Mac, móvil) | Power BI Desktop solo se instala de forma nativa en Windows |
+
+## Comparación punto por punto: Power BI vs Excel
+
+Si todavía dudas sobre qué herramienta abrir para tu próximo informe, revisa esta comparación técnica criterio por criterio:
 
 | Criterio | Excel | Power BI |
 |---|---|---|
-| Volumen de datos | Hasta 1.048.576 filas por hoja; se pone lento mucho antes | Modelos comprimidos con millones de filas |
-| Actualización | Manual o con macros | Programada en el servicio (según licencia) |
-| Limpieza de datos | Power Query (sí, también está en Excel) | Power Query, el mismo motor |
-| Cálculos | Fórmulas por celda | Medidas DAX sobre un modelo |
-| Visualización | Gráficos estáticos | Informes interactivos con filtros cruzados |
-| Compartir | Enviar el archivo (y sus versiones) | Un enlace con permisos por persona o grupo |
-| Seguridad por usuario | Limitada | Seguridad a nivel de fila (RLS) |
-| Escenarios «qué pasa si» | Excelente | Posible, pero menos natural |
-| Curva de aprendizaje | Ya la conoces | Nueva, sobre todo en DAX y modelado |
-| Costo para empezar | Incluido en Microsoft 365 | Power BI Desktop gratis en Windows; compartir requiere licencia |
+| Tipo de herramienta | Hoja de cálculo flexible orientada a celdas | Plataforma de inteligencia de negocios (BI) |
+| Capacidad práctica de filas | Límite de 1.048.576 filas por hoja; se ralentiza mucho antes | Modelos comprimidos con decenas de millones de filas |
+| Limpieza y ETL | Power Query integrado | Power Query (mismo motor y lenguaje M) |
+| Lenguaje de cálculos | Fórmulas por celda (`SUMAR.SI.CONJUNTO`, `BUSCARX`) | Medidas DAX sobre tablas y relaciones (`CALCULATE`, `DIVIDE`) |
+| Modelado relacional | Posible con Power Pivot, aunque poco usado en el día a día | Nativo y obligatorio (esquema en estrella) |
+| Interactividad de gráficos | Segmentadores y gráficos dinámicos básicos | Filtros cruzados automáticos, tooltips y drill-through |
+| Actualización de datos | Manual, con Power Query o macros VBA | Programada automáticamente en Power BI Service |
+| Forma de compartir | Adjuntar archivo por correo o enlace a planilla editable | Publicación web con permisos de solo lectura |
+| Seguridad por usuario (RLS) | Muy limitada (protección simple de hojas) | Seguridad a nivel de fila por correo corporativo |
+| Presupuestos y simulaciones | Excelente para escenarios «qué pasa si» y edición libre | Poco práctico para ingresar supuestos manuales |
+| Exportación y trabajo ad-hoc | Totalmente editable por quien recibe el archivo | Pensado para consumir KPIs (aunque permite «Analizar en Excel») |
+| Licenciamiento para empezar | Incluido en suscripciones Microsoft 365 / Office | Power BI Desktop gratis en Windows; compartir en nube requiere licencia |
 
-##### Cuándo usar Excel
+## Cuándo usar Excel
 
-- Un análisis puntual que harás una vez.
-- Presupuestos, proyecciones y simulaciones con supuestos que cambias a mano.
-- Cuadros que necesitan anotaciones, comentarios o formato libre.
-- Cuando el destinatario necesita editar los datos.
+Excel sigue siendo imbatible cuando el trabajo exige flexibilidad inmediata y edición directa sobre los números. Úsalo sin dudar en estos casos:
 
-##### Cuándo usar Power BI
+- Análisis puntuales o exploratorios que harás una sola vez y no necesitas automatizar.
+- Presupuestos, flujos de caja y proyecciones financieras donde cambias supuestos a mano.
+- Cuadros que requieren anotaciones, comentarios por fila o diseño libre para imprimir.
+- Cuando la persona que recibe el archivo necesita modificar celdas o agregar columnas propias.
 
-- Un reporte que se repite cada semana o mes.
-- Datos de varias fuentes (ERP, CRM, planillas, bases de datos) que hay que cruzar.
-- Más de unas pocas personas que necesitan ver los mismos números.
-- Cuando el archivo de Excel ya tarda minutos en abrir.
-- Cuando cada persona debería ver solo su parte (por región, sucursal o vendedor).
+Si quieres construir un tablero ejecutivo directamente dentro de tu planilla sin salir de Office, revisa nuestra guía de [cómo hacer un dashboard en Excel](/guias/como-hacer-dashboard-en-excel).
 
-##### La señal más clara de que necesitas Power BI
+## Cuándo usar Power BI
 
-Si cada mes haces **exactamente los mismos pasos** para armar un reporte —descargar, pegar, arreglar, actualizar tablas dinámicas, mandar por correo—, ese trabajo se puede automatizar. Lo que haces en horas, Power BI lo hace al actualizar.
+El salto a Power BI se justifica apenas el tiempo que gastas armando el reporte supera al tiempo que dedicas a analizarlo. Conviene elegir Power BI cuando:
+
+- Repites exactamente el mismo reporte cada semana o cada cierre de mes.
+- Necesitas cruzar datos de varias fuentes (ERP, base SQL, planillas de sucursales y CRM).
+- Más de tres o cuatro personas deben consultar exactamente la misma versión oficial de los números.
+- Tu archivo de Excel ya pesa decenas de megas y tarda minutos en abrir o recalcular.
+- Cada gerente o vendedor debe ver únicamente los resultados de su propia zona o cartera.
+
+Para dar tu primer paso práctico, sigue el tutorial completo de [dashboard de ventas en Power BI paso a paso](/guias/dashboard-de-ventas-en-power-bi-paso-a-paso) y aprende luego a programar su refresco en [automatizar reportes con Power BI](/guias/automatizar-reportes-con-power-bi).
 
 <!-- CTA-MID --> — Descarga una plantilla de Power BI y compárala con tu reporte de Excel actual.
 
-##### Cómo pasar de Excel a Power BI sin traumas
+## Cómo pasar de Excel a Power BI sin traumas
 
-1. **Empieza por Power Query en Excel.** Si ya limpias datos con Power Query, en Power BI te sentirás en casa.
-2. **Ordena tus datos como tablas**: una fila por registro, sin celdas combinadas ni subtotales.
-3. **Separa hechos y dimensiones**: ventas por un lado; productos, clientes y fechas por otro.
-4. **Traduce tus fórmulas a medidas**: tus SUMAR.SI.CONJUNTO se convierten en CALCULATE.
-5. **Rehaz un solo reporte**, el más repetitivo. Cuando funcione, sigue con el próximo.
-6. **Mantén Excel para lo que hace mejor**: puedes analizar un modelo de Power BI desde Excel con «Analizar en Excel».
+1. **Empieza por Power Query dentro de Excel.** Si ya limpias planillas con Power Query en Excel, ya conoces la mitad del flujo de carga de Power BI.
+2. **Ordena tus datos como tablas planas:** una fila por registro, encabezados en la primera fila, sin celdas combinadas ni subtotales intermedios.
+3. **Separa hechos y dimensiones:** deja las transacciones (ventas, gastos) en una tabla y los catálogos únicos (productos, clientes, calendario) en otras.
+4. **Traduce tus fórmulas a medidas DAX:** tus `SUMAR.SI.CONJUNTO` se convierten en `CALCULATE` y tus divisiones protegidas pasan a `DIVIDE`.
+5. **Migra un solo reporte:** elige el informe más repetitivo de tu semana; cuando quede automatizado, avanza con el siguiente.
+6. **Combina ambos mundos:** una vez publicado tu modelo en Power BI Service, puedes conectarte desde Excel con «Analizar en Excel» para armar tablas dinámicas sobre datos certificados.
 
-##### Equivalencias útiles
+## Equivalencias útiles de Excel a DAX
 
 | En Excel | En Power BI (DAX) |
 |---|---|
-| SUMAR.SI / SUMAR.SI.CONJUNTO | `CALCULATE(SUM(...), filtro)` |
-| BUSCARV / BUSCARX | Relaciones del modelo + `RELATED` |
-| Tabla dinámica | Matriz con medidas |
+| `SUMAR.SI` / `SUMAR.SI.CONJUNTO` | `CALCULATE(SUM(...), filtro)` |
+| `BUSCARV` / `BUSCARX` | Relaciones del modelo + `RELATED` |
+| Tabla dinámica | Matriz o tabla con medidas explícitas |
 | % del total en tabla dinámica | `DIVIDE([Ventas], CALCULATE([Ventas], ALL(...)))` |
-| SI.ERROR(a/b; 0) | `DIVIDE(a, b, 0)` |
+| `SI.ERROR(a/b; 0)` | `DIVIDE(a, b, 0)` |
 
 ```dax
 Participación sobre total =
-DIVIDE([Ventas], CALCULATE([Ventas], ALL(Calendario)))
+DIVIDE (
+    [Ventas],
+    CALCULATE ( [Ventas], ALL ( Calendario ) )
+)
 ```
 
-##### Mitos frecuentes
-
-- **«Power BI reemplaza a Excel.»** No. Lo complementa.
-- **«Power BI es solo para ingenieros.»** Lo usan contadores, analistas comerciales y de RR. HH.
-- **«Si sé Excel, ya sé Power BI.»** Te ayuda mucho, pero el modelado y DAX son otra lógica.
-- **«Necesito una licencia cara para empezar.»** Power BI Desktop es gratuito en Windows.
-
-Elige tu guía para aprender Power BI con ejemplos de tu país: [Chile](/guias/como-aprender-power-bi-en-chile) · [México](/mx/guias/como-aprender-power-bi-en-mexico) · [Colombia](/co/guias/como-aprender-power-bi-en-colombia) · [Argentina](/ar/guias/como-aprender-power-bi-en-argentina) · [Perú](/pe/guias/como-aprender-power-bi-en-peru) · [Uruguay](/uy/guias/como-aprender-power-bi-en-uruguay). Si prefieres empezar reforzando planillas, mira nuestro [curso de Excel en vivo](/cursos/excel), y cuando quieras dar el salto a modelos y tableros, el [curso de Power BI](/cursos/power-bi) o el programa de [Análisis de datos completo](/cursos/analisis-de-datos).
+Elige tu guía para aprender Power BI con ejemplos de tu país: [Chile](/guias/como-aprender-power-bi-en-chile) · [México](/mx/guias/como-aprender-power-bi-en-mexico) · [Colombia](/co/guias/como-aprender-power-bi-en-colombia) · [Argentina](/ar/guias/como-aprender-power-bi-en-argentina) · [Perú](/pe/guias/como-aprender-power-bi-en-peru) · [Uruguay](/uy/guias/como-aprender-power-bi-en-uruguay). Si prefieres reforzar primero tus planillas y fórmulas, revisa el [curso de Excel](/cursos/excel); y cuando estés listo para modelado estrella, DAX y tableros automatizados, pasa al [curso de Power BI](/cursos/power-bi) o al programa completo de [Análisis de datos](/cursos/analisis-de-datos).
 
 <!-- CTA-END -->
 
-##### Preguntas frecuentes
+## Preguntas frecuentes
 
-**¿Es más difícil Power BI que Excel?** Al principio, sí, por el modelado y DAX. Si dominas tablas dinámicas, la transición es mucho más rápida.
-**¿Puedo usar Power BI sin Excel?** Sí, pero la mayoría de los datos de negocio vienen de Excel, así que conviven.
-**¿Power BI es gratis?** Desktop es gratis en Windows. Compartir en la nube con otros normalmente requiere licencia Pro o capacidad de la empresa.
-**¿Qué conviene aprender primero?** Excel intermedio y Power Query; luego Power BI.
-**¿Power BI sirve para presupuestos?** Para mostrar presupuesto contra real, sí. Para construir el presupuesto con supuestos, Excel suele ser más cómodo.
-**¿Cuántos datos aguanta Power BI?** Bastantes millones de filas en un equipo normal, gracias a la compresión; el límite depende de la memoria y de la licencia al publicar.
+**¿Power BI reemplaza a Excel?** No. Excel sigue siendo la mejor herramienta para simulaciones, presupuestos editables y análisis rápidos ad-hoc; Power BI lo complementa automatizando reportes recurrentes y compartiéndolos en la web de forma segura.
+
+**¿Power BI es gratis?** Power BI Desktop es completamente gratuito para descargar y usar en Windows: puedes conectar datos, modelar y crear tableros sin costo. Para publicar y compartir informes de forma privada dentro de una empresa se requiere una licencia de pago como Power BI Pro o una capacidad Microsoft Fabric contratada por la organización.
+
+**¿Qué conviene aprender primero?** Si partes desde cero, conviene dominar Excel intermedio (tablas estructuradas, tablas dinámicas y Power Query) y luego dar el salto a Power BI. Todo lo que aprendas de Power Query en Excel se reutiliza exactamente igual en Power BI.
+
+**¿Puedo usar Power BI sin Excel?** Sí, Power BI se conecta directo a bases SQL, ERPs, Google Analytics o APIs web; sin embargo, en casi todas las empresas siguen existiendo metas o listados en Excel que conviven con el modelo.
+
+**¿Power BI sirve para presupuestos?** Sirve muy bien para comparar presupuesto contra real en tiempo real, pero construir las proyecciones y ajustar supuestos fila por fila sigue siendo mucho más cómodo en Excel.
+
+**¿Cuántos datos aguanta Power BI?** Puede manejar decenas de millones de filas en un computador estándar gracias a la compresión columnar del motor VertiPaq; el límite práctico al publicar depende de la memoria disponible y del tipo de licencia de tu espacio de trabajo.

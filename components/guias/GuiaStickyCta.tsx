@@ -19,7 +19,15 @@ const CLAVE_CIERRE = "programbi:guia-sticky:cerrado";
  * - Sin `backdrop-blur`: sobre contenido que scrollea es caro en móviles.
  * - `inert` + `aria-hidden` cuando está oculta, y botón de cierre accesible.
  */
-export default function GuiaStickyCta({ iso, course }: { iso: string; course: string }) {
+export default function GuiaStickyCta({
+  iso,
+  course,
+  guiaSlug,
+}: {
+  iso: string;
+  course: string;
+  guiaSlug?: string;
+}) {
   const [pasoUmbral, setPasoUmbral] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
   const [cerrada, setCerrada] = useState(false);
@@ -69,6 +77,7 @@ export default function GuiaStickyCta({ iso, course }: { iso: string; course: st
   const visible = !cerrada && pasoUmbral && !footerVisible;
   const curso = courses.find((item) => item.slug === course);
   const ruta = rutaFichaCurso(iso, course);
+  const esVsExcel = guiaSlug === "power-bi-vs-excel";
 
   const cerrar = () => {
     setCerrada(true);
@@ -98,15 +107,20 @@ export default function GuiaStickyCta({ iso, course }: { iso: string; course: st
           Inscribirme
         </Link>
         <WhatsAppCta
-          page={ruta}
+          page={esVsExcel ? "/guias/power-bi-vs-excel" : ruta}
           intent="curso"
           course={curso?.title || "Power BI"}
           courseSlug={course}
           country={iso}
+          customText={
+            esVsExcel
+              ? "Hola, vengo de la guía Power BI vs Excel y quiero la clase gratis del curso de Power BI [power-bi-vs-excel]"
+              : undefined
+          }
           className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-semibold text-ink no-underline"
         >
           <MessageCircle size={16} aria-hidden />
-          WhatsApp
+          {esVsExcel ? "Clase gratis" : "WhatsApp"}
         </WhatsAppCta>
         <button
           type="button"

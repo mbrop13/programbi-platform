@@ -70,10 +70,10 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
   const lecturaMin = tiempoLecturaMinutos(body);
   const instructor = miembroPorCurso(guia.course === "general" ? "power-bi" : guia.course);
   const cursoEtiqueta = guia.course === "general" ? "Guía práctica" : nombreCurso(guia.course);
-  // Tarjeta del curso en la columna derecha, solo desde 1360 px (85rem). Va en
-  // rem y no en px: Tailwind emite las variantes en px antes que las en rem, y
-  // `lg:` le ganaría la cascada a un corte escrito en px.
+  // Tarjeta del curso en la columna derecha, solo desde 1360 px (85rem), salvo
+  // `power-bi-vs-excel` que la muestra desde `lg:` (1024 px).
   const conLateral = guia.course !== "general";
+  const lateralDesdeLg = guia.slug === "power-bi-vs-excel";
 
   // El Markdown trae marcadores <!-- CTA-TOP|MID|END --> para intercalar los CTA.
   const partes = body.split(/<!--\s*CTA-(TOP|MID|END)\s*-->/g);
@@ -86,7 +86,15 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <article className="bg-canvas px-4 pb-28 pt-10 sm:px-6 lg:px-8 lg:pb-20">
-        <div className={`mx-auto max-w-[1120px] ${conLateral ? "min-[85rem]:max-w-[1290px]" : ""}`}>
+        <div
+          className={`mx-auto max-w-[1120px] ${
+            conLateral
+              ? lateralDesdeLg
+                ? "lg:max-w-[1290px]"
+                : "min-[85rem]:max-w-[1290px]"
+              : ""
+          }`}
+        >
           <nav aria-label="Migas de pan" className="text-xs text-mute">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
@@ -110,7 +118,11 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
 
           <div
             className={`mt-6 lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12 ${
-              conLateral ? "min-[85rem]:grid-cols-[190px_minmax(0,760px)_260px] min-[85rem]:gap-10" : ""
+              conLateral
+                ? lateralDesdeLg
+                  ? "lg:grid-cols-[190px_minmax(0,760px)_260px] lg:gap-8 xl:gap-10"
+                  : "min-[85rem]:grid-cols-[190px_minmax(0,760px)_260px] min-[85rem]:gap-10"
+                : ""
             }`}
           >
             <div className="min-w-0 max-w-[760px] lg:col-start-2 lg:row-start-1">
@@ -248,14 +260,26 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
             </div>
 
             {conLateral ? (
-              <div className="hidden min-[85rem]:col-start-3 min-[85rem]:row-start-1 min-[85rem]:block">
-                <GuiaCursoLateral iso={iso} course={guia.course} inicio={inicio} promotions={promotions} />
+              <div
+                className={
+                  lateralDesdeLg
+                    ? "hidden lg:col-start-3 lg:row-start-1 lg:block"
+                    : "hidden min-[85rem]:col-start-3 min-[85rem]:row-start-1 min-[85rem]:block"
+                }
+              >
+                <GuiaCursoLateral
+                  iso={iso}
+                  course={guia.course}
+                  inicio={inicio}
+                  promotions={promotions}
+                  guiaSlug={guia.slug}
+                />
               </div>
             ) : null}
           </div>
         </div>
       </article>
-      <GuiaStickyCta iso={iso} course={guia.course} />
+      <GuiaStickyCta iso={iso} course={guia.course} guiaSlug={guia.slug} />
     </>
   );
 }

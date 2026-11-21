@@ -84,6 +84,20 @@ export default function GuiaCard({
         <h3 className="mt-2 text-pretty break-words text-base font-bold leading-snug tracking-tight text-ink">
           {guia.h1}
         </h3>
+        {guia.herramienta || guia.nivel ? (
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {guia.herramienta ? (
+              <span className="inline-flex items-center rounded-full border border-line bg-wash/80 px-2 py-0.5 text-[10px] font-semibold text-ink">
+                {guia.herramienta}
+              </span>
+            ) : null}
+            {guia.nivel ? (
+              <span className="inline-flex items-center rounded-full border border-line bg-canvas px-2 py-0.5 text-[10px] font-medium text-mute">
+                {guia.nivel}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-mute">{guia.description}</p>
         <div className="mt-auto flex items-center justify-between gap-2 pt-4 text-xs">
           <span className="text-faint">Act. {guia.updatedLabel}</span>

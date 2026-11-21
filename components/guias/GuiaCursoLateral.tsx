@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, Clock, FileText, MessageCircle } from "lucide-react";
 import InicioVigente from "@/components/guias/InicioVigente";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
+import { textoCuotas } from "@/config/cuotas";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
@@ -22,12 +23,14 @@ export default function GuiaCursoLateral({
   course,
   inicio,
   promotions,
+  guiaSlug,
 }: {
   iso: string;
   course: string;
   /** Próxima cohorte real del curso, fijada al construir el sitio. */
   inicio: InicioGuia | null;
   promotions?: readonly PromocionAplicable[];
+  guiaSlug?: string;
 }) {
   if (course === "general") return null;
 
@@ -37,6 +40,8 @@ export default function GuiaCursoLateral({
   const horaLocal = `de ${horario.inicio} a ${horario.fin}, hora de ${lugar}`;
   const rutaCurso = rutaFichaCurso(iso, course);
   const etiquetaDescuento = etiquetaDescuentoCurso(iso, course, promotions);
+  const esVsExcel = guiaSlug === "power-bi-vs-excel";
+  const cuotas = textoCuotas(iso);
 
   return (
     <aside
@@ -70,7 +75,18 @@ export default function GuiaCursoLateral({
           </li>
         </ul>
 
-        {etiquetaDescuento ? (
+        {esVsExcel ? (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            <span className="inline-flex items-center rounded-full bg-ink px-2.5 py-0.5 text-[11px] font-bold text-canvas">
+              Clase gratis
+            </span>
+            {cuotas ? (
+              <span className="inline-flex items-center rounded-full border border-line-strong bg-wash px-2.5 py-0.5 text-[11px] font-semibold text-ink">
+                {cuotas}
+              </span>
+            ) : null}
+          </div>
+        ) : etiquetaDescuento ? (
           <p className="mt-3">
             <span className="inline-flex items-center rounded-full border border-line-strong bg-wash px-2.5 py-1 text-[11px] font-semibold text-ink">
               {etiquetaDescuento}
@@ -91,17 +107,30 @@ export default function GuiaCursoLateral({
           >
             Ver curso <ArrowRight size={14} aria-hidden />
           </Link>
+          {esVsExcel ? (
+            <Link
+              href={rutaFichaCurso(iso, "excel")}
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-line bg-wash/60 px-4 text-xs font-semibold text-ink no-underline hover:bg-wash"
+            >
+              Ver curso de Excel <ArrowRight size={13} aria-hidden />
+            </Link>
+          ) : null}
           <WhatsAppCta
-            page={rutaCurso}
+            page={esVsExcel ? "/guias/power-bi-vs-excel" : rutaCurso}
             intent="curso"
             course={ficha.nombre}
             courseSlug={course}
             country={iso}
             ctaPosition="guia_lateral"
+            customText={
+              esVsExcel
+                ? "Hola, vengo de la guía Power BI vs Excel y quiero la clase gratis del curso de Power BI [power-bi-vs-excel]"
+                : undefined
+            }
             className="inline-flex h-9 items-center justify-center gap-1.5 text-xs font-semibold text-ink underline underline-offset-4 hover:text-mute"
           >
             <MessageCircle size={14} aria-hidden />
-            Hablar por WhatsApp
+            {esVsExcel ? "Quiero mi clase gratis" : "Hablar por WhatsApp"}
           </WhatsAppCta>
         </div>
       </div>

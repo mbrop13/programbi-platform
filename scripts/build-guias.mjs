@@ -71,8 +71,8 @@ function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) return walk(full);
-    // Los archivos que empiezan con "_" son plantillas y no se publican.
-    if (!full.endsWith(".md") || basename(full).startsWith("_")) return [];
+    // Los archivos que empiezan con "_" son plantillas y CAPTURAS.md es inventario de imágenes; no se publican.
+    if (!full.endsWith(".md") || basename(full).startsWith("_") || basename(full).toUpperCase() === "CAPTURAS.MD") return [];
     return [full];
   });
 }

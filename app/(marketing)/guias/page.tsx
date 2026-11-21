@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import GuiasHub from "@/components/guias/GuiasHub";
+import { GUIAS_PASO_A_PASO } from "@/content/guias/paso-a-paso";
 import { GUIAS } from "@/lib/guias/generado";
 import { indiceGuias } from "@/lib/guias";
-import { opcionesCurso, opcionesPais, paisesConConteo } from "@/lib/guias/opciones";
+import { nombreCurso, opcionesCurso, opcionesPais, paisesConConteo } from "@/lib/guias/opciones";
 import { esGuiaPublicada } from "@/lib/guias/relacionadas";
-import { tarjetasDeGuias } from "@/lib/guias/tarjetas";
+import { tarjetasDeGuias, tarjetasDePasoAPaso } from "@/lib/guias/tarjetas";
 import { hreflangDe } from "@/lib/paises/rutas";
 import { absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 
@@ -48,9 +49,25 @@ export default function GuiasIndexPage() {
   // El hub general lista solo las guías de mercados indexables; los filtros separan país y curso.
   const guias = GUIAS.filter(esGuiaPublicada);
   const paises = opcionesPais(guias);
-  const cursos = opcionesCurso(guias);
+  const cursosBase = opcionesCurso(guias);
   const paisesConCarpeta = paisesConConteo(guias).filter((pais) => pais.iso !== "cl");
-  const tarjetas = tarjetasDeGuias(guias);
+  const pasoAPasoTarjetas = tarjetasDePasoAPaso(GUIAS_PASO_A_PASO);
+  const pasoAPasoPaths = new Set(pasoAPasoTarjetas.map((t) => t.path));
+  const tarjetas = [
+    ...pasoAPasoTarjetas,
+    ...tarjetasDeGuias(guias).filter((t) => !pasoAPasoPaths.has(t.path)),
+  ];
+
+  // Asegura que los cursos de guías paso a paso también aparezcan en el filtro de curso.
+  const cursosVistos = new Set(cursosBase.map((c) => c.valor));
+  const cursos = [...cursosBase];
+  for (const t of pasoAPasoTarjetas) {
+    if (!cursosVistos.has(t.course)) {
+      cursosVistos.add(t.course);
+      cursos.push({ valor: t.course, etiqueta: nombreCurso(t.course) });
+    }
+  }
+
   const canonical = absoluteUrl("/guias");
 
   // CollectionPage + ItemList: el hub es un índice, no un artículo. Ayuda a
@@ -106,7 +123,7 @@ export default function GuiasIndexPage() {
         </p>
 
         <div className="mt-8">
-          <GuiasHub guias={tarjetasDeGuias(guias)} paises={paises} cursos={cursos} />
+          <GuiasHub guias={tarjetas} paises={paises} cursos={cursos} />
         </div>
 
         <section
