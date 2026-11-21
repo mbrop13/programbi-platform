@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GuiaBreadcrumbs, GuiaScope } from "@/components/guias/GuiaEditorialPrimitives";
+import { GuiaScope } from "@/components/guias/GuiaEditorialPrimitives";
 import GuiasHub from "@/components/guias/GuiasHub";
 import {
   esIndexable,
@@ -105,45 +105,28 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
   };
 
   return (
-    <GuiaScope className="pb-20 pt-10">
+    <GuiaScope className="pb-20 pt-8 sm:pt-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
-        <GuiaBreadcrumbs
-          items={[
+        <GuiasHub
+          guias={tarjetas}
+          paises={[]}
+          cursos={cursos}
+          mostrarPais={false}
+          iso={pais}
+          titulo={`Guías de datos y Power BI en ${nombre}`}
+          subtitulo={`${tarjetas.length} ${tarjetas.length === 1 ? "guía" : "guías"} de estudio y referencia para ${nombre}: rutas de aprendizaje, ejemplos aplicados, precios locales y cursos en vivo.`}
+          breadcrumbs={[
             { label: "Inicio", href: `/${pais}` },
             { label: "Guías", href: "/guias" },
             { label: nombre },
           ]}
         />
 
-        <header className="mt-6 border-b border-[var(--g-border)] pb-8">
-          <div className="flex flex-wrap items-baseline justify-between gap-4">
-            <h1 className="max-w-[24ch] text-[clamp(2rem,3.6vw,3rem)] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--g-ink)]">
-              Guías de datos y Power BI en {nombre}
-            </h1>
-            <p className="text-sm font-medium tabular-nums text-[var(--g-subtle)]">
-              {tarjetas.length} {tarjetas.length === 1 ? "guía" : "guías"}
-            </p>
-          </div>
-          <p className="mt-3 max-w-[66ch] text-base leading-relaxed text-[var(--g-muted)]">
-            Rutas de estudio, funciones con ejemplos, precios locales y cursos en vivo para {nombre}.
-          </p>
-        </header>
-
-        <div className="mt-8">
-          <GuiasHub
-            guias={tarjetas}
-            paises={[]}
-            cursos={cursos}
-            mostrarPais={false}
-            iso={pais}
-          />
-        </div>
-
         <p className="mt-14 border-t border-[var(--g-border)] pt-8 text-sm">
           <Link
             href={indiceGuias("cl")}
-            className="font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)]"
+            className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)] sm:min-h-0"
           >
             Ver todas las guías de ProgramBI
           </Link>
