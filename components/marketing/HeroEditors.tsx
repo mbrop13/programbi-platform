@@ -319,7 +319,7 @@ export function SqlEditor({ demo }: { demo: DemoPais }) {
             <button
               type="button"
               onClick={() => setSortDesc((s) => !s)}
-              className="font-medium text-[var(--h-ink)] hover:text-[var(--h-accent)]"
+              className="min-h-[44px] font-medium text-[var(--h-ink)] hover:text-[var(--h-accent)] sm:min-h-[32px]"
             >
               Orden: {sortDesc ? "DESC" : "ASC"}
             </button>

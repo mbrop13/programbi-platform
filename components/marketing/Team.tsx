@@ -5,7 +5,7 @@ import { LISTADO_PROFESORES_INDEXABLE } from "@/lib/seo/indexabilidad";
 
 export default function Team() {
   return (
-    <section className="cv-auto border-y border-[var(--h-border)] bg-[var(--h-surface)] py-16 lg:py-24">
+    <section className="home-scope cv-auto border-y border-[var(--h-border)] bg-[var(--h-surface)] py-16 lg:py-24">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">

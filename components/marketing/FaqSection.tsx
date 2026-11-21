@@ -10,7 +10,7 @@ export default function FaqSection({
   titulo?: string;
 }) {
   return (
-    <section id="faq" className="cv-auto border-t border-[var(--h-border)] bg-[var(--h-bg)] py-20 lg:py-28">
+    <section id="faq" className="home-scope cv-auto border-t border-[var(--h-border)] bg-[var(--h-bg)] py-20 lg:py-28">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:px-8">
         <div className="lg:col-span-4 lg:sticky lg:top-24 lg:self-start">
           <h2 className="text-3xl font-bold tracking-tight text-[var(--h-ink)] sm:text-4xl">

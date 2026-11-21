@@ -56,7 +56,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
         </span>
       </div>
 
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 flex-col sm:flex-row">
         <div className="hidden w-9 shrink-0 flex-col items-center gap-3 border-r border-[var(--h-border)] bg-[var(--h-surface)] py-2.5 text-[var(--h-subtle)] sm:flex">
           <LayoutGrid size={15} className="text-[var(--h-accent)]" aria-hidden />
           <Table2 size={15} aria-hidden />
@@ -74,7 +74,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                   type="button"
                   onClick={() => setRegion(r)}
                   aria-pressed={active}
-                  className={`min-h-7 shrink-0 whitespace-nowrap rounded-md border px-2.5 text-[11px] font-medium transition-colors ${
+                  className={`min-h-[44px] shrink-0 whitespace-nowrap rounded-md border px-2.5 text-[11px] font-medium transition-colors sm:min-h-[32px] ${
                     active
                       ? "border-[var(--h-accent)] bg-[var(--h-accent-soft)] text-[var(--h-accent)]"
                       : "border-[var(--h-border)] bg-[var(--h-surface)] text-[var(--h-muted)] hover:text-[var(--h-ink)]"
@@ -93,7 +93,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                   type="button"
                   onClick={() => setYear(y)}
                   aria-pressed={active}
-                  className={`hidden min-h-7 shrink-0 rounded-md border px-2.5 text-[11px] font-medium tabular-nums transition-colors sm:inline-block ${
+                  className={`hidden min-h-[44px] shrink-0 rounded-md border px-2.5 text-[11px] font-medium tabular-nums transition-colors sm:inline-block sm:min-h-[32px] ${
                     active
                       ? "border-[var(--h-accent)] bg-[var(--h-accent-soft)] text-[var(--h-accent)]"
                       : "border-[var(--h-border)] bg-[var(--h-surface)] text-[var(--h-muted)] hover:text-[var(--h-ink)]"
@@ -252,9 +252,9 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
           )}
         </div>
 
-        <div className="hidden w-[136px] shrink-0 flex-col border-l border-[var(--h-border)] bg-[var(--h-surface)] sm:flex">
-          <div className="border-b border-[var(--h-border)] p-2">
-            <div className="overflow-hidden rounded-md border border-[var(--h-border)] bg-[var(--h-wash)]">
+        <div className="flex w-full shrink-0 flex-col border-t border-[var(--h-border)] bg-[var(--h-surface)] sm:w-[136px] sm:border-t-0 sm:border-l">
+          <div className="flex items-center gap-2.5 border-b border-[var(--h-border)] p-2 sm:block">
+            <div className="w-20 shrink-0 overflow-hidden rounded-md border border-[var(--h-border)] bg-[var(--h-wash)] sm:w-full">
               <Image
                 src="/images/courses/power-bi-card.webp"
                 alt="Clase en vivo del curso Power BI en ProgramBI"
@@ -262,17 +262,17 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                 height={180}
                 priority
                 fetchPriority="high"
-                sizes="120px"
+                sizes="(max-width: 639px) 80px, 120px"
                 className="aspect-video w-full object-cover"
               />
             </div>
-            <p className="mt-1.5 text-[10px] font-medium text-[var(--h-muted)]">Proyecto del curso</p>
+            <p className="text-[10px] font-medium text-[var(--h-muted)] sm:mt-1.5">Proyecto del curso</p>
           </div>
 
-          <p className="border-b border-[var(--h-border)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--h-ink)]">
+          <p className="hidden border-b border-[var(--h-border)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--h-ink)] sm:block">
             Visualizaciones
           </p>
-          <div className="grid grid-cols-3 gap-0.5 p-1.5">
+          <div className="hidden grid-cols-3 gap-0.5 p-1.5 sm:grid">
             {visuals.map(({ id, label, Icon }) => (
               <button
                 key={id}
@@ -290,10 +290,10 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
               </button>
             ))}
           </div>
-          <p className="border-y border-[var(--h-border)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--h-ink)]">
+          <p className="hidden border-y border-[var(--h-border)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--h-ink)] sm:block">
             Datos
           </p>
-          <ul className="space-y-0.5 px-2.5 py-1.5 font-mono text-[10px] text-[var(--h-muted)]">
+          <ul className="hidden space-y-0.5 px-2.5 py-1.5 font-mono text-[10px] text-[var(--h-muted)] sm:block">
             <li className="text-[var(--h-ink)]">Ventas</li>
             <li className="pl-2">monto</li>
             <li className="pl-2">mes</li>
@@ -304,11 +304,11 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
         </div>
       </div>
 
-      <div className="flex h-8 shrink-0 items-center gap-1 border-t border-[var(--h-border)] bg-[var(--h-surface)] px-2.5">
+      <div className="flex min-h-[44px] shrink-0 items-center gap-1 border-t border-[var(--h-border)] bg-[var(--h-surface)] px-2.5 sm:h-8 sm:min-h-0">
         <button
           type="button"
           onClick={() => setPage("informe")}
-          className={`h-8 border-b-2 px-3 text-[11px] font-medium transition-colors ${
+          className={`min-h-[44px] border-b-2 px-3 text-[11px] font-medium transition-colors sm:min-h-[32px] ${
             page === "informe"
               ? "border-[var(--h-accent)] text-[var(--h-ink)]"
               : "border-transparent text-[var(--h-muted)] hover:text-[var(--h-ink)]"
@@ -319,7 +319,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
         <button
           type="button"
           onClick={() => setPage("detalle")}
-          className={`h-8 border-b-2 px-3 text-[11px] font-medium transition-colors ${
+          className={`min-h-[44px] border-b-2 px-3 text-[11px] font-medium transition-colors sm:min-h-[32px] ${
             page === "detalle"
               ? "border-[var(--h-accent)] text-[var(--h-ink)]"
               : "border-transparent text-[var(--h-muted)] hover:text-[var(--h-ink)]"

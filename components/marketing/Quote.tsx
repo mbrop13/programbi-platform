@@ -28,7 +28,7 @@ export default function Quote() {
   const hasMore = others.length > INITIAL_VISIBLE;
 
   return (
-    <section className="cv-auto bg-[#111214] py-20 text-[#f4f4f6] lg:py-28 dark:border-y dark:border-[var(--h-border)] dark:bg-[#141418]">
+    <section className="home-scope cv-auto bg-[#111214] py-20 text-[#f4f4f6] lg:py-28 dark:border-y dark:border-[var(--h-border)] dark:bg-[#141418]">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="max-w-[44rem]">
           <h2 className="text-3xl font-bold tracking-tight text-[#f4f4f6] sm:text-4xl lg:text-5xl">

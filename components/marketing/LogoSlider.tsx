@@ -16,7 +16,7 @@ export default function LogoSlider({ className }: { className?: string }) {
       id="empresas-logos"
       aria-label="Empresas donde trabajan nuestros alumnos"
       className={cn(
-        "border-y border-[var(--h-border)] bg-[var(--h-surface)] py-8 lg:py-10",
+        "home-scope border-y border-[var(--h-border)] bg-[var(--h-surface)] py-8 lg:py-10",
         className,
       )}
     >

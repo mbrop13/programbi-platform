@@ -135,7 +135,7 @@ export default function LeadForm() {
   };
 
   return (
-    <section id="cotizar" className="border-t border-[var(--h-border)] bg-[var(--h-bg)] py-16 lg:py-24">
+    <section id="cotizar" className="home-scope border-t border-[var(--h-border)] bg-[var(--h-bg)] py-16 lg:py-24">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:items-start lg:px-8 xl:gap-14">
         <div className="lg:col-span-5">
           <h2 className="text-3xl font-bold tracking-tight text-[var(--h-ink)] sm:text-4xl lg:text-5xl">
