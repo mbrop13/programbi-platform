@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Check, ExternalLink, MessageCircle } from "lucide-react";
+import { GuiaToolVisual, GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
+import InicioVigente from "@/components/guias/InicioVigente";
 import { BrochureGateForm } from "@/components/marketing/BrochureGateForm";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
@@ -10,7 +12,6 @@ import { offerSyllabusSections } from "@/lib/data/course-views";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
-import InicioVigente from "@/components/guias/InicioVigente";
 import type { InicioGuia } from "@/lib/guias/inicio";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -41,14 +42,15 @@ export default function CursoShowcaseGuia({
       <section
         id="temario-curso"
         aria-labelledby="titulo-showcase-general"
-        className="mt-12 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] p-6 sm:p-8"
+        className="mt-12 rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] p-6 shadow-[var(--g-card-shadow)] sm:p-8"
       >
-        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
-          Cursos en vivo · ProgramBI
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <GuiaToolVisual tool="datos" course="general" size="sm" />
+          <GuiaVisualBadge tone="accent">Cursos en vivo · ProgramBI</GuiaVisualBadge>
+        </div>
         <h2
           id="titulo-showcase-general"
-          className="mt-2 text-2xl font-bold tracking-tight text-[var(--g-ink)]"
+          className="mt-3 text-2xl font-bold tracking-tight text-[var(--g-ink)]"
         >
           Aprende estas herramientas en vivo con un proyecto real
         </h2>
@@ -59,19 +61,19 @@ export default function CursoShowcaseGuia({
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
             href={rutaLocal(iso, "/cursos")}
-            className="inline-flex min-h-[44px] items-center rounded-lg bg-[var(--g-accent)] px-6 text-sm font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
+            className="inline-flex min-h-[44px] items-center rounded-xl bg-[var(--g-accent)] px-6 text-sm font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
           >
             Ver cursos en vivo
           </Link>
           <Link
             href={rutaLocal(iso, "/cursos/claude")}
-            className="inline-flex min-h-[44px] items-center rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
+            className="inline-flex min-h-[44px] items-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
           >
             Curso de Claude
           </Link>
           <Link
             href={rutaLocal(iso, "/cursos/power-bi")}
-            className="inline-flex min-h-[44px] items-center rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
+            className="inline-flex min-h-[44px] items-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
           >
             Curso de Power BI
           </Link>
@@ -93,17 +95,24 @@ export default function CursoShowcaseGuia({
       id="temario-curso"
       data-testid="curso-showcase-guia"
       aria-labelledby="titulo-showcase-curso"
-      className="mt-12 scroll-mt-24 overflow-hidden rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-surface)]"
+      className="mt-12 scroll-mt-24 overflow-hidden rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] shadow-[var(--g-card-shadow)]"
     >
       <div className="grid grid-cols-1 gap-8 p-5 sm:p-7 lg:grid-cols-12 lg:gap-8">
         <div className="flex flex-col justify-between lg:col-span-7">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.06em] tabular-nums text-[var(--g-subtle)]">
-              Curso en vivo recomendado · {ficha.horasTexto} · {horario.inicio} a {horario.fin} ({lugar})
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <GuiaToolVisual tool={curso.slug} course={curso.slug} size="sm" />
+              <GuiaVisualBadge tone="accent">Curso en vivo</GuiaVisualBadge>
+              <GuiaVisualBadge tone="neutral" className="tabular-nums">
+                {ficha.horasTexto}
+              </GuiaVisualBadge>
+              <GuiaVisualBadge tone="neutral" className="tabular-nums">
+                {horario.inicio} a {horario.fin} ({lugar})
+              </GuiaVisualBadge>
+            </div>
 
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-[180px_minmax(0,1fr)] sm:items-center">
-              <div className="overflow-hidden rounded-lg border border-[var(--g-border)] bg-[var(--g-wash)]">
+              <div className="overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)] shadow-[var(--g-card-shadow)]">
                 <Image
                   src={curso.imageUrl}
                   alt={`Curso en vivo de ${curso.title} en ProgramBI`}
@@ -135,9 +144,12 @@ export default function CursoShowcaseGuia({
                 <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
                   Lo que construyes en el programa ({modulos.length} módulos)
                 </p>
-                <ol className="mt-3 divide-y divide-[var(--g-border)] border-y border-[var(--g-border)]">
+                <ol className="mt-3 grid grid-cols-1 gap-2">
                   {modulos.map((mod, index) => (
-                    <li key={mod.name} className="flex items-baseline gap-3 py-2.5">
+                    <li
+                      key={mod.name}
+                      className="flex items-baseline gap-3 rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]/45 px-3.5 py-2.5"
+                    >
                       <span className="shrink-0 font-mono text-xs font-semibold tabular-nums text-[var(--g-accent)]">
                         {String(index + 1).padStart(2, "0")}
                       </span>
@@ -155,7 +167,7 @@ export default function CursoShowcaseGuia({
               <ul className="mt-6 space-y-2">
                 {curso.whatYouLearn.slice(0, 4).map((punto) => (
                   <li key={punto} className="flex items-start gap-2 text-sm text-[var(--g-muted)]">
-                    <Check size={15} className="mt-0.5 shrink-0 text-[var(--g-accent)]" aria-hidden />
+                    <Check size={15} className="mt-0.5 shrink-0 text-[var(--g-ok)]" aria-hidden />
                     <span>{punto}</span>
                   </li>
                 ))}
@@ -171,7 +183,7 @@ export default function CursoShowcaseGuia({
                   {galeria.map((foto) => (
                     <div
                       key={foto.src}
-                      className="overflow-hidden rounded-lg border border-[var(--g-border)] bg-[var(--g-wash)]"
+                      className="overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)] shadow-[var(--g-card-shadow)]"
                     >
                       <Image
                         src={foto.src}
@@ -216,7 +228,7 @@ export default function CursoShowcaseGuia({
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={rutaCurso}
-                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
+                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
               >
                 Ver ficha completa
                 <ExternalLink size={13} aria-hidden />
@@ -227,7 +239,7 @@ export default function CursoShowcaseGuia({
                 course={curso.title}
                 courseSlug={curso.slug}
                 country={iso}
-                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
+                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
               >
                 <MessageCircle size={13} aria-hidden />
                 WhatsApp

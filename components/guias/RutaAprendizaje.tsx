@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { GuiaToolVisual, GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
 import { RUTA_DATOS, fichaCurso, pasoDeRuta, rutaFichaCurso } from "@/lib/guias/curso";
 
 /**
- * Ruta de aprendizaje editorial (Excel, SQL Server, Power BI, Python,
- * Análisis de datos). Lista limpia con divisores finos e índices tabulares.
+ * Ruta de aprendizaje visual y táctil (Excel, SQL Server, Power BI, Python,
+ * Análisis de datos). Cada paso se presenta como una tarjeta interactiva con
+ * su ícono de herramienta, estado de avance y carga horaria.
  */
 export default function RutaAprendizaje({
   iso,
@@ -25,7 +27,7 @@ export default function RutaAprendizaje({
       className={
         embebido
           ? "rounded-none border-0 bg-transparent p-0"
-          : "mt-12 rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] px-5 py-6"
+          : "mt-12 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 shadow-[var(--g-card-shadow)] sm:p-6"
       }
     >
       {embebido ? (
@@ -44,11 +46,7 @@ export default function RutaAprendizaje({
         </div>
       )}
 
-      <ol
-        className={`${
-          embebido ? "" : "mt-4"
-        } divide-y divide-[var(--g-border)] border-y border-[var(--g-border)]`}
-      >
+      <ol className={`${embebido ? "" : "mt-4"} space-y-2.5`}>
         {RUTA_DATOS.map((paso, i) => {
           const actual = i === indice;
           const hecho = i < indice;
@@ -60,30 +58,35 @@ export default function RutaAprendizaje({
               <Link
                 href={rutaFichaCurso(iso, paso.curso)}
                 aria-current={actual ? "step" : undefined}
-                className={`flex min-h-[44px] items-baseline justify-between gap-4 px-2 py-3 no-underline transition-colors ${
-                  actual ? "bg-[var(--g-accent-soft)]" : "hover:bg-[var(--g-wash)]"
+                className={`group flex min-h-[44px] items-center justify-between gap-4 rounded-2xl border p-3.5 no-underline transition-all hover:-translate-y-0.5 hover:shadow-[var(--g-card-shadow-hover)] sm:p-4 ${
+                  actual
+                    ? "border-[var(--g-accent)]/35 bg-[var(--g-accent-soft)] shadow-[var(--g-card-shadow)]"
+                    : "border-[var(--g-border)] bg-[var(--g-surface)] shadow-[var(--g-card-shadow)] hover:border-[var(--g-border-strong)]"
                 }`}
               >
-                <div className="flex min-w-0 items-baseline gap-3">
-                  <span className="shrink-0 font-mono text-xs font-semibold tabular-nums text-[var(--g-subtle)]">
-                    {num}
-                  </span>
+                <div className="flex min-w-0 items-start gap-3">
+                  <GuiaToolVisual tool={paso.curso} course={paso.curso} size="sm" className="mt-0.5" />
                   <div className="min-w-0">
-                    <span className="text-sm font-semibold text-[var(--g-ink)]">{paso.nombre}</span>
-                    {actual ? (
-                      <span className="ml-2 text-xs font-semibold text-[var(--g-accent)]">
-                        (Paso actual)
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-mono text-xs font-semibold tabular-nums text-[var(--g-subtle)]">
+                        {num}
                       </span>
-                    ) : hecho ? (
-                      <span className="ml-2 text-xs text-[var(--g-subtle)]">(Anterior)</span>
-                    ) : null}
-                    <span className="mt-0.5 block text-xs leading-snug text-[var(--g-muted)]">
+                      <span className="text-sm font-bold text-[var(--g-ink)] group-hover:text-[var(--g-accent)]">
+                        {paso.nombre}
+                      </span>
+                      {actual ? (
+                        <GuiaVisualBadge tone="accent">Paso actual</GuiaVisualBadge>
+                      ) : hecho ? (
+                        <GuiaVisualBadge tone="ok">Base previa</GuiaVisualBadge>
+                      ) : null}
+                    </div>
+                    <span className="mt-1 block text-xs leading-snug text-[var(--g-muted)]">
                       {paso.detalle}
                     </span>
                   </div>
                 </div>
 
-                <span className="shrink-0 font-mono text-xs font-medium tabular-nums text-[var(--g-subtle)]">
+                <span className="shrink-0 rounded-lg border border-[var(--g-border)] bg-[var(--g-wash)] px-2.5 py-1 font-mono text-xs font-semibold tabular-nums text-[var(--g-ink)]">
                   {ficha.horas != null ? `${ficha.horas} h` : "Ver"}
                 </span>
               </Link>

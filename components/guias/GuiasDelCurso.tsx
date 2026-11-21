@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { GuiaToolVisual, GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { guiaDeCurso, guiasDePais, guiasDelCurso, indiceGuias } from "@/lib/guias";
@@ -45,7 +47,7 @@ function prioridad(guia: Guia, pais: string): number {
 
 /**
  * Bloque de servidor «Guías de <curso>» para la ficha de curso.
- * Lista editorial limpia con divisores finos e índices tabulares.
+ * Grilla de tarjetas visuales táctiles ordenadas por mercado.
  */
 export default function GuiasDelCurso({ curso, pais }: Props) {
   const iso = pais === "transversal" ? ISO_CHILE : pais;
@@ -111,31 +113,40 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
           {hayGuiaLocal ? ` La primera es la guía de ${nombreMercado}.` : ""}
         </p>
 
-        <ol className="mt-8 divide-y divide-[var(--g-border)] border-y border-[var(--g-border)]">
+        <ol className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
           {enlaces.map((guia, idx) => {
             const num = String(idx + 1).padStart(2, "0");
+            const esLocal = guia.country === iso;
             return (
               <li key={guia.path}>
                 <Link
                   href={guia.path}
-                  className="group flex min-h-[44px] flex-col justify-between gap-2 px-2 py-4 no-underline transition-colors hover:bg-[var(--g-surface)] sm:flex-row sm:items-baseline sm:gap-6"
+                  className="group flex h-full min-h-[44px] flex-col justify-between gap-4 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 no-underline shadow-[var(--g-card-shadow)] transition-all hover:-translate-y-0.5 hover:border-[var(--g-border-strong)] hover:shadow-[var(--g-card-shadow-hover)]"
                 >
-                  <div className="flex min-w-0 items-baseline gap-3">
-                    <span className="shrink-0 font-mono text-xs font-semibold tabular-nums text-[var(--g-subtle)]">
-                      {num}
-                    </span>
-                    <div className="min-w-0">
-                      <span className="block text-sm font-semibold leading-snug text-[var(--g-ink)] group-hover:text-[var(--g-accent)]">
-                        {sinMontos(guia.h1)}
-                      </span>
-                      <span className="mt-1 block line-clamp-1 text-xs leading-relaxed text-[var(--g-muted)]">
-                        {sinMontos(guia.description)}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <GuiaToolVisual tool={curso} course={curso} size="sm" />
+                      <span className="font-mono text-xs font-semibold tabular-nums text-[var(--g-subtle)]">
+                        {num}
                       </span>
                     </div>
+                    <GuiaVisualBadge tone={esLocal ? "accent" : "neutral"}>
+                      {mercadoDe(guia)}
+                    </GuiaVisualBadge>
                   </div>
 
-                  <span className="shrink-0 pl-7 text-xs font-medium text-[var(--g-subtle)] sm:pl-0">
-                    {mercadoDe(guia)}
+                  <div>
+                    <span className="block text-base font-bold leading-snug text-[var(--g-ink)] group-hover:text-[var(--g-accent)]">
+                      {sinMontos(guia.h1)}
+                    </span>
+                    <span className="mt-1.5 block line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
+                      {sinMontos(guia.description)}
+                    </span>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--g-accent)]">
+                    Leer guía
+                    <ArrowUpRight size={13} aria-hidden />
                   </span>
                 </Link>
               </li>

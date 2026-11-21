@@ -1,10 +1,11 @@
 import { Check } from "lucide-react";
-import { filasComparativa } from "@/components/guias/comparativa";
-import { encabezadosVisibles } from "@/components/guias/indice";
+import { GuiaToolVisual, GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
 import RutaAprendizaje from "@/components/guias/RutaAprendizaje";
 import TablaComparativa from "@/components/guias/TablaComparativa";
-import { ISO_CHILE } from "@/config/paises";
+import { filasComparativa } from "@/components/guias/comparativa";
+import { encabezadosVisibles } from "@/components/guias/indice";
 import { CUOTAS_SIN_INTERES } from "@/config/cuotas";
+import { ISO_CHILE } from "@/config/paises";
 import { pasoDeRuta } from "@/lib/guias/curso";
 import type { Guia } from "@/lib/guias/tipos";
 import { courseBrochurePath } from "@/lib/pricing-gate";
@@ -81,7 +82,7 @@ function FlujoGenerico({ guia }: { guia: Guia }) {
         {TARJETAS_FLUJO.map((item) => (
           <li
             key={item.paso}
-            className="rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] p-4"
+            className="rounded-xl border border-[var(--g-border)] bg-[var(--g-bg)] p-4 shadow-[var(--g-card-shadow)]"
           >
             <span className="font-mono text-xs font-semibold tabular-nums text-[var(--g-accent)]">
               {item.paso}
@@ -102,15 +103,13 @@ function BloquePromptClaude() {
         <p className="text-sm font-semibold text-[var(--g-ink)]">
           Anatomía de un prompt profesional para trabajar con datos
         </p>
-        <span className="rounded-md border border-[var(--g-border-strong)] bg-[var(--g-wash)] px-2.5 py-0.5 text-xs font-medium text-[var(--g-ink)]">
-          Verificado antes de enviar
-        </span>
+        <GuiaVisualBadge tone="ok">Verificado antes de enviar</GuiaVisualBadge>
       </div>
       <ol className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {BLOQUES_PROMPT_CLAUDE.map((b) => (
           <li
             key={b.num}
-            className="rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] p-4"
+            className="rounded-xl border border-[var(--g-border)] bg-[var(--g-bg)] p-4 shadow-[var(--g-card-shadow)]"
           >
             <span className="font-mono text-xs font-semibold uppercase tracking-wider tabular-nums text-[var(--g-accent)]">
               {b.num} · {b.label}
@@ -136,7 +135,7 @@ function BloqueDaxContexto() {
         {pilares.map((pilar) => (
           <div
             key={pilar.nombre}
-            className="rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] p-4"
+            className="rounded-xl border border-[var(--g-border)] bg-[var(--g-bg)] p-4 shadow-[var(--g-card-shadow)]"
           >
             <p className="text-sm font-bold tabular-nums text-[var(--g-ink)]">{pilar.nombre}</p>
             <p className="mt-1.5 text-xs leading-relaxed text-[var(--g-muted)]">{pilar.detalle}</p>
@@ -161,21 +160,15 @@ function BloqueBiVsExcel() {
         {casos.map((item) => (
           <div
             key={item.caso}
-            className="flex items-start justify-between gap-3 rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] px-4 py-3"
+            className="flex items-start justify-between gap-3 rounded-xl border border-[var(--g-border)] bg-[var(--g-bg)] px-4 py-3 shadow-[var(--g-card-shadow)]"
           >
             <div>
               <p className="text-xs font-semibold text-[var(--g-ink)]">{item.caso}</p>
               <p className="mt-0.5 text-xs text-[var(--g-muted)]">{item.nota}</p>
             </div>
-            <span
-              className={`shrink-0 rounded-md border px-2 py-0.5 text-xs font-semibold ${
-                item.ganador === "Power BI"
-                  ? "border-[var(--g-border-strong)] bg-[var(--g-accent-soft)] text-[var(--g-accent)]"
-                  : "border-[var(--g-border)] bg-[var(--g-wash)] text-[var(--g-ink)]"
-              }`}
-            >
+            <GuiaVisualBadge tone={item.ganador === "Power BI" ? "accent" : "neutral"} className="shrink-0">
               {item.ganador}
-            </span>
+            </GuiaVisualBadge>
           </div>
         ))}
       </div>
@@ -193,14 +186,14 @@ function PasosDeContenido({ guia }: { guia: Guia }) {
   }
 
   return (
-    <ol className="divide-y divide-[var(--g-border)] border-y border-[var(--g-border)]">
+    <ol className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
       {secciones.map((sec, idx) => (
         <li key={sec.id}>
           <a
             href={`#${sec.id}`}
-            className="flex min-h-[44px] items-baseline gap-3 px-2 py-2.5 text-sm font-medium text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] hover:text-[var(--g-accent)]"
+            className="flex min-h-[44px] items-baseline gap-3 rounded-xl border border-[var(--g-border)] bg-[var(--g-bg)] px-3.5 py-2.5 text-sm font-medium text-[var(--g-ink)] no-underline shadow-[var(--g-card-shadow)] transition-all hover:-translate-y-0.5 hover:border-[var(--g-border-strong)] hover:text-[var(--g-accent)] hover:shadow-[var(--g-card-shadow-hover)]"
           >
-            <span className="font-mono text-xs font-semibold tabular-nums text-[var(--g-subtle)]">
+            <span className="font-mono text-xs font-semibold tabular-nums text-[var(--g-accent)]">
               {String(idx + 1).padStart(2, "0")}
             </span>
             <span>{sec.texto}</span>
@@ -246,7 +239,7 @@ function Contenido({ variante, guia, iso }: { variante: VarianteVisual; guia: Gu
       return <FlujoGenerico guia={guia} />;
     case "checklist":
       return (
-        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {[
             "Horario local compatible dos días a la semana",
             "Computadora con los programas gratuitos instalados",
@@ -255,9 +248,9 @@ function Contenido({ variante, guia, iso }: { variante: VarianteVisual; guia: Gu
           ].map((item) => (
             <li
               key={item}
-              className="flex items-start gap-2 rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] px-4 py-3 text-sm text-[var(--g-ink)]"
+              className="flex items-start gap-2.5 rounded-xl border border-[var(--g-border)] bg-[var(--g-bg)] px-4 py-3 text-sm text-[var(--g-ink)] shadow-[var(--g-card-shadow)]"
             >
-              <Check size={15} className="mt-0.5 shrink-0 text-[var(--g-accent)]" aria-hidden />
+              <Check size={15} className="mt-0.5 shrink-0 text-[var(--g-ok)]" aria-hidden />
               <span>{item}</span>
             </li>
           ))}
@@ -279,7 +272,7 @@ function Contenido({ variante, guia, iso }: { variante: VarianteVisual; guia: Gu
                 <span>{fila.nivel}</span>
                 <span className="tabular-nums text-[var(--g-subtle)]">Progresión</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-[var(--g-wash)]">
+              <div className="h-2.5 overflow-hidden rounded-full bg-[var(--g-wash)]">
                 <div className={`h-full rounded-full ${fila.color}`} style={{ width: fila.porcentaje }} />
               </div>
             </div>
@@ -306,17 +299,22 @@ export default function ElementoVisual({ guia }: { guia: Guia }) {
       aria-labelledby="elemento-visual-guia"
       data-testid="elemento-visual"
       data-variante={variante}
-      className="mt-8 rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5"
+      className="mt-8 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 shadow-[var(--g-card-shadow)] sm:p-6"
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
-        Esquema de referencia
-      </p>
-      <h2
-        id="elemento-visual-guia"
-        className="mt-1 text-lg font-bold tracking-tight text-[var(--g-ink)]"
-      >
-        {titulo}
-      </h2>
+      <div className="flex items-center gap-3">
+        <GuiaToolVisual tool={guia.course} course={guia.course} size="sm" />
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
+            Esquema de referencia
+          </p>
+          <h2
+            id="elemento-visual-guia"
+            className="mt-0.5 text-lg font-bold tracking-tight text-[var(--g-ink)]"
+          >
+            {titulo}
+          </h2>
+        </div>
+      </div>
       <div className="mt-4">
         <Contenido variante={variante} guia={guia} iso={iso} />
       </div>
