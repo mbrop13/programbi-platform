@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { GuiaBreadcrumbs, GuiaScope } from "@/components/guias/GuiaEditorialPrimitives";
 import GuiasHub from "@/components/guias/GuiasHub";
 import {
   esIndexable,
@@ -33,11 +34,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
   const nombre = getPais(pais).nombre;
   const path = `/${pais}/guias`;
-  const titleLargo = `Guías de datos y Power BI en ${nombre} — ProgramBI`;
+  const titleLargo = `Guías de datos y Power BI en ${nombre} | ProgramBI`;
   // «República Dominicana» empuja el título sobre 60 caracteres: en ese caso
   // se conserva la palabra clave corta y se suelta «Power BI».
   const title =
-    titleLargo.length <= 60 ? titleLargo : `Guías de datos en ${nombre} — ProgramBI`;
+    titleLargo.length <= 60 ? titleLargo : `Guías de datos en ${nombre} | ProgramBI`;
   const description = `Guías prácticas de Claude, Power BI, SQL, Python y Excel en ${nombre}: rutas de estudio, sueldos del mercado y cursos en vivo.`;
   const indexable = esIndexable(pais);
   const share = pageOg({
@@ -104,32 +105,34 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
   };
 
   return (
-    <div className="bg-canvas px-4 pb-20 pt-12 sm:px-6 lg:px-8">
+    <GuiaScope className="px-4 pb-20 pt-10 sm:px-6 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <div className="mx-auto max-w-[1120px]">
-        <nav aria-label="Migas de pan" className="text-xs text-mute">
-          <ol className="flex items-center gap-1.5">
-            <li>
-              <Link href={`/${pais}`} className="no-underline hover:text-ink">
-                Inicio
-              </Link>
-            </li>
-            <li aria-hidden>/</li>
-            <li className="text-ink">Guías</li>
-          </ol>
-        </nav>
-        <h1 className="mt-6 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-          Guías de datos y Power BI en {nombre}
-        </h1>
-        <p className="mt-4 max-w-[62ch] leading-relaxed text-mute">
-          {guias.length} guías de estudio y referencia para trabajar con datos en {nombre}: ruta de
-          aprendizaje, funciones con ejemplos, fuentes citadas, precios locales y el curso en vivo que
-          las cubre.
-        </p>
+        <GuiaBreadcrumbs
+          items={[
+            { label: "Inicio", href: `/${pais}` },
+            { label: "Guías", href: "/guias" },
+            { label: nombre },
+          ]}
+        />
+
+        <header className="mt-6 border-b border-[var(--g-border)] pb-8">
+          <div className="flex flex-wrap items-baseline justify-between gap-4">
+            <h1 className="max-w-[24ch] text-[clamp(2rem,3.6vw,3rem)] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--g-ink)]">
+              Guías de datos y Power BI en {nombre}
+            </h1>
+            <p className="text-sm font-medium tabular-nums text-[var(--g-subtle)]">
+              {tarjetas.length} {tarjetas.length === 1 ? "guía" : "guías"}
+            </p>
+          </div>
+          <p className="mt-3 max-w-[66ch] text-base leading-relaxed text-[var(--g-muted)]">
+            Rutas de estudio, funciones con ejemplos, precios locales y cursos en vivo para {nombre}.
+          </p>
+        </header>
 
         <div className="mt-8">
           <GuiasHub
-            guias={tarjetasDeGuias(guias)}
+            guias={tarjetas}
             paises={[]}
             cursos={cursos}
             mostrarPais={false}
@@ -137,12 +140,15 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
           />
         </div>
 
-        <p className="mt-12 border-t border-line pt-8 text-sm">
-          <Link href={indiceGuias("cl")} className="font-medium text-ink underline underline-offset-4">
+        <p className="mt-14 border-t border-[var(--g-border)] pt-8 text-sm">
+          <Link
+            href={indiceGuias("cl")}
+            className="font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)]"
+          >
             Ver todas las guías de ProgramBI
           </Link>
         </p>
       </div>
-    </div>
+    </GuiaScope>
   );
 }
