@@ -48,12 +48,12 @@ export async function proxy(request: NextRequest) {
     return finalize(NextResponse.redirect(url, 301))
   }
 
-  // Legacy locale prefixes (/es, /en) from the old Maverlang merge — strip and redirect.
+  // Legacy locale prefix (/en) from the old Maverlang merge — strip and redirect.
   // Language is controlled only from user settings, not the URL.
-  // 301 (permanente): el prefijo /es ya no vuelve, no es una redirección temporal.
-  const localeMatch = pathname.match(/^\/(es|en)(\/.*)?$/)
+  // /es es la carpeta de país para España (app/(pais)/[pais]) y no redirige.
+  const localeMatch = pathname.match(/^\/en(\/.*)?$/)
   if (localeMatch) {
-    const rest = localeMatch[2] || '/'
+    const rest = localeMatch[1] || '/'
     const cleanPath = rest === '' ? '/' : rest
     const url = request.nextUrl.clone()
     url.pathname = cleanPath
@@ -116,7 +116,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * El middleware solo corre donde hace falta (auth, sesión, 301 de /cl y /es|/en):
+     * El middleware solo corre donde hace falta (auth, sesión, 301 de /cl y /en):
      * - api (incluye /api/og) y _next/* (static, image, data y prefetch RSC)
      * - /og (imagen social) y las rutas de metadata: robots.txt, sitemap.xml, llms*.txt
      * - assets públicos por extensión: ico (favicon incluido), png, jpg, jpeg, webp,

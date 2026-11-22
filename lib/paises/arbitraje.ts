@@ -14,10 +14,11 @@
  * no se detecta. Es una barrera contra el caso fácil, no un control total.
  */
 
-import { ISO_CHILE, normalizarPais } from "@/config/paises";
+import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 
 /** Mercado cuyo precio es el más alto y que se protege del arbitraje. */
 export const PAIS_PROTEGIDO = "us";
+export const PAISES_PROTEGIDOS = new Set(["us", "es"]);
 
 /** País de la IP según Vercel, en minúsculas, o `null` si no viene. */
 export function paisDeIp(headers: Headers): string | null {
@@ -40,13 +41,14 @@ export function bloqueoPorMercado(
   headers: Headers,
   paisSolicitado: string | null | undefined
 ): BloqueoMercado | null {
-  if (paisDeIp(headers) !== PAIS_PROTEGIDO) return null;
+  const ipPais = paisDeIp(headers);
+  if (!ipPais || !PAISES_PROTEGIDOS.has(ipPais)) return null;
   const pais = normalizarPais(paisSolicitado || ISO_CHILE);
-  if (pais === PAIS_PROTEGIDO) return null;
+  if (PAISES_PROTEGIDOS.has(pais)) return null;
+  const nombrePais = getPais(ipPais).nombre;
   return {
     code: "mercado_ip",
-    paisSugerido: PAIS_PROTEGIDO,
-    error:
-      "Detectamos que te conectas desde Estados Unidos, donde el curso tiene su propio precio en dólares. Abre la versión de EE.UU. para continuar. Si estás de viaje y compras para otro país, escríbenos por WhatsApp y lo resolvemos.",
+    paisSugerido: ipPais,
+    error: `Detectamos que te conectas desde ${nombrePais}, donde el curso tiene su propio precio en dólares. Abre la versión de ${nombrePais} para continuar. Si estás de viaje y compras para otro país, escríbenos por WhatsApp y lo resolvemos.`,
   };
 }

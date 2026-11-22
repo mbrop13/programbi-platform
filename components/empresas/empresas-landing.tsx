@@ -15,6 +15,13 @@ import {
   INCLUDES_EMPRESAS_US,
   ISO_EMPRESAS_US,
 } from "@/lib/data/empresas-us";
+import {
+  FAQS_EMPRESAS_ES,
+  HERO_EMPRESAS_ES,
+  INCLUDES_EMPRESAS_ES,
+  ISO_EMPRESAS_ES,
+  VERTICALS_EMPRESAS_ES,
+} from "@/lib/data/empresas-es";
 
 type EmpresasLandingProps = {
   /** Nombre del país de la ruta (/empresas es Chile; /pe/empresas, Perú). */
@@ -116,23 +123,37 @@ const EMPRESA_COURSES = [...courses].sort((a, b) => a.sortOrder - b.sortOrder);
 
 export function EmpresasLanding({ paisNombre = "Chile", iso }: EmpresasLandingProps) {
   const esUs = iso === ISO_EMPRESAS_US;
+  const esEs = iso === ISO_EMPRESAS_ES;
   return (
     <div className="bg-canvas text-ink">
       <AnalyticsPageEvent event="view_empresas" />
-      <Hero paisNombre={paisNombre} esUs={esUs} />
+      <Hero paisNombre={paisNombre} esUs={esUs} esEs={esEs} iso={iso} />
       <LogoSlider className="border-0 bg-transparent" />
-      <Includes esUs={esUs} />
+      <Includes esUs={esUs} esEs={esEs} />
       <How />
-      {!esUs && <Verticals />}
+      {!esUs && <Verticals esEs={esEs} />}
       <Topics iso={iso} />
-      <Faq esUs={esUs} />
+      <Faq esUs={esUs} esEs={esEs} />
       <Tools />
       <Contact />
     </div>
   );
 }
 
-function Hero({ paisNombre, esUs }: { paisNombre: string; esUs: boolean }) {
+function Hero({
+  paisNombre,
+  esUs,
+  esEs,
+  iso,
+}: {
+  paisNombre: string;
+  esUs: boolean;
+  esEs: boolean;
+  iso?: string;
+}) {
+  const href = (destino: string) =>
+    (esUs || esEs) && iso ? rutaLocal(iso, destino) : destino;
+  const hero = esUs ? HERO_EMPRESAS_US : esEs ? HERO_EMPRESAS_ES : null;
   return (
     <section className="relative overflow-hidden border-b border-line lg:min-h-[calc(100dvh-72px)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(23,23,22,0.04),transparent_55%)]" />
@@ -140,14 +161,14 @@ function Hero({ paisNombre, esUs }: { paisNombre: string; esUs: boolean }) {
       <div className="relative mx-auto grid h-full min-h-0 max-w-[1400px] lg:min-h-[calc(100dvh-72px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
         <div className="flex flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10">
           <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-            {esUs ? HERO_EMPRESAS_US.kicker : `Cursos para empresas · ${paisNombre}`}
+            {hero ? hero.kicker : `Cursos para empresas · ${paisNombre}`}
           </p>
           <h1 className="mt-5 max-w-[20ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]">
-            {esUs ? HERO_EMPRESAS_US.titulo : `Capacitación Power BI para empresas en ${paisNombre}`}
+            {hero ? hero.titulo : `Capacitación Power BI para empresas en ${paisNombre}`}
           </h1>
           <p className="mt-5 max-w-md text-base leading-relaxed text-mute sm:text-lg">
-            {esUs
-              ? HERO_EMPRESAS_US.descripcion
+            {hero
+              ? hero.descripcion
               : "Cursos cerrados para tu empresa: Power BI, Excel, SQL, Python, automatización e IA. En vivo, con tus datos y factura corporativa."}
           </p>
 
@@ -172,41 +193,41 @@ function Hero({ paisNombre, esUs }: { paisNombre: string; esUs: boolean }) {
 
           <p className="mt-8 text-[13px] text-faint">
             No es el curso abierto. Es un programa para el equipo.
-            {esUs ? ` ${HERO_EMPRESAS_US.nota}` : ""}
+            {hero ? ` ${hero.nota}` : ""}
           </p>
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-mute">
             <Link
-              href="/implementacion-power-bi"
+              href={href("/implementacion-power-bi")}
               className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
             >
               Implementación Power BI
             </Link>
             <Link
-              href="/migrar-excel-a-power-bi"
+              href={href("/migrar-excel-a-power-bi")}
               className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
             >
               Migrar de Excel a Power BI
             </Link>
             <Link
-              href="/casos"
+              href={href("/casos")}
               className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
             >
               Testimonios de alumnos
             </Link>
             <Link
-              href="/capacitacion-empresas"
+              href={href("/capacitacion-empresas")}
               className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
             >
               Programas in-company
             </Link>
             <Link
-              href="/curso-power-bi-vs-pack-adopcion"
+              href={href("/curso-power-bi-vs-pack-adopcion")}
               className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
             >
               Curso vs. pack de adopción
             </Link>
             <Link
-              href="/por-que-fallan-proyectos-power-bi"
+              href={href("/por-que-fallan-proyectos-power-bi")}
               className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
             >
               Por qué fallan proyectos Power BI
@@ -222,8 +243,8 @@ function Hero({ paisNombre, esUs }: { paisNombre: string; esUs: boolean }) {
   );
 }
 
-function Includes({ esUs }: { esUs: boolean }) {
-  const items = esUs ? INCLUDES_EMPRESAS_US : INCLUDES;
+function Includes({ esUs, esEs }: { esUs: boolean; esEs: boolean }) {
+  const items = esUs ? INCLUDES_EMPRESAS_US : esEs ? INCLUDES_EMPRESAS_ES : INCLUDES;
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
@@ -272,7 +293,8 @@ function How() {
   );
 }
 
-function Verticals() {
+function Verticals({ esEs }: { esEs: boolean }) {
+  const verticals = esEs ? VERTICALS_EMPRESAS_ES : VERTICALS;
   return (
     <section className="mx-auto max-w-[1400px] border-b border-line px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
@@ -285,7 +307,7 @@ function Verticals() {
         Entregables concretos que tu equipo arma durante la capacitación sobre sus propias fuentes y reglas de negocio.
       </p>
       <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-3">
-        {VERTICALS.map((v) => (
+        {verticals.map((v) => (
           <div key={v.sector} className="bg-paper p-6">
             <p className="text-[11px] font-semibold tracking-[0.14em] text-faint uppercase">
               {v.sector}
@@ -308,12 +330,15 @@ function Verticals() {
 
 function Topics({ iso }: { iso?: string }) {
   const esUs = iso === ISO_EMPRESAS_US;
-  // «Análisis para minería» no se ofrece en el mercado de Estados Unidos.
-  const list = esUs
-    ? EMPRESA_COURSES.filter((course) => course.slug !== "analitica-mineria")
-    : EMPRESA_COURSES;
-  // Solo Estados Unidos conserva su carpeta; el resto de los mercados enlaza como siempre.
-  const href = (destino: string) => (esUs && iso ? rutaLocal(iso, destino) : destino);
+  const esEs = iso === ISO_EMPRESAS_ES;
+  // «Análisis para minería» no se ofrece en Estados Unidos ni en España.
+  const list =
+    esUs || esEs
+      ? EMPRESA_COURSES.filter((course) => course.slug !== "analitica-mineria")
+      : EMPRESA_COURSES;
+  // Estados Unidos y España conservan sus rutas locales; el resto enlaza como siempre.
+  const href = (destino: string) =>
+    (esUs || esEs) && iso ? rutaLocal(iso, destino) : destino;
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
@@ -369,7 +394,8 @@ function Topics({ iso }: { iso?: string }) {
   );
 }
 
-function Faq({ esUs }: { esUs: boolean }) {
+function Faq({ esUs, esEs }: { esUs: boolean; esEs: boolean }) {
+  const faqs = esUs ? FAQS_EMPRESAS_US : esEs ? FAQS_EMPRESAS_ES : undefined;
   return (
     <section className="border-y border-line bg-paper">
       <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
@@ -379,7 +405,7 @@ function Faq({ esUs }: { esUs: boolean }) {
         <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
           Preguntas sobre la capacitación in-company
         </h2>
-        <EmpresasFaq faqs={esUs ? FAQS_EMPRESAS_US : undefined} />
+        <EmpresasFaq faqs={faqs} />
       </div>
     </section>
   );

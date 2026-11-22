@@ -34,7 +34,9 @@ function buildJsonLd(lang: string) {
   const description =
     lang === "es-CL"
       ? "ProgramBI (Chile) dicta cursos en vivo de Power BI, SQL y Python, y trabaja con empresas en capacitación e implementación de Business Intelligence."
-      : "ProgramBI dicta cursos en vivo de Power BI, SQL y Python para profesionales y empresas en Latinoamérica, junto con proyectos de implementación de Business Intelligence.";
+      : lang === "es-ES"
+        ? "ProgramBI imparte formación online en directo de Power BI, SQL Server, Python y análisis de datos para profesionales y empresas en España, con proyectos de Business Intelligence."
+        : "ProgramBI dicta cursos en vivo de Power BI, SQL y Python para profesionales y empresas en Latinoamérica, junto con proyectos de implementación de Business Intelligence.";
 
   return {
     "@context": "https://schema.org",

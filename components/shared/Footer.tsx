@@ -47,6 +47,7 @@ const GUIAS_POR_PAIS = new Set([
   "pe",
   "co",
   "uy",
+  "es",
   "bo",
   "cr",
   "do",

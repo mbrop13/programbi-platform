@@ -62,7 +62,7 @@ const PRIMARY_COURSE_SLUGS = new Set([
  */
 // Estados Unidos entra igual que Paraguay: hoy `indexable: false`, y hereda la
 // prioridad alta el día que se encienda.
-const PAISES_DESTACADOS = new Set(["mx", "co", "ar", "pe", "uy", "py", "us"]);
+const PAISES_DESTACADOS = new Set(["mx", "co", "ar", "pe", "uy", "py", "us", "es"]);
 
 /** Tope de espera para Supabase: el sitemap nunca queda colgado por el blog. */
 const BLOG_TIMEOUT_MS = 5000;

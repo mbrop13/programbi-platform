@@ -9,7 +9,7 @@ import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import CourseImage from "@/components/shared/CourseImage";
 import { usePaisRuta } from "@/lib/paises/cliente";
-import { muestraPrecioDirecto } from "@/config/paises";
+import { getPais, muestraPrecioDirecto } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { courseBrochureUrl, unlockPricesClient } from "@/lib/pricing-gate";
 import { captureAndReadAttribution } from "@/lib/utm";
@@ -220,7 +220,7 @@ export default function LeadForm() {
                 autoComplete="tel"
                 helper={
                   telefonoOpcional
-                    ? "En EE.UU. te respondemos por email; agrégalo solo si prefieres WhatsApp."
+                    ? `En ${getPais(pais).nombre} te respondemos por email; agrégalo solo si prefieres WhatsApp.`
                     : "Incluye código de país. Chile: +56 9..."
                 }
               />

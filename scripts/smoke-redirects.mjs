@@ -104,6 +104,8 @@ const TABLA = [
     destino: "/co/cursos/mercado-financiero",
     origen: "legacy",
   },
+  { url: "/es/curso-power-bi", destino: "/es/cursos/power-bi", origen: "ES" },
+  { url: "/es/faq", destino: "/es/preguntas-frecuentes", origen: "ES" },
 ];
 
 /**
@@ -120,6 +122,10 @@ const DIRECTAS = [
   "/empresas",
   "/blog",
   "/login",
+  "/es",
+  "/es/cursos/power-bi",
+  "/es/empresas",
+  "/es/guias",
 ];
 
 function unir(base, ruta) {

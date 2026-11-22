@@ -13,7 +13,7 @@ import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
 import { trackLeadSubmit, trackTemario } from "@/lib/analytics/marketing";
 import { textoCuotas } from "@/config/cuotas";
-import { muestraPrecioDirecto } from "@/config/paises";
+import { getPais, muestraPrecioDirecto } from "@/config/paises";
 
 export type BrochureGateFormProps = {
   /** Slug del curso cuyo temario se abre al enviar. */
@@ -87,7 +87,7 @@ function includesDe(pais: string): string[] {
   if (muestraPrecioDirecto(pais)) {
     return [
       "Temario y detalle del curso para presentar a tu empleador",
-      "Próximas fechas y horarios convertidos a EE.UU.",
+      `Próximas fechas y horarios convertidos a ${getPais(pais).nombre}`,
       "Malla curricular completa módulo a módulo y profesores",
     ];
   }

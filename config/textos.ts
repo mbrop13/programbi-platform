@@ -25,6 +25,6 @@ export function voseoTitular(iso: string, texto: string): string {
     .replaceAll("Regístrate", "Registrate");
 }
 
-export function dispositivo(iso: string): "computador" | "computadora" {
+export function dispositivo(iso: string): "computador" | "computadora" | "ordenador" {
   return getPais(iso).dispositivo;
 }

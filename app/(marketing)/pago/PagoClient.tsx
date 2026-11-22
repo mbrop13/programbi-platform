@@ -36,7 +36,7 @@ import { useCountry } from "@/lib/context/CountryContext";
 import { validateCouponAction } from "@/lib/supabase/comunidad-ai";
 import { trackCheckoutStart, trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
-import { normalizarPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { formatMoneda, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal, totalLocalConCupon } from "@/lib/paises/precios";
 import { NOTA_CUOTAS_MEDIOS } from "@/config/cuotas";
@@ -654,10 +654,10 @@ export default function PagoClient({
       if (data.url) {
         window.location.href = data.url;
       } else if (data.code === "mercado_ip" && typeof data.paisSugerido === "string") {
-        // Anti-arbitraje: la IP es de EE.UU. y el precio mostrado es el de otro país.
+        // Anti-arbitraje: la IP es de un mercado protegido y el precio mostrado es el de otro país.
         if (window.confirm(`${data.error}
 
-¿Ir al precio de Estados Unidos?`)) {
+¿Ir al precio de ${getPais(data.paisSugerido).nombre}?`)) {
           const destino = new URL(window.location.href);
           destino.searchParams.set("pais", data.paisSugerido);
           window.location.href = destino.toString();

@@ -12,13 +12,14 @@ import { esIndexable, esIsoPais, getPais, type Pais } from "@/config/paises";
  * frontera, pero su versión todavía no se indexa: `vecinosDe` lo filtra.
  */
 export const VECINOS: Record<string, string[]> = {
-  cl: ["ar", "pe", "uy"],
+  cl: ["ar", "pe", "uy", "es"],
   ar: ["cl", "uy", "py"],
   mx: ["co", "pe"],
   co: ["mx", "pe"],
   pe: ["cl", "co"],
   uy: ["ar", "cl", "py"],
   py: ["ar", "uy"],
+  es: ["cl", "mx", "ar"],
 };
 
 /**

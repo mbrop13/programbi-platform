@@ -11,6 +11,7 @@ import { hreflangDe } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
 import { FAQS_EMPRESAS_US, ISO_EMPRESAS_US } from "@/lib/data/empresas-us";
+import { FAQS_EMPRESAS_ES, ISO_EMPRESAS_ES } from "@/lib/data/empresas-es";
 
 // ISR: la página no lee searchParams en el servidor. `?curso=` y `?nivel=`
 // se resuelven en cliente dentro del formulario (EmpresasContactForm), así el
@@ -67,6 +68,7 @@ export default async function EmpresasPage({
   const pais = normalizarPais((await params).pais);
   const bloque = getBloqueLocal(pais);
   const esUs = pais === ISO_EMPRESAS_US;
+  const esEs = pais === ISO_EMPRESAS_ES;
   const serviceJsonLd = {
     "@type": "Service",
     name: "Adopción de Power BI y capacitación in-company",
@@ -85,20 +87,25 @@ export default async function EmpresasPage({
             { "@type": "Country", name: "México" },
             { "@type": "Country", name: "Perú" },
           ]
-        : [{ "@type": "Country", name: localizarMercado("Chile", pais) }],
-    ...(esUs ? { availableLanguage: "Spanish" } : {}),
+        : esEs
+          ? [{ "@type": "Country", name: "España" }]
+          : [{ "@type": "Country", name: localizarMercado("Chile", pais) }],
+    ...(esUs || esEs ? { availableLanguage: "Spanish" } : {}),
     description: esUs
       ? "Capacitación in-company en español de Power BI, Excel, SQL, Python e IA para equipos de empresas en Estados Unidos: en vivo, con los datos de la empresa y factura o recibo en USD."
-      : localizarMercado(
-          "Adopción de Power BI en empresas de Chile: de Excel a tableros, con SQL, Python y automatización. Programas in-company en vivo, con los datos de la empresa y factura corporativa.",
-          pais
-        ),
+      : esEs
+        ? "Formación in-company en Power BI, Excel, SQL, Python e IA para empresas en España: en directo en horario laboral (CET/CEST), con vuestros datos y factura internacional en USD (no bonificable por FUNDAE)."
+        : localizarMercado(
+            "Adopción de Power BI en empresas de Chile: de Excel a tableros, con SQL, Python y automatización. Programas in-company en vivo, con los datos de la empresa y factura corporativa.",
+            pais
+          ),
   };
 
   // Mismo texto que el bloque visible de /empresas (components/empresas/empresas-faq.tsx).
+  const faqsJsonLd = esUs ? FAQS_EMPRESAS_US : esEs ? FAQS_EMPRESAS_ES : EMPRESAS_FAQS;
   const faqJsonLd = {
     "@type": "FAQPage",
-    mainEntity: (esUs ? FAQS_EMPRESAS_US : EMPRESAS_FAQS).map((faq) => ({
+    mainEntity: faqsJsonLd.map((faq) => ({
       "@type": "Question",
       name: faq.q,
       acceptedAnswer: { "@type": "Answer", text: faq.a },

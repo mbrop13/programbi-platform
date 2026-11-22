@@ -127,7 +127,7 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/curso-power-bi",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us|es)/curso-power-bi",
         destination: "/:pais/cursos/power-bi",
         statusCode: 301,
       },
@@ -137,7 +137,7 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/curso-python",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us|es)/curso-python",
         destination: "/:pais/cursos/python",
         statusCode: 301,
       },
@@ -147,7 +147,7 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/curso-sql-online",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us|es)/curso-sql-online",
         destination: "/:pais/cursos/sql-server",
         statusCode: 301,
       },
@@ -167,7 +167,7 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/faq",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us|es)/faq",
         destination: "/:pais/preguntas-frecuentes",
         statusCode: 301,
       },
@@ -552,57 +552,57 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/es/curso-power-bi",
-        destination: "/cursos/power-bi",
+        destination: "/es/cursos/power-bi",
         statusCode: 301,
       },
       {
         source: "/es/cursos/copilot-studio/brochure",
-        destination: "/cursos/copilot/brochure",
+        destination: "/es/cursos/copilot/brochure",
         statusCode: 301,
       },
       {
         source: "/es/cursos/copilot-studio",
-        destination: "/cursos/copilot",
+        destination: "/es/cursos/copilot",
         statusCode: 301,
       },
       {
         source: "/es/cursos/copilot-studio/:rest*",
-        destination: "/cursos/copilot",
+        destination: "/es/cursos/copilot",
         statusCode: 301,
       },
       {
         source: "/es/copilot-studio/brochure",
-        destination: "/cursos/copilot/brochure",
+        destination: "/es/cursos/copilot/brochure",
         statusCode: 301,
       },
       {
         source: "/es/copilot-studio",
-        destination: "/cursos/copilot",
+        destination: "/es/cursos/copilot",
         statusCode: 301,
       },
       {
         source: "/es/cursos/sql",
-        destination: "/cursos/sql-server",
+        destination: "/es/cursos/sql-server",
         statusCode: 301,
       },
       {
         source: "/es/sql",
-        destination: "/cursos/sql-server",
+        destination: "/es/cursos/sql-server",
         statusCode: 301,
       },
       {
         source: "/es/cursos/analitica-financiera",
-        destination: "/cursos/mercado-financiero",
+        destination: "/es/cursos/mercado-financiero",
         statusCode: 301,
       },
       {
         source: "/es/cursos/analitica-financiera/:rest*",
-        destination: "/cursos/mercado-financiero",
+        destination: "/es/cursos/mercado-financiero",
         statusCode: 301,
       },
       {
         source: "/es/analitica-financiera",
-        destination: "/cursos/mercado-financiero",
+        destination: "/es/cursos/mercado-financiero",
         statusCode: 301,
       },
       {
@@ -663,17 +663,17 @@ const nextConfig: NextConfig = {
 
       // ── Slugs de curso renombrados por país ─────────────────────────────
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/cursos/copilot-studio/brochure",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us|es)/cursos/copilot-studio/brochure",
         destination: "/:pais/cursos/copilot/brochure",
         statusCode: 301,
       },
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/cursos/copilot-studio",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us|es)/cursos/copilot-studio",
         destination: "/:pais/cursos/copilot",
         statusCode: 301,
       },
       {
-        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us)/cursos/sql",
+        source: "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve|us|es)/cursos/sql",
         destination: "/:pais/cursos/sql-server",
         statusCode: 301,
       },

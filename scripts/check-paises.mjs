@@ -32,7 +32,7 @@ const SOLO_PAGINAS = process.argv.includes("--solo-paginas");
 const RAPIDO = process.argv.includes("--rapido");
 const VERBOSE = process.argv.includes("--verbose");
 
-const PAISES = ["ar", "co", "mx", "pe", "uy"];
+const PAISES = ["ar", "co", "es", "mx", "pe", "uy"];
 
 const SLUGS = [
   "analisis-de-datos",
@@ -288,7 +288,7 @@ async function revisarSitemap() {
 }
 
 /** Países con indexación global permitida; el noindex por ruta se resta aparte. */
-const PAISES_INDEXABLES = ["cl", "ar", "co", "mx", "pe", "uy"];
+const PAISES_INDEXABLES = ["cl", "ar", "co", "es", "mx", "pe", "uy"];
 
 /** Variantes indexables de una ruta: todas menos las consolidadas por WS9. */
 function variantesIndexables(ruta) {

@@ -31,7 +31,7 @@ import { SITE_URL } from "@/lib/seo";
 
 /** Resumen que encabeza los dos archivos. Debe ser el mismo en ambos. */
 const RESUMEN =
-  `ProgramBI es una academia de datos en español (+5.000 estudiantes formados, 30+ clientes corporativos y 100% clases en vivo por Zoom): cursos de Power BI, SQL Server, Python, análisis de datos e IA, con campus virtual con clases y material durante el curso y certificado verificable. Opera con sede en Chile para toda Latinoamérica, con aranceles transparentes en moneda local —precio vigente, precio normal y porcentaje de descuento— (${textoCuotas()}) y temario y fechas en el PDF de cada curso.`;
+  `ProgramBI es una academia de datos en español (+5.000 estudiantes formados, 30+ clientes corporativos y 100% clases en vivo por Zoom): cursos de Power BI, SQL Server, Python, análisis de datos e IA, con campus virtual con clases y material durante el curso y certificado verificable. Opera con sede en Chile para Latinoamérica, Estados Unidos y España, con aranceles transparentes en moneda local —precio vigente, precio normal y porcentaje de descuento— (${textoCuotas()}) y temario y fechas en el PDF de cada curso.`;
 
 const url = (ruta: string) => `${SITE_URL}${ruta}`;
 
@@ -69,7 +69,7 @@ function cursosEnOrden(): Course[] {
 const CURSOS = cursosEnOrden();
 
 /** Mercados principales con tabla propia en moneda local para la matriz detallada. */
-const MERCADOS_MATRIZ = ["cl", "ar", "mx", "pe", "co", "uy"] as const;
+const MERCADOS_MATRIZ = ["cl", "ar", "mx", "pe", "co", "uy", "es"] as const;
 const MERCADOS_MATRIZ_SET = new Set<string>(MERCADOS_MATRIZ);
 
 /** Guías publicadas: las de país indexable más las transversales. Mismo filtro que el sitemap. */
@@ -143,6 +143,9 @@ const PAISES_PUBLICADOS = PAISES.filter((pais) => pais.indexable);
 function montoTexto(iso: string, monto: number): string {
   const pais = getPais(iso);
   const texto = formatMoneda(iso, monto).replace(/\u00a0/g, " ").trim();
+  if (texto.includes("US$")) {
+    return `${pais.simbolo}${texto.replace(/\s*US\$/, "").trim()} ${pais.moneda}`;
+  }
   return texto.includes(pais.moneda) ? texto : `${texto} ${pais.moneda}`;
 }
 
@@ -279,7 +282,7 @@ function bloqueLandings(): string[] {
 function bloquePrecios(): string[] {
   const lineas = [
     "## Precios por país",
-    `Aranceles vigentes publicados en la moneda de cada país (precio con descuento, precio normal y porcentaje de descuento), con ${textoCuotas()} salvo en Estados Unidos, donde el pago es único con tarjeta. El temario detallado y las fechas de cada cohorte se descargan en el PDF de cada curso.`,
+    `Aranceles vigentes publicados en la moneda de cada país (precio con descuento, precio normal y porcentaje de descuento), con ${textoCuotas()} salvo en Estados Unidos y España, donde el pago es único con tarjeta. El temario detallado y las fechas de cada cohorte se descargan en el PDF de cada curso.`,
     "",
     "| País | Moneda | Estándar (20 h*) | Análisis de Datos / Minería | Mercado Financiero (30 h) | Cuotas | Página |",
     "|---|---|---|---|---|---|---|",
@@ -322,9 +325,9 @@ function bloquePreciosDetalle(): string[] {
 
   const lineas = [
     "## Aranceles por país y por curso",
-    `Cada celda informa el arancel vigente por nivel/programa junto a su precio normal y porcentaje de descuento en la moneda de cada mercado (fuente: \`config/pricing.ts\`), pagadero en ${textoCuotas()} (en Estados Unidos, pago único con tarjeta). El temario detallado y las fechas exactas de inicio se descargan en el PDF de cada curso.`,
+    `Cada celda informa el arancel vigente por nivel/programa junto a su precio normal y porcentaje de descuento en la moneda de cada mercado (fuente: \`config/pricing.ts\`), pagadero en ${textoCuotas()} (en Estados Unidos y España, pago único con tarjeta). El temario detallado y las fechas exactas de inicio se descargan en el PDF de cada curso.`,
     "",
-    "### Mercados principales en moneda local (Chile, Argentina, México, Perú, Colombia y Uruguay)",
+    "### Mercados principales en moneda local (Chile, Argentina, México, Perú, Colombia, Uruguay y España)",
     "",
     `| Curso | Estructura | ${mercados.map((p) => `${p.nombre} (${p.moneda})`).join(" | ")} |`,
     `|---|---|${mercados.map(() => "---").join("|")}|`,
@@ -371,7 +374,7 @@ function bloquePreciosDetalle(): string[] {
 function bloquePoliticas(): string[] {
   return [
     "## Políticas y condiciones",
-    `- Cuotas: ${NOTA_CUOTAS} Aplica en todos los países salvo Estados Unidos (allí el pago es único con tarjeta), con ${MEDIOS_CUOTAS.join(" o ")}; la disponibilidad final la confirma la pasarela en el checkout.`,
+    `- Cuotas: ${NOTA_CUOTAS} Aplica en todos los países salvo Estados Unidos y España (allí el pago es único con tarjeta), con ${MEDIOS_CUOTAS.join(" o ")}; la disponibilidad final la confirma la pasarela en el checkout.`,
     `- Horario: clases en vivo por Zoom de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile, dos veces por semana; cada país ve el equivalente en su hora local.`,
     "- Campus virtual: acceso al campus virtual con las clases y el material usado para que puedas practicar durante el curso.",
     `- Certificado: al completar el curso se entrega un certificado de ProgramBI, incluido en el valor, con un código público con formato PBI-XXX-XXXXXX que se verifica en ${md("verificar-certificado", url("/verificar-certificado"))}. La ficha pública de cada certificado se abre desde su código en \`/certificado/<codigo>\`.`,
@@ -404,7 +407,7 @@ function bloqueDatosClave(): string[] {
     `- Cursos de 2 niveles: ${dosNiveles20.map((c) => c.title).join(", ")} (Básico-Intermedio 20 h + Avanzado 20 h = 40 h totales) y ${dosNiveles60.map((c) => c.title).join(", ")} (Básico-Intermedio 60 h + Avanzado 60 h = 120 h totales).`,
     `- Modalidad: clases en vivo por Zoom, dos veces por semana, de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile; cada versión por país muestra su hora local.`,
     "- Certificado: incluido al completar el curso, con código público verificable en línea.",
-    `- Aranceles vigentes: en Chile, ${resumenPreciosPais(ISO_CHILE)} (${textoCuotas(ISO_CHILE)}), con tablas en moneda local para Argentina, México, Perú, Colombia y Uruguay; las fechas de inicio están en el PDF de temario de cada curso.`,
+    `- Aranceles vigentes: en Chile, ${resumenPreciosPais(ISO_CHILE)} (${textoCuotas(ISO_CHILE)}), con tablas en moneda local para Argentina, México, Perú, Colombia, Uruguay y España; las fechas de inicio están en el PDF de temario de cada curso.`,
     "- Campus virtual: acceso al campus virtual con las clases y material usado para que puedas practicar durante el curso.",
     "",
   ];

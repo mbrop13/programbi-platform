@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { ArrowRight, Database } from "lucide-react";
-import { getPais } from "@/config/paises";
+import { getPais, muestraPrecioDirecto } from "@/config/paises";
+import { precioPublico } from "@/config/pricing";
 import { textoCuotas } from "@/config/cuotas";
 import type { ContenidoPais } from "@/lib/data/contenido-paises/tipos";
+import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { courseBrochurePath } from "@/lib/pricing-gate";
@@ -132,18 +134,38 @@ export default function CountryContent({ contenido }: { contenido: ContenidoPais
               <p className="text-[11px] font-bold uppercase tracking-widest text-mute">
                 Curso Power BI
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-mute">
-                {textoCuotas(pais.iso)
-                  ? `El arancel vigente de tu país, los descuentos y las ${textoCuotas(pais.iso)} están en el PDF de temario y precios del curso.`
-                  : "El arancel vigente de tu país y los descuentos están en el PDF de temario y precios del curso."}
-              </p>
-              <Link
-                href={courseBrochurePath("power-bi", pais.iso)}
-                className="mt-3 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-canvas no-underline"
-              >
-                Ver temario y precios (PDF)
-                <ArrowRight size={15} />
-              </Link>
+              {muestraPrecioDirecto(pais.iso) ? (
+                <>
+                  <p className="mt-2 text-2xl font-bold tracking-tight text-ink tabular-nums">
+                    {montoConCodigo(pais.iso, precioPublico(pais.iso, "power-bi")!)}
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-mute">
+                    Precio único del curso en vivo de 20 horas, con malla completa y fechas en tu horario.
+                  </p>
+                  <Link
+                    href={rutaLocal(pais.iso, "/cursos/power-bi")}
+                    className="mt-3 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-canvas no-underline"
+                  >
+                    Ver ficha y temario
+                    <ArrowRight size={15} />
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <p className="mt-2 text-sm leading-relaxed text-mute">
+                    {textoCuotas(pais.iso)
+                      ? `El arancel vigente de tu país, los descuentos y las ${textoCuotas(pais.iso)} están en el PDF de temario y precios del curso.`
+                      : "El arancel vigente de tu país y los descuentos están en el PDF de temario y precios del curso."}
+                  </p>
+                  <Link
+                    href={courseBrochurePath("power-bi", pais.iso)}
+                    className="mt-3 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-canvas no-underline"
+                  >
+                    Ver temario y precios (PDF)
+                    <ArrowRight size={15} />
+                  </Link>
+                </>
+              )}
             </div>
 
             <div className="mt-6">

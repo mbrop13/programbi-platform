@@ -201,6 +201,13 @@ const SEO_PAIS: Record<string, Record<string, LandingCursoSeo>> = {
         "Curso SQL online en vivo para Paraguay: JOINs, GROUP BY, vistas y procedimientos sobre SQL Server, en horario local y con certificado.",
       kicker: "Curso SQL online · Paraguay",
     },
+    es: {
+      h1: "Curso de SQL Server online para España",
+      seoTitle: "Curso SQL Server online en España | ProgramBI",
+      seoDescription:
+        "Curso SQL Server y T-SQL online para España: JOINs, GROUP BY, vistas y procedimientos con casos de banca, retail y pymes. Directos y grabaciones HD.",
+      kicker: "Curso SQL online · España",
+    },
   },
   "curso-python": {
     ar: {
@@ -244,6 +251,13 @@ const SEO_PAIS: Record<string, Record<string, LandingCursoSeo>> = {
       seoDescription:
         "Curso Python para datos en vivo en Paraguay: fundamentos, Pandas, groupby, merge y visualización, en horario local y con certificado.",
       kicker: "Curso Python para datos · Paraguay",
+    },
+    es: {
+      h1: "Curso de Python para análisis de datos en España",
+      seoTitle: "Curso Python para datos en España | ProgramBI",
+      seoDescription:
+        "Curso práctico de Python y Pandas online para España: limpieza de datos, merge, groupby y gráficos con Matplotlib, Seaborn y Plotly. Con grabaciones HD.",
+      kicker: "Curso Python para datos · España",
     },
   },
 };
@@ -466,6 +480,48 @@ const USOS_PAIS: Record<string, Record<string, UsoBase[]>> = {
       },
     ],
   },
+  es: {
+    "curso-sql-online": [
+      {
+        sector: "Banca y seguros",
+        title: "Cartera, morosidad y márgenes por segmento",
+        body:
+          "Cruza extractos de cartera, pólizas y contabilidad con JOINs y GROUP BY para controlar riesgo y morosidad sin exportar a mano.",
+      },
+      {
+        sector: "Retail, moda y e-commerce",
+        title: "Stock omnicanal y devoluciones por SKU",
+        body:
+          "Une TPV de tienda, pedidos online y almacén con filtros de fecha y agregaciones para detectar roturas de stock y calcular el margen neto.",
+      },
+      {
+        sector: "Consultoría y control de gestión en pymes",
+        title: "Cierres desde Holded, Sage o A3ERP",
+        body:
+          "Consulta tablas de facturación, cobros y libros registro mediante vistas y procedimientos almacenados reutilizables cada trimestre.",
+      },
+    ],
+    "curso-python": [
+      {
+        sector: "Energía y renovables",
+        title: "Curvas horarias OMIE y producción SCADA",
+        body:
+          "Carga lecturas de contadores y precios horarios en DataFrames de Pandas, limpia marcas temporales y calcula desvíos con groupby.",
+      },
+      {
+        sector: "Retail, moda y e-commerce",
+        title: "Sell-through y devoluciones con Pandas",
+        body:
+          "Combina ficheros de tienda física y e-commerce con merge, normaliza formatos españoles de fecha y visualiza márgenes con Seaborn.",
+      },
+      {
+        sector: "Logística y puertos",
+        title: "Tiempos de tránsito y rentabilidad por ruta",
+        body:
+          "Consolida albaranes y expediciones desde TMS y SGA, resume entregas puntuales por corredor y genera gráficos interactivos con Plotly.",
+      },
+    ],
+  },
 };
 
 type FaqBase = { q: string; a: string };
@@ -579,6 +635,28 @@ const FAQ_PAIS: Record<string, Record<string, FaqBase[]>> = {
       {
         q: "¿Puedo automatizar reportes de turismo y logística?",
         a: "Sí. El temario incluye carga de archivos, merge, groupby y visualización, que alcanza para repetir un reporte de ocupación o de costo por ruta.",
+      },
+    ],
+  },
+  es: {
+    "curso-sql-online": [
+      {
+        q: "¿Sirve este curso de SQL Server si trabajo con Holded, Sage, A3ERP o Dynamics 365?",
+        a: "Sí. Si dispones de acceso de lectura a la base de datos o a exportaciones tabulares de tu ERP, la misma lógica de SELECT, JOIN, GROUP BY, vistas y procedimientos almacenados te permite automatizar informes financieros y operativos.",
+      },
+      {
+        q: "¿Cómo sigo las clases desde España con la diferencia horaria?",
+        a: "Las sesiones en directo desde Chile coinciden con la noche en España (23:30–01:30 CET en invierno / 01:30–03:30 CEST en verano, 1 h menos en Canarias), por lo que todas las clases quedan grabadas en HD en el campus virtual para cursarlas a tu ritmo con soporte del profesorado.",
+      },
+    ],
+    "curso-python": [
+      {
+        q: "¿Puedo usar Python para automatizar ficheros de Excel, e-commerce o energía en España?",
+        a: "Sí. En clase trabajamos carga de archivos Excel y CSV con Pandas, limpieza de formatos españoles (fechas y decimales), cruces con merge y gráficos con Matplotlib, Seaborn y Plotly para dejar procesos repetibles.",
+      },
+      {
+        q: "¿El curso es bonificable por FUNDAE o funciona en Mac?",
+        a: "ProgramBI SPA opera desde Chile, por lo que los cursos no son bonificables por FUNDAE, aunque emitimos factura internacional en USD deducible para empresas. Python, Pandas y las librerías de visualización funcionan de forma nativa tanto en Windows como en macOS.",
       },
     ],
   },

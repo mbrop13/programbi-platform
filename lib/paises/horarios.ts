@@ -12,7 +12,7 @@ import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 export const HORA_CLASE_CHILE = { inicio: "19:30", fin: "21:30" };
 
 /** Orden con el que se comparan los horarios entre mercados. */
-const ORDEN_MERCADOS = ["ar", "mx", "pe", "co", "uy"];
+const ORDEN_MERCADOS = ["ar", "mx", "pe", "co", "uy", "es"];
 
 type Partes = {
   year: number;
@@ -146,6 +146,9 @@ const ZONAS_LATAM: ReadonlyArray<readonly [string, string]> = [
   ["America/Juneau", "us"],
   ["Pacific/Honolulu", "us"],
   ["America/Puerto_Rico", "us"],
+  ["Europe/Madrid", "es"],
+  ["Atlantic/Canary", "es"],
+  ["Africa/Ceuta", "es"],
 ];
 
 function zonaCoincide(zona: string, base: string): boolean {
@@ -192,6 +195,8 @@ export function etiquetaHoraLocal(
     case "us":
       // EE.UU. tiene cuatro husos: la referencia publicada es la del Este.
       return `hora del Este de EE.UU. (ET, Miami y Nueva York, ${offset})`;
+    case "es":
+      return `hora peninsular de España (${offset})`;
     default:
       return `hora de ${pais.nombre} (${offset})`;
   }
@@ -239,6 +244,7 @@ export function conHoraPais(iso: string | null | undefined, horario: string): st
   if (/hora de/i.test(horario)) return horario;
   const pais = getPais(normalizarPais(iso));
   if (pais.iso === "us") return `${horario} · Hora del Este (ET)`;
+  if (pais.iso === "es") return `${horario} · Hora peninsular de España`;
   return `${horario} · Hora de ${pais.nombre}`;
 }
 

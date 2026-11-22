@@ -51,7 +51,7 @@ const RUTAS_DESCUBIERTAS = [
   "/empleos/vacantes",
 ];
 
-const PAISES_SIMILITUD = ["pe", "mx", "ar", "co"];
+const PAISES_SIMILITUD = ["pe", "mx", "ar", "co", "es"];
 const RUTAS_SIMILITUD = [
   "/cursos/power-bi",
   "/cursos/analisis-de-datos",

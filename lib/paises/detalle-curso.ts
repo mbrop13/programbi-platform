@@ -26,7 +26,10 @@ export type DetalleCursoLocal = {
 };
 
 function montoConMoneda(pais: Pais, monto: number): string {
-  const formatted = formatMoneda(pais.iso, monto);
+  const formatted = formatMoneda(pais.iso, monto).replace(/\u00a0/g, " ").trim();
+  if (formatted.includes("US$")) {
+    return `${pais.simbolo}${formatted.replace(/\s*US\$/, "").trim()} ${pais.moneda}`;
+  }
   return formatted.includes(pais.moneda) ? formatted : `${formatted} ${pais.moneda}`;
 }
 

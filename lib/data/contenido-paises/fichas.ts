@@ -83,6 +83,38 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
       "Las clases se ven en la hora del Este (Miami y Nueva York): caen entre las 17:30 y las 19:30 según la época del año, porque EE.UU. y Chile cambian la hora en fechas distintas; en Central es una hora antes y en Pacífico, tres. El precio se publica en dólares en esta misma ficha, sin formularios. Si tu empresa tiene un programa de asistencia educativa, recibes el recibo en USD y la descripción del curso para solicitar el reembolso; la aprobación depende de tu empleador.",
     ],
   },
+  es: {
+    parrafos: [
+      "En las pymes y departamentos financieros de España, el reporting mensual suele depender de exportar listados de Holded, Sage, A3ERP o Dynamics 365 Business Central y cuadrarlos a mano en Excel. Este curso recorre todo el proceso técnico para automatizar la ingesta, ordenar el modelo y generar cuadros de mando fiables con indicadores de banca, turismo, retail, energía o logística, integrando referencias como el INE, el Banco de España y datos.gob.es.",
+      "Las cohortes abiertas se imparten en directo desde Chile de 19:30 a 21:30 (23:30–01:30 CET en invierno europeo y 01:30–03:30 CEST en verano; una hora menos en Canarias), por lo que todas las sesiones quedan grabadas en HD en el campus virtual para seguirlas a tu ritmo con soporte docente. El precio en dólares (USD) figura directamente en esta ficha sin formularios previos y se abona en pago único con tarjeta internacional; no es bonificable por FUNDAE, aunque entregamos factura internacional deducible.",
+    ],
+    porCurso: {
+      "power-bi": [
+        "Este curso de Power BI online (20 horas por nivel) está diseñado para analistas, controllers y responsables de área en España que necesitan dejar atrás los informes manuales de Excel alimentados desde Holded, Sage, A3ERP o Dynamics 365. Aprenderás a automatizar la transformación con Power Query (M), construir un modelo en estrella limpio y escribir medidas DAX en euros para cuadros de mando de ventas, tesorería, rotación de stock o márgenes.",
+        "Las sesiones en directo se emiten desde Chile en horario nocturno español (23:30–01:30 CET en invierno / 01:30–03:30 CEST en verano, 1 h menos en Canarias), con acceso inmediato a las grabaciones en HD y materiales en el campus virtual. El temario cubre las competencias clave del examen oficial Microsoft PL-300 y se abona en un pago único en USD con tarjeta internacional, sin bonificación FUNDAE.",
+      ],
+      "analisis-de-datos": [
+        "El programa de Análisis de Datos reúne en 60 horas por nivel (20 h de SQL Server, 20 h de Power BI y 20 h de Python) las tres herramientas más demandadas en las ofertas de Business Intelligence y Data Analyst en España. Partirás consultando bases transaccionales y registros de facturación, limpiarás ficheros complejos con Pandas y publicarás cuadros de mando ejecutivos con datos de retail, banca, turismo o energía.",
+        "La modalidad abierta combina sesiones en directo desde Chile con grabaciones en HD en el campus virtual para estudiar cómodamente desde cualquier provincia española o Canarias, además de tutoría docente. El importe total en dólares (USD) se muestra sin formularios previos y se paga en un cargo único internacional; para equipos de empresa ofrecemos edición in-company en jornada laboral CET/CEST.",
+      ],
+      python: [
+        "Cuando los ficheros de proveedores, los listados de TPV o las series de precios horarios de OMIE superan la capacidad de una hoja de cálculo, automatizar con Python marca la diferencia. En 20 horas prácticas aprenderás a cargar archivos Excel y CSV con Pandas, normalizar formatos españoles de fecha y decimales, cruzar tablas con merge y generar gráficos ejecutivos con Matplotlib, Seaborn y Plotly.",
+        "Las clases en directo desde Chile quedan grabadas en HD en el campus virtual para que puedas seguirlas desde España en tu propio horario, replicando los cuadernos paso a paso en tu ordenador Windows o Mac. El precio directo en USD se abona con tarjeta internacional en un pago único (no bonificable por FUNDAE, con factura corporativa internacional disponible).",
+      ],
+      "sql-server": [
+        "El curso de SQL Server y T-SQL (20 horas por nivel) prepara a profesionales de control de gestión, operaciones y finanzas en España para consultar directamente el ERP o el almacén de datos sin esperar a informática. Practicarás SELECT, filtros, INNER/LEFT JOIN, GROUP BY, vistas y procedimientos almacenados sobre tablas de pedidos, albaranes, inventarios y cobros.",
+        "Al celebrarse en directo de noche en España (23:30–01:30 CET / 01:30–03:30 CEST), dispones de todas las grabaciones en HD en el campus virtual y guías para instalar SQL Server en Windows o trabajar desde Mac. Tarifa transparente en USD sin formularios previos y pago único con tarjeta internacional.",
+      ],
+      excel: [
+        "Pensado para equipos administrativos, financieros y comerciales en España que viven dentro de hojas de cálculo pero pierden horas consolidando cierres mensuales, liquidaciones de IVA o cuadros de nóminas. Dominarás tablas dinámicas avanzadas, funciones de búsqueda, Power Query y automatización para reducir errores manuales en tus reportes diarios.",
+        "Compatible al 100 % con ordenadores Windows y Mac. Si la franja en directo desde Chile (23:30–01:30 CET en invierno / 01:30–03:30 CEST en verano) no te encaja, cursas el programa con las grabaciones en HD del campus virtual y el soporte del profesorado. Precio publicado en USD en un único pago.",
+      ],
+      claude: [
+        "Aprende a integrar Claude (Anthropic) en el análisis de datos, redacción de fórmulas complejas, generación de código Python/SQL y revisión de informes financieros en España con criterio de privacidad. Ponemos especial foco en el cumplimiento del RGPD y la LOPDGDD: anonimización previa de DNI/NIE, nóminas y datos personales antes de trabajar con modelos de IA.",
+        "El curso de 20 horas incluye acceso a las grabaciones en HD en el campus virtual para seguirlo desde España sin depender del horario nocturno del directo. Se contrata en pago único en USD con tarjeta internacional; si buscas formar a todo un departamento bajo políticas corporativas, disponemos de formato in-company en horario CET/CEST.",
+      ],
+    },
+  },
   bo: {
     parrafos: [
       "En Bolivia el cierre de mes suele empezar en la facturación electrónica en línea del SIN y terminar en una planilla que alguien rearma cada vez. El curso ordena ese recorrido con un modelo que se actualiza solo: la consulta trae los comprobantes, el modelo cruza volumen y costo, y el tablero responde sin depender de una persona. Los ejercicios vienen de minería e hidrocarburos, donde producción por turno y costo por operación pesan tanto como el margen final.",

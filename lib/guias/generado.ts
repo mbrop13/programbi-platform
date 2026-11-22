@@ -145,6 +145,54 @@ export const GUIAS: Guia[] = [
     "cursoUrl": "https://www.programbi.com/co/cursos/power-bi"
   },
   {
+    "source": "content/guias/pais/es.md",
+    "slug": "como-aprender-power-bi-en-espana",
+    "path": "/es/guias/como-aprender-power-bi-en-espana",
+    "country": "es",
+    "lang": "es-ES",
+    "title": "Cómo aprender Power BI en España: guía 2026 | ProgramBI",
+    "description": "Qué demandan las empresas en España, sueldos orientativos en euros, ruta de 8 semanas con datos del INE, ejemplos DAX y horario para aprender Power BI.",
+    "h1": "Cómo aprender Power BI en España: mercado laboral, sueldos y ruta práctica",
+    "updated": "2026-11-21",
+    "course": "power-bi",
+    "body": "En departamentos financieros de Madrid, cadenas hoteleras de Baleares o plantas industriales del País Vasco, el cierre mensual sigue dependiendo a menudo de hojas de Excel enlazadas a mano. Quien domina Power BI sustituye esa rutina por cuadros de mando conectados al ERP que se actualizan sin copiar ni pegar filas. Esta guía reúne lo que piden hoy las empresas españolas, referencias salariales en euros, un plan de estudio de ocho semanas con fuentes públicas nacionales y la logística real para cursar desde España.\n<!-- CTA-TOP -->\n\n##### Qué demanda el mercado de Power BI en España\n\nLa demanda se concentra en los grandes polos empresariales —**Madrid, Barcelona, Valencia, Bilbao y Sevilla**—, aunque el teletrabajo híbrido ha ampliado las vacantes hacia Zaragoza, Málaga y A Coruña. Gran parte del tejido corporativo español opera sobre Microsoft 365, Dynamics 365 o SQL Server, de modo que Power BI encaja sin fricciones en el presupuesto de sistemas. A diferencia de hace unos años, las ofertas ya no buscan únicamente «saber hacer gráficos»: valoran la limpieza automatizada en Power Query, el modelado en estrella y el cálculo de indicadores de negocio con DAX.\n\n##### Referencias salariales en España (EUR brutos al año)\n\nLas cifras siguientes son **referencias orientativas** recopiladas de portales de empleo en España y no constituyen una promesa ni una garantía salarial; la retribución real varía según provincia, tamaño de empresa, idioma inglés y experiencia previa:\n\n- **Indeed España**: sitúa la media orientativa para *Business Intelligence Analyst* alrededor de **30.115 € brutos anuales**, y entre **32.900 € y 34.100 €** para perfiles de *Data Analyst*.\n- **Glassdoor España**: recoge una media cercana a **36.000 € brutos al año** para analistas de inteligencia de negocio, dentro de una horquilla habitual de **28.000 € a 47.000 €** según seniority.\n- **InfoJobs y Convenio colectivo TIC**: las posiciones júnior suelen partir en torno a **29.900 € brutos anuales**, los perfiles intermedios con SQL y DAX consolidado se mueven entre **30.000 € y 45.000 €**, y los puestos sénior o de arquitectura BI superan los **45.000 €**.\n\n##### Portales donde buscar empleo con Power BI en España\n\n- **InfoJobs**: concentra el mayor volumen de ofertas para pymes, consultoras tecnológicas y departamentos de control de gestión.\n- **LinkedIn España**: canal principal para multinacionales, banca, consultoría Big Four y vacantes remotas en Europa.\n- **Tecnoempleo**: especializado en perfiles IT, analítica de datos y desarrollo BI en toda España.\n- **Indeed España**: útil para rastrear vacantes regionales y comparar bandas salariales publicadas.\n\nConsejo práctico: busca también términos como *Controller Financiero*, *Analista de Operaciones* o *Reporting Specialist*, ya que muchas empresas españolas exigen Power BI dentro del puesto sin incluirlo en el titular.\n\n##### Sectores españoles que más utilizan Power BI\n\n- **Banca y seguros** (Madrid, Barcelona): seguimiento de morosidad, margen financiero, siniestralidad y cumplimiento normativo.\n- **Turismo y hostelería** (Baleares, Canarias, Costa del Sol, Cataluña): ocupación por temporada, RevPAR, tarifa media diaria y canales de reserva.\n- **Retail y comercio electrónico**: rotación de inventario, márgenes por referencia, devoluciones y ventas omnicanal.\n- **Energía y renovables** (País Vasco, Navarra, Andalucía): generación por parque, costes de mantenimiento y consumo horario.\n- **Logística y puertos** (Valencia, Algeciras, Barcelona, Bilbao): puntualidad de entregas, ocupación de flotas y costes de transporte.\n\n##### Plan práctico de 8 semanas con datos públicos de España\n\n1. **Semanas 1 y 2 · Power Query.** Descarga series CSV de `datos.gob.es` o del Instituto Nacional de Estadística (INE) y automatiza la limpieza de fechas europeas (`dd/mm/aaaa`) y separadores decimales con coma.\n2. **Semana 3 · Modelado en estrella.** Separa tablas de hechos (transacciones o pernoctaciones) y dimensiones (comunidad autónoma, producto, calendario fiscal).\n3. **Semanas 4 y 5 · Fundamentos de DAX.** Aprende `CALCULATE`, `DIVIDE`, `FILTER` y `ALL` para construir ratios de rentabilidad y peso porcentual.\n4. **Semana 6 · Inteligencia temporal.** Calcula variaciones interanuales (YoY), comparativas mensuales (MoM) y acumulados desde inicio de ejercicio.\n5. **Semana 7 · Diseño ejecutivo.** Organiza informes claros para dirección financiera o gerencia, evitando sobrecargar la pantalla con tarjetas redundantes.\n6. **Semana 8 · Proyecto de cartera.** Publica un caso completo con datos reales de turismo, empleo o comercio del INE para mostrar en entrevistas técnicas.\n<!-- CTA-MID -->\n\n##### Fórmulas DAX aplicadas a una empresa en España\n\nSupongamos una compañía con delegaciones en Madrid, Barcelona, Valencia y Bilbao que factura en euros (`Importe_EUR`):\n\n- `Facturacion = SUM(Ventas[Importe_EUR])`\n- `Facturacion Madrid = CALCULATE([Facturacion], Delegacion[Ciudad] = \"Madrid\")`\n- `Facturacion Norte = CALCULATE([Facturacion], Delegacion[Ciudad] IN {\"Bilbao\"})`\n- `Cumplimiento Objetivo = DIVIDE([Facturacion], [Objetivo_EUR])`\n- `Variacion Interanual % = DIVIDE([Facturacion] - CALCULATE([Facturacion], SAMEPERIODLASTYEAR(Calendario[Fecha])), CALCULATE([Facturacion], SAMEPERIODLASTYEAR(Calendario[Fecha])))`\n- `Ranking Delegaciones = RANKX(ALL(Delegacion[Ciudad]), [Facturacion])`\n\n##### Certificación oficial Microsoft PL-300\n\nSi deseas respaldar tu perfil con una credencial oficial del fabricante, el examen de referencia es **Microsoft Certified: Power BI Data Analyst Associate (PL-300)**. Evalúa preparación de datos, modelado, visualización y administración en Power BI Service. Puedes consultar sus requisitos y temario actualizado en [Microsoft Learn](https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/); el examen se contrata y abona directamente a Microsoft, al margen del certificado propio de finalización que entrega ProgramBI.\n\n##### Horarios desde España, precio y facturación (FUNDAE)\n\nLas cohortes abiertas se imparten en directo por Zoom en horario vespertino de Chile (19:30 a 21:30), lo que equivale en España peninsular a **23:30–01:30 CET en invierno** y **01:30–03:30 CEST en verano**. Si ese horario nocturno no encaja con tu jornada, **todas las sesiones quedan grabadas en HD en el campus virtual** junto con los archivos de práctica para que avances a tu ritmo. Para empresas españolas que prefieren formación síncrona de mañana o tarde en Europa, ofrecemos grupos **in-company en horario laboral español**.\n\nEl arancel público vigente para España es **{{precio}}** (en dólares estadounidenses, con pago único mediante tarjeta internacional). Respecto a bonificaciones, los cursos abiertos de ProgramBI **no son bonificables mediante créditos FUNDAE**, aunque emitimos **factura internacional** válida para su deducción contable y fiscal como gasto de formación en empresas y autónomos.\n<!-- CTA-END -->",
+    "faqs": [
+      {
+        "q": "¿A qué hora son las clases en directo si vivo en España?",
+        "a": "Las sesiones abiertas se emiten de 23:30 a 01:30 CET en horario de invierno (y de 01:30 a 03:30 CEST en verano). Quienes prefieren estudiar de día utilizan las grabaciones en HD del campus virtual, o bien contratan modalidad in-company en horario laboral europeo."
+      },
+      {
+        "q": "¿El curso de Power BI es bonificable por FUNDAE?",
+        "a": "No. Al tratarse de formación impartida desde fuera de España, no se gestiona con créditos FUNDAE. Emitimos factura internacional para que autónomos y sociedades puedan registrarla como gasto formativo deducible."
+      },
+      {
+        "q": "¿Cuál es el precio y cómo se realiza el pago desde España?",
+        "a": "El importe vigente para España es {{precio}}, expresado en USD y abonable en un pago único con tarjeta de crédito o débito internacional, sin formularios previos."
+      },
+      {
+        "q": "¿Necesito conocimientos previos de programación para empezar?",
+        "a": "No. El nivel básico-intermedio arranca desde cero en Power Query, modelado y DAX. Basta con manejar hojas de cálculo a nivel usuario y contar con un ordenador con Windows para instalar Power BI Desktop (en Mac se trabaja mediante Power BI Service en navegador)."
+      },
+      {
+        "q": "¿Incluye el examen oficial Microsoft PL-300?",
+        "a": "No. Al finalizar recibes el certificado verificable de ProgramBI incluido en la matrícula. La certificación PL-300 es un examen independiente que se reserva y paga directamente en Microsoft Learn."
+      },
+      {
+        "q": "¿Sirve para sectores como banca, turismo o retail en España?",
+        "a": "Sí. Los ejercicios cubren modelado comercial, márgenes, estacionalidad e inteligencia temporal aplicables directamente a banca, hostelería, comercio electrónico, energía o logística."
+      }
+    ],
+    "sources": [
+      "https://es.indeed.com/career/business-intelligence-analyst/salaries",
+      "https://www.glassdoor.es/Sueldos/analista-business-intelligence-sueldo-SRCH_KO0,30.htm",
+      "https://learn.microsoft.com/es-es/credentials/certifications/data-analyst-associate/",
+      "https://datos.gob.es/",
+      "https://www.programbi.com/es/cursos/power-bi"
+    ],
+    "visual": "ruta de aprendizaje de 8 semanas en Power BI aplicada al mercado laboral español.",
+    "cursoUrl": "https://www.programbi.com/es/cursos/power-bi"
+  },
+  {
     "source": "content/guias/pais/mx.md",
     "slug": "como-aprender-power-bi-en-mexico",
     "path": "/mx/guias/como-aprender-power-bi-en-mexico",
@@ -1308,6 +1356,55 @@ export const GUIAS: Guia[] = [
     "cursoUrl": "https://www.programbi.com/co/cursos/analisis-de-datos"
   },
   {
+    "source": "guias/analisis-de-datos-espana.md",
+    "slug": "curso-analisis-de-datos-espana",
+    "path": "/es/guias/curso-analisis-de-datos-espana",
+    "country": "es",
+    "lang": "es-ES",
+    "title": "Curso de Análisis de Datos en España 2026 | ProgramBI",
+    "description": "Fórmate como analista de datos en España: por qué SQL, Power BI y Python lideran InfoJobs y Tecnoempleo, temario de 60 horas, horarios CET y precio.",
+    "h1": "Curso de Análisis de Datos en España: SQL Server, Power BI y Python en 60 horas",
+    "updated": "2026-11-21",
+    "course": "analisis-de-datos",
+    "body": "El [curso de Análisis de Datos de ProgramBI para España](https://www.programbi.com/es/cursos/analisis-de-datos) reúne en un único itinerario de **60 horas por nivel** las tres tecnologías más solicitadas en las ofertas técnicas españolas: **20 horas de SQL Server, 20 horas de Power BI y 20 horas de Python**. La inversión vigente para España es **{{precio}}** por nivel (pago único con tarjeta en USD), con acceso completo al campus virtual con grabaciones en HD, materiales descargables y certificado verificable.\n<!-- CTA-TOP -->\n\n##### Por qué SQL, Power BI y Python dominan las ofertas en España\n\nAl revisar vacantes de *Data Analyst* o *BI Analyst* en **InfoJobs, Tecnoempleo y LinkedIn España**, se repite un patrón claro: dominar solo Excel ya no basta para acceder a los tramos salariales medios y altos. Las empresas españolas necesitan profesionales capaces de extraer millones de registros desde bases corporativas con SQL, construir modelos analíticos en Power BI para dirección y depurar o cruzar ficheros complejos con Python cuando los datos vienen fragmentados.\n\nAprender estas tres piezas de forma aislada suele dejar lagunas entre la extracción y el informe final. Integrarlas en un mismo programa permite entender el flujo completo del dato desde el servidor hasta la toma de decisiones.\n\n##### Estructura del programa: 60 horas por nivel\n\nCada nivel se cursa y matricula de manera independiente, dividido en tres bloques prácticos de 20 horas:\n\n| Bloque | Carga horaria | Competencias principales |\n|---|---|---|\n| 1. SQL Server | 20 horas | Consultas `SELECT`, `JOIN`, subconsultas, agregaciones, CTE y vistas analíticas sobre bases relacionales |\n| 2. Power BI | 20 horas | Limpieza en Power Query, modelado en estrella, fórmulas DAX y diseño de cuadros de mando ejecutivos |\n| 3. Python | 20 horas | Manipulación tabular con `pandas`, tratamiento de valores nulos, automatización de ficheros y análisis exploratorio |\n\nSi ya dominas el nivel básico-intermedio, puedes continuar posteriormente con el segundo nivel (otras 60 horas enfocadas en consultas avanzadas, Power BI Service con RLS y automatización analítica en Python).\n\n##### Casos prácticos con sistemas y fuentes habituales en España\n\nLos ejercicios están pensados para la realidad operativa de compañías y asesorías españolas:\n\n- **Fuentes estadísticas oficiales**: cruce de series macroeconómicas del **Instituto Nacional de Estadística (INE)** y tipos o agregados del **Banco de España (BdE)** para contextualizar ventas frente a inflación o demanda sectorial.\n- **ERPs corporativos (SAP y Microsoft Dynamics 365)**: modelado de pedidos, albaranes, facturas y control de márgenes por delegación.\n- **Software de gestión y contabilidad (Holded y Sage)**: depuración de exportaciones contables, conciliación de tesorería, control de cobros y seguimiento de presupuestos en pymes.\n<!-- CTA-MID -->\n\n##### Horarios desde España, campus virtual y formación para empresas\n\nLas clases en directo por Zoom siguen el calendario base de Chile (lunes y miércoles de 19:30 a 21:30), lo que corresponde en España peninsular a **23:30–01:30 CET en invierno** y **01:30–03:30 CEST en verano**. Para facilitar el seguimiento sin trasnochar, cada sesión queda disponible en el **campus virtual en alta definición** junto con los scripts SQL, notebooks de Python y archivos `.pbix` usados en clase.\n\nSi representas a una empresa o despacho en España y buscas formación síncrona para tu equipo en horario de mañana o tarde europeo, impartimos programas **in-company adaptados al huso horario español**.\n\n##### Precio, pago y aclaración sobre FUNDAE\n\nEl precio por nivel en España es **{{precio}}** en dólares estadounidenses, mediante pago único con tarjeta internacional. Como centro con sede en Chile, esta formación **no es bonificable a través de FUNDAE**, pero expedimos **factura internacional** para que sociedades y profesionales autónomos puedan contabilizarla como gasto deducible de formación.\n<!-- CTA-END -->",
+    "faqs": [
+      {
+        "q": "¿Cuál es la duración exacta del curso de Análisis de Datos?",
+        "a": "Cada nivel suma 60 horas lectivas repartidas en tres módulos de 20 horas cada uno: SQL Server, Power BI y Python. Existen dos niveles independientes que se contratan por separado."
+      },
+      {
+        "q": "¿Puedo seguir el curso desde España sin conectarme de madrugada?",
+        "a": "Sí. Aunque las clases en directo se emiten a las 23:30 CET (01:30 CEST en verano), todas quedan grabadas en HD en el campus virtual junto con los ejercicios para que estudies en tu horario habitual."
+      },
+      {
+        "q": "¿Es necesario saber programar antes de inscribirse?",
+        "a": "No. El primer nivel comienza desde los fundamentos en SQL, Power BI y Python, pensado para perfiles de finanzas, administración, operaciones o ingeniería que quieren dar el salto técnico."
+      },
+      {
+        "q": "¿Se trabaja con herramientas que usan las empresas españolas?",
+        "a": "Sí. Practicas sobre SQL Server, Power BI Desktop y Python con casos adaptados a exportaciones de SAP, Dynamics 365, Holded, Sage y datos abiertos del INE o del Banco de España."
+      },
+      {
+        "q": "¿Es bonificable con créditos de FUNDAE?",
+        "a": "No, no es bonificable mediante FUNDAE. Entregamos factura internacional deducible para empresas y autónomos en España."
+      },
+      {
+        "q": "¿Qué precio tiene y qué incluye la matrícula?",
+        "a": "El arancel vigente en España es {{precio}} por nivel en pago único con tarjeta. Incluye clases en directo, acceso al campus virtual con grabaciones y materiales durante el curso, y certificado verificable de ProgramBI."
+      }
+    ],
+    "sources": [
+      "https://www.programbi.com/es/cursos/analisis-de-datos",
+      "https://www.programbi.com/es/cursos/power-bi",
+      "https://www.programbi.com/es/cursos/sql-server",
+      "https://www.programbi.com/es/cursos/python",
+      "https://www.ine.es/",
+      "https://www.bde.es/"
+    ],
+    "visual": "desglose de 60 horas por nivel (20 h SQL Server + 20 h Power BI + 20 h Python) para el mercado español.",
+    "cursoUrl": "https://www.programbi.com/es/cursos/analisis-de-datos"
+  },
+  {
     "source": "guias/analisis-de-datos-mexico.md",
     "slug": "curso-analisis-de-datos-mexico",
     "path": "/mx/guias/curso-analisis-de-datos-mexico",
@@ -2042,6 +2139,51 @@ export const GUIAS: Guia[] = [
     ],
     "visual": "tabla del programa por módulos + caja «Ley 1581 de 2012 y datos personales».",
     "cursoUrl": "https://www.programbi.com/co/cursos/claude"
+  },
+  {
+    "source": "guias/claude-espana.md",
+    "slug": "curso-claude-espana",
+    "path": "/es/guias/curso-claude-espana",
+    "country": "es",
+    "lang": "es-ES",
+    "title": "Curso de Claude AI en España: uso y RGPD | ProgramBI",
+    "description": "Aprende a trabajar con Claude de Anthropic en España cumpliendo el RGPD y la LOPDGDD: Excel, Holded, Sage, AEAT y 20 horas prácticas con campus virtual.",
+    "h1": "Curso de Claude en España: análisis de datos, finanzas y administración bajo RGPD",
+    "updated": "2026-11-21",
+    "course": "claude",
+    "body": "El [curso de Claude de ProgramBI para España](https://www.programbi.com/es/cursos/claude) consta de **20 horas prácticas distribuidas en 5 módulos de 4 horas**, diseñadas para profesionales de finanzas, administración, control de gestión y análisis de datos que desean incorporar la inteligencia artificial de Anthropic sin escribir código. Su precio en España es **{{precio}}** (pago único con tarjeta en USD), con acceso al campus virtual con grabaciones en HD y certificado verificable.\n<!-- CTA-TOP -->\n\n##### Uso responsable de Claude en España: RGPD y LOPDGDD\n\nTrabajar con inteligencia artificial en una empresa o asesoría española exige respetar el **Reglamento General de Protección de Datos (RGPD)** y la **Ley Orgánica de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD)**. En el curso abordamos criterios claros antes de subir cualquier fichero:\n\n- **Anonimización previa**: cómo sustituir o eliminar **DNI, NIE, nombres completos, IBAN y datos de nóminas** mediante identificadores internos antes de analizar tablas o redactar resúmenes.\n- **Elección del plan adecuado**: diferencias reales de privacidad y retención de datos entre cuentas gratuitas, planes individuales y entornos corporativos como **Claude Team** o **Claude Enterprise**, donde los datos de la organización no se emplean para entrenar modelos.\n- **Control humano obligatorio**: verificación de cifras contables y fiscales frente al documento original antes de emitir cualquier informe.\n\n##### Casos prácticos con Holded, Sage, Excel y AEAT\n\nMás allá de redactar correos, Claude destaca al estructurar información administrativa y financiera habitual en España:\n\n- **Exportaciones de Holded y Sage**: limpieza de listados de facturas emitidas y recibidas, detección de duplicados, clasificación de gastos por centro de coste y resúmenes de tesorería.\n- **Documentación tributaria y AEAT**: lectura de borradores, comparación de cuadros resumen de IVA o retenciones, y preparación de checklists previos al cierre trimestral (siempre bajo supervisión del asesor o responsable fiscal).\n- **Excel y reporting financiero**: generación de fórmulas complejas, diagnóstico de errores en libros de cálculo y transformación de tablas desordenadas en resúmenes ejecutivos.\n\n##### Programa en 5 módulos (20 horas totales)\n\n| Módulo | Duración | Contenidos clave |\n|---|---|---|\n| 1. Fundamentos y cumplimiento | 4 horas | Ecosistema Claude, configuración de cuenta, privacidad, planes Team/Enterprise y protocolos de anonimización bajo RGPD |\n| 2. Ingeniería de prompts | 4 horas | Estructura profesional (contexto, tarea, formato, restricciones), síntesis de contratos, actas y comunicaciones formales |\n| 3. Projects y Artifacts | 4 horas | Espacios de trabajo con plantillas corporativas, documentos editables, tablas comparativas y presentaciones |\n| 4. Excel, finanzas y ERPs | 4 horas | Análisis de hojas de cálculo, depuración de exportaciones Holded/Sage, control de gastos y detección de anomalías |\n| 5. Automatización y proyecto | 4 horas | Flujos repetitivos sin código, Claude Cowork, límites técnicos y proyecto aplicado a un proceso real de tu puesto |\n<!-- CTA-MID -->\n\n##### Horarios desde España, campus virtual y formación in-company\n\nLas emisiones en directo por Zoom se realizan los lunes y miércoles de 19:30 a 21:30 hora de Chile, lo que equivale en España peninsular a **23:30–01:30 CET en invierno** y **01:30–03:30 CEST en verano**. Si prefieres formarte en horario diurno, dispones de las **grabaciones en HD y materiales dentro del campus virtual** durante todo el curso. Para despachos, asesorías y departamentos financieros en España, impartimos ediciones **in-company en horario laboral europeo**.\n\n##### Precio y facturación (FUNDAE)\n\nLa matrícula vigente para España es **{{precio}}** en dólares estadounidenses (pago único con tarjeta internacional). Este programa **no es bonificable mediante FUNDAE**, aunque emitimos **factura internacional** deducible para autónomos y sociedades en España.\n<!-- CTA-END -->",
+    "faqs": [
+      {
+        "q": "¿Cumple el curso con criterios de RGPD y LOPDGDD para empresas españolas?",
+        "a": "Sí. El módulo inicial dedica un apartado específico a la anonimización de DNI, NIE, nóminas y datos personales, así como a la diferencia de privacidad entre planes personales y Claude Team o Enterprise."
+      },
+      {
+        "q": "¿Sirve para trabajar con datos de Holded, Sage o modelos de la AEAT?",
+        "a": "Sí. Practicamos con exportaciones en Excel y CSV típicas de Holded y Sage, conciliaciones de gastos y revisión estructurada de resúmenes fiscales, manteniendo siempre la validación humana final."
+      },
+      {
+        "q": "¿Necesito saber programar para aprovechar las 20 horas?",
+        "a": "No. Todo el temario está orientado a perfiles administrativos, financieros y de gestión sin conocimientos de programación."
+      },
+      {
+        "q": "¿Cómo compatibilizo las clases con el horario español?",
+        "a": "Las sesiones en directo son a las 23:30 CET (01:30 CEST en verano), pero todas quedan grabadas en HD en el campus virtual para que las sigas de día. También ofrecemos grupos in-company en horario español."
+      },
+      {
+        "q": "¿Se puede bonificar el curso con FUNDAE?",
+        "a": "No, no es bonificable por FUNDAE. Emitimos factura internacional deducible como gasto de formación para empresas y autónomos."
+      },
+      {
+        "q": "¿Cuál es el precio y qué incluye?",
+        "a": "El precio en España es {{precio}} en pago único con tarjeta. Incluye las 20 horas de formación en 5 módulos, acceso al campus virtual con grabaciones y plantillas, y certificado verificable de ProgramBI."
+      }
+    ],
+    "sources": [
+      "https://www.programbi.com/es/cursos/claude",
+      "https://www.aepd.es/"
+    ],
+    "visual": "tabla de los 5 módulos (20 horas) + protocolo de anonimización RGPD/LOPDGDD.",
+    "cursoUrl": "https://www.programbi.com/es/cursos/claude"
   },
   {
     "source": "guias/claude-mexico.md",

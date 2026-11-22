@@ -127,7 +127,7 @@ export function getFallbackImage(category: string): string {
 
 export function getCleanPathname(path: string): string {
   if (!path) return "/";
-  let clean = path.replace(/^\/(es|en)(\/|$)/, "/");
+  let clean = path.replace(/^\/en(\/|$)/, "/");
   if (clean.length > 1 && clean.endsWith("/")) {
     clean = clean.slice(0, -1);
   }

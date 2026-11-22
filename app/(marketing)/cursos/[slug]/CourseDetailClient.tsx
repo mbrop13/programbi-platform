@@ -75,7 +75,7 @@ import { whatsappHref } from "@/lib/whatsapp";
 import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
-import { ISO_CHILE, muestraPrecioDirecto } from "@/config/paises";
+import { getPais, ISO_CHILE, muestraPrecioDirecto } from "@/config/paises";
 import { cuotasSinInteres, textoCuotas } from "@/config/cuotas";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
@@ -1334,7 +1334,7 @@ function CourseContactForm({ course }: { course: Course }) {
                 </div>
                 {muestraPrecioDirecto(pais) ? (
                   <p className="text-xs text-mute">
-                    En EE.UU. te respondemos por email; déjalo solo si prefieres WhatsApp.
+                    En {getPais(pais).nombre} te respondemos por email; déjalo solo si prefieres WhatsApp.
                   </p>
                 ) : null}
               </div>

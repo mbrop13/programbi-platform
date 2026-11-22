@@ -394,8 +394,9 @@ export function localizarMercado(texto: string, iso: string | null | undefined):
   let salida = localizarHoras(texto, paisIso)
     .replaceAll("en Chile", `en ${nombre}`)
     .replaceAll("Chile", nombre);
-  if (getPais(paisIso).dispositivo === "computadora") {
-    salida = salida.replace(/\bcomputador\b/gi, "computadora");
+  const disp = getPais(paisIso).dispositivo;
+  if (disp !== "computador") {
+    salida = salida.replace(/\bcomputador\b/gi, disp);
   }
   return voseoTitular(paisIso, salida);
 }

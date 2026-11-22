@@ -182,8 +182,9 @@ export const PRECIOS_ARS: PreciosCurso = {
 };
 
 /**
- * Dólares de Estados Unidos. Sin descuento ni precio tachado (lista = vigente):
- * USD 249 el curso estándar de 20 horas y USD 498 Análisis de datos (60 horas).
+ * Dólares de Estados Unidos y España. Sin descuento ni precio tachado (lista = vigente):
+ * USD 249 el curso estándar de 20 horas, USD 498 Análisis de datos / Minería (60 horas)
+ * y USD 369 Mercado financiero (30 horas).
  */
 export const PRECIOS_USD_EEUU: PreciosCurso = precios(249, 498);
 
@@ -214,7 +215,7 @@ export type Pais = {
   tramoPrecio?: TramoPrecio;
   /** El mercado publica precio único sin tachado ni % de descuento (ej. EE.UU. / FTC). */
   sinDescuento?: boolean;
-  dispositivo: "computador" | "computadora";
+  dispositivo: "computador" | "computadora" | "ordenador";
   /** Voseo solo en titulares y botones. */
   voseo: boolean;
   /**
@@ -440,6 +441,30 @@ export const PAISES: Pais[] = [
     // Hora del Este (Miami, Nueva York). Central y Pacífico se explican en el texto.
     zonaHoraria: "America/New_York",
     mediosPago: ["Tarjeta de crédito o débito"],
+    precioDirecto: true,
+    sinCuotas: true,
+    contacto: contactoPendiente(),
+  },
+  {
+    iso: "es",
+    nombre: "España",
+    idioma: "es-ES",
+    moneda: "USD",
+    simbolo: "$",
+    locale: "es-ES",
+    decimales: 0,
+    pago: "usd-chile",
+    precios: PRECIOS_USD_EEUU,
+    listas: preciosVacios(),
+    sinDescuento: true,
+    dispositivo: "ordenador",
+    voseo: false,
+    indexable: true,
+    zonaHoraria: "Europe/Madrid",
+    mediosPago: [
+      "Tarjeta de crédito o débito internacional (Visa/Mastercard)",
+      "Transferencia bancaria internacional (para empresas)",
+    ],
     precioDirecto: true,
     sinCuotas: true,
     contacto: contactoPendiente(),

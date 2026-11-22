@@ -41,8 +41,8 @@ export const CURSOS_TABLA = [
   { slug: "analisis-de-datos", nombre: "Análisis de datos" },
 ] as const;
 
-/** Países de la tabla: los seis mercados con precio propio más Paraguay. */
-export const PAISES_TABLA: Pais[] = ["cl", "ar", "mx", "co", "pe", "uy", "py"].map(
+/** Países de la tabla: los mercados con precio propio más Paraguay. */
+export const PAISES_TABLA: Pais[] = ["cl", "ar", "mx", "co", "pe", "uy", "es", "py"].map(
   (iso) => getPais(iso)
 );
 
@@ -190,7 +190,7 @@ function tablaPagos(): FaqContenido["pagos"] {
       medios: listaNatural(pais.mediosPago),
     })),
     nota:
-      `En todos los países el curso se puede pagar en ${CUOTAS}. Si pagas con tarjeta emitida en el exterior, el cargo final lo define tu banco.`,
+      `En Latinoamérica el curso se puede pagar en ${CUOTAS}; en España y Estados Unidos el pago es único con tarjeta. Si pagas con tarjeta emitida en el exterior, el cargo final lo define tu banco.`,
   };
 }
 
@@ -243,11 +243,16 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
   const cuotas = textoCuotas(iso);
   const descuentoCatalogo = etiquetaDescuentoCatalogo(iso);
   const resumenPrecios = resumenPreciosCatalogo(iso);
+  const esPrecioDirecto = !sinPrecio && (pais.precioDirecto === true || pais.sinDescuento === true);
+  const pagoResumen = cuotas ? `y ${cuotas}` : "con pago único con tarjeta";
 
-  const introPrecio =
-    sinPrecio || !descuentoCatalogo
-      ? `En ${nombre} el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado, y se puede pagar en ${cuotas}.`
-      : `En ${nombre} hay ${descuentoCatalogo} vigente y ${cuotas}; el desglose por curso y combos se descarga en el PDF de temario y precios.`;
+  const introPrecio = sinPrecio
+    ? `En ${nombre} el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado${cuotas ? `, y se puede pagar en ${cuotas}` : ""}.`
+    : esPrecioDirecto
+      ? `En ${nombre} los cursos tienen precio público directo en ${pais.moneda}, sin formularios ni cupones, y pago único con tarjeta; el detalle por curso se descarga en el PDF de temario y precios.`
+      : descuentoCatalogo
+        ? `En ${nombre} hay ${descuentoCatalogo} vigente ${pagoResumen}; el desglose por curso y combos se descarga en el PDF de temario y precios.`
+        : `En ${nombre} el desglose por curso y combos ${pagoResumen} se descarga en el PDF de temario y precios.`;
 
   const introHorario = esChile
     ? `Abrimos cohortes cada mes, con clases de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} (hora de Chile) los lunes y miércoles o los martes y jueves; la fecha exacta de inicio se confirma al inscribirte.`
@@ -268,7 +273,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "que-es-programbi",
           pregunta: "¿Qué es ProgramBI?",
           respuesta:
-            "ProgramBI es una escuela online de inteligencia de negocios y análisis de datos que dicta cursos en vivo por Zoom, desde Chile, para alumnos de todo Latinoamérica. Sus programas principales son Power BI y Análisis de datos (SQL, Power BI y Python), y el catálogo incluye además Excel, SQL Server, Python, Claude, Copilot e IA para productividad.",
+            "ProgramBI es una escuela online de inteligencia de negocios y análisis de datos que dicta cursos en vivo por Zoom, desde Chile, para alumnos de Latinoamérica, Estados Unidos y España. Sus programas principales son Power BI y Análisis de datos (SQL, Power BI y Python), y el catálogo incluye además Excel, SQL Server, Python, Claude, Copilot e IA para productividad.",
         },
         {
           id: "online-o-grabado",
@@ -299,7 +304,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "desde-que-paises",
           pregunta: "¿Desde qué países puedo tomar los cursos?",
           respuesta:
-            "Puedes tomar los cursos desde cualquier país con conexión a internet, porque las clases son en vivo por Zoom y se muestran en la hora local de cada país. ProgramBI publica precios y páginas propias para Chile, Argentina, México, Colombia, Perú, Uruguay y Paraguay.",
+            "Puedes tomar los cursos desde cualquier país con conexión a internet, porque las clases son en vivo por Zoom y se muestran en la hora local de cada país. ProgramBI publica precios y páginas propias para Chile, Argentina, México, Colombia, Perú, Uruguay, España y Paraguay.",
         },
       ],
     },
@@ -374,7 +379,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "horario-mi-pais",
           pregunta: "¿Cómo sé el horario de mi país?",
           respuesta:
-            "La tabla de horarios de esta página muestra la hora local de Chile, Argentina, México, Colombia, Perú, Uruguay y Paraguay. Si tu país no aparece, escríbenos por WhatsApp y te confirmamos la hora exacta.",
+            "La tabla de horarios de esta página muestra la hora local de Chile, Argentina, México, Colombia, Perú, Uruguay, España y Paraguay. Si tu país no aparece, escríbenos por WhatsApp y te confirmamos la hora exacta.",
         },
       ],
     },
@@ -393,7 +398,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "moneda-local",
           pregunta: "¿Los precios están en moneda local?",
           respuesta:
-            "Sí: cada país tiene su precio publicado en su moneda. La tabla de esta página muestra Chile en pesos chilenos (CLP), Argentina en pesos argentinos (ARS), México en pesos mexicanos (MXN), Colombia en pesos colombianos (COP), Perú en soles (PEN), Uruguay en pesos uruguayos (UYU) y los demás mercados (incluido Paraguay) en dólares (USD).",
+            "Sí: cada país tiene su precio publicado en su moneda. La tabla de esta página muestra Chile en pesos chilenos (CLP), Argentina en pesos argentinos (ARS), México en pesos mexicanos (MXN), Colombia en pesos colombianos (COP), Perú en soles (PEN), Uruguay en pesos uruguayos (UYU) y los demás mercados (incluidos España, Estados Unidos y Paraguay) en dólares (USD).",
         },
         {
           id: "precio-que-veo",
@@ -653,10 +658,13 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       { dato: "Horario", detalle: fichaHorario },
       {
         dato: "Precio",
-        detalle:
-          sinPrecio || !descuentoCatalogo
-            ? "Se consulta por WhatsApp"
-            : `${descuentoCatalogo} (descarga el PDF para ver el desglose)`,
+        detalle: sinPrecio
+          ? "Se consulta por WhatsApp"
+          : esPrecioDirecto
+            ? `Precio directo en ${pais.moneda} (descarga el PDF para ver el desglose)`
+            : descuentoCatalogo
+              ? `${descuentoCatalogo} (descarga el PDF para ver el desglose)`
+              : "Descarga el PDF para ver el desglose",
       },
       { dato: "Certificado", detalle: "ProgramBI al completar; la PL-300 se rinde aparte con Microsoft" },
     ],

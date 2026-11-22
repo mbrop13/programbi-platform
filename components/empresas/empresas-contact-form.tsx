@@ -9,7 +9,7 @@ import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 import { whatsappHref } from "@/lib/whatsapp";
 import { usePaisRuta } from "@/lib/paises/cliente";
-import { muestraPrecioDirecto } from "@/config/paises";
+import { getPais, muestraPrecioDirecto } from "@/config/paises";
 import { captureAndReadAttribution } from "@/lib/utm";
 
 type Status = "idle" | "error" | "success";
@@ -280,7 +280,7 @@ export function EmpresasContactForm({
           autoComplete="tel"
           helper={
             telefonoOpcional
-              ? "En EE.UU. te respondemos por email; agrégalo solo si prefieres WhatsApp."
+              ? `En ${getPais(pais).nombre} te respondemos por email; agrégalo solo si prefieres WhatsApp.`
               : "Incluye código de país. Chile: +56 9..."
           }
         />

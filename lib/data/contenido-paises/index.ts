@@ -5,6 +5,7 @@ import pe, { bloqueLocal as bloquePe } from "./pe";
 import co from "./co";
 import uy from "./uy";
 import us, { bloqueLocal as bloqueUs } from "./us";
+import es, { bloqueLocal as bloqueEs } from "./es";
 import {
   construirBloque,
   type DatosBloqueLocal,
@@ -17,7 +18,7 @@ import type { SeoPagina } from "./tipos";
  * Países con contenido propio. Chile (raíz) mantiene su home actual y los
  * países sin entrada reciben la versión común, sin bloque local.
  */
-const POR_ISO: Record<string, ContenidoPais> = { ar, mx, pe, co, uy, us };
+const POR_ISO: Record<string, ContenidoPais> = { ar, mx, pe, co, uy, us, es };
 
 export function getContenidoPais(iso: string | null | undefined): ContenidoPais | null {
   if (!iso) return null;
@@ -35,6 +36,7 @@ const BLOQUES: Record<string, DefinicionBloqueLocal> = {
   pe: bloquePe,
   mx: bloqueMx,
   us: bloqueUs,
+  es: bloqueEs,
 };
 
 /**
