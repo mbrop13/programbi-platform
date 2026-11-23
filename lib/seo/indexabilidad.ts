@@ -34,6 +34,8 @@ export const INDEXABLE_SECONDARY_ROUTES: readonly string[] = [
   "/",
   "/cursos",
   "/cursos/claude",
+  "/cursos/chatgpt",
+  "/cursos/gemini",
   "/cursos/analisis-de-datos",
   "/cursos/power-bi",
   "/cursos/excel",

@@ -10,6 +10,8 @@ export const SLUGS_CURSO = [
   "analisis-de-datos",
   "copilot",
   "claude",
+  "chatgpt",
+  "gemini",
   "power-automate",
   "analitica-mineria",
   "ia-productividad",
@@ -162,11 +164,14 @@ export const PRECIOS_LISTA_ARS: PreciosCurso = listas(280000);
 
 /** Análisis de datos y su versión minera, al mismo monto en pesos. */
 const ANALISIS_DE_DATOS_ARS = 379900;
+const CLAUDE_ARS = 189900;
 
 export const PRECIOS_ARS: PreciosCurso = {
   "analisis-de-datos": ANALISIS_DE_DATOS_ARS,
   copilot: 189900,
-  claude: 189900,
+  claude: CLAUDE_ARS,
+  chatgpt: CLAUDE_ARS,
+  gemini: CLAUDE_ARS,
   "power-automate": 189900,
   // Mismo curso y mismo valor que Análisis de datos.
   "analitica-mineria": ANALISIS_DE_DATOS_ARS,

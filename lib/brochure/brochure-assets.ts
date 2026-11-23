@@ -156,6 +156,8 @@ const STACK_PYTHON = new Set([
   "machine-learning",
   "ia-productividad",
   "claude",
+  "chatgpt",
+  "gemini",
 ]);
 /** Slugs cuyo stack principal es SQL / bases de datos. */
 const STACK_SQL = new Set(["sql-server", "access"]);

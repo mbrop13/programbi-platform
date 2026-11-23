@@ -25,6 +25,7 @@ export const PRECIOS_VALID_FROM = "2026-11-01T00:00:00-03:00";
  * usuario, el que declara el JSON-LD y la base del checkout.
  */
 const ANALISIS_DE_DATOS_CLP = 338000;
+const CLAUDE_CLP = 169000;
 const ESTANDAR_LISTA_CLP = 249000;
 const ANALISIS_LISTA_CLP = ESTANDAR_LISTA_CLP * 3;
 const MERCADO_FINANCIERO_LISTA_CLP = 514000;
@@ -32,7 +33,9 @@ const MERCADO_FINANCIERO_LISTA_CLP = 514000;
 export const PRECIOS_CLP: Record<SlugCurso, number> = {
   "analisis-de-datos": ANALISIS_DE_DATOS_CLP,
   copilot: 169000,
-  claude: 169000,
+  claude: CLAUDE_CLP,
+  chatgpt: CLAUDE_CLP,
+  gemini: CLAUDE_CLP,
   "power-automate": 169000,
   // Mismo curso y mismo valor que Análisis de datos.
   "analitica-mineria": ANALISIS_DE_DATOS_CLP,
@@ -56,6 +59,8 @@ export const PRECIOS_LISTA_CLP: Record<SlugCurso, number> = {
   "analisis-de-datos": ANALISIS_LISTA_CLP,
   copilot: ESTANDAR_LISTA_CLP,
   claude: ESTANDAR_LISTA_CLP,
+  chatgpt: ESTANDAR_LISTA_CLP,
+  gemini: ESTANDAR_LISTA_CLP,
   "power-automate": ESTANDAR_LISTA_CLP,
   "analitica-mineria": ANALISIS_LISTA_CLP,
   "ia-productividad": ESTANDAR_LISTA_CLP,
@@ -76,7 +81,8 @@ export function esCursoConPrecio(slug: string): slug is SlugCurso {
 /** Precio de venta en Chile. `null` si el slug no es un curso del catálogo. */
 export function precioChile(slug: string): number | null {
   if (!esCursoConPrecio(slug)) return null;
-  const valor = PRECIOS_CLP[slug];
+  const precioSlug = slug === "chatgpt" || slug === "gemini" ? "claude" : slug;
+  const valor = PRECIOS_CLP[precioSlug];
   return Number.isFinite(valor) && valor > 0 ? valor : null;
 }
 
@@ -92,9 +98,10 @@ export function precioPublico(iso: string | null | undefined, slug: string): num
   if (paisIso === ISO_CHILE) return precioChile(slug);
   const pais = getPais(paisIso);
   if (pais.precios === "catalogo") return null;
-  const valor = pais.precios[slug as SlugCurso];
+  const precioSlug = slug === "chatgpt" || slug === "gemini" ? "claude" : slug;
+  const valor = pais.precios[precioSlug as SlugCurso];
   if (typeof valor !== "number" || valor <= 0) return null;
-  return aplicarPisoChile(valor, slug as SlugCurso, pais.iso, "vigente");
+  return aplicarPisoChile(valor, precioSlug as SlugCurso, pais.iso, "vigente");
 }
 
 /** Precio de lista (tachado) en la moneda del país, si existe y es mayor. */
@@ -102,16 +109,17 @@ export function precioListaPublico(iso: string | null | undefined, slug: string)
   const paisIso = normalizarPais(iso);
   const cobro = precioPublico(paisIso, slug);
   if (cobro == null) return null;
+  const precioSlug = slug === "chatgpt" || slug === "gemini" ? "claude" : slug;
   if (paisIso === ISO_CHILE) {
     if (!esCursoConPrecio(slug)) return null;
-    const lista = PRECIOS_LISTA_CLP[slug];
+    const lista = PRECIOS_LISTA_CLP[precioSlug];
     return Number.isFinite(lista) && lista > cobro ? lista : null;
   }
   const pais = getPais(paisIso);
   if (pais.sinDescuento || pais.listas === "catalogo") return null;
-  const listaBase = pais.listas[slug as SlugCurso];
+  const listaBase = pais.listas[precioSlug as SlugCurso];
   if (typeof listaBase !== "number" || listaBase <= 0) return null;
-  const lista = aplicarPisoChile(listaBase, slug as SlugCurso, pais.iso, "lista");
+  const lista = aplicarPisoChile(listaBase, precioSlug as SlugCurso, pais.iso, "lista");
   return lista > cobro ? lista : null;
 }
 
