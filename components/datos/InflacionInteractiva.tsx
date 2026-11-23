@@ -170,6 +170,9 @@ export function InflacionInteractiva({
     calculo && calculo.factor > 0 ? Math.round(monto / calculo.factor) : null;
   const perdidaPctSinReajuste =
     calculo && calculo.factor > 0 ? (1 / calculo.factor - 1) : null;
+  // Pérdida (o ganancia, si las fechas van hacia atrás o hubo deflación) de poder de compra.
+  const perdidaPesos = poderCompraSinReajuste !== null ? monto - poderCompraSinReajuste : null;
+  const pierde = (perdidaPesos ?? 0) > 0;
 
   // Cálculo Tab 2: ¿Mi sueldo le ganó a la inflación?
   const comparacionSueldo = useMemo(() => {
@@ -224,9 +227,12 @@ export function InflacionInteractiva({
 
   const copiarResultado = async () => {
     if (!calculo) return;
-    const texto = `${pesos(monto)} de ${mesLargo(mesOrigen)} equivalen a ${pesos(
-      calculo.montoAjustado
-    )} en ${mesLargo(mesDestino)} (${variacion !== null ? variacionPorcentual(variacion) : ""} según IPC oficial del INE). Calculado en programbi.com/datos/inflacion`;
+    const rinde = calculo.factor > 0 ? Math.round(monto / calculo.factor) : monto;
+    const texto = `${pesos(monto)} de ${mesLargo(mesOrigen)} en ${mesLargo(mesDestino)} compran lo mismo que ${pesos(
+      rinde
+    )}. Para comprar lo mismo que antes se necesitan ${pesos(calculo.montoAjustado)} (${
+      variacion !== null ? variacionPorcentual(variacion) : ""
+    } de IPC según el INE). Calculado en programbi.com/datos/inflacion`;
     try {
       await navigator.clipboard.writeText(texto);
       setCopiadoResumen(true);
@@ -250,11 +256,12 @@ export function InflacionInteractiva({
     }
   };
 
-  const variacionSube = (variacion ?? 0) > 0;
-  const variacionBaja = (variacion ?? 0) < 0;
 
   return (
     <div className="space-y-8">
+      {/* Primero la serie: el gráfico da contexto antes de la calculadora */}
+      <TradingViewIpcChart serie={serie} />
+
       {/* Herramienta principal con 3 modos */}
       <Card className="gap-0 overflow-hidden rounded-[1.5rem] border border-line bg-card py-0 shadow-none ring-0">
         <Tabs value={tabActiva} onValueChange={setTabActiva} className="gap-0">
@@ -265,7 +272,7 @@ export function InflacionInteractiva({
                 className="h-10 gap-1.5 rounded-lg px-3.5 text-sm font-semibold"
               >
                 <Calculator className="size-3.5" aria-hidden="true" />
-                Ajustar un monto
+                Poder de compra
               </TabsTrigger>
               <TabsTrigger
                 value="sueldo"
@@ -291,7 +298,7 @@ export function InflacionInteractiva({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="ipc-monto" className="text-sm font-medium text-foreground">
-                      ¿Qué monto quieres actualizar?
+                      Monto de origen
                     </Label>
                     <span className="text-xs text-muted-foreground">Pesos chilenos (CLP)</span>
                   </div>
@@ -443,85 +450,76 @@ export function InflacionInteractiva({
               {/* Panel de resultado */}
               <div className="flex flex-col justify-between rounded-[1.25rem] border border-ipc/40 bg-ipc-suave p-5 sm:p-6">
                 <div>
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Equivale en {mesLargo(mesDestino)} a
-                    </span>
-                    {variacion !== null ? (
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "h-auto gap-1 rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums",
-                          variacionSube && "border border-blue-200/80 bg-blue-50 text-blue-700",
-                          variacionBaja && "border border-emerald-200/80 bg-emerald-50 text-emerald-800"
-                        )}
-                      >
-                        {variacionSube ? (
-                          <TrendingUp className="size-3" aria-hidden="true" />
-                        ) : variacionBaja ? (
-                          <TrendingDown className="size-3" aria-hidden="true" />
-                        ) : null}
-                        {variacionPorcentual(variacion)} de variación
-                      </Badge>
-                    ) : null}
-                  </div>
-
-                  <p className="kpi-hero mt-3 text-foreground tabular-nums">
-                    {calculo ? pesos(calculo.montoAjustado) : "Sin dato"}
+                  {/* Lo principal: cuánto rinde hoy el monto si no se reajustó (pérdida de poder de compra) */}
+                  <p className="text-sm font-medium text-foreground">
+                    {pesos(monto)} de {mesLargo(mesOrigen)}, en {mesLargo(mesDestino)} compran lo mismo que
                   </p>
 
-                  <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                    {calculo ? (
-                      <>
-                        Para mantener el mismo poder de compra que{" "}
-                        <strong className="font-semibold text-foreground">{pesos(monto)}</strong> en{" "}
-                        {mesLargo(mesOrigen)}, necesitas{" "}
-                        <strong className="font-semibold text-foreground">
-                          {pesos(calculo.montoAjustado)}
-                        </strong>{" "}
-                        en {mesLargo(mesDestino)}.
-                      </>
-                    ) : (
-                      "Selecciona dos fechas válidas para calcular el ajuste por inflación."
-                    )}
+                  <p className="kpi-hero mt-2 text-foreground tabular-nums">
+                    {calculo && poderCompraSinReajuste !== null ? pesos(poderCompraSinReajuste) : "Sin dato"}
                   </p>
 
-                  {calculo && diferenciaPesos !== null && poderCompraSinReajuste !== null ? (
+                  {calculo && perdidaPesos !== null && perdidaPctSinReajuste !== null ? (
+                    <p
+                      className={cn(
+                        "mt-3 inline-flex flex-wrap items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold tabular-nums",
+                        pierde ? "bg-ipc text-foreground" : "bg-empleo text-white"
+                      )}
+                    >
+                      {pierde ? (
+                        <TrendingDown className="size-4" aria-hidden="true" />
+                      ) : (
+                        <TrendingUp className="size-4" aria-hidden="true" />
+                      )}
+                      {pierde ? "Pierden" : "Ganan"} {pesos(Math.abs(perdidaPesos))} de poder de compra (
+                      {Math.abs(perdidaPctSinReajuste * 100).toFixed(1).replace(".", ",")} %)
+                    </p>
+                  ) : null}
+
+                  {!calculo ? (
+                    <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                      Selecciona dos fechas válidas para calcular el ajuste por inflación.
+                    </p>
+                  ) : null}
+
+                  {calculo && diferenciaPesos !== null ? (
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
                       <div className="rounded-lg border border-border bg-card p-3.5">
-                        <p className="text-[11px] font-medium text-muted-foreground">
-                          Diferencia en pesos
+                        <p className="text-xs font-medium text-muted-foreground">
+                          Para comprar lo mismo que antes
                         </p>
                         <p className="mt-1 text-base font-semibold text-foreground tabular-nums">
-                          {diferenciaPesos >= 0 ? "+" : ""}
-                          {pesos(diferenciaPesos)}
+                          {pesos(calculo.montoAjustado)}
                         </p>
-                        {frecuencia === "mensual" && diferenciaPesos !== 0 ? (
-                          <p className="mt-0.5 text-[11px] text-muted-foreground tabular-nums">
-                            {diferenciaPesos > 0 ? "+" : ""}
-                            {pesos(diferenciaPesos * 12)} en 12 meses
-                          </p>
-                        ) : (
-                          <p className="mt-0.5 text-[11px] text-muted-foreground">
-                            Ajuste neto del período
-                          </p>
-                        )}
+                        <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">
+                          {diferenciaPesos >= 0 ? "+" : ""}
+                          {pesos(diferenciaPesos)} de reajuste necesario
+                        </p>
                       </div>
 
                       <div className="rounded-lg border border-border bg-card p-3.5">
-                        <p className="text-[11px] font-medium text-muted-foreground">
-                          Si el monto no se reajustó
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {frecuencia === "mensual" ? "Si es un sueldo sin reajuste" : "Inflación del período"}
                         </p>
-                        <p className="mt-1 text-base font-semibold text-foreground tabular-nums">
-                          {pesos(poderCompraSinReajuste)}
-                        </p>
-                        <p className="mt-0.5 text-[11px] text-muted-foreground tabular-nums">
-                          {perdidaPctSinReajuste !== null && perdidaPctSinReajuste < 0
-                            ? `Rinde ${Math.abs(perdidaPctSinReajuste * 100)
-                                .toFixed(1)
-                                .replace(".", ",")} % menos hoy`
-                            : "Poder de compra equivalente"}
-                        </p>
+                        {frecuencia === "mensual" && perdidaPesos !== null ? (
+                          <>
+                            <p className="mt-1 text-base font-semibold text-foreground tabular-nums">
+                              {pesos(Math.abs(perdidaPesos))} al mes
+                            </p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              {pierde ? "menos" : "más"} de poder de compra con precios de {mesCorto(mesDestino)}
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="mt-1 text-base font-semibold text-foreground tabular-nums">
+                              {variacion !== null ? variacionPorcentual(variacion) : "Sin dato"}
+                            </p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              Variación del IPC entre ambas fechas
+                            </p>
+                          </>
+                        )}
                       </div>
                     </div>
                   ) : null}
@@ -854,7 +852,6 @@ export function InflacionInteractiva({
       </Card>
 
       {/* Gráfico interactivo TradingView Lightweight Charts */}
-      <TradingViewIpcChart serie={serie} />
     </div>
   );
 }

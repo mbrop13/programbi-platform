@@ -28,14 +28,6 @@ export const metadata = {
   twitter: { ...baseMeta.twitter, title: titulo, description: descripcion },
 };
 
-const PREGUNTAS = [
-  { href: "/datos/carreras/medicina", texto: "¿Cuánto gana un médico en Chile?" },
-  { href: "/datos/inflacion", texto: "¿Mi sueldo le ganó a la inflación?" },
-  { href: `${RUTA_DESEMPLEO}#regiones`, texto: "¿Cómo está el empleo en mi región?" },
-  { href: "/datos/carreras/test", texto: "¿Qué carrera calza conmigo?" },
-  { href: "/datos/carreras/mejor-sueldo-por-arancel", texto: "¿Qué carrera rinde más por lo que cuesta?" },
-] as const;
-
 const HERRAMIENTAS = [
   {
     href: "/datos/carreras/comparar",
@@ -141,7 +133,8 @@ export default function DatosPage() {
   const [ultY, ultM] = ultimoIpc.m.split("-");
   const mesHace12 = `${Number(ultY) - 1}-${ultM}`;
   const var12 = variacionIpc(mesHace12, ultimoIpc.m, ipcSerie);
-  const equivalente = var12 !== null ? Math.round(1_000_000 * (1 + var12)) : null;
+  // Lo que rinde hoy $1.000.000 sin reajuste: muestra la pérdida de poder de compra, no el precio nuevo.
+  const rindeHoy = var12 !== null ? Math.round(1_000_000 / (1 + var12)) : null;
   const foto = getFotoInstitucion("UNIVERSIDAD DE CHILE");
   const tasasRecientes = serie.slice(-24).map((o) => o.tasa);
 
@@ -153,7 +146,7 @@ export default function DatosPage() {
 
       <MigasDatos migas={MIGAS_DATOS} />
 
-      {/* Portada: el titular y las preguntas con que llega la gente */}
+      {/* Portada: titular breve; los observatorios vienen justo debajo */}
       <header className="mt-6 max-w-4xl sm:mt-10">
         <h1 className="h1-datos text-foreground">
           Datos de Chile, <span className="marcador">explicados en simple</span>
@@ -164,26 +157,10 @@ export default function DatosPage() {
         </p>
       </header>
 
-      <nav aria-label="Preguntas frecuentes de la gente" className="mt-7">
-        <p className="text-sm font-semibold text-foreground">Empieza por una pregunta</p>
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {PREGUNTAS.map((p) => (
-            <li key={p.href}>
-              <Link
-                href={p.href}
-                className="inline-flex min-h-11 items-center rounded-full border border-line-strong bg-white px-4 text-[15px] font-medium text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-white active:bg-black"
-              >
-                {p.texto}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
       {/* Observatorio 1: Carreras. Foto real de campus + cifra de ejemplo */}
       <section
         aria-labelledby="hub-carreras"
-        className="mt-12 grid overflow-hidden rounded-[1.75rem] border border-line bg-white lg:mt-16 lg:grid-cols-[1.15fr_1fr]"
+        className="mt-10 grid overflow-hidden rounded-[1.75rem] border border-line bg-white lg:mt-16 lg:grid-cols-[1.15fr_1fr]"
       >
         <div className="relative aspect-[16/10] min-h-[220px] bg-wash lg:aspect-auto">
           {foto ? (
@@ -281,10 +258,10 @@ export default function DatosPage() {
             </p>
           </div>
 
-          {equivalente !== null ? (
+          {rindeHoy !== null ? (
             <p className="max-w-md rounded-2xl bg-white/85 p-4 text-[15px] leading-relaxed">
-              Lo que en {mesCorto(mesHace12)} costaba <strong>$1.000.000</strong>, hoy cuesta{" "}
-              <strong className="marcador tabular-nums">{pesos(equivalente)}</strong>.
+              Un sueldo de <strong>$1.000.000</strong> sin reajuste desde {mesCorto(mesHace12)} hoy
+              compra lo mismo que <strong className="marcador tabular-nums">{pesos(rindeHoy)}</strong>.
             </p>
           ) : null}
 
@@ -292,7 +269,7 @@ export default function DatosPage() {
             href="/datos/inflacion"
             className="inline-flex min-h-12 w-fit items-center gap-2 rounded-xl bg-foreground px-5 text-[15px] font-semibold text-white transition-colors hover:bg-slate-700 active:bg-black"
           >
-            Actualizar un monto por IPC
+            Calcular mi pérdida por inflación
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </section>

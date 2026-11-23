@@ -54,22 +54,20 @@ function Grafico({
   label: string;
   pandemia?: boolean;
 }) {
+  const compacto = useCompacto();
   return (
-    <div
-      className={styles.chart}
-      role="img"
-      tabIndex={0}
-      aria-label={`${label}. Desplaza horizontalmente para ver el gráfico completo.`}
-    >
+    <>
+    <div className={styles.chart} role="img" aria-label={label}>
       <div className={styles.chartInner}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
-            margin={{ top: 12, right: 170, left: 0, bottom: 12 }}
+            // En celular las etiquetas al final de cada línea se reemplazan por una leyenda debajo.
+            margin={{ top: 12, right: compacto ? 8 : 170, left: compacto ? -12 : 0, bottom: 12 }}
           >
             <CartesianGrid stroke="#e8e8e4" vertical={false} />
-            <XAxis dataKey="label" minTickGap={35} tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} width={40} unit="%" />
+            <XAxis dataKey="label" minTickGap={compacto ? 50 : 35} tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 11 }} width={compacto ? 44 : 40} unit="%" />
             <Tooltip
               formatter={(value) =>
                 typeof value === "number" ? fmt(value) : "Sin datos"
@@ -103,16 +101,18 @@ function Grafico({
                   isAnimationActive={false}
                   connectNulls={false}
                 >
-                  <LabelList
-                    position="right"
-                    fill={
-                      s.color === "#aaa" || s.color === "#a3a3a0"
-                        ? "#555"
-                        : s.color
-                    }
-                    fontSize={11}
-                    valueAccessor={(_, index) => (index === last ? s.key : "")}
-                  />
+                  {!compacto && (
+                    <LabelList
+                      position="right"
+                      fill={
+                        s.color === "#aaa" || s.color === "#a3a3a0"
+                          ? "#555"
+                          : s.color
+                      }
+                      fontSize={11}
+                      valueAccessor={(_, index) => (index === last ? s.key : "")}
+                    />
+                  )}
                 </Line>
               );
             })}
@@ -120,7 +120,29 @@ function Grafico({
         </ResponsiveContainer>
       </div>
     </div>
+    <ul className={styles.leyendaSeries} aria-hidden="true">
+      {series.map((s) => (
+        <li key={s.key}>
+          <span style={{ backgroundColor: s.color }} />
+          {s.key}
+        </li>
+      ))}
+    </ul>
+    </>
   );
+}
+
+/** true en pantallas de hasta 640 px (celular). */
+function useCompacto() {
+  const [compacto, setCompacto] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const actualizar = () => setCompacto(mq.matches);
+    actualizar();
+    mq.addEventListener("change", actualizar);
+    return () => mq.removeEventListener("change", actualizar);
+  }, []);
+  return compacto;
 }
 export default function ExploradorGraficos({
   territorio,

@@ -48,7 +48,7 @@ export function DatosMobileSheet() {
             variant="outline"
             size="sm"
             aria-label="Abrir menú de navegación"
-            className="h-11 gap-2 rounded-xl border-[#d3cbbc] bg-white px-3.5 text-[15px] font-semibold text-[#1b1a17] hover:bg-[#ede8de]"
+            className="h-11 gap-2 rounded-xl border-[#d1d3d8] bg-white px-3.5 text-[15px] font-semibold text-[#111214] hover:bg-[#eceef1]"
           />
         }
       >
@@ -57,13 +57,13 @@ export function DatosMobileSheet() {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="w-[310px] border-l border-[#e6e0d5] bg-[#f7f4ee] p-0 text-[#1b1a17] sm:max-w-[330px]"
+        className="w-[310px] border-l border-[#e4e5e8] bg-[#f7f7f8] p-0 text-[#111214] sm:max-w-[330px]"
       >
-        <SheetHeader className="border-b border-[#e6e0d5] px-5 py-4 text-left">
-          <SheetTitle className="font-display text-lg font-bold text-[#1b1a17]">
+        <SheetHeader className="border-b border-[#e4e5e8] px-5 py-4 text-left">
+          <SheetTitle className="font-display text-lg font-bold text-[#111214]">
             Datos de Chile
           </SheetTitle>
-          <SheetDescription className="text-sm text-[#5b574f]">
+          <SheetDescription className="text-sm text-[#4b5058]">
             Cifras oficiales, explicadas en simple
           </SheetDescription>
         </SheetHeader>
@@ -80,8 +80,8 @@ export function DatosMobileSheet() {
                 className={cn(
                   enlaceBase,
                   active
-                    ? "bg-[#1b1a17] font-semibold text-white"
-                    : "font-medium text-[#3a3833] hover:bg-[#ede8de]"
+                    ? "bg-[#111214] font-semibold text-white"
+                    : "font-medium text-[#2b2d31] hover:bg-[#eceef1]"
                 )}
               >
                 {label}
@@ -90,8 +90,8 @@ export function DatosMobileSheet() {
           })}
         </nav>
 
-        <div className="border-t border-[#e6e0d5] px-3 py-3">
-          <p className="px-3 pb-1 text-sm font-semibold text-[#5b574f]">Herramientas</p>
+        <div className="border-t border-[#e4e5e8] px-3 py-3">
+          <p className="px-3 pb-1 text-sm font-semibold text-[#4b5058]">Herramientas</p>
           {MOBILE_HERRAMIENTAS.map(({ href, label }) => {
             const active = esActivo(href, false);
             return (
@@ -103,8 +103,8 @@ export function DatosMobileSheet() {
                 className={cn(
                   enlaceBase,
                   active
-                    ? "bg-[#1b1a17] font-semibold text-white"
-                    : "font-medium text-[#3a3833] hover:bg-[#ede8de]"
+                    ? "bg-[#111214] font-semibold text-white"
+                    : "font-medium text-[#2b2d31] hover:bg-[#eceef1]"
                 )}
               >
                 {label}
@@ -113,18 +113,18 @@ export function DatosMobileSheet() {
           })}
         </div>
 
-        <div className="flex flex-col gap-1 border-t border-[#e6e0d5] px-3 py-3">
+        <div className="flex flex-col gap-1 border-t border-[#e4e5e8] px-3 py-3">
           <Link
             href="/cursos"
             onClick={() => setOpen(false)}
-            className={cn(enlaceBase, "font-medium text-[#3a3833] hover:bg-[#ede8de]")}
+            className={cn(enlaceBase, "font-medium text-[#2b2d31] hover:bg-[#eceef1]")}
           >
             Cursos en vivo
           </Link>
           <Link
             href="/login"
             onClick={() => setOpen(false)}
-            className="mt-1 inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#1b1a17] px-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#3a3833]"
+            className="mt-1 inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#111214] px-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#2b2d31]"
           >
             Iniciar sesión
           </Link>

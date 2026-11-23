@@ -71,7 +71,6 @@ export function Observatorio({ slug }: { slug: string }) {
       <VistaDatos territorio={slug} periodo={actual.p} />
       <Migas elementos={migas} />
       <header className={estilos.encabezado}>
-        <p className={estilos.sello}><span><Activity size={15} aria-hidden="true" /></span> Observatorio del mercado laboral</p>
         <h1>Desempleo en {nombre}</h1>
         <p>{region ? `Tasa regional, comparación con Chile y evolución desde 2010.` : "Tasa de desocupación, evolución histórica y panorama de las 16 regiones de Chile."}</p>
       </header>
@@ -107,48 +106,14 @@ export function Observatorio({ slug }: { slug: string }) {
 
       <DatosEstructurados nodos={[breadcrumbs(migas), dataset(slug, nombre, descripcion, serie), faqSchema(preguntas), ...(region ? [] : [itemList])]} />
       <nav className={estilos.indice} aria-label="En esta página">
-        <a href={region ? "#lectura-regional" : "#regiones"}><MapPin size={16} aria-hidden="true" /> {region ? "Panorama regional" : "Mapa y ranking"}</a>
+        <a href={region ? "#lectura-regional" : "#regiones"}><MapPin size={16} aria-hidden="true" /> {region ? "Cómo leerlo" : "Mapa y ranking"}</a>
         <a href="#historico"><ChartNoAxesCombined size={16} aria-hidden="true" /> Histórico y comparadores</a>
         <a href="#desgloses"><Activity size={16} aria-hidden="true" /> Desglose laboral</a>
         <a href="#descargas"><Download size={16} aria-hidden="true" /> Descargas</a>
         <a href="#metodologia"><CircleHelp size={16} aria-hidden="true" /> Metodología</a>
       </nav>
 
-      <div className={estilos.lecturaCorta}>
-        <section className={estilos.resumen} aria-labelledby="titulo-resumen">
-          <h2 id="titulo-resumen">En resumen</h2>
-          {resumen.map((texto) => <p key={texto}>{texto}</p>)}
-        </section>
-        <section className={estilos.cambios} aria-labelledby="titulo-cambios">
-          <h2 id="titulo-cambios">Qué cambió este mes</h2>
-          <ul>{cambios.map((texto) => <li key={texto}>{texto}</li>)}</ul>
-          <p className={estilos.secundario}>El INE advierte que las variaciones pequeñas pueden no ser estadísticamente significativas.</p>
-        </section>
-      </div>
-
-      {region ? (
-        <section id="lectura-regional" className={estilos.seccion} aria-labelledby="titulo-lectura">
-          <h2 id="titulo-lectura">Cómo leer el desempleo en {nombre}</h2>
-          <div className={estilos.lecturaRegional} data-lectura-regional>
-            {lecturaRegional(nombre, actual, indicadores, serie, chile.actual, RANKING).map((texto) => <p key={texto}>{texto}</p>)}
-          </div>
-          <div className={estilos.regionesRelacionadas}>
-            <div>
-              <h3>Regiones vecinas en el mapa</h3>
-              {vecinas.map((item) => <a key={item.slug} href={rutaTerritorio(item.slug)}>Desempleo en {item.nombre}</a>)}
-            </div>
-            <div>
-              <h3>Tasas regionales más cercanas</h3>
-              {cercanas.map((item) => <a key={item.slug} href={rutaTerritorio(item.slug)}>{item.nombre} · {tasa(item.tasa)}</a>)}
-            </div>
-            <div>
-              <h3>Panorama nacional</h3>
-              <a href={RUTA_DESEMPLEO}>Desempleo en Chile</a>
-              <a href={`${RUTA_DESEMPLEO}?comparar=${pares}#comparar-regiones`}>Comparar {nombre} con Chile y otras regiones</a>
-            </div>
-          </div>
-        </section>
-      ) : (
+      {!region && (
         <section id="regiones" className={estilos.bloque} aria-labelledby="titulo-regiones">
           <div className={estilos.tituloSeccion}><h2 id="titulo-regiones">Desempleo por región</h2><p>Compara la tasa del trimestre {trimestre} y su variación anual. Selecciona una región para explorar su serie.</p></div>
           <MapaRanking filas={filasMapa} tasaChile={actual.tasa} periodo={trimestre} />
@@ -162,6 +127,47 @@ export function Observatorio({ slug }: { slug: string }) {
         </ExploradorDesempleo>
         <Fuente />
       </section>
+
+      {/* Lecturas en desplegables: el gráfico va primero y el texto queda a un clic, sin ocupar la pantalla. */}
+      <div className={estilos.lecturas}>
+        <details className={estilos.desplegable}>
+          <summary>En resumen</summary>
+          <div className={estilos.desplegableCuerpo}>{resumen.map((texto) => <p key={texto}>{texto}</p>)}</div>
+        </details>
+        <details className={estilos.desplegable}>
+          <summary>Qué cambió este mes</summary>
+          <div className={estilos.desplegableCuerpo}>
+            <ul className={estilos.listaCambios}>{cambios.map((texto) => <li key={texto}>{texto}</li>)}</ul>
+            <p className={estilos.secundario}>El INE advierte que las variaciones pequeñas pueden no ser estadísticamente significativas.</p>
+          </div>
+        </details>
+        {region && (
+          <details id="lectura-regional" className={estilos.desplegable}>
+            <summary>Cómo leer el desempleo en {nombre}</summary>
+            <div className={`${estilos.desplegableCuerpo} ${estilos.lecturaRegional}`} data-lectura-regional>
+              {lecturaRegional(nombre, actual, indicadores, serie, chile.actual, RANKING).map((texto) => <p key={texto}>{texto}</p>)}
+            </div>
+          </details>
+        )}
+      </div>
+
+      {region && (
+        <nav className={estilos.regionesRelacionadas} aria-label="Otras regiones">
+          <div>
+            <h3>Regiones vecinas en el mapa</h3>
+            {vecinas.map((item) => <a key={item.slug} href={rutaTerritorio(item.slug)}>Desempleo en {item.nombre}</a>)}
+          </div>
+          <div>
+            <h3>Tasas regionales más cercanas</h3>
+            {cercanas.map((item) => <a key={item.slug} href={rutaTerritorio(item.slug)}>{item.nombre} · {tasa(item.tasa)}</a>)}
+          </div>
+          <div>
+            <h3>Panorama nacional</h3>
+            <a href={RUTA_DESEMPLEO}>Desempleo en Chile</a>
+            <a href={`${RUTA_DESEMPLEO}?comparar=${pares}#comparar-regiones`}>Comparar {nombre} con Chile y otras regiones</a>
+          </div>
+        </nav>
+      )}
 
       <DesglosesDesempleo territorio={slug} nombre={nombre} />
       {!region && <SeguroCesantia />}

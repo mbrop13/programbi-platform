@@ -1,7 +1,7 @@
 /*
  * Sistema visual de /datos ("Datos de Chile").
  *
- * Papel cálido (#f7f4ee) + tinta (#1b1a17): se lee como una revista de datos, no como un panel admin.
+ * Fondo gris neutro de la web principal (#f7f7f8) + tinta (#111214); el color lo ponen los temas.
  * Tres colores de tema, uno por observatorio, para orientarse de un vistazo:
  *   carreras = cobalto, inflación = mandarina, empleo = esmeralda.
  * Un único acento: el amarillo "marcador", que subraya la cifra o palabra clave de cada pantalla.
@@ -9,30 +9,30 @@
  */
 .datos-scope {
   --radius: 0.875rem;
-  --background: #f7f4ee;
-  --foreground: #1b1a17;
+  --background: #f7f7f8;
+  --foreground: #111214;
   --card: #ffffff;
-  --card-foreground: #1b1a17;
+  --card-foreground: #111214;
   --popover: #ffffff;
-  --popover-foreground: #1b1a17;
-  --primary: #1b1a17;
+  --popover-foreground: #111214;
+  --primary: #111214;
   --primary-foreground: #ffffff;
-  --secondary: #f0ece4;
-  --secondary-foreground: #1b1a17;
-  --muted: #f0ece4;
-  --muted-foreground: #5b574f;
-  --accent: #f0ece4;
-  --accent-foreground: #1b1a17;
+  --secondary: #eff0f2;
+  --secondary-foreground: #111214;
+  --muted: #eff0f2;
+  --muted-foreground: #4b5058;
+  --accent: #eff0f2;
+  --accent-foreground: #111214;
   --destructive: #c62828;
   --destructive-foreground: #ffffff;
-  --border: #e6e0d5;
-  --input: #d3cbbc;
+  --border: #e4e5e8;
+  --input: #d1d3d8;
   --ring: #3442de;
   --chart-1: #3442de;
   --chart-2: #0e7a55;
   --chart-3: #e8590c;
   --chart-4: #8a6b00;
-  --chart-5: #78716c;
+  --chart-5: #6b7079;
   background-color: var(--background);
   color: var(--foreground);
   color-scheme: light;
@@ -117,4 +117,9 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+/* Gráficos (recharts): sin contorno negro al tocar o hacer clic; el anillo queda sólo para teclado. */
+.datos-scope :is(.recharts-wrapper, .recharts-surface, .recharts-wrapper svg):focus:not(:focus-visible) {
+  outline: none;
 }

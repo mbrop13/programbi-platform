@@ -140,11 +140,11 @@ export default function InflacionPage() {
               Calculadora de IPC · INE, actualizado a {mesLargo(ultimo.m)}
             </p>
             <h1 className="h1-datos mt-3 text-foreground">
-              ¿Cuánto valen <span className="marcador">tus pesos hoy</span>?
+              ¿Cuánto <span className="marcador">poder de compra</span> pierde tu plata?
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              Actualiza sueldos, arriendos o aranceles con la serie oficial del INE y comprueba si
-              tus ingresos le ganaron a la inflación.
+              Mira cuánto rinde hoy un sueldo, arriendo o ahorro de antes si no se reajustó, y cuánto
+              necesitarías para comprar lo mismo. Con la serie oficial del IPC del INE.
             </p>
           </div>
 

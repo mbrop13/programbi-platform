@@ -55,9 +55,9 @@
 }
 .controls button[aria-pressed="true"],
 .button[aria-pressed="true"] {
-  background: #1469ad;
+  background: #111214;
   color: white;
-  border-color: #1469ad;
+  border-color: #111214;
 }
 .controls :focus-visible,
 .button:focus-visible,
@@ -162,4 +162,23 @@
   .interactive {
     min-height: 3200px;
   }
+}
+
+/* Celular: los gráficos se ajustan al ancho (sin scroll lateral) y los paneles respiran entre sí. */
+.explorador { grid-template-columns: minmax(0, 1fr); }
+.panel + .panel { margin-top: 1.5rem; }
+.panel { border-color: #e4e5e8; border-radius: 1rem; }
+/* Sin contorno al tocar o hacer clic en el gráfico; con teclado se mantiene un anillo visible. */
+.chart :focus,
+.chart:focus { outline: none; }
+.chart :focus-visible,
+.chart:focus-visible { outline: 2px solid #3442de; outline-offset: 4px; border-radius: 8px; }
+.leyendaSeries { display: none; }
+@media (max-width: 640px) {
+  .panel { padding: 1rem .75rem; }
+  .chart { overflow: visible; height: 300px; }
+  .chartInner { min-width: 0; height: 300px; }
+  .leyendaSeries { display: flex; flex-wrap: wrap; gap: .35rem .9rem; margin: .5rem 0 0; padding: 0; list-style: none; font-size: .8rem; }
+  .leyendaSeries li { display: inline-flex; align-items: center; gap: .35rem; }
+  .leyendaSeries span { width: .85rem; height: 3px; border-radius: 2px; }
 }

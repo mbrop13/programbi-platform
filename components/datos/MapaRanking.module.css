@@ -297,3 +297,69 @@
     gap: 0.1rem;
   }
 }
+
+/* Tarjeta de región al pasar el cursor, enfocar o tocar el mapa. */
+.geografia { position: relative; }
+.tarjeta {
+  position: absolute;
+  z-index: 5;
+  width: 264px;
+  max-width: calc(100% - 16px);
+  padding: 1rem 1.05rem 1.05rem;
+  border: 1px solid #e4e5e8;
+  border-radius: 1rem;
+  background: #fff;
+  color: #111214;
+  box-shadow: 0 12px 32px rgb(17 18 20 / 0.14);
+  text-align: left;
+}
+.tarjetaCabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+.tarjetaCabecera strong { font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif; font-size: 1.05rem; line-height: 1.2; }
+.tarjetaCerrar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: -.45rem -.45rem 0 0;
+  border: 0;
+  border-radius: .6rem;
+  background: transparent;
+  color: #4b5058;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.tarjetaCerrar:hover { background: #eff0f2; color: #111214; }
+.tarjetaTasa {
+  margin: .35rem 0 0;
+  font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif;
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.04em;
+  color: #0e7a55;
+}
+.tarjetaTasa span { font-size: .5em; }
+.tarjetaTasa sup { font-size: .35em; margin-left: .2em; }
+.tarjetaEtiqueta { margin: .2rem 0 0; font-size: .82rem; color: #4b5058; }
+.tarjetaDatos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; margin: .8rem 0 0; padding-top: .7rem; border-top: 1px solid #e4e5e8; }
+.tarjetaDatos dt { font-size: .72rem; color: #4b5058; }
+.tarjetaDatos dd { margin: .1rem 0 0; font-size: .92rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tarjetaNota { margin: .6rem 0 0; font-size: .75rem; color: #4b5058; }
+.tarjetaBoton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  margin-top: .85rem;
+  border-radius: .75rem;
+  background: #111214;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background-color .15s ease;
+}
+.tarjetaBoton:hover { background: #2b2d31; }
+.tarjetaBoton:focus-visible, .tarjetaCerrar:focus-visible { outline: 2px solid #3442de; outline-offset: 2px; }

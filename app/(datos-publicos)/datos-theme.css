@@ -46,14 +46,14 @@
 }
 
 @theme {
-  --color-canvas: #f7f4ee;
+  --color-canvas: #f7f7f8;
   --color-paper: #ffffff;
-  --color-wash: #f0ece4;
-  --color-ink: #1b1a17;
-  --color-mute: #5b574f;
-  --color-faint: #78716c;
-  --color-line: #e6e0d5;
-  --color-line-strong: #d3cbbc;
+  --color-wash: #eff0f2;
+  --color-ink: #111214;
+  --color-mute: #4b5058;
+  --color-faint: #6b7079;
+  --color-line: #e4e5e8;
+  --color-line-strong: #d1d3d8;
 
   /* Colores de tema por observatorio (orientación). Las variantes "-tinta" pasan AA sobre blanco. */
   --color-carreras: #3442de;
@@ -67,7 +67,7 @@
   --color-resalte: #ffd84d;
 
   /*
-   * "blue" pasa a ser el cobalto de carreras y "slate" un neutro cálido, para que los
+   * "blue" pasa a ser el cobalto de carreras y "slate" el gris neutro de la web principal, para que los
    * componentes existentes (tablas, filtros, calculadoras) hereden la paleta sin reescribirse.
    */
   --color-blue-50: #eef0ff;
@@ -82,15 +82,15 @@
   --color-blue-900: #22297b;
   --color-blue-950: #161a4a;
 
-  --color-slate-50: #faf8f4;
-  --color-slate-100: #f0ece4;
-  --color-slate-200: #e6e0d5;
-  --color-slate-300: #d3cbbc;
-  --color-slate-400: #a8a093;
-  --color-slate-500: #78716c;
-  --color-slate-600: #5b574f;
-  --color-slate-700: #44403a;
-  --color-slate-800: #2b2925;
-  --color-slate-900: #1b1a17;
-  --color-slate-950: #0f0e0c;
+  --color-slate-50: #fafafb;
+  --color-slate-100: #eff0f2;
+  --color-slate-200: #e4e5e8;
+  --color-slate-300: #d1d3d8;
+  --color-slate-400: #9a9ea6;
+  --color-slate-500: #6b7079;
+  --color-slate-600: #4b5058;
+  --color-slate-700: #3a3e45;
+  --color-slate-800: #23252a;
+  --color-slate-900: #111214;
+  --color-slate-950: #0a0a0c;
 }

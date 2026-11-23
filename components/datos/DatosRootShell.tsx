@@ -56,7 +56,7 @@ export function DatosRootShell({
                 <img src="/images/logo-nav.webp" alt="ProgramBI" width="136" height="35" />
               </a>
               <a href="/datos" className={styles.sectionTag}>
-                Datos de Chile
+                Datos
               </a>
             </div>
 
