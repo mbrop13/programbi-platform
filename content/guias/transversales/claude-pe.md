@@ -1,6 +1,6 @@
 ---
-title: "Claude para análisis de datos en Perú: guía práctica"
-description: "Aprende a limpiar planillas, conciliar comprobantes SUNAT y crear fórmulas de Excel con Claude. Ejemplos en soles (PEN) y reglas de privacidad."
+title: "Claude para análisis de datos en Perú: guía 2026 con prompts"
+description: "Usa Claude para limpiar planillas, conciliar comprobantes SUNAT y crear fórmulas de Excel sin programar. Prompts listos, ejemplos en soles y privacidad."
 h1: "Cómo usar Claude para análisis de datos en Perú sin saber programar"
 country: pe
 lang: es-PE

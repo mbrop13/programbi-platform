@@ -70,6 +70,10 @@ export function metadataDeGuia(guia: Guia, indexable: boolean): Metadata {
       tags: [cursoLabel, lugar, "ProgramBI"],
       images,
     },
-    twitter: share.twitter,
+    twitter: {
+      ...share.twitter,
+      title,
+      description,
+    },
   };
 }
