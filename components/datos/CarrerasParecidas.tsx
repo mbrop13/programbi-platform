@@ -1,5 +1,5 @@
 import Link from "@/components/datos/EnlaceNavegacionDatos";
-import { ArrowLeft, ArrowRight, BookOpen, GitCompare } from "lucide-react";
+import { ArrowLeft, ArrowRight, GitCompare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button-variants";
 import {
@@ -167,97 +167,52 @@ export function CarrerasParecidas({
         </Card>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
-          <CardContent className="flex h-full flex-col justify-between p-5">
-            <span className="text-xs font-medium text-muted-foreground">
-              Navegación en el ranking ({TIPO_ETIQUETAS[tipoActual].corto})
-            </span>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {anteriorEnRanking ? (
-                <Link
-                  href={`/datos/carreras/${anteriorEnRanking.slug}`}
-                  className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 p-3 text-xs transition-colors hover:border-slate-300 hover:bg-card"
-                >
-                  <ArrowLeft className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                  <div className="min-w-0">
-                    <span className="block text-[10px] text-muted-foreground">Puesto superior</span>
-                    <span className="block truncate font-semibold text-foreground">
-                      {anteriorEnRanking.nombre}
-                    </span>
-                  </div>
-                </Link>
-              ) : (
-                <div className="rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground">
-                  Primer lugar del ranking
+      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+        <CardContent className="flex h-full flex-col justify-between p-5">
+          <span className="text-xs font-medium text-muted-foreground">
+            Navegación en el ranking ({TIPO_ETIQUETAS[tipoActual].corto})
+          </span>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {anteriorEnRanking ? (
+              <Link
+                href={`/datos/carreras/${anteriorEnRanking.slug}`}
+                className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 p-3 text-xs transition-colors hover:border-slate-300 hover:bg-card"
+              >
+                <ArrowLeft className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                <div className="min-w-0">
+                  <span className="block text-[10px] text-muted-foreground">Puesto superior</span>
+                  <span className="block truncate font-semibold text-foreground">
+                    {anteriorEnRanking.nombre}
+                  </span>
                 </div>
-              )}
+              </Link>
+            ) : (
+              <div className="rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground">
+                Primer lugar del ranking
+              </div>
+            )}
 
-              {siguienteEnRanking ? (
-                <Link
-                  href={`/datos/carreras/${siguienteEnRanking.slug}`}
-                  className="flex items-center justify-end gap-2 rounded-lg border border-border bg-muted/40 p-3 text-right text-xs transition-colors hover:border-slate-300 hover:bg-card"
-                >
-                  <div className="min-w-0">
-                    <span className="block text-[10px] text-muted-foreground">Puesto siguiente</span>
-                    <span className="block truncate font-semibold text-foreground">
-                      {siguienteEnRanking.nombre}
-                    </span>
-                  </div>
-                  <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                </Link>
-              ) : (
-                <div className="rounded-lg border border-dashed border-border p-3 text-right text-xs text-muted-foreground">
-                  Último lugar evaluado
+            {siguienteEnRanking ? (
+              <Link
+                href={`/datos/carreras/${siguienteEnRanking.slug}`}
+                className="flex items-center justify-end gap-2 rounded-lg border border-border bg-muted/40 p-3 text-right text-xs transition-colors hover:border-slate-300 hover:bg-card"
+              >
+                <div className="min-w-0">
+                  <span className="block text-[10px] text-muted-foreground">Puesto siguiente</span>
+                  <span className="block truncate font-semibold text-foreground">
+                    {siguienteEnRanking.nombre}
+                  </span>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
-          <CardContent className="flex h-full flex-col justify-between p-5">
-            <div>
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                <BookOpen className="size-3.5 text-blue-600" aria-hidden="true" />
-                Habilidades complementarias en ProgramBI
-              </span>
-              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                Herramientas prácticas de análisis de datos útiles en cualquier área profesional.
-              </p>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Link
-                href="/cursos/excel"
-                className={cn(
-                  buttonVariants({ variant: "secondary", size: "sm" }),
-                  "h-8 rounded-md px-3 text-xs font-medium"
-                )}
-              >
-                Curso de Excel →
+                <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               </Link>
-              <Link
-                href="/cursos/power-bi"
-                className={cn(
-                  buttonVariants({ variant: "secondary", size: "sm" }),
-                  "h-8 rounded-md px-3 text-xs font-medium"
-                )}
-              >
-                Curso de Power BI →
-              </Link>
-              <Link
-                href="/cursos/analisis-de-datos"
-                className={cn(
-                  buttonVariants({ variant: "secondary", size: "sm" }),
-                  "h-8 rounded-md px-3 text-xs font-medium"
-                )}
-              >
-                Análisis de Datos →
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            ) : (
+              <div className="rounded-lg border border-dashed border-border p-3 text-right text-xs text-muted-foreground">
+                Último lugar evaluado
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }

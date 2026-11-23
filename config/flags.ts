@@ -13,6 +13,10 @@ function env(valor: string | undefined): string {
 /** `/clase-gratis` se publica solo con este flag en "1". Apagado = 404. Hoy está APAGADO. */
 export const CLASE_GRATIS_HABILITADA = env(process.env.NEXT_PUBLIC_CLASE_GRATIS).toLowerCase() === "1";
 
+/** Oferta de clase gratis vía WhatsApp en fichas y guías. Se apaga con "0". */
+export const OFERTA_CLASE_GRATIS_WHATSAPP =
+  env(process.env.NEXT_PUBLIC_OFERTA_CLASE_GRATIS_WHATSAPP).toLowerCase() !== "0";
+
 /** Fecha ISO (YYYY-MM-DD) de la próxima clase gratis. null = sin fecha. */
 function fechaValida(valor: string): string | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) return null;

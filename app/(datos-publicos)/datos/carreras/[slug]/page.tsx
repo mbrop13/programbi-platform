@@ -5,6 +5,7 @@ import { Calculator, GitCompare } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CarrerasParecidas } from "@/components/datos/CarrerasParecidas";
+import { CtaCarreraSueldo } from "@/components/datos/CtaCarreraSueldo";
 import { CtaDatos } from "@/components/datos/CtaDatos";
 import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
@@ -170,6 +171,13 @@ export default async function FichaCarreraPage({
         instituciones={instituciones}
         programas={programas}
         edicion={meta.edicion}
+        ctaSueldo={
+          <CtaCarreraSueldo
+            slug={carrera.slug}
+            nombreCorto={carrera.nombre}
+            area={carrera.area}
+          />
+        }
       />
 
       {/* Bloque "En resumen" citable */}
@@ -211,7 +219,12 @@ export default async function FichaCarreraPage({
       />
 
       {/* CTA ProgramBI */}
-      <CtaDatos slug={carrera.slug} pagina={`/datos/carreras/${carrera.slug}`} />
+      <CtaDatos
+        slug={carrera.slug}
+        area={carrera.area}
+        nombreCorto={carrera.nombre}
+        pagina={`/datos/carreras/${carrera.slug}`}
+      />
 
       {/* Fuente y aviso legal */}
       <FuenteLinea edicion={meta.edicion} conAviso />
