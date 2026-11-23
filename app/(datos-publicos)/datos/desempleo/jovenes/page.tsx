@@ -9,8 +9,18 @@ import { SITE_URL } from "@/lib/seo";
 export const dynamic = "force-static";
 const url = `${SITE_URL}/datos/desempleo/jovenes`;
 const datos = datosJovenes();
-const title = "Desempleo juvenil en Chile: datos del INE";
-const description = datos ? `La desocupación de jóvenes de 15 a 24 años fue ${tasa(datos.tasa).replace(" ", " ")} en ${periodo(datos.actual.p)}, según el INE. Explora la evolución y descarga los datos oficiales por edad.` : "Datos oficiales sobre desempleo juvenil en Chile.";
+const tasaStr = datos ? tasa(datos.tasa).replace("\u00a0", " ") : "";
+const trimestre = datos ? periodo(datos.actual.p) : "";
+const tituloDinamico = datos
+  ? `Desempleo juvenil en Chile: ${tasaStr} en ${trimestre} (INE)`
+  : "Desempleo juvenil en Chile: datos del INE";
+const title =
+  tituloDinamico.length <= 60
+    ? tituloDinamico
+    : `Desempleo juvenil en Chile: ${tasaStr} (${trimestre})`;
+const description = datos
+  ? `La desocupación de jóvenes de 15 a 24 años fue ${tasaStr} en ${trimestre}, según el INE. Explora la evolución y descarga los datos oficiales por edad.`
+  : "Datos oficiales sobre desempleo juvenil en Chile.";
 const imagen = `${SITE_URL}/datos/desempleo/og/jovenes?v=${REVISION_DESEMPLEO}`;
 export const metadata: Metadata = {
   title: { absolute: title }, description, alternates: { canonical: url }, robots: { index: Boolean(datos), follow: true },

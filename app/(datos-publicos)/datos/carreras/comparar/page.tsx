@@ -45,7 +45,7 @@ const FAQS = [
 export function generateMetadata(): Metadata {
   return metadataSimpleDatos({
     path: "/datos/carreras/comparar",
-    title: "Comparador de carreras en Chile: sueldos y empleo",
+    title: "Comparador de carreras en Chile 2026: sueldos y empleo",
     description:
       "Compara hasta 3 carreras en Chile lado a lado: sueldos 1.º al 5.º año, empleabilidad, duración real y aranceles 2026 con datos oficiales de mifuturo.cl.",
   });

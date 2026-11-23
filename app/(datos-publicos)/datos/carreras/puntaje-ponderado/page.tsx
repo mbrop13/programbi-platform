@@ -37,9 +37,9 @@ const FAQS = [
 export function generateMetadata(): Metadata {
   return metadataSimpleDatos({
     path: "/datos/carreras/puntaje-ponderado",
-    title: "Calculadora de puntaje ponderado PAES 2026 | ProgramBI",
+    title: "Calculadora de puntaje ponderado PAES Chile 2026",
     description:
-      "Calcula tu puntaje ponderado con NEM, Ranking y PAES aplicando las ponderaciones reales por universidad y carrera en Chile.",
+      "Calcula tu puntaje ponderado PAES con NEM y Ranking aplicando las ponderaciones reales por universidad y carrera en Chile según datos oficiales SIES.",
   });
 }
 
