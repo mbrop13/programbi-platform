@@ -3,8 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CalendarClock, Languages, Receipt, Video } from "lucide-react";
 import { getPais } from "@/config/paises";
-import { precioVenta } from "@/lib/paises/precios";
-import { getActivePromotions } from "@/lib/supabase/comunidad-ai";
+import { precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
 import { courses, getCourseBySlug } from "@/lib/data/courses";
 import { catalogHours } from "@/lib/data/course-views";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
@@ -79,7 +78,8 @@ export default async function MiamiPage({
   const contenido = getContenidoPais(PAIS);
   const horario = horarioLocal(PAIS);
   const horaLocal = etiquetaHoraLocal(PAIS);
-  const promotions = await getActivePromotions();
+  // /us/miami nunca aplica promociones de Chile.
+  const promotions: PromocionAplicable[] = [];
 
   const destacados = CURSOS_DESTACADOS.flatMap((slug) => {
     const curso = getCourseBySlug(slug);

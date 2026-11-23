@@ -284,7 +284,7 @@ export default function PagoClient({
     mercadoLocal ? montoConCodigo(paisPago, monto) : formatMoneda(paisPago, monto);
   const convertAndFormat = (clpAmount: number, slug?: string, qty = 1) => {
     if ((mercadoLocal || puedeMonedaLocal) && paisPago !== "cl" && slug && slug !== "asesoria") {
-      const local = precioCurso(paisPago, slug, promotions);
+      const local = precioCurso(paisPago, slug, []);
       if (local != null) return textoLocal(local * qty);
     }
     return convertPrice(clpAmount);
@@ -299,11 +299,15 @@ export default function PagoClient({
       withCoupon && appliedCoupon
         ? totalLocalConCupon(
             paisPago,
-            items.map((item) => ({ slug: item.slug, quantity: item.quantity, conPromo: item.hasDiscount === true })),
+            items.map((item) => ({
+              slug: item.slug,
+              quantity: item.quantity,
+              conPromo: ["analisis-de-datos", "analitica-mineria"].includes(item.slug),
+            })),
             { pct: appliedCoupon.discount_percentage, stacking: appliedCoupon.allow_stacking },
-            promotions
+            []
           )
-        : totalLocal(paisPago, items, promotions);
+        : totalLocal(paisPago, items, []);
     if (local != null) return textoLocal(local);
     return convertPrice(clpAmount);
   };
@@ -314,12 +318,16 @@ export default function PagoClient({
     if (paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal) || !appliedCoupon) {
       return convertPrice(clpDiscount);
     }
-    const antes = totalLocal(paisPago, items, promotions);
+    const antes = totalLocal(paisPago, items, []);
     const despues = totalLocalConCupon(
       paisPago,
-      items.map((item) => ({ slug: item.slug, quantity: item.quantity, conPromo: item.hasDiscount === true })),
+      items.map((item) => ({
+        slug: item.slug,
+        quantity: item.quantity,
+        conPromo: ["analisis-de-datos", "analitica-mineria"].includes(item.slug),
+      })),
       { pct: appliedCoupon.discount_percentage, stacking: appliedCoupon.allow_stacking },
-      promotions
+      []
     );
     if (antes != null && despues != null) {
       return textoLocal(Math.max(0, Math.round((antes - despues) * 100) / 100));
@@ -328,8 +336,8 @@ export default function PagoClient({
   };
   const tachadoLocal = (slug: string | undefined, qty = 1) => {
     if (!slug || slug === "asesoria" || paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal)) return null;
-    const lista = precioLista(paisPago, slug, promotions);
-    const cobro = precioCurso(paisPago, slug, promotions);
+    const lista = precioLista(paisPago, slug, []);
+    const cobro = precioCurso(paisPago, slug, []);
     if (lista == null || cobro == null || lista <= cobro) return null;
     return { texto: textoLocal(lista * qty), pct: porcentajeDescuento(lista, cobro) };
   };

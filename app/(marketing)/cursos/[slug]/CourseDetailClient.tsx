@@ -94,6 +94,15 @@ function withDialCode(raw: string, code: string) {
   return `${code}${trimmed.replace(/\D/g, "")}`;
 }
 
+function calcularMontoCuotaPais(iso: string, precio: number, numCuotas: number): number {
+  if (numCuotas <= 0) return precio;
+  if (precio % numCuotas === 0) return precio / numCuotas;
+  const { decimales } = getPais(iso);
+  return decimales > 0
+    ? Math.round((precio / numCuotas) * 100) / 100
+    : Math.round(precio / numCuotas);
+}
+
 type CourseLeadType = "personal" | "empresa";
 
 /**
@@ -544,17 +553,27 @@ export default function CourseDetailClient({
             {formatMoneda(pais, precioLocalCliente)}
           </span>
           <span className="text-[11px] text-faint">
-            {precioDirecto ? `${monedaPublica(pais)} · precio del curso` : "arancel del curso"}
+            {precioDirecto
+              ? `${monedaPublica(pais)} · precio del curso`
+              : precioListaCliente != null && precioListaCliente > precioLocalCliente
+                ? "arancel del curso"
+                : "precio normal"}
           </span>
         </p>
         {numCuotas > 0 ? (
           <p className="text-xs text-mute">
-            {formatMoneda(pais, precioLocalCliente / numCuotas)} en {textoCuotas(pais)}
+            {formatMoneda(pais, calcularMontoCuotaPais(pais, precioLocalCliente, numCuotas))} en{" "}
+            {textoCuotas(pais)}
           </p>
         ) : null}
         {precioHora != null ? (
           <p className="text-xs text-mute">
             ≈ {formatMoneda(pais, precioHora)} por hora de clase
+          </p>
+        ) : null}
+        {!precioDirecto ? (
+          <p className="text-xs text-mute">
+            Clase gratis · sesión abierta por Zoom sin costo
           </p>
         ) : null}
         <p className="text-xs text-mute">
@@ -850,10 +869,19 @@ export default function CourseDetailClient({
                           <span className="w-full text-base font-bold tracking-tight text-ink">
                             {descuentoLocalCliente}% de descuento
                           </span>
+                        ) : !canSeePrice && precioLocalCliente != null && !precioDirecto ? (
+                          <span className="w-full text-sm font-bold tracking-tight text-ink">
+                            Precio normal en {monedaPublica(pais)}
+                          </span>
                         ) : null}
                         {numCuotas > 0 ? (
                           <span className="font-semibold text-ink">
                             Pago en {textoCuotas(pais)}
+                          </span>
+                        ) : null}
+                        {!precioDirecto ? (
+                          <span className="w-full text-[11px] text-mute">
+                            Clase gratis · sesión abierta por Zoom sin costo
                           </span>
                         ) : null}
                         <Link

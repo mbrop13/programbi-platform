@@ -9,6 +9,7 @@ import {
   tituloLocal,
 } from "@/lib/seo";
 import {
+  ISO_CHILE,
   PAISES_INDEXABLES,
   getPais,
   muestraPrecioDirecto,
@@ -127,7 +128,8 @@ export default async function PreciosPage({
   params: Promise<{ pais?: string }>;
 }) {
   const iso = normalizarPais((await params).pais);
-  const { pais, cursos, moneda, cobroLocal, promotions } = await preciosDePais(iso);
+  const { pais, cursos, moneda, cobroLocal, promotions: rawPromotions } = await preciosDePais(iso);
+  const promotions = iso === ISO_CHILE ? rawPromotions : [];
   const bloque = getBloqueLocal(iso);
   const paginaBloque = getPaginaBloqueLocal(iso, "precios");
   const cuotas = textoCuotas(iso);
@@ -248,57 +250,64 @@ export default async function PreciosPage({
           )}
 
           {powerBi ? (
-            <dl className="mt-6 grid gap-4 rounded-2xl border border-line bg-paper p-5 text-sm sm:grid-cols-2 lg:grid-cols-5">
-              <div>
-                <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-                  {precioDirecto && powerBi.priceValue != null
-                    ? "Precio del curso"
-                    : discountLabel
-                      ? "Descuento vigente"
-                      : "Arancel"}
-                </dt>
-                <dd className="mt-1 font-semibold text-ink">
-                  {precioDirecto && powerBi.priceValue != null
-                    ? powerBi.priceLabel
-                    : (discountLabel ?? "Consulta por WhatsApp")}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-                  Curso Power BI
-                </dt>
-                <dd className="mt-1 font-semibold text-ink">
-                  <Link
-                    href={courseBrochurePath(powerBi.slug, pais.iso)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="no-underline hover:text-mute"
-                  >
-                    Ver temario y precios (PDF)
-                  </Link>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-                  Duración
-                </dt>
-                <dd className="mt-1 font-semibold text-ink">{powerBi.hours} h</dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-                  Modalidad
-                </dt>
-                <dd className="mt-1 font-semibold text-ink">En vivo por Zoom</dd>
-              </div>
-              <div>
-                <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
-                  {textoCuotas(pais.iso) ? "Financiamiento" : "Forma de pago"}
-                </dt>
-                <dd className="mt-1 font-semibold text-ink">
-                  {textoCuotas(pais.iso) || "Un solo pago con tarjeta"}
-                </dd>
-              </div>
-            </dl>
+            <div className="mt-6 rounded-2xl border border-line bg-paper p-5">
+              <dl className="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-5">
+                <div>
+                  <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                    {precioDirecto && powerBi.priceValue != null
+                      ? "Precio del curso"
+                      : discountLabel
+                        ? "Descuento vigente"
+                        : "Arancel de referencia"}
+                  </dt>
+                  <dd className="mt-1 font-semibold text-ink">
+                    {precioDirecto && powerBi.priceValue != null
+                      ? powerBi.priceLabel
+                      : (discountLabel ?? `Precio normal en ${moneda}`)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                    Curso Power BI
+                  </dt>
+                  <dd className="mt-1 font-semibold text-ink">
+                    <Link
+                      href={courseBrochurePath(powerBi.slug, pais.iso)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="no-underline hover:text-mute"
+                    >
+                      Ver temario y precios (PDF)
+                    </Link>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                    Duración
+                  </dt>
+                  <dd className="mt-1 font-semibold text-ink">{powerBi.hours} h</dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                    Modalidad
+                  </dt>
+                  <dd className="mt-1 font-semibold text-ink">En vivo por Zoom</dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
+                    {textoCuotas(pais.iso) ? "Financiamiento" : "Forma de pago"}
+                  </dt>
+                  <dd className="mt-1 font-semibold text-ink">
+                    {textoCuotas(pais.iso) || "Un solo pago con tarjeta"}
+                  </dd>
+                </div>
+              </dl>
+              {!precioDirecto ? (
+                <p className="mt-4 border-t border-line pt-3 text-xs font-medium text-mute">
+                  Clase gratis · sesión abierta por Zoom sin costo.
+                </p>
+              ) : null}
+            </div>
           ) : null}
 
           <PreciosGateClient

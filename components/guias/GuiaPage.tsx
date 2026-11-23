@@ -52,11 +52,12 @@ type Props = {
  * JSON-LD), fuentes y tarjetas de enlazado interno.
  */
 export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas }: Props) {
-  const [inicio, promotions] = await Promise.all([
+  const [inicio, promotionsRaw] = await Promise.all([
     proximoInicioDeCurso(guia.course),
     getActivePromotions(),
   ]);
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
+  const promotions = iso === ISO_CHILE ? promotionsRaw : [];
   const brochureHref = guia.course === "general" ? undefined : courseBrochurePath(guia.course, iso);
   const body = resolverPrecios(guia.body, guia, promotions).replace(/^#\s+.*\n+/, "");
   const actualizado = fechaActualizado(guia.updated);

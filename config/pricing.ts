@@ -108,7 +108,8 @@ export function precioListaPublico(iso: string | null | undefined, slug: string)
     return Number.isFinite(lista) && lista > cobro ? lista : null;
   }
   const pais = getPais(paisIso);
-  if (pais.sinDescuento || pais.listas === "catalogo") return null;
+  if (pais.listas === "catalogo") return null;
+  if (pais.sinDescuento && slug !== "mercado-financiero") return null;
   const listaBase = pais.listas[slug as SlugCurso];
   if (typeof listaBase !== "number" || listaBase <= 0) return null;
   const lista = aplicarPisoChile(listaBase, slug as SlugCurso, pais.iso, "lista");

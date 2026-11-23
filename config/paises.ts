@@ -140,6 +140,33 @@ function precios(normal: number, analisis: number): PreciosCurso {
 }
 
 /**
+ * Precio normal explícito para mercados LatAm: 20h, 60h y Mercado Financiero
+ * (30h) con su valor vigente exacto sin recalcular con `cobroMercado`.
+ */
+function preciosLatAm(
+  normal20h: number,
+  analisis60h: number,
+  mercadoFinanciero30h: number
+): PreciosCurso {
+  const tabla = preciosVacios();
+  for (const slug of SLUGS_CURSO) {
+    tabla[slug] = SLUGS_ANALISIS.has(slug) ? analisis60h : normal20h;
+  }
+  tabla["mercado-financiero"] = mercadoFinanciero30h;
+  return tabla;
+}
+
+/**
+ * Precio de lista solo para Mercado Financiero (30h); los cursos de 20h y 60h
+ * quedan en `null` (precio normal sin tachado ni % de descuento).
+ */
+function listasSoloMercadoFinanciero(listaMF: number): PreciosCurso {
+  const tabla = preciosVacios();
+  tabla["mercado-financiero"] = listaMF;
+  return tabla;
+}
+
+/**
  * Precio de lista de los mercados locales. Chile no usa esta tabla: su precio
  * de venta y su lista viven en `config/pricing.ts`.
  * `normal` es el original local. Análisis de datos (y su versión minera)
@@ -155,31 +182,26 @@ function listas(normal: number): PreciosCurso {
 }
 
 /**
- * Pesos argentinos (ARS). PRECIOS_ARS es el cobro. PRECIOS_LISTA_ARS es el tachado.
- * Actualiza los dos cuando haya inflación.
+ * Pesos argentinos (ARS). PRECIOS_ARS es el cobro. PRECIOS_LISTA_ARS solo
+ * mantiene el tachado de Mercado Financiero (30h).
  */
-export const PRECIOS_LISTA_ARS: PreciosCurso = listas(280000);
+export const PRECIOS_LISTA_ARS: PreciosCurso = listasSoloMercadoFinanciero(643000);
 
-/** Análisis de datos y su versión minera, al mismo monto en pesos. */
-const ANALISIS_DE_DATOS_ARS = 379900;
+export const PRECIOS_ARS_META = {
+  vigenteDesde: "2026-11-23",
+  revisarAntesDe: "2026-12-15",
+  tcReferencia: {
+    fuente: "MEP/bolsa (dolarapi.com/v1/dolares/bolsa)",
+    venta: 1743.1,
+    fecha: "2026-11-22",
+  },
+  usdObjetivo: {
+    basicoIntermedio: 179,
+    analisisDatos: 358,
+  },
+} as const;
 
-export const PRECIOS_ARS: PreciosCurso = {
-  "analisis-de-datos": ANALISIS_DE_DATOS_ARS,
-  copilot: 189900,
-  claude: 189900,
-  "power-automate": 189900,
-  // Mismo curso y mismo valor que Análisis de datos.
-  "analitica-mineria": ANALISIS_DE_DATOS_ARS,
-  "ia-productividad": 189900,
-  "power-bi": 189900,
-  python: 189900,
-  "sql-server": 189900,
-  excel: 189900,
-  access: 189900,
-  "machine-learning": 189900,
-  // 189900 × 249/169, al corte de 900. En Chile el catálogo es $349.000.
-  "mercado-financiero": 279900,
-};
+export const PRECIOS_ARS: PreciosCurso = preciosLatAm(312000, 624000, 437000);
 
 /**
  * Dólares de Estados Unidos y España. Sin descuento ni precio tachado (lista = vigente):
@@ -311,7 +333,7 @@ export const PAISES: Pais[] = [
     pago: "mp",
     precios: PRECIOS_ARS,
     listas: PRECIOS_LISTA_ARS,
-    tramoPrecio: 0.8,
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: true,
     indexable: true,
@@ -328,9 +350,9 @@ export const PAISES: Pais[] = [
     locale: "es-BO",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(139, 279),
-    listas: listas(205),
-    tramoPrecio: 0.7,
+    precios: preciosLatAm(149, 298, 245),
+    listas: listasSoloMercadoFinanciero(360),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -347,9 +369,9 @@ export const PAISES: Pais[] = [
     locale: "es-CO",
     decimales: 0,
     pago: "mp",
-    precios: precios(399900, 799900),
-    listas: listas(590000),
-    tramoPrecio: 0.75,
+    precios: preciosLatAm(519000, 1038000, 878000),
+    listas: listasSoloMercadoFinanciero(1294000),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: true,
@@ -367,9 +389,9 @@ export const PAISES: Pais[] = [
     decimales: 2,
     pago: "usd-chile",
     // Importes fijos para Costa Rica; no se derivan del precio chileno.
-    precios: precios(169, 339),
-    listas: listas(249),
-    tramoPrecio: 0.85,
+    precios: preciosLatAm(199, 398, 297),
+    listas: listasSoloMercadoFinanciero(437),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -386,9 +408,9 @@ export const PAISES: Pais[] = [
     locale: "es-EC",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(149, 299),
-    listas: listas(220),
-    tramoPrecio: 0.75,
+    precios: preciosLatAm(149, 298, 262),
+    listas: listasSoloMercadoFinanciero(386),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -405,9 +427,9 @@ export const PAISES: Pais[] = [
     locale: "es-SV",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(149, 299),
-    listas: listas(220),
-    tramoPrecio: 0.75,
+    precios: preciosLatAm(149, 298, 262),
+    listas: listasSoloMercadoFinanciero(386),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -478,9 +500,9 @@ export const PAISES: Pais[] = [
     locale: "es-GT",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(149, 299),
-    listas: listas(220),
-    tramoPrecio: 0.75,
+    precios: preciosLatAm(149, 298, 262),
+    listas: listasSoloMercadoFinanciero(386),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -497,9 +519,9 @@ export const PAISES: Pais[] = [
     locale: "es-HN",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(139, 279),
-    listas: listas(205),
-    tramoPrecio: 0.7,
+    precios: preciosLatAm(149, 298, 245),
+    listas: listasSoloMercadoFinanciero(360),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -516,9 +538,9 @@ export const PAISES: Pais[] = [
     locale: "es-MX",
     decimales: 0,
     pago: "mp",
-    precios: precios(2490, 4990),
-    listas: listas(3660),
-    tramoPrecio: 0.8,
+    precios: preciosLatAm(3480, 6960, 5320),
+    listas: listasSoloMercadoFinanciero(7830),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: true,
@@ -535,9 +557,9 @@ export const PAISES: Pais[] = [
     locale: "es-NI",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(129, 259),
-    listas: listas(190),
-    tramoPrecio: 0.7,
+    precios: preciosLatAm(149, 298, 245),
+    listas: listasSoloMercadoFinanciero(360),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -554,10 +576,10 @@ export const PAISES: Pais[] = [
     locale: "es-PA",
     decimales: 2,
     pago: "usd-chile",
-    // Mismo precio que Costa Rica: USD 149 y análisis 299.
-    precios: precios(169, 339),
-    listas: listas(249),
-    tramoPrecio: 0.85,
+    // Mismo precio que Costa Rica: USD 199 y análisis 398.
+    precios: preciosLatAm(199, 398, 297),
+    listas: listasSoloMercadoFinanciero(437),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -574,10 +596,9 @@ export const PAISES: Pais[] = [
     locale: "es-PY",
     decimales: 2,
     pago: "usd-chile",
-    // Tramo piso 75% de Chile en USD (187 / 127 en 20h, 561 / 254 en 60h).
-    precios: precios(127, 254),
-    listas: listas(187),
-    tramoPrecio: 0.75,
+    precios: preciosLatAm(149, 298, 262),
+    listas: listasSoloMercadoFinanciero(386),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -592,11 +613,11 @@ export const PAISES: Pais[] = [
     moneda: "PEN",
     simbolo: "S/",
     locale: "es-PE",
-    decimales: 2,
+    decimales: 0,
     pago: "mp",
-    precios: precios(419, 839),
-    listas: listas(620),
-    tramoPrecio: 0.75,
+    precios: preciosLatAm(618, 1236, 904),
+    listas: listasSoloMercadoFinanciero(1332),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: true,
@@ -613,9 +634,9 @@ export const PAISES: Pais[] = [
     locale: "es-DO",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(159, 319),
-    listas: listas(235),
-    tramoPrecio: 0.8,
+    precios: preciosLatAm(149, 298, 280),
+    listas: listasSoloMercadoFinanciero(412),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -632,9 +653,9 @@ export const PAISES: Pais[] = [
     locale: "es-UY",
     decimales: 0,
     pago: "mp",
-    precios: precios(5990, 11990),
-    listas: listas(8790),
-    tramoPrecio: 0.85,
+    precios: preciosLatAm(8100, 16200, 12177),
+    listas: listasSoloMercadoFinanciero(17917),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: true,
     indexable: true,
@@ -651,9 +672,9 @@ export const PAISES: Pais[] = [
     locale: "es-VE",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(129, 259),
-    listas: listas(190),
-    tramoPrecio: 0.7,
+    precios: preciosLatAm(149, 298, 245),
+    listas: listasSoloMercadoFinanciero(360),
+    sinDescuento: true,
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
