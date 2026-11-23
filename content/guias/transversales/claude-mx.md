@@ -1,6 +1,6 @@
 ---
-title: Cómo usar Claude para análisis de datos en México
-description: Prompts listos para conciliar reportes, limpiar bases de clientes y explicar variaciones con Claude. Ejemplos en MXN y privacidad.
+title: Claude para análisis de datos en México: guía 2026
+description: Usa Claude para conciliar reportes, limpiar bases de clientes y explicar variaciones sin programar. Prompts listos, ejemplos en MXN y reglas de privacidad.
 h1: Claude para análisis de datos: guía práctica para equipos en México
 country: mx
 lang: es-MX

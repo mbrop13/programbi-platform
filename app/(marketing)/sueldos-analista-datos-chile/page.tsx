@@ -14,9 +14,14 @@ import { SITE_URL, absoluteUrl, breadcrumbJsonLd, jsonLdString, pageOg } from "@
 export const revalidate = 86400;
 
 const path = "/sueldos-analista-datos-chile";
-const title = "Sueldo analista de datos Chile 2026: calculadora | ProgramBI";
-const description =
-  "Referencias de sueldo de Analista de Datos y BI en Chile (Chiletrabajos, Indeed, GetOnBoard) + calculadora Bruto a Líquido en CLP y ruta de habilidades.";
+const refDatos = REFERENCIAS_SUELDO_CHILE.find((r) => r.id === "chiletrabajos-datos");
+const refBi = REFERENCIAS_SUELDO_CHILE.find((r) => r.id === "chiletrabajos-bi");
+if (!refDatos?.montoClp || !refBi?.montoClp) {
+  throw new Error("Faltan referencias de Chiletrabajos en REFERENCIAS_SUELDO_CHILE");
+}
+
+const title = "¿Cuánto gana un analista de datos en Chile? Sueldo 2026";
+const description = `Un analista de datos en Chile pretende en promedio ${formatClp(refDatos.montoClp)} al mes y un analista BI ${formatClp(refBi.montoClp)} (Chiletrabajos, nov 2026). Calcula tu sueldo líquido.`;
 
 const share = pageOg({
   title,

@@ -1,6 +1,6 @@
 ---
-title: "Power BI vs Looker Studio: diferencias y cuál elegir"
-description: "Comparativa práctica entre Power BI y Looker Studio (gratis y Pro): licencias, modelado DAX, conectores, seguridad y cuándo usar cada uno."
+title: "Power BI vs Looker Studio: diferencias, precio y cuál elegir"
+description: "Power BI o Looker Studio: compara precio (Looker Studio gratis o Pro desde US$ 9), modelado DAX, conectores y seguridad, y elige cuál te conviene más."
 h1: "Power BI vs Looker Studio: diferencias reales y cuál elegir"
 country: transversal
 lang: es

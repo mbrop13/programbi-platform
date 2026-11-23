@@ -5,8 +5,8 @@ pais: latam
 hreflang: es
 curso: analisis-de-datos
 url_curso: https://www.programbi.com/cursos/analisis-de-datos
-title: "Sueldo de analista de datos en Latinoamérica (2026)"
-meta: "Cuánto gana un analista de datos en Chile, México, Colombia, Perú, Argentina, Guatemala y El Salvador en 2026: rangos, fuentes y cómo subir de sueldo."
+title: "Sueldo de analista de datos en Latinoamérica 2026 por país"
+meta: "Cuánto gana un analista de datos en Chile, México, Colombia, Perú, Argentina, Guatemala y El Salvador: rangos 2026 por país y cómo subir de sueldo."
 h1: "Sueldo de analista de datos en Latinoamérica: cifras por país con fuente"
 updated: 2026-11-04
 sources:
@@ -40,7 +40,7 @@ Para Ecuador, República Dominicana, Bolivia, Costa Rica, Uruguay, Paraguay y Ve
 
 | País | Cifra mensual (moneda local) | Muestra | Rango informado | Tipo de dato | Fuente |
 |---|---|---|---|---|---|
-| Chile | $979.205 | 58.686 sueldos pretendidos (12 meses) | $906.243 a $1.045.880 | Lo que **piden** los postulantes | [Chiletrabajos](https://www.chiletrabajos.cl/sueldos/analista/datos) |
+| Chile | $979.205 | 58.686 sueldos pretendidos (12 meses) | $906.243 a $1.045.880 | Lo que **piden** los postulantes | [Chiletrabajos](https://www.chiletrabajos.cl/sueldos/analista/datos) · [Ver sueldo detallado y calculadora para Chile](/sueldos-analista-datos-chile) |
 | México | $13,098 | 5,647 salarios | $2,999 a $26,200 | Estimación de empresas, usuarios y empleados | [Computrabajo México](https://mx.computrabajo.com/salarios/analista-de-datos) |
 | Colombia | $2.416.855 | 7.156 salarios | $1.000.000 a $8.000.000 | Estimación de empresas, usuarios y empleados | [Computrabajo Colombia](https://co.computrabajo.com/salarios/analista-de-datos) |
 | Perú | S/ 2.224 | 467 salarios | S/ 500 a S/ 5.000 | Estimación de empresas, usuarios y empleados | [Computrabajo Perú](https://pe.computrabajo.com/salarios/analista-de-datos) |
