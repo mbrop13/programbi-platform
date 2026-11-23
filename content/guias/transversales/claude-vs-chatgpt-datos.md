@@ -76,7 +76,7 @@ Antes de adjuntar planillas reales:
 
 ## Aprende flujos reales con Claude en vivo en ProgramBI
 
-Si quieres llevar Claude del uso casual a procesos confiables en oficina, el [curso de Claude en vivo](/cursos/claude) de ProgramBI dura **20 horas en 1 solo nivel completo** (5 módulos de 4 horas). Cubre privacidad y planes empresariales, arquitectura de prompts, Projects y Artifacts, integración práctica con **Excel y tareas administrativas**, y automatización cotidiana aplicada a un caso real de tu trabajo, guiado por **Manuel Oliva** con acceso al campus virtual con las clases grabadas y el material durante el curso.
+Si quieres llevar Claude del uso casual a procesos confiables en oficina, el [curso de Claude en vivo](/cursos/claude) de ProgramBI dura **20 horas en 1 solo nivel completo** (5 módulos de 4 horas). Cubre privacidad y planes empresariales, arquitectura de prompts, Projects y Artifacts, integración práctica con **Excel y tareas administrativas**, y automatización cotidiana aplicada a un caso real de tu trabajo, guiado por **Manuel Oliva** con acceso al campus virtual con las clases grabadas y el material durante el curso. Si tu equipo trabaja principalmente con OpenAI, también puedes revisar el [curso de ChatGPT en vivo](/cursos/chatgpt).
 
 <!-- CTA-END -->
 

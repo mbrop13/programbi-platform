@@ -17,7 +17,7 @@ export const guia: GuiaPasoAPaso = {
     "automatizar excel con ia",
   ],
   curso: "excel",
-  cursoSecundario: "ia-productividad",
+  cursosSecundarios: ["chatgpt", "gemini"],
   herramienta: "IA",
   nivel: "Básico",
   updated: "2026-11-21",

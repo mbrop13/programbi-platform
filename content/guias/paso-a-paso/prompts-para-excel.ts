@@ -16,6 +16,7 @@ export const guia: GuiaPasoAPaso = {
     "mejores prompts para Excel",
   ],
   curso: "excel",
+  cursoSecundario: "chatgpt",
   herramienta: "IA",
   nivel: "Básico",
   updated: "2026-11-21",
