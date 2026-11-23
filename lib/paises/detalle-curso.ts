@@ -9,6 +9,7 @@ import { courseDurationHours, getCourseBySlug } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import { etiquetaHoraLocal, horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
 import {
+  calcularMontoCuota,
   formatMoneda,
   muestraPrecioLocal,
   porcentajeDescuento,
@@ -42,6 +43,17 @@ function formatoConLista(
   const base = montoConMoneda(pais, precio);
   if (lista == null || descuento <= 0) return base;
   return `${base} (precio normal de lista ${montoConMoneda(pais, lista)}, ${descuento}% de descuento)`;
+}
+
+function formatoCatalogoPais(
+  pais: Pais,
+  precio: number,
+  lista: number | null,
+  cuotas: string,
+): string {
+  const base = formatoConLista(pais, precio, lista);
+  if (pais.iso === ISO_CHILE || !cuotas) return base;
+  return `${base} (${cuotas} de ${montoConCodigo(pais.iso, calcularMontoCuota(pais.iso, precio))})`;
 }
 
 /**
@@ -79,7 +91,11 @@ export function resumenPrecioCursoTexto(
     niveles === 1
       ? `${titulo} en ${lugar} es un programa de nivel único de ${horas} horas en vivo. El valor vigente es ${montoBase}${detalleLista}`
       : `${titulo} en ${lugar} se dicta en 2 niveles independientes de ${horas} horas en vivo cada uno (Básico-Intermedio y Avanzado). El valor vigente por nivel es ${montoBase}${detalleLista}`;
-  const parteCuotas = cuotas ? `, con pago disponible en ${cuotas}` : "";
+  const parteCuotas = cuotas
+    ? pais.iso === ISO_CHILE
+      ? `, con pago disponible en ${cuotas}`
+      : `, con pago disponible en ${cuotas} de ${montoConCodigo(pais.iso, calcularMontoCuota(pais.iso, precio))}`
+    : "";
 
   return `${estructura}${parteCuotas}. Arriba puedes descargar el PDF completo con el temario, los enlaces de pago y los valores de combos con varios cursos.`;
 }
@@ -98,22 +114,33 @@ export function resumenPreciosCatalogo(
     return `En ${pais.nombre} no hay un valor público publicado todavía; los aranceles vigentes, los medios de pago locales y el PDF de temario y precios de cada curso se consultan por WhatsApp.`;
   }
 
-  const estandarTexto = formatoConLista(
+  const cuotas = textoCuotas(pais.iso);
+  const estandarTexto = formatoCatalogoPais(
     pais,
     pEstandar,
     precioListaVenta(pais.iso, "power-bi", promotions),
+    cuotas,
   );
   const pAnalisis = precioVenta(pais.iso, "analisis-de-datos", promotions);
   const analisisTexto =
     pAnalisis != null
-      ? formatoConLista(pais, pAnalisis, precioListaVenta(pais.iso, "analisis-de-datos", promotions))
+      ? formatoCatalogoPais(
+          pais,
+          pAnalisis,
+          precioListaVenta(pais.iso, "analisis-de-datos", promotions),
+          cuotas,
+        )
       : null;
   const pFinanciero = precioVenta(pais.iso, "mercado-financiero", promotions);
   const financieroTexto =
     pFinanciero != null
-      ? formatoConLista(pais, pFinanciero, precioListaVenta(pais.iso, "mercado-financiero", promotions))
+      ? formatoCatalogoPais(
+          pais,
+          pFinanciero,
+          precioListaVenta(pais.iso, "mercado-financiero", promotions),
+          cuotas,
+        )
       : null;
-  const cuotas = textoCuotas(pais.iso);
 
   const hEstandar = courseDurationHours("power-bi");
   const hAnalisis = courseDurationHours("analisis-de-datos");
@@ -143,9 +170,10 @@ export function resumenPreciosCatalogo(
 /** Número con separador local y el código de moneda: "$2.190 MXN". */
 export function montoConCodigo(iso: string | null | undefined, monto: number): string {
   const pais = getPais(normalizarPais(iso));
+  const decimales = Number.isInteger(monto) ? 0 : 2;
   const numero = new Intl.NumberFormat(pais.locale, {
-    minimumFractionDigits: pais.decimales,
-    maximumFractionDigits: pais.decimales,
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
   }).format(monto);
   return `${pais.simbolo}${numero} ${pais.moneda}`;
 }

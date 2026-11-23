@@ -12,6 +12,7 @@ import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import {
   NOTA_PAGO,
   formatMoneda,
+  promocionesParaPais,
   resolverPrecioCursoPais,
   type OverridePrecio,
   type PromocionAplicable,
@@ -133,10 +134,11 @@ export async function preciosDePais(
   promotions: PromocionAplicable[];
 }> {
   const pais = getPais(normalizarPais(iso));
-  const [promotions, priceOverrides] = await Promise.all([
+  const [rawPromotions, priceOverrides] = await Promise.all([
     getActivePromotions(),
     pais.precios === "catalogo" ? getPriceOverrides() : Promise.resolve([]),
   ]);
+  const promotions = promocionesParaPais(pais.iso, rawPromotions);
 
   // Solo Chile usa el catálogo. El resto publica su propia tabla (MP o referencia USD).
   if (pais.precios === "catalogo") {

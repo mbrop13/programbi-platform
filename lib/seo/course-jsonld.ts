@@ -26,7 +26,12 @@ import {
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { PRECIOS_VALID_FROM, monedaPublica } from "@/config/pricing";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { localizarMercado, precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
+import {
+  localizarMercado,
+  precioVenta,
+  promocionesParaPais,
+  type PromocionAplicable,
+} from "@/lib/paises/precios";
 
 const OFFER_PRICE_VALID_UNTIL = "2026-12-31";
 
@@ -111,8 +116,9 @@ export function getCourseJsonLd(
   // Cada curso declara a su profesor en `equipo.ts`; sin match, lo dicta el
   // fundador. El `sameAs` a la página de empresa era un dato incorrecto.
   const instructor = miembroPorCurso(course.slug);
+  const promotions = promocionesParaPais(pais, options?.promotions);
   const precio =
-    view === "empresas" ? null : precioVenta(pais, course.slug, options?.promotions);
+    view === "empresas" ? null : precioVenta(pais, course.slug, promotions);
   const startDate = view === "empresas" ? undefined : resolveCourseStartDate(course.slug, options);
 
   const seoDescription =
@@ -167,7 +173,7 @@ export function getCourseJsonLd(
             price: precio,
             priceCurrency: monedaPublica(pais),
             validFrom: PRECIOS_VALID_FROM,
-            priceValidUntil: OFFER_PRICE_VALID_UNTIL,
+            ...(!getPais(pais).sinDescuento ? { priceValidUntil: OFFER_PRICE_VALID_UNTIL } : {}),
           }
         : {}),
     },
