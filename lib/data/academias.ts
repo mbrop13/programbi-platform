@@ -124,7 +124,6 @@ export type ComparativaAcademia = {
 export const RUTA_CODERHOUSE = "/versus/programbi-vs-coderhouse-power-bi";
 export const RUTA_PLATZI = "/versus/alternativa-a-platzi-en-vivo";
 export const RUTA_IPS = "/versus/ips-datax-vs-programbi";
-export const RUTA_DESAFIO = "/versus/desafio-latam-vs-programbi";
 export const RUTA_LISTICLE = "/guias/mejores-cursos-power-bi-chile-2026";
 
 export const PAISES_CODERHOUSE: PaisComparativa[] = ["cl", "mx", "co", "ar"];
@@ -833,148 +832,6 @@ export function comparativaIpsDatax(): ComparativaAcademia {
   };
 }
 
-/** Comparativa Desafío Latam (Chile, sin variantes de país). */
-export function comparativaDesafioLatam(): ComparativaAcademia {
-  const iso: PaisComparativa = "cl";
-  const precio = precioVenta(iso, "power-bi");
-  const lista = precioListaVenta(iso, "power-bi");
-  const progTexto = textoPrecio(iso, precio, lista);
-
-  return {
-    ...fechaComun(iso),
-    slug: "desafio-latam-vs-programbi",
-    rival: "Desafío Latam",
-    rivalUrl: "https://desafiolatam.com/data-science-2026/",
-    ruta: RUTA_DESAFIO,
-    paises: ["cl"],
-    hreflang: {},
-    h1: "¿Bootcamp de 8 meses o un curso de 20 horas?",
-    metaTitle: "Desafío Latam vs ProgramBI: bootcamp o curso corto",
-    metaDescription:
-      "Comparamos un bootcamp de Data Analytics de 32 semanas con un curso de Power BI de 20 horas. Duración, precio publicado, empleabilidad y para quién es cada uno.",
-    subtitulo:
-      "Si quieres cambiar de carrera, un bootcamp tiene sentido. Si necesitas Power BI para tu pega este mes, no.",
-    intro:
-      "Desafío Latam vende una carrera larga de Data Analytics; ProgramBI vende un curso corto y aplicado de Power BI. La comparación solo tiene sentido si miras tu objetivo: cambiar de rubro o resolver un problema concreto en tu trabajo actual.",
-    ctaPrimario: "Ver el curso de 20 h",
-    horasProgrambi: HORAS_POWER_BI,
-    horasRival: null,
-    precioProgrambi: precio,
-    precioListaProgrambi: lista,
-    moneda: getPais(iso).moneda,
-    precioRival: null,
-    precioRivalTexto: "No publicado: se cotiza con un asesor",
-    precioRivalNota:
-      "No publicamos una cifra de Desafío Latam porque su página de carrera no estaba disponible al revisar (04-11-2026).",
-    resumen10s: {
-      horasProgrambi: `${HORAS_POWER_BI} h`,
-      horasRival: "32 semanas",
-      precioProgrambi: textoPrecio(iso, precio, lista),
-      precioRival: "Vía asesor",
-      precioHoraProgrambi: precioHora(iso, precio, HORAS_POWER_BI),
-      precioHoraRival: "—",
-    },
-    filas: [
-      {
-        criterio: "Duración",
-        programbi: "20 h / ~5 semanas",
-        rival: "Data Analytics: 32 semanas (~8 meses), 12 h/semana. Data Science: 1 año",
-        fuente: "desafiolatam.com/data-science-2026/",
-        fuenteUrl: "https://desafiolatam.com/data-science-2026/",
-      },
-      {
-        criterio: "Precio",
-        programbi: progTexto,
-        rival: "No publicado en la página revisada: se cotiza con un asesor",
-        fuente: "desafiolatam.com/data-science-2026/ · carrera-data-analytics (no disponible el 04-11-2026)",
-        fuenteUrl: "https://desafiolatam.com/data-science-2026/",
-      },
-      {
-        criterio: "Enfoque",
-        programbi: "Power BI aplicado a tu pega; sales con un tablero propio",
-        rival: "Programa de Data Analytics de 32 semanas",
-        fuente: "desafiolatam.com/data-science-2026/",
-        fuenteUrl: "https://desafiolatam.com/data-science-2026/",
-      },
-      {
-        criterio: "Empleabilidad",
-        programbi: "Bolsa de empleos de ProgramBI (/empleos)",
-        rival: "91% de empleabilidad a 6 meses (cifra autodeclarada en su sitio)",
-        fuente: "desafiolatam.com/data-science-2026/",
-        fuenteUrl: "https://desafiolatam.com/data-science-2026/",
-      },
-      {
-        criterio: "Ritmo",
-        programbi: "Dos clases por semana, 19:30–21:30 (hora de Chile)",
-        rival: "12 h por semana durante 32 semanas",
-        fuente: "desafiolatam.com/data-science-2026/",
-        fuenteUrl: "https://desafiolatam.com/data-science-2026/",
-      },
-      {
-        criterio: "Clases en vivo",
-        programbi: "✓",
-        rival: "Consultar en su sitio",
-        fuente: "desafiolatam.com/data-science-2026/",
-        fuenteUrl: "https://desafiolatam.com/data-science-2026/",
-      },
-      {
-        criterio: "Certificado",
-        programbi: "✓",
-        rival: "Consultar en su sitio",
-        fuente: "desafiolatam.com/data-science-2026/",
-        fuenteUrl: "https://desafiolatam.com/data-science-2026/",
-      },
-    ],
-    ganaRival: [
-      "Recorrido largo: 32 semanas con 12 h semanales para quien quiere formarse en Data Analytics, no solo en una herramienta.",
-      "Acompañamiento de empleabilidad y una cifra de inserción que ellos mismos declaran (91% a 6 meses).",
-      "Tiene sentido si tu objetivo es cambiar de carrera, no solo aprender Power BI.",
-    ],
-    ganaProgrambi: [
-      "Empiezas y terminas en semanas, no en ocho meses.",
-      "Foco en Power BI y en un tablero aplicado a tu trabajo actual.",
-      "Precio publicado y en pesos chilenos, sin cotización con asesor.",
-    ],
-    faqs: [
-      {
-        q: "¿Desafío Latam es mejor que un curso corto?",
-        a: "Depende de tu objetivo. Si quieres cambiar de carrera y puedes dedicar meses, un bootcamp tiene más recorrido. Si necesitas Power BI para tu pega este mes, un curso de 20 horas es más directo.",
-      },
-      {
-        q: "¿Cuánto cuesta Desafío Latam?",
-        a: "No publicamos esa cifra porque la página de la carrera no estaba disponible al revisarla y no encontramos un precio vivo que pudiéramos citar. En su sitio se cotiza con un asesor. No inventamos el monto.",
-      },
-      {
-        q: "¿Cuánto dura Data Analytics de Desafío Latam?",
-        a: "32 semanas, aproximadamente 8 meses, con una carga de 12 horas semanales, según la información publicada en su sitio. Su programa de Data Science se extiende por 1 año.",
-      },
-      {
-        q: "¿ProgramBI sirve para cambiar de carrera?",
-        a: "Es un curso de 20 horas enfocado en Power BI. Sirve para sumar una herramienta clave a tu perfil actual; si tu plan es una reconversión completa, probablemente necesites además SQL, Python y un portafolio más amplio.",
-      },
-      {
-        q: "¿Ambos tienen clases en vivo?",
-        a: "ProgramBI dicta clases en vivo por Zoom, lunes y miércoles o martes y jueves. Para Desafío Latam, confirma la modalidad de la cohorte en su sitio.",
-      },
-    ],
-    fuentes: [
-      { etiqueta: "ProgramBI · curso de Power BI", url: "https://www.programbi.com/cursos/power-bi" },
-      { etiqueta: "ProgramBI · precios", url: "https://www.programbi.com/precios" },
-      { etiqueta: "Desafío Latam · Data Science 2026", url: "https://desafiolatam.com/data-science-2026/" },
-      { etiqueta: "Desafío Latam · Data Analytics (sin precio vivo al 04-11-2026)", url: "https://desafiolatam.com/carrera-data-analytics/" },
-    ],
-    cursoSlug: "power-bi",
-    cursoNombre: "Power BI en vivo",
-    rutaCurso: rutaCurso(iso),
-    rutaPrecios: rutaPrecios(iso),
-    rutaGuiaPais: GUIA_PAIS.cl,
-    notaPrecios:
-      "ProgramBI: precio de venta publicado en programbi.com/precios. Desafío Latam: sin monto verificado al 04-11-2026; su programa se cotiza con asesor.",
-    notaCalculadora:
-      "Desafío Latam no publica el precio en la página revisada y su programa no se mide en horas de clase equivalentes. La calculadora muestra solo ProgramBI.",
-  };
-}
-
 /* ------------------------------------------------------------------ */
 /* Listicle «Mejores cursos de Power BI en Chile 2026»                 */
 /* ------------------------------------------------------------------ */
@@ -1101,7 +958,6 @@ export const RUTAS_COMPARATIVAS_ACADEMIA = [
   RUTA_CODERHOUSE,
   RUTA_PLATZI,
   RUTA_IPS,
-  RUTA_DESAFIO,
 ];
 
 /** Versiones por país de la comparativa de Coderhouse que sí existen. */
@@ -1111,7 +967,7 @@ export const RUTAS_CODERHOUSE_PAIS = ["mx", "co", "ar"].map(
 
 /**
  * Todas las rutas nuevas de este workstream, listas para el sitemap:
- * 4 comparativas + listicle + 3 variantes de país.
+ * 3 comparativas + listicle + 3 variantes de país.
  */
 export const RUTAS_COMPARATIVAS = [
   ...RUTAS_COMPARATIVAS_ACADEMIA,
@@ -1153,14 +1009,6 @@ export function comparativasAcademiaHub(): TarjetaAcademia[] {
       title: "IPS DATAX vs ProgramBI: grabado o en vivo",
       description:
         "Dos academias chilenas de datos: catálogo amplio y acceso de por vida frente a cohortes en vivo.",
-    },
-    {
-      href: RUTA_DESAFIO,
-      rival: "Desafío Latam",
-      etiqueta: "Academia",
-      title: "Desafío Latam vs ProgramBI: bootcamp o curso corto",
-      description:
-        "Un bootcamp de 32 semanas y un curso de 20 horas no compiten por lo mismo. Te ayudamos a elegir.",
     },
     {
       href: RUTA_LISTICLE,

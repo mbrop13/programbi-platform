@@ -157,11 +157,6 @@ const RECURSOS = [
     text: "Power BI vs Excel, SQL Server vs PostgreSQL y Python vs R, con criterio para elegir.",
   },
   {
-    href: "/versus/desafio-latam-vs-programbi",
-    title: "Desafío Latam vs ProgramBI",
-    text: "Bootcamp de 32 semanas o curso de 20 horas: para quién es cada formato.",
-  },
-  {
     href: "/versus/programbi-vs-coderhouse-power-bi",
     title: "ProgramBI vs Coderhouse en Power BI",
     text: "Horas en vivo, precio por hora y certificado, con las fuentes y la fecha de revisión.",
