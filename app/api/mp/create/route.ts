@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { randomUUID } from "crypto";
 import { getPricingVariantForUser } from "@/lib/experiments/user-variant";
-import { getPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
 import { bloqueoPorMercado } from "@/lib/paises/arbitraje";
 import { resolveOrCreateGuestUser } from "@/lib/pago/guest-user";
 
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     } = await import("@/lib/paises/precios");
     const activePromos = await getActivePromotions();
     const priceOverrides = await getPriceOverrides();
-    const pais = typeof body.pais === "string" ? body.pais : "cl";
+    const pais = normalizarPais(typeof body.pais === "string" ? body.pais : "cl");
 
 
     // El precio publicado es el techo: el panel puede aplicar un descuento por
@@ -146,7 +146,6 @@ export async function POST(req: NextRequest) {
        const subDiscount = isSpec ? specDiscountPercent : baseDiscountPercent;
        
        const promo = seleccionarPromocionCurso(activePromos, masterCourse.slug, "cl", basePrice);
-       const promoPais = seleccionarPromocionCurso(activePromos, masterCourse.slug, pais, basePrice);
        
        let finalPriceClp = basePrice;
        
@@ -166,7 +165,7 @@ export async function POST(req: NextRequest) {
        grandTotalClp += itemTotal;
 
         const isBundle = ["analisis-de-datos", "analitica-mineria"].includes(masterCourse.slug);
-        const hasPromoDiscount = isBundle || (pais === "cl" ? !!promo : !!promoPais);
+        const hasPromoDiscount = isBundle || (pais === "cl" ? !!promo : false);
 
         validatedItems.push({
            slug: masterCourse.slug,
@@ -250,7 +249,7 @@ export async function POST(req: NextRequest) {
         conPromo: item.hasPromoDiscount,
       })),
       cuponPct > 0 ? { pct: cuponPct, stacking: cuponStacking } : null,
-      activePromos
+      pais === "cl" ? activePromos : []
     );
     if (localConCupon != null) {
       if (cobro.modo === "local" && cobro.token) {

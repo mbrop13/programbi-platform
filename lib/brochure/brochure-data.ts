@@ -38,7 +38,6 @@ import {
   zonaDe,
 } from "@/lib/paises/horarios";
 import {
-  formatMoneda,
   NOTA_PAGO,
   resolverPrecioCursoPais,
 } from "@/lib/paises/precios";
@@ -438,6 +437,19 @@ function armarInscripcion(slug: string, pais: string): string {
   return pais === "cl" ? base : `${base}&pais=${encodeURIComponent(pais)}`;
 }
 
+const NOTA_CLASE_GRATIS = "Clase gratis · sesión abierta por Zoom sin costo";
+
+function formatMonedaBrochure(iso: string, monto: number): string {
+  const pais = getPais(iso);
+  const decimales = Number.isInteger(monto) ? 0 : pais.decimales;
+  return new Intl.NumberFormat(pais.locale, {
+    style: "currency",
+    currency: pais.moneda,
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
+  }).format(monto);
+}
+
 /**
  * Arma el brochure completo de un curso en un país.
  * Devuelve `null` si el slug no existe en el catálogo.
@@ -472,25 +484,36 @@ export async function getCourseBrochureData(
   const [schedules, customPdfUrl, promotions, priceOverrides] = await Promise.all([
     armarHorarios(course, iso, paisNombre),
     leerPdfPersonalizado(course.slug),
-    getActivePromotions(),
+    iso === ISO_CHILE ? getActivePromotions() : Promise.resolve([]),
     iso === ISO_CHILE ? getPriceOverrides() : Promise.resolve([]),
   ]);
 
-  const precioResuelto = resolverPrecioCursoPais(iso, course.slug, promotions, {
-    priceOverrides,
-  });
+  const precioResuelto = resolverPrecioCursoPais(
+    iso,
+    course.slug,
+    iso === ISO_CHILE ? promotions : [],
+    {
+      priceOverrides,
+    }
+  );
   const precio = precioResuelto?.finalPrice ?? null;
   const precioLista = precioResuelto?.listPrice ?? null;
   const descuentoPct = precioResuelto?.discountPercentage ?? 0;
 
-  // Mercados sin cuotas (hoy Estados Unidos): el PDF habla de pago único.
+  // Mercados sin cuotas (hoy Estados Unidos y España): el PDF habla de pago único.
   const conCuotas = cuotasSinInteres(iso) > 0;
   const cuotaMonto =
-    conCuotas && precio != null ? Math.round(precio / CUOTAS_SIN_INTERES) : null;
+    conCuotas && precio != null
+      ? infoPais.decimales > 0
+        ? precio % CUOTAS_SIN_INTERES === 0
+          ? precio / CUOTAS_SIN_INTERES
+          : Math.round((precio / CUOTAS_SIN_INTERES) * 100) / 100
+        : Math.round(precio / CUOTAS_SIN_INTERES)
+      : null;
   const cuotaTexto = !conCuotas
     ? "Pago único con tarjeta"
     : cuotaMonto != null
-      ? `${textoCuotas(iso)} de ${formatMoneda(iso, cuotaMonto)} cada una`
+      ? `${textoCuotas(iso)} de ${formatMonedaBrochure(iso, cuotaMonto)} cada una`
       : textoCuotas(iso);
 
   // La ficha usa la tarjeta (`-card.webp`, más liviana). El brochure usa la
@@ -517,16 +540,16 @@ export async function getCourseBrochureData(
     temario,
     precio,
     precioFormateado:
-      precio != null ? formatMoneda(iso, precio) : "Consulta el valor por WhatsApp",
+      precio != null ? formatMonedaBrochure(iso, precio) : "Consulta el valor por WhatsApp",
     precioLista,
     precioListaFormateado:
-      precioLista != null ? formatMoneda(iso, precioLista) : null,
+      precioLista != null ? formatMonedaBrochure(iso, precioLista) : null,
     descuentoPct,
     cuotas: conCuotas ? CUOTAS_SIN_INTERES : 0,
     etiquetaCuotas: conCuotas ? `${CUOTAS_SIN_INTERES} cuotas sin interés` : "Pago único",
     cuotaMonto,
     cuotaTexto,
-    notaCuotas: conCuotas ? NOTA_CUOTAS : "",
+    notaCuotas: conCuotas ? `${NOTA_CUOTAS} ${NOTA_CLASE_GRATIS}.` : "",
     notaPago: NOTA_PAGO,
     mediosPago: infoPais.mediosPago,
     moneda: infoPais.moneda,
