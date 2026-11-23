@@ -111,7 +111,7 @@ export function precioListaPublico(iso: string | null | undefined, slug: string)
   if (cobro == null) return null;
   const precioSlug = slug === "chatgpt" || slug === "gemini" ? "claude" : slug;
   if (paisIso === ISO_CHILE) {
-    if (!esCursoConPrecio(slug)) return null;
+    if (!esCursoConPrecio(precioSlug)) return null;
     const lista = PRECIOS_LISTA_CLP[precioSlug];
     return Number.isFinite(lista) && lista > cobro ? lista : null;
   }
