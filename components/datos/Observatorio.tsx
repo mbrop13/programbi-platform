@@ -71,7 +71,7 @@ export function Observatorio({ slug }: { slug: string }) {
       <VistaDatos territorio={slug} periodo={actual.p} />
       <Migas elementos={migas} />
       <header className={estilos.encabezado}>
-        <h1>Desempleo en {nombre}</h1>
+        <h1>{region ? `Desempleo en ${nombre}` : "Desempleo en Chile: tasa actual y por región"}</h1>
         <p>{region ? `Tasa regional, comparación con Chile y evolución desde 2010.` : "Tasa de desocupación, evolución histórica y panorama de las 16 regiones de Chile."}</p>
       </header>
       <div className={estilos.heroes}>

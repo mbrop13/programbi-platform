@@ -39,7 +39,7 @@ const FAQS = [
 export function generateMetadata(): Metadata {
   return metadataSimpleDatos({
     path: "/datos/carreras/test",
-    title: "Explorador de carreras en Chile según datos oficiales",
+    title: "Explorador de carreras en Chile según datos oficiales 2026",
     description:
       "Ordena carreras en Chile en 5 pasos según área, presupuesto, PAES, región y jornada con cifras oficiales de sueldos y empleabilidad de mifuturo.cl.",
   });

@@ -8,6 +8,11 @@ import {
   type TipoIesKey,
 } from "./carreras";
 import { millonesCorto, pesos, porcentaje } from "./formato";
+import {
+  CARRERAS_SEO_MAPA,
+  nombreCortoCarrera,
+  tituloFichaCarreraConFormato,
+} from "./carreras-seo-mapa";
 import { PRESETS_MAP, type PresetSlug } from "./presets";
 
 export interface MigajaDatos {
@@ -65,17 +70,21 @@ export function metadataHubCarreras(): Metadata {
   const meta = getMetaCarreras();
   const path = "/datos/carreras";
   const conEdicion = `Ranking de carreras en Chile ${meta.edicion}: sueldos y empleo`;
-  const title = conEdicion.length <= 60 ? conEdicion : "Ranking de carreras en Chile: sueldos y empleabilidad";
+  const title =
+    conEdicion.length <= 60
+      ? conEdicion
+      : "Ranking de carreras en Chile: sueldos y empleabilidad";
   const description = ajustarDescripcion(
     [
-      `Ranking oficial de ${meta.conteos.genericas_unicas} carreras en Chile (${meta.edicion}): sueldos brutos 1.º al 5.º año, empleabilidad, aranceles y comparador.`,
+      `Ranking oficial de ${meta.conteos.genericas_unicas} carreras en Chile ${meta.edicion}: sueldo bruto del 1.º al 5.º año, empleabilidad y arancel. Compara carreras y elige con datos.`,
     ],
     `Ranking oficial de carreras en Chile (${meta.edicion}): sueldos y empleabilidad.`
   );
   const url = `${SITE_URL}${path}`;
   const ogImg = ogUrlDe(path, meta.edicion);
+  const finalTitle = ajustarTitulo(title, false);
   return {
-    title: { absolute: ajustarTitulo(title, false) },
+    title: { absolute: finalTitle },
     description,
     alternates: { canonical: url },
     robots: { index: true, follow: true },
@@ -84,47 +93,101 @@ export function metadataHubCarreras(): Metadata {
       siteName: "ProgramBI",
       locale: "es_CL",
       url,
-      title,
+      title: finalTitle,
       description,
-      images: [{ url: ogImg, width: 1200, height: 630, alt: title }],
+      images: [{ url: ogImg, width: 1200, height: 630, alt: finalTitle }],
     },
-    twitter: { card: "summary_large_image", title, description, images: [ogImg] },
+    twitter: { card: "summary_large_image", title: finalTitle, description, images: [ogImg] },
   };
+}
+
+function construirDescripcionFicha(carrera: CarreraRecord): string {
+  const principal = tipoPrincipalDeCarrera(carrera);
+  const ing1 = principal?.data.ing[0] ?? null;
+  const ing4 = principal?.data.ing[3] ?? null;
+  const emp1 = principal?.data.emp1 ?? null;
+
+  const cfg = CARRERAS_SEO_MAPA[carrera.slug] ?? {};
+  const art = cfg.articulo ?? "un";
+  const personaMeta = cfg.personaMeta ?? cfg.persona;
+  const nombreCorto = nombreCortoCarrera(carrera);
+  const sujeto = personaMeta
+    ? `${art === "una" ? "Una" : "Un"} ${personaMeta}`
+    : `Un titulado de ${nombreCorto}`;
+
+  const esTecnica =
+    !principal ||
+    principal.key !== "u" ||
+    /^t[eé]cnico\b/i.test(carrera.nombre) ||
+    carrera.slug.startsWith("tecnico-");
+  const inst = esTecnica ? "institutos" : "universidades";
+
+  const empStr = emp1 !== null ? porcentaje(emp1).replace("\u00a0", " ") : null;
+  const ing1Str = ing1 !== null ? pesos(ing1) : null;
+  const ing4Str = ing4 !== null ? pesos(ing4) : null;
+
+  const bases: string[] = [];
+  if (ing1Str && ing4Str && empStr) {
+    bases.push(
+      `${sujeto} gana ${ing1Str} brutos al 1.er año y ${ing4Str} al 4.º año, con ${empStr} de empleabilidad.`,
+      `${sujeto}: ${ing1Str} brutos al 1.er año y ${ing4Str} al 4.º, ${empStr} de empleabilidad.`
+    );
+  } else if (ing4Str && empStr) {
+    bases.push(
+      `${sujeto} gana ${ing4Str} brutos al 4.º año, con ${empStr} de empleabilidad oficial.`,
+      `${sujeto}: ${ing4Str} brutos al 4.º año y ${empStr} de empleabilidad oficial.`
+    );
+  } else if (ing1Str && empStr) {
+    bases.push(
+      `${sujeto} gana ${ing1Str} brutos al 1.er año, con ${empStr} de empleabilidad oficial.`
+    );
+  } else if (empStr) {
+    bases.push(
+      `${sujeto} registra ${empStr} de empleabilidad al 1.er año en Chile según el SIES.`
+    );
+  } else {
+    bases.push(
+      `Revisa cifras oficiales de ${nombreCorto} en Chile según el SIES (Mineduc).`
+    );
+  }
+
+  const colasBase = [
+    ` Compara ${inst}, aranceles y ranking oficial.`,
+    ` Compara ${inst}, aranceles y ranking.`,
+    ` Compara ${inst} y aranceles.`,
+    ` Compara aranceles y ranking.`,
+    ` Compara aranceles.`,
+    ` Compara ${inst}, aranceles, duración y ranking oficial.`,
+    ` Revisa el detalle completo por institución y arancel.`,
+    "",
+  ];
+  const colas = cfg.colaMetaOverride ? [cfg.colaMetaOverride, ...colasBase] : colasBase;
+
+  for (const base of bases) {
+    for (const cola of colas) {
+      const candidato = `${base}${cola}`;
+      if (candidato.length >= 140 && candidato.length <= 155) {
+        return candidato;
+      }
+    }
+  }
+
+  // Fallback limpio sin cortar a mitad de palabra ni frase
+  const candidatos = bases.flatMap((base) => colas.map((cola) => `${base}${cola}`));
+  const mejor =
+    candidatos.find((c) => c.length <= 155 && c.length >= 120) ??
+    candidatos.find((c) => c.length <= 155) ??
+    bases[bases.length - 1];
+  return mejor;
 }
 
 export function metadataFichaCarrera(carrera: CarreraRecord, indexable: boolean): Metadata {
   const meta = getMetaCarreras();
-  const principal = tipoPrincipalDeCarrera(carrera);
-  const ing4 = principal?.data.ing[3] ?? null;
-  const ing1 = principal?.data.ing[0] ?? null;
-  const emp1 = principal?.data.emp1 ?? null;
   const path = `/datos/carreras/${carrera.slug}`;
   const url = `${SITE_URL}${path}`;
 
-  const cortoIng4 = ing4 ? millonesCorto(ing4) : null;
-  const candidato1 = cortoIng4
-    ? `Sueldo de ${carrera.nombre} en Chile: ${cortoIng4} al 4.º año`
-    : `${carrera.nombre}: sueldo y empleabilidad en Chile`;
-  const candidato2 = `${carrera.nombre}: sueldo y empleabilidad en Chile`;
-  const title =
-    candidato1.length <= 60
-      ? candidato1
-      : candidato2.length <= 60
-        ? candidato2
-        : ajustarTitulo(carrera.nombre, true);
-
-  const empStr = emp1 !== null ? porcentaje(emp1).replace("\u00a0", " ") : "s/i";
-  const ing1Str = ing1 !== null ? pesos(ing1) : "s/i";
-  const ing4Str = ing4 !== null ? pesos(ing4) : "s/i";
-
-  const description = ajustarDescripcion(
-    [
-      `${carrera.nombre}: ${ing1Str} al 1.er año y ${ing4Str} al 4.º año (brutos). Empleabilidad ${empStr}. Datos ${meta.edicion} de mifuturo.cl, aranceles y ranking.`,
-      `${carrera.nombre}: sueldo promedio ${ing4Str} al 4.º año y empleabilidad ${empStr} en Chile. Revisa datos ${meta.edicion} de mifuturo.cl, aranceles y ranking.`,
-      `${carrera.nombre} en Chile: ingreso ${ing4Str} al 4.º año, empleabilidad ${empStr}. Datos oficiales ${meta.edicion} de mifuturo.cl, instituciones y comparador.`,
-    ],
-    `${carrera.nombre} en Chile: sueldos brutos, empleabilidad, percentiles y oferta por institución según mifuturo.cl.`
-  );
+  const { title } = tituloFichaCarreraConFormato(carrera);
+  const description = construirDescripcionFicha(carrera);
 
   const ogImg = ogUrlDe(path, meta.edicion);
   return {

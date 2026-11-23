@@ -81,7 +81,7 @@ export function generateMetadata(): Metadata {
     path: "/datos/carreras/tecnologia-y-datos",
     title: "Carreras de tecnología y datos en Chile: sueldos 2026",
     description:
-      "Ranking oficial de carreras de tecnología, informática, redes, telecomunicaciones y estadística en Chile: sueldos, empleabilidad y aranceles.",
+      "Ranking oficial de carreras de tecnología, informática, redes, telecomunicaciones y estadística en Chile 2026: sueldos, empleabilidad y aranceles.",
   });
 }
 

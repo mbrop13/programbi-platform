@@ -37,9 +37,9 @@ const FAQS = [
 export function generateMetadata(): Metadata {
   return metadataSimpleDatos({
     path: "/datos/carreras/retorno",
-    title: "Calculadora de retorno de carrera en Chile | ProgramBI",
+    title: "Calculadora de retorno de carrera en Chile 2026",
     description:
-      "Estima cuánto cuesta estudiar una carrera en Chile (arancel 2026 y años reales) y a cuántos meses de sueldo bruto equivale al 1.º y 4.º año.",
+      "Estima cuánto cuesta estudiar una carrera en Chile (arancel 2026 y duración real) y a cuántos meses de sueldo bruto equivale al 1.º y 4.º año.",
   });
 }
 

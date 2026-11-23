@@ -34,7 +34,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     h1: "Carreras mejor pagadas en Chile: ranking por tipo de institución",
     titleSeo: "Carreras mejor pagadas en Chile 2025-2026: U, IP y CFT",
     descriptionSeo:
-      "Ranking oficial de las 25 carreras mejor pagadas en Chile en universidades, IP y CFT al 4.º año según mifuturo.cl (Mineduc), con empleabilidad y percentiles.",
+      "Ranking oficial de las 25 carreras mejor pagadas en Chile en universidades, IP y CFT al 4.º año según mifuturo.cl (Mineduc), con empleabilidad y sueldo.",
     metodologia: [
       "Este listado ordena las carreras genéricas publicadas por el Servicio de Información de Educación Superior (SIES) según el ingreso promedio bruto mensual al cuarto año de titulación, expresado en pesos de septiembre de 2025.",
       "Dado que las condiciones formativas, la duración y el mercado laboral difieren según el tipo de institución, el ranking separa Universidades, Institutos Profesionales (IP) y Centros de Formación Técnica (CFT). Los ingresos consideran únicamente a titulados con ingresos iguales o superiores al sueldo mínimo.",
@@ -86,9 +86,9 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "mejor-sueldo-por-arancel",
     tituloCorto: "Mejor sueldo por arancel",
     h1: "Carreras con mejor relación entre sueldo y arancel en Chile",
-    titleSeo: "Carreras con mejor retorno por arancel en Chile | ProgramBI",
+    titleSeo: "Carreras con mejor retorno por arancel en Chile 2026",
     descriptionSeo:
-      "Compara el ingreso bruto anual al 4.º año frente al costo total estimado de arancel y titulación en Chile según datos oficiales de mifuturo.cl.",
+      "Compara el ingreso bruto anual al 4.º año frente al costo total estimado de arancel y titulación en Chile 2026 según datos oficiales de mifuturo.cl.",
     metodologia: [
       "Esta vista calcula la razón entre el ingreso bruto anualizado al cuarto año de titulación (ingreso mensual promedio × 12, en pesos de septiembre de 2025) y el costo total estimado de estudiar la carrera sin gratuidad ni becas.",
       "El costo total estimado se obtiene multiplicando el arancel anual mediano 2026 informado en el Buscador de Carreras por la duración real promedio en años (duración real en semestres ÷ 2), más el costo de titulación mediano cuando existe dato.",
@@ -113,9 +113,9 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "baratas-con-buena-empleabilidad",
     tituloCorto: "Baratas con buena empleabilidad",
     h1: "Carreras más económicas con alta empleabilidad en Chile",
-    titleSeo: "Carreras baratas con alta empleabilidad en Chile | ProgramBI",
+    titleSeo: "Carreras baratas con alta empleabilidad en Chile 2026",
     descriptionSeo:
-      "Carreras en el cuartil más económico de arancel de su tipo de institución y en el 25 % superior de empleabilidad al 1.er año, con datos de mifuturo.cl.",
+      "Carreras en el cuartil más económico de arancel 2026 de su tipo de institución y en el 25 % superior de empleabilidad al 1.er año, según mifuturo.cl.",
     metodologia: [
       "Para identificar opciones accesibles con sólida inserción laboral inicial, esta vista evalúa por separado cada tipo de institución (Universidades, Institutos Profesionales y CFT).",
       "Califican únicamente las carreras cuyo arancel anual mediano 2026 se ubica en el 25 % más bajo (cuartil Q1) de su tipo de institución y cuya empleabilidad al primer año se sitúa en el 25 % más alto (percentil 75 o superior) de ese mismo segmento.",
@@ -140,7 +140,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "crecieron-en-sueldo-real",
     tituloCorto: "Crecieron en sueldo real",
     h1: "Carreras que más crecieron en sueldo real en Chile (2020–2024)",
-    titleSeo: "Carreras que más subieron de sueldo real en Chile (2020-2024)",
+    titleSeo: "Carreras que más subieron de sueldo real en Chile 2020-2024",
     descriptionSeo:
       "Carreras con mayor aumento real del ingreso bruto al 4.º año entre los años de ingreso 2020 y 2024 en Chile, en pesos constantes de septiembre de 2025.",
     metodologia: [
@@ -167,7 +167,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "mejor-pagadas-vespertinas",
     tituloCorto: "Vespertinas mejor pagadas",
     h1: "Carreras vespertinas mejor pagadas en Chile",
-    titleSeo: "Carreras vespertinas mejor pagadas en Chile | ProgramBI",
+    titleSeo: "Carreras vespertinas mejor pagadas en Chile 2026",
     descriptionSeo:
       "Ranking de carreras con oferta vespertina en Chile en 2026 ordenadas por ingreso bruto al 4.º año según mifuturo.cl (Mineduc), con advertencia metodológica.",
     metodologia: [
