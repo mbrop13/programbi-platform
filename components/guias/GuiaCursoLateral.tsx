@@ -98,7 +98,17 @@ export default function GuiaCursoLateral({
             {etiquetaDescuento}
           </GuiaVisualBadge>
         </p>
-      ) : null}
+      ) : (
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          <GuiaVisualBadge tone="neutral">
+            Precio normal en {getPais(iso).moneda}
+          </GuiaVisualBadge>
+          {cuotas ? <GuiaVisualBadge tone="neutral">{cuotas}</GuiaVisualBadge> : null}
+          {!getPais(iso).precioDirecto ? (
+            <GuiaVisualBadge tone="accent">Clase gratis</GuiaVisualBadge>
+          ) : null}
+        </div>
+      )}
 
       <div className="mt-3.5 flex flex-col gap-2">
         <Link

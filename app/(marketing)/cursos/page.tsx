@@ -80,10 +80,11 @@ export default async function CursosPage({
 }) {
   const pais = normalizarPais((await params).pais);
   const bloque = getBloqueLocal(pais);
-  const [schedulesData, promotions] = await Promise.all([
+  const [schedulesData, promotionsRaw] = await Promise.all([
     getActiveSchedules(),
     getActivePromotions(),
   ]);
+  const promotions = pais === ISO_CHILE ? promotionsRaw : [];
   const schedules = schedulesData as CourseSchedule[];
   const featuredImage =
     courses.find((c) => c.slug === "analisis-de-datos")?.imageUrl ??

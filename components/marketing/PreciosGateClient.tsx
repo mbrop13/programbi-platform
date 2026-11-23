@@ -20,8 +20,8 @@ import {
 } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
-import { NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
-import { muestraPrecioDirecto } from "@/config/paises";
+import { NOTA_CUOTAS, cuotasSinInteres, textoCuotas } from "@/config/cuotas";
+import { getPais, muestraPrecioDirecto } from "@/config/paises";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
@@ -55,6 +55,15 @@ type Props = {
 
 const FUENTE_NOTA = "Precios publicados y sujetos a cambios. El monto final se confirma en el checkout.";
 
+function calcularMontoCuotaPais(iso: string, precio: number, numCuotas: number): number {
+  if (numCuotas <= 0) return precio;
+  if (precio % numCuotas === 0) return precio / numCuotas;
+  const { decimales } = getPais(iso);
+  return decimales > 0
+    ? Math.round((precio / numCuotas) * 100) / 100
+    : Math.round(precio / numCuotas);
+}
+
 /**
  * Tabla de precios de `/precios` detrás del gate.
  *
@@ -75,6 +84,8 @@ export default function PreciosGateClient({
   const { unlocked, unlock } = usePriceUnlock();
   const precioDirecto = muestraPrecioDirecto(pais);
   const showPrices = unlocked || precioDirecto;
+  const numCuotas = cuotasSinInteres(pais);
+  const cuotasTexto = textoCuotas(pais);
   const [slug, setSlug] = useState(() => cursos[0]?.slug ?? "power-bi");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -190,8 +201,8 @@ export default function PreciosGateClient({
             <>
               <LockKeyhole size={13} aria-hidden />{" "}
               {discountLabel
-                ? `${discountLabel} · Aranceles en ${moneda}${textoCuotas(pais) ? ` · ${textoCuotas(pais)}` : ""} · en el PDF de temario y precios`
-                : `Valores vigentes en el PDF o por WhatsApp · ${moneda}${textoCuotas(pais) ? ` · ${textoCuotas(pais)}` : ""}`}
+                ? `${discountLabel} · Aranceles en ${moneda}${cuotasTexto ? ` · ${cuotasTexto}` : ""} · en el PDF de temario y precios`
+                : `Precio normal en ${moneda}${cuotasTexto ? ` · ${cuotasTexto}` : ""} · en el PDF de temario y precios`}
             </>
           )}
         </p>
@@ -225,21 +236,30 @@ export default function PreciosGateClient({
               ? "Descarga el temario PDF de cualquier curso"
               : discountLabel
                 ? `${discountLabel} · Desbloquea todos los precios y llévate el temario`
-                : "Desbloquea el detalle y llévate el temario de cada curso"}
+                : `Precio normal en ${moneda} · Desbloquea todos los precios y llévate el temario`}
           </p>
           <p className="mt-1 max-w-[52rem] text-sm leading-relaxed text-mute">
             {precioDirecto
               ? `Los valores en ${moneda} están publicados en la tabla de abajo. Completa tu nombre y correo para abrir el temario PDF completo con fechas en tu horario y detalle para reembolso de tu empresa.`
-              : (
-                <>
-                  {discountLabel
-                    ? `${discountLabel} sobre el precio normal en ${moneda}. `
-                    : "Valores vigentes en el PDF o por WhatsApp. "}
-                  Los aranceles de cada curso se publican en su PDF de temario y precios, con el descuento
-                  vigente, las fechas en hora de tu país{textoCuotas(pais) ? ` y las ${textoCuotas(pais)}` : ""}. Completa tus datos y
-                  abrimos el PDF de tu curso principal en una pestaña nueva.
-                </>
-              )}
+              : discountLabel
+                ? (
+                  <>
+                    {discountLabel} sobre el precio normal en {moneda}. Los aranceles de cada curso se
+                    publican en su PDF de temario y precios, con el descuento vigente, las fechas en
+                    hora de tu país{cuotasTexto ? ` y las ${cuotasTexto}` : ""}. Además incluye clase
+                    gratis (sesión abierta por Zoom sin costo). Completa tus datos y abrimos el PDF de
+                    tu curso principal en una pestaña nueva.
+                  </>
+                )
+                : (
+                  <>
+                    Precio normal en {moneda}. Los aranceles de cada curso se publican en su PDF de
+                    temario y precios, con las fechas en hora de tu país
+                    {cuotasTexto ? ` y ${cuotasTexto}` : ""}. También incluye clase gratis (sesión
+                    abierta por Zoom sin costo). Completa tus datos y abrimos el PDF de tu curso
+                    principal en una pestaña nueva.
+                  </>
+                )}
           </p>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -430,20 +450,31 @@ export default function PreciosGateClient({
                         <span className="text-base font-bold text-ink tabular-nums">
                           {precio != null ? formatMoneda(pais, precio) : "Consultar"}
                         </span>
-                        {descuento > 0 ? (
+                        {lista != null && descuento > 0 ? (
                           <span className="rounded-full bg-wash px-2 py-0.5 text-[11px] font-semibold text-ink">
                             {descuento}% off
+                          </span>
+                        ) : null}
+                        {precio != null && numCuotas > 0 ? (
+                          <span className="block w-full text-xs text-mute tabular-nums">
+                            {cuotasTexto} de {formatMoneda(pais, calcularMontoCuotaPais(pais, precio, numCuotas))}
                           </span>
                         ) : null}
                         <span className="block w-full text-[11px] leading-snug text-faint">
                           {NOTA_PAGO}
                         </span>
                       </div>
-                    ) : descuento > 0 ? (
+                    ) : precio != null ? (
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-wash px-2.5 py-0.5 text-xs font-semibold text-ink">
-                          {descuento}% de descuento
-                        </span>
+                        {lista != null && descuento > 0 ? (
+                          <span className="rounded-full bg-wash px-2.5 py-0.5 text-xs font-semibold text-ink">
+                            {descuento}% de descuento
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-wash px-2.5 py-0.5 text-xs font-medium text-mute">
+                            Precio normal en {moneda}
+                          </span>
+                        )}
                         <Link
                           href={courseBrochurePath(curso.slug, pais)}
                           target="_blank"
@@ -475,13 +506,14 @@ export default function PreciosGateClient({
       </div>
 
       <p className="mt-3 text-sm text-mute">{FUENTE_NOTA}</p>
-      {cobroLocal ? null : (
+      {cobroLocal || precioDirecto ? null : (
         <p className="mt-1 text-sm text-mute">
           Cuando no hay cobro local disponible, el checkout procesa el pago en pesos chilenos (CLP).
         </p>
       )}
       <p className="mt-3 text-xs leading-relaxed text-faint">
-        {NOTA_CUOTAS} El detalle de cada arancel, con descuentos y fechas, está en el PDF de temario y
+        {cuotasTexto ? `${NOTA_CUOTAS} ` : ""}El detalle de cada arancel
+        {discountLabel ? ", con descuentos y fechas," : " y fechas"} está en el PDF de temario y
         precios del curso.
       </p>
     </section>

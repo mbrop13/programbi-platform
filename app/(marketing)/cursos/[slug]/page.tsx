@@ -172,11 +172,12 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
   if (!course) notFound();
 
   const seo = COURSE_SEO[slug];
-  const [dbDescription, schedulesData, promotions] = await Promise.all([
+  const [dbDescription, schedulesData, promotionsRaw] = await Promise.all([
     getMarketingDescription(slug),
     getActiveSchedules(),
     getActivePromotions(),
   ]);
+  const promotions = pais === ISO_CHILE ? promotionsRaw : [];
   if (dbDescription && !seo) {
     course.description = dbDescription;
   } else if (seo) {
