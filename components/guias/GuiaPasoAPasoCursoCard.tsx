@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GuiaToolVisual } from "@/components/guias/GuiaEditorialPrimitives";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
+import { OFERTA_CLASE_GRATIS_WHATSAPP } from "@/config/flags";
 import type { DatosCursoGuia } from "@/lib/guias/paso-a-paso-curso";
 import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
 
@@ -17,7 +18,9 @@ export default function GuiaPasoAPasoCursoCard({
   sticky?: boolean;
   ctaPosition?: string;
 }) {
-  const waText = `Hola, vengo de la guía ${guia.h1} y quiero la clase gratis del curso de ${curso.nombre} [${guia.slug}]`;
+  const waText = OFERTA_CLASE_GRATIS_WHATSAPP
+    ? `Hola, vengo de la guía ${guia.h1} y quiero la clase gratis del curso de ${curso.nombre} [${guia.slug}]`
+    : `Hola, vengo de la guía ${guia.h1} y quiero información del curso de ${curso.nombre} [${guia.slug}]`;
 
   return (
     <aside
@@ -27,9 +30,13 @@ export default function GuiaPasoAPasoCursoCard({
       }`}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
-          Clase gratis disponible
-        </p>
+        {OFERTA_CLASE_GRATIS_WHATSAPP ? (
+          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
+            Clase gratis disponible
+          </p>
+        ) : (
+          <span />
+        )}
         {curso.precioFormateado ? (
           <div className="flex items-baseline gap-1.5 tabular-nums">
             <span className="text-base font-bold tracking-tight text-[var(--g-ink)]">
@@ -97,7 +104,9 @@ export default function GuiaPasoAPasoCursoCard({
           customText={waText}
           className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[var(--g-ink)] px-4 text-center text-xs font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
         >
-          Solicitar clase gratis por WhatsApp
+          {OFERTA_CLASE_GRATIS_WHATSAPP
+            ? "Solicitar clase gratis por WhatsApp"
+            : "Consultar por WhatsApp"}
         </WhatsAppCta>
 
         <div className="grid grid-cols-2 gap-2">

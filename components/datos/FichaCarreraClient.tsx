@@ -117,6 +117,7 @@ interface FichaCarreraClientProps {
   instituciones: InstitucionCarrera[];
   programas: ProgramaCarrera[];
   edicion: string;
+  ctaSueldo?: ReactNode;
 }
 
 export function FichaCarreraClient({
@@ -125,6 +126,7 @@ export function FichaCarreraClient({
   instituciones,
   programas,
   edicion,
+  ctaSueldo,
 }: FichaCarreraClientProps) {
   const tiposDisponibles = useMemo(
     () => TIPO_ORDEN.filter((k) => Boolean(carrera.tipos[k])),
@@ -313,6 +315,8 @@ export function FichaCarreraClient({
           etiquetaPesos={etiquetaPesos}
         />
       </div>
+
+      {ctaSueldo}
 
       {/* Evolución histórica 2020-2024 */}
       <GraficoEnVista altura="h-[360px]">

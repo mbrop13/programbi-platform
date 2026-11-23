@@ -1203,6 +1203,8 @@ export function trackWhatsAppClick(opts?: {
   page?: string;
   page_path?: string;
   cta_position?: string;
+  cta_location?: string;
+  carrera_slug?: string;
   /** href del enlace wa.me; mejora el dedupe entre listener global y CTA. */
   href?: string | null;
 }): void {
@@ -1227,16 +1229,33 @@ export function trackWhatsAppClick(opts?: {
   const courseSlug = rawCourse && rawCourse !== "general" ? rawCourse : "general";
   const country = (opts?.country || ctx.country || "cl").trim();
   const pagePath = page || (isBrowser() ? window.location.pathname : "/");
+  const location = opts?.cta_position || opts?.cta_location || undefined;
   trackEvent(GA_LEAD_EVENTS.CLICK_WHATSAPP, {
     course: courseSlug,
     course_slug: courseSlug,
     country,
-    cta_position: opts?.cta_position || undefined,
-    wa_location: opts?.cta_position || undefined,
+    cta_position: location,
+    cta_location: opts?.cta_location || undefined,
+    carrera_slug: opts?.carrera_slug || undefined,
+    wa_location: location,
     page: pagePath,
     // Keep legacy params for existing GA4 reports/explorations.
     page_path: pagePath,
     curso_slug: courseSlug,
+  });
+}
+
+export function trackCtaCursoClick(opts: {
+  cta_location: string;
+  carrera_slug: string;
+  course_slug: string;
+  page_path: string;
+}): void {
+  trackEvent("cta_curso_click", {
+    cta_location: opts.cta_location,
+    carrera_slug: opts.carrera_slug,
+    course_slug: opts.course_slug,
+    page_path: opts.page_path,
   });
 }
 
