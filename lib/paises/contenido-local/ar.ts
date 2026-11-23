@@ -1,9 +1,7 @@
 import type { DatosBloqueLocal } from "./tipos";
 import { textoCuotas } from "@/config/cuotas";
-import { etiquetaDescuentoCatalogo } from "@/lib/paises/precios";
 import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
-const descuentoCatalogo = etiquetaDescuentoCatalogo("ar");
 const resumenCatalogo = resumenPreciosCatalogo("ar");
 const cuotasAr = textoCuotas("ar");
 
@@ -53,9 +51,8 @@ const datos: DatosBloqueLocal = {
   zonaHoraria: "America/Argentina/Buenos_Aires",
   datos: {
     precioTitulo: "Precio en pesos argentinos",
-    precioDetalle: descuentoCatalogo
-      ? `El catálogo de Argentina se publica en ARS (${descuentoCatalogo}) con {cuotas}. Descarga el PDF de temario y precios de cada curso para ver el desglose, combos y fechas.`
-      : "El catálogo de Argentina se publica en ARS con {cuotas}. Consulta el valor vigente de cada curso en su PDF de temario y precios.",
+    precioDetalle:
+      "El catálogo de Argentina se publica en ARS con {cuotas}. Consulta el valor vigente de cada curso en su PDF de temario y precios.",
     horarioDetalle:
       "Argentina mantiene America/Argentina/Buenos_Aires (UTC-3) todo el año. La clase de 19:30 a 21:30 en Chile se cursa de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno.",
     pagoDetalle:
@@ -299,7 +296,7 @@ const datos: DatosBloqueLocal = {
       intro:
         "Moneda ARS, PDF de temario y precios de cada curso, y checkout con Mercado Pago. El monto se confirma antes de pagar y las {cuotas} aplican a todos los cursos.",
       parrafos: [
-        "Todos los cursos tienen un precio publicado en pesos argentinos. El valor vigente, los descuentos y las {cuotas} se descargan en el PDF de temario y precios de cada curso; la tabla de esta página muestra duración y nivel, y el checkout confirma el monto antes de pagar. No hay un precio distinto por comprar desde otra ciudad: la moneda es la del mercado argentino.",
+        "Todos los cursos tienen un precio publicado en pesos argentinos. El valor vigente y las {cuotas} se descargan en el PDF de temario y precios de cada curso; la tabla de esta página muestra duración y nivel, y el checkout confirma el monto antes de pagar. No hay un precio distinto por comprar desde otra ciudad: la moneda es la del mercado argentino.",
         "El pago se procesa con Mercado Pago Argentina: tarjeta de crédito o débito, Mercado Pago Wallet o transferencia bancaria en pesos. Si la cuenta local no está habilitada, el checkout muestra el equivalente en pesos chilenos (CLP) antes de confirmar. Esa conversión es informativa: el cargo final depende del medio de pago y de tu banco.",
         "Pagar desde el exterior es posible. El checkout muestra los medios disponibles y, si usas una tarjeta emitida en otro país, el cargo final lo define tu banco, incluidos los impuestos o comisiones que aplique. ProgramBI no fija ese cargo. Si necesitas una factura corporativa, el equipo de admisiones coordina los datos antes del pago.",
         "El precio incluye clases en vivo por Zoom, grabaciones en el campus y certificado digital al completar. No incluye licencias de pago de Microsoft ni el examen PL-300, que se pagan aparte si decides rendirlos. Las licencias de Power BI Pro solo hacen falta para publicar y compartir informes dentro de una organización.",

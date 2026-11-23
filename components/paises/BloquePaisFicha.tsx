@@ -108,8 +108,10 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
     )
     .slice(0, 3);
 
-  // Estados Unidos publica el monto en la ficha, sin pasar por el PDF.
-  const precioDirecto = muestraPrecioDirecto(iso) ? precioVenta(iso, curso.slug, promotions) : null;
+  // Estados Unidos y España publican el monto en la ficha, sin pasar por el PDF.
+  const precioDirecto = muestraPrecioDirecto(iso)
+    ? precioVenta(iso, curso.slug, iso === ISO_CHILE ? promotions : [])
+    : null;
 
   return (
     <section
