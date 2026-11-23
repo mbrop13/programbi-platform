@@ -5,6 +5,7 @@ import { GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
 import InicioVigente from "@/components/guias/InicioVigente";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { textoCuotas } from "@/config/cuotas";
+import { OFERTA_CLASE_GRATIS_WHATSAPP } from "@/config/flags";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
@@ -87,9 +88,11 @@ export default function GuiaCursoLateral({
         </li>
       </ul>
 
-      {esVsExcel ? (
+      {esVsExcel && (OFERTA_CLASE_GRATIS_WHATSAPP || cuotas) ? (
         <div className="mt-2.5 flex flex-wrap gap-1.5">
-          <GuiaVisualBadge tone="accent">Clase gratis</GuiaVisualBadge>
+          {OFERTA_CLASE_GRATIS_WHATSAPP ? (
+            <GuiaVisualBadge tone="accent">Clase gratis</GuiaVisualBadge>
+          ) : null}
           {cuotas ? <GuiaVisualBadge tone="neutral">{cuotas}</GuiaVisualBadge> : null}
         </div>
       ) : etiquetaDescuento ? (
@@ -104,7 +107,7 @@ export default function GuiaCursoLateral({
             Precio normal en {getPais(iso).moneda}
           </GuiaVisualBadge>
           {cuotas ? <GuiaVisualBadge tone="neutral">{cuotas}</GuiaVisualBadge> : null}
-          {!getPais(iso).precioDirecto ? (
+          {!getPais(iso).precioDirecto && OFERTA_CLASE_GRATIS_WHATSAPP ? (
             <GuiaVisualBadge tone="accent">Clase gratis</GuiaVisualBadge>
           ) : null}
         </div>
@@ -133,13 +136,15 @@ export default function GuiaCursoLateral({
             ctaPosition="guia_lateral"
             customText={
               esVsExcel
-                ? "Hola, vengo de la guía Power BI vs Excel y quiero la clase gratis del curso de Power BI [power-bi-vs-excel]"
+                ? OFERTA_CLASE_GRATIS_WHATSAPP
+                  ? "Hola, vengo de la guía Power BI vs Excel y quiero la clase gratis del curso de Power BI [power-bi-vs-excel]"
+                  : "Hola, vengo de la guía Power BI vs Excel y quiero información del curso de Power BI [power-bi-vs-excel]"
                 : undefined
             }
             className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)] px-3 text-center text-xs font-semibold text-[var(--g-accent)] no-underline transition-colors hover:border-[var(--g-border-strong)] hover:text-[var(--g-ink)]"
           >
             <MessageCircle size={13} aria-hidden />
-            {esVsExcel ? "Clase gratis" : "WhatsApp"}
+            {esVsExcel && OFERTA_CLASE_GRATIS_WHATSAPP ? "Clase gratis" : "WhatsApp"}
           </WhatsAppCta>
         </div>
         {esVsExcel ? (

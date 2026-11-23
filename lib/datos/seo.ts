@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ORG_ID, SITE_URL } from "@/lib/seo";
 import { datosTerritorio, FECHA_EDICION, FUENTE_ENE, LICENCIA, PERIODO_ACTUAL, REVISION_DESEMPLEO, type Observacion } from "./desempleo";
-import { periodo, tasa } from "./desempleo-formato";
+import { periodo, personas, tasa } from "./desempleo-formato";
 import { NACIONAL, rutaTerritorio } from "./regiones";
 
 export type Migaja = { label: string; path: string };
@@ -12,11 +12,11 @@ export const MIGAS_DATOS = [
 ];
 
 const SUFIJOS = [
-  "Explora la serie histórica desde 2010, compara con Chile y descarga los datos oficiales en CSV y Excel.",
+  "Explora la serie histórica desde 2010, compara con Chile y descarga los datos oficiales en CSV o Excel.",
   "Revisa el histórico desde 2010, compáralo con Chile y descarga el CSV o Excel con datos oficiales.",
   "Compara con Chile, revisa la serie desde 2010 y descarga los datos oficiales en Excel o CSV.",
-  "Revisa la serie desde 2010, compara con Chile y descarga los datos oficiales en CSV o XLSX.",
-  "Compara con Chile y explora la serie desde 2010 con descargas oficiales en CSV y XLSX.",
+  "Revisa la serie desde 2010, compara con Chile y descarga los datos oficiales en CSV o Excel.",
+  "Compara con Chile y explora la serie desde 2010 con descargas oficiales en CSV o Excel.",
   "Mira la serie desde 2010 y descarga datos oficiales en CSV o Excel para comparar con Chile.",
   "Compara con Chile y descarga la serie oficial desde 2010 en CSV o Excel.",
   "Consulta el histórico y descarga los datos oficiales en CSV o Excel.",
@@ -26,35 +26,60 @@ const SUFIJOS = [
 export function metaObservatorio(slug: string, nombre: string, esHub = false): Metadata {
   const esChile = slug === NACIONAL;
   const path = esHub ? "/datos" : rutaTerritorio(slug);
-  const title = esHub
-    ? "Datos de Chile: observatorio de desempleo del INE"
-    : esChile
-      ? "Desempleo en Chile: tasa actual por región (INE)"
-      : `Desempleo en ${nombre}: tasa actual e histórico`;
   const fecha = periodo(PERIODO_ACTUAL);
   const principal = esHub || esChile ? "Chile" : nombre;
   const datos = datosTerritorio(slug);
-  if (!datos) return { title: { absolute: title }, robots: { index: false, follow: true } };
-  const valor = tasa(datos.actual.tasa).replace(" ", " ");
-  const inicio = `Tasa de desempleo en ${principal}: ${valor} en ${fecha}, según el INE. `;
-  const opciones = esChile ? [
-    "Consulta las 16 regiones, compara trimestres y descarga las series históricas en CSV y Excel.",
-    "Consulta las 16 regiones, compara trimestres y descarga series oficiales en CSV y Excel.",
-    ...SUFIJOS,
-  ] : SUFIJOS;
-  const description = opciones.map((opcion) => inicio + opcion).find((texto) => texto.length >= 140 && texto.length <= 155)
-    ?? inicio + "Explora el histórico y descarga los datos oficiales.";
+  const fallbackTitle = esHub
+    ? "Datos de Chile: observatorio de desempleo del INE"
+    : esChile
+      ? "Desempleo en Chile: tasa actual y por región (INE)"
+      : `Desempleo en ${nombre}: tasa e histórico`;
+  if (!datos) return { title: { absolute: fallbackTitle }, robots: { index: false, follow: true } };
+
+  const valor = tasa(datos.actual.tasa).replace("\u00a0", " ");
+  let finalTitle = fallbackTitle;
+  if (!esHub) {
+    if (esChile) {
+      const t1 = `Desempleo en Chile: tasa actual de ${valor} y por región (INE)`;
+      const t2 = `Desempleo en Chile: ${valor} y por región (INE)`;
+      finalTitle = t1.length <= 60 ? t1 : t2;
+    } else {
+      const t1 = `Desempleo en ${nombre}: ${valor} en ${fecha} (INE)`;
+      const t2 = `Desempleo en ${nombre}: ${valor} (${fecha})`;
+      finalTitle = t1.length <= 60 ? t1 : t2;
+    }
+  }
+
+  let description: string;
+  if (esChile && !esHub) {
+    const metaChile = `La tasa de desempleo en Chile fue ${valor} en ${fecha}, según el INE: ${personas(datos.actual.des)} personas desocupadas. Compara las 16 regiones y descarga la serie.`;
+    const metaChileCorta = `La tasa de desempleo en Chile fue ${valor} en ${fecha}, según el INE: ${personas(datos.actual.des)} personas desocupadas. Compara las 16 regiones.`;
+    description = metaChile.length <= 155 ? metaChile : metaChileCorta;
+  } else {
+    const inicio = `Tasa de desempleo en ${principal}: ${valor} en ${fecha}, según el INE. `;
+    description =
+      SUFIJOS.map((opcion) => inicio + opcion).find((texto) => texto.length >= 140 && texto.length <= 155) ??
+      inicio + "Explora el histórico y descarga los datos oficiales.";
+  }
+
   const url = `${SITE_URL}${path}`;
   const imagen = `${SITE_URL}/datos/desempleo/og/${esHub ? "hub" : slug}?v=${REVISION_DESEMPLEO}`;
   return {
-    title: { absolute: title.length <= 60 ? title : `Desempleo en ${nombre}: tasa e histórico` },
+    title: { absolute: finalTitle },
     description,
     keywords: ["desempleo", `tasa de desocupación ${principal}`, "Encuesta Nacional de Empleo", "INE Chile"],
     alternates: { canonical: url },
     robots: { index: true, follow: true },
-    openGraph: { type: "website", siteName: "ProgramBI", locale: "es_CL", url, title, description,
-      images: [{ url: imagen, width: 1200, height: 630, alt: `Desempleo en ${principal}, ${valor}` }] },
-    twitter: { card: "summary_large_image", title, description, images: [imagen] },
+    openGraph: {
+      type: "website",
+      siteName: "ProgramBI",
+      locale: "es_CL",
+      url,
+      title: finalTitle,
+      description,
+      images: [{ url: imagen, width: 1200, height: 630, alt: `Desempleo en ${principal}, ${valor}` }],
+    },
+    twitter: { card: "summary_large_image", title: finalTitle, description, images: [imagen] },
   };
 }
 

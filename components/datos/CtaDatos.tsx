@@ -1,39 +1,75 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowUpRight, GraduationCap, MessageCircle } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { Card, CardContent } from "@/components/ui/card";
-import { CLASE_GRATIS_HABILITADA } from "@/config/flags";
+import {
+  CLASE_GRATIS_HABILITADA,
+  OFERTA_CLASE_GRATIS_WHATSAPP,
+} from "@/config/flags";
 import { CUOTAS_SIN_INTERES } from "@/config/cuotas";
-import { trackEvent, trackWhatsAppClick } from "@/lib/analytics/marketing";
+import {
+  trackCtaCursoClick,
+  trackEvent,
+  trackWhatsAppClick,
+} from "@/lib/analytics/marketing";
+import { cursosParaCarrera } from "@/lib/datos/carreras-cursos";
 import { whatsappHref, withPageUtms } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
 const CURSOS_DATOS = [
-  { href: "/cursos/analisis-de-datos", label: "Análisis de Datos" },
-  { href: "/cursos/power-bi", label: "Power BI" },
-  { href: "/cursos/sql-server", label: "SQL Server" },
-  { href: "/cursos/python", label: "Python" },
-  { href: "/cursos/excel", label: "Excel" },
+  { slug: "analisis-de-datos", href: "/cursos/analisis-de-datos", nombre: "Análisis de Datos" },
+  { slug: "power-bi", href: "/cursos/power-bi", nombre: "Power BI" },
+  { slug: "sql-server", href: "/cursos/sql-server", nombre: "SQL Server" },
+  { slug: "python", href: "/cursos/python", nombre: "Python" },
+  { slug: "excel", href: "/cursos/excel", nombre: "Excel" },
 ] as const;
 
 export interface CtaDatosProps {
   slug?: string;
+  area?: string;
+  nombreCorto?: string;
   pagina?: string;
   className?: string;
 }
 
-export function CtaDatos({ slug, pagina, className }: CtaDatosProps) {
+export function CtaDatos({ slug, area, nombreCorto, pagina, className }: CtaDatosProps) {
   const pagePath = pagina ?? (slug ? `/datos/carreras/${slug}` : "/datos");
-  const waBase = whatsappHref({
-    page: pagePath,
-    intent: "general",
-    country: "cl",
-  });
+  const esFichaCarrera = Boolean(slug && area);
+  const recomendacion =
+    slug && area ? cursosParaCarrera(slug, area) : null;
 
-  const handleWhatsApp = () => {
+  const waBase = recomendacion && slug
+    ? whatsappHref({
+        page: pagePath,
+        customText: `Hola, vengo de /datos/carreras/${slug} (final de la ficha) y quiero información del curso de ${recomendacion.principal.nombre}.`,
+      })
+    : whatsappHref({
+        page: pagePath,
+        intent: "general",
+        country: "cl",
+      });
+
+  const handleWhatsApp = (e: MouseEvent<HTMLAnchorElement>) => {
     const hrefConUtm = withPageUtms(waBase);
+    e.currentTarget.href = hrefConUtm;
+
+    if (esFichaCarrera && recomendacion && slug) {
+      trackWhatsAppClick({
+        cta_location: "ficha_final",
+        cta_position: "ficha_final",
+        carrera_slug: slug,
+        course_slug: recomendacion.principal.slug,
+        country: "cl",
+        page: pagePath,
+        page_path: pagePath,
+        href: hrefConUtm,
+      });
+      return;
+    }
+
     trackWhatsAppClick({
       cta_position: "datos_carreras",
       course_slug: slug ?? "general",
@@ -46,6 +82,8 @@ export function CtaDatos({ slug, pagina, className }: CtaDatosProps) {
       origen_detalle: slug ?? "general",
     });
   };
+
+  const chips = recomendacion ? recomendacion.chips : CURSOS_DATOS;
 
   return (
     <Card
@@ -69,47 +107,60 @@ export function CtaDatos({ slug, pagina, className }: CtaDatosProps) {
               ¿Quieres sumar habilidades de datos a tu carrera?
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Aprende herramientas prácticas de análisis, visualización y bases de datos con clases
-              en vivo y proyectos reales. Disponible en {CUOTAS_SIN_INTERES} cuotas sin interés.
+              {recomendacion && slug
+                ? `Para ${nombreCorto ?? slug} te recomendamos ${recomendacion.principal.nombre} y ${recomendacion.secundario.nombre}. Clases en vivo con proyectos reales, ${CUOTAS_SIN_INTERES} cuotas sin interés${OFERTA_CLASE_GRATIS_WHATSAPP ? " y clase gratis." : "."}`
+                : `Aprende herramientas prácticas de análisis, visualización y bases de datos con clases en vivo y proyectos reales. Disponible en ${CUOTAS_SIN_INTERES} cuotas sin interés.`}
             </p>
 
             <div className="flex flex-wrap gap-2 pt-1.5">
-              {CURSOS_DATOS.map((curso) => (
+              {chips.map((curso) => (
                 <Link
                   key={curso.href}
                   href={curso.href}
+                  onClick={
+                    esFichaCarrera && slug
+                      ? () =>
+                          trackCtaCursoClick({
+                            cta_location: "ficha_final",
+                            carrera_slug: slug,
+                            course_slug: curso.slug,
+                            page_path: pagePath,
+                          })
+                      : undefined
+                  }
                   className={cn(
                     buttonVariants({ variant: "secondary", size: "sm" }),
                     "h-7 gap-1 rounded-md px-2.5 text-xs font-medium"
                   )}
                 >
-                  {curso.label}
+                  {curso.nombre}
                   <ArrowUpRight className="size-3 text-muted-foreground" aria-hidden="true" />
                 </Link>
               ))}
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-wrap items-center gap-2.5">
+          <div className="flex w-full shrink-0 flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <a
               href={waBase}
               target="_blank"
               rel="noopener noreferrer"
+              data-wa-tracked="1"
               onClick={handleWhatsApp}
               className={cn(
                 buttonVariants({ variant: "default", size: "lg" }),
-                "h-10 gap-2 rounded-lg px-4 text-sm font-medium"
+                "min-h-11 w-full justify-center gap-2 rounded-lg px-4 text-sm font-medium sm:w-auto"
               )}
             >
               <MessageCircle className="size-4" aria-hidden="true" />
               Consultar por WhatsApp
             </a>
-            {CLASE_GRATIS_HABILITADA ? (
+            {CLASE_GRATIS_HABILITADA && OFERTA_CLASE_GRATIS_WHATSAPP ? (
               <Link
                 href="/clase-gratis"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-10 gap-1.5 rounded-lg bg-card px-4 text-sm font-medium"
+                  "min-h-11 w-full justify-center gap-1.5 rounded-lg bg-card px-4 text-sm font-medium sm:w-auto"
                 )}
               >
                 Clase gratis

@@ -15,7 +15,7 @@ import {
   nombreInstitucion,
   type CarreraEnInstitucion,
 } from "@/lib/datos/instituciones-paginas";
-import { breadcrumbsSchema, MIGAS_BASE } from "@/lib/datos/seo-carreras";
+import { ajustarTitulo, breadcrumbsSchema, MIGAS_BASE } from "@/lib/datos/seo-carreras";
 import { jsonLdString, SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-static";
@@ -40,7 +40,14 @@ export async function generateMetadata({
   const nombre = nombreInstitucion(pagina.visual);
   const foto = getFotoInstitucion(pagina.key);
   const path = `/datos/carreras/instituciones/${slug}`;
-  const titulo = `${nombre}: carreras, aranceles y sedes 2026`;
+  const tituloCompleto = `${nombre}: carreras, aranceles y sedes 2026`;
+  const tituloCorto = `${pagina.visual.nombreCorto}: carreras, aranceles y sedes 2026`;
+  const titulo =
+    tituloCompleto.length <= 60
+      ? tituloCompleto
+      : tituloCorto.length <= 60
+        ? tituloCorto
+        : ajustarTitulo(tituloCorto, false);
   const descripcion = `${pagina.carreras.length} carreras y ${entero(pagina.programas)} programas de ${nombre} en 2026: aranceles, jornadas, sedes y acreditación según el SIES (Mineduc).`;
   return {
     title: { absolute: titulo },

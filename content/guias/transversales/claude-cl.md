@@ -1,6 +1,6 @@
 ---
-title: Cómo usar Claude para análisis de datos (guía 2026)
-description: Usa Claude para limpiar datos, analizar Excel y CSV y crear reportes sin programar. Prompts listos y ejemplos paso a paso.
+title: Claude para análisis de datos: guía 2026 con 5 prompts
+description: Aprende a usar Claude para limpiar datos, analizar Excel y CSV y armar un informe mensual de ventas sin programar. Paso a paso, con 5 prompts para copiar.
 h1: Cómo usar Claude para analizar datos en tu trabajo (sin programar)
 country: cl
 lang: es-CL

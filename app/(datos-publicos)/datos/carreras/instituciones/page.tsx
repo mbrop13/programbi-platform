@@ -10,7 +10,7 @@ import { jsonLdString, SITE_URL } from "@/lib/seo";
 export const dynamic = "force-static";
 
 const PATH = "/datos/carreras/instituciones";
-const TITULO = "Universidades, institutos y CFT en Chile: carreras y aranceles 2026";
+const TITULO = "Universidades, IP y CFT en Chile: carreras y aranceles 2026";
 const DESCRIPCION =
   "Fichas de las principales universidades, institutos profesionales y CFT de Chile: carreras que imparten, sedes, aranceles y acreditación según el SIES.";
 
@@ -24,6 +24,11 @@ export const metadata: Metadata = {
     siteName: "ProgramBI",
     locale: "es_CL",
     url: `${SITE_URL}${PATH}`,
+    title: TITULO,
+    description: DESCRIPCION,
+  },
+  twitter: {
+    card: "summary_large_image",
     title: TITULO,
     description: DESCRIPCION,
   },

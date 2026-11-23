@@ -1,6 +1,6 @@
 ---
 title: Power BI vs Excel: para qué sirve cada uno y cuándo usarlo
-description: Qué es Power BI, para qué sirve y en qué se diferencia de Excel: tabla comparativa, ventajas y desventajas, y cuándo conviene cada uno en tu trabajo.
+description: ¿Power BI reemplaza a Excel? No compiten, se complementan. Tabla comparativa, ventajas y desventajas, y cuándo conviene usar cada uno en tu trabajo.
 h1: Power BI vs Excel: diferencias, para qué sirve cada uno y cuándo usarlos
 country: transversal
 lang: es

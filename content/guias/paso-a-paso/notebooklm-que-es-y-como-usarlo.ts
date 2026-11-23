@@ -2,8 +2,8 @@ import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
 
 export const guia: GuiaPasoAPaso = {
   slug: "notebooklm-que-es-y-como-usarlo",
-  title: "NotebookLM: qué es, para qué sirve y cómo usarlo (2026)",
-  meta: "Guía de NotebookLM de Google: cargar fuentes, hacer preguntas con citas, resúmenes de audio y usos para trabajo y análisis. Paso a paso y límites reales.",
+  title: "NotebookLM: qué es y cómo usarlo paso a paso (guía 2026)",
+  meta: "Qué es NotebookLM de Google, si es gratis y cómo usarlo: carga tus fuentes, haz preguntas con citas y crea resúmenes de audio. Guía paso a paso.",
   h1: "Qué es NotebookLM y cómo usarlo paso a paso",
   subtitle:
     "Aprende a trabajar con tus propios documentos en NotebookLM: sube PDFs, Google Docs y enlaces web, obtén respuestas con citas clicables y genera resúmenes de audio o guías de estudio sin mezclar fuentes externas.",
