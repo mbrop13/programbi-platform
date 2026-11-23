@@ -36,6 +36,16 @@ const COURSE_RESOURCE_LINKS: Record<string, { href: string; label: string }[]> =
     { href: "/versus/python-vs-r", label: "Comparativa: Python vs. R" },
     { href: "/casos", label: "Testimonios de alumnos" },
   ],
+  chatgpt: [
+    { href: "/guias/chatgpt-para-analisis-de-datos", label: "Guía: ChatGPT para análisis de datos" },
+    { href: "/guias/curso-chatgpt-chile", label: "Guía: curso de ChatGPT en Chile" },
+    { href: "/empresas", label: "Capacitación para empresas" },
+  ],
+  gemini: [
+    { href: "/guias/gemini-para-analisis-de-datos", label: "Guía: Gemini para análisis de datos" },
+    { href: "/guias/curso-gemini-chile", label: "Guía: curso de Gemini en Chile" },
+    { href: "/empresas", label: "Capacitación para empresas" },
+  ],
 };
 
 /** Tipo de recurso según su ruta. El kicker de la tarjeta lo muestra. */

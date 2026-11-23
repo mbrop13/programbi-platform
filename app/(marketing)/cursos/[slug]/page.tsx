@@ -8,6 +8,7 @@ import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
 import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import FichaSeoExtra from "@/components/marketing/FichaSeoExtra";
+import ComparativaCursosIA from "@/components/marketing/ComparativaCursosIA";
 import PlantillaVentasPowerBi from "@/components/marketing/PlantillaVentasPowerBi";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
 import RecursosRelacionadosCurso from "@/components/marketing/RecursosRelacionadosCurso";
@@ -55,6 +56,8 @@ const FICHA_CON_FAQ_CURSO = new Set<string>([
   "power-automate",
   "python",
   "sql-server",
+  "chatgpt",
+  "gemini",
 ]);
 
 /**
@@ -107,7 +110,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     pais === ISO_CHILE && seo?.descriptionCl
       ? seo.descriptionCl
       : seo?.description || dbDescription || course.description;
-  const description = seoLocal ? seoLocal.description : localizarMercado(descripcionBase, pais);
+  const rawDescription = seoLocal ? seoLocal.description : localizarMercado(descripcionBase, pais);
+  const description =
+    pais === "do" && rawDescription.length > 155
+      ? rawDescription.replace(/República Dominicana/g, "Rep. Dominicana")
+      : rawDescription;
   const canon = absoluteUrl(rutaLocal(pais, `/cursos/${slug}`));
 
   // Tarjeta OG de marca (tipográfica, papel-monócromo) — reemplaza las
@@ -214,26 +221,31 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
           a: localizarMercado(faq.a, pais),
         }))
     : [];
+  const esChatgptOGemini = slug === "chatgpt" || slug === "gemini";
   const preguntasExistentes = new Set(
     [...faqsCursoRaw, ...detalle.faqs].map((faq) => faq.q.toLowerCase())
   );
-  const faqsResumen = faqsResumenCurso(course, pais, detalle.horario).filter(
-    (faq) => !preguntasExistentes.has(faq.q.toLowerCase())
-  );
+  // ChatGPT y Gemini muestran exactamente 8 FAQs (2 dinámicas + 6 específicas), sin faqsResumen extra.
+  const faqsResumen = esChatgptOGemini
+    ? []
+    : faqsResumenCurso(course, pais, detalle.horario).filter(
+        (faq) => !preguntasExistentes.has(faq.q.toLowerCase())
+      );
   detalle.faqs = [...detalle.faqs, ...faqsResumen];
 
-  const faqsCurso = faqsCursoRaw.map((faq) => ({
-    "@type": "Question",
-    name: faq.q,
-    acceptedAnswer: { "@type": "Answer", text: faq.a },
-  }));
-  // Preguntas del mercado y del resumen: horario local, certificado, duración,
-  // modalidad en vivo, requisitos previos y precio vigente del curso.
-  const faqsMercado = detalle.faqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.q,
-    acceptedAnswer: { "@type": "Answer", text: faq.a },
-  }));
+  const vistosFaq = new Set<string>();
+  const faqsJsonLd = [...faqsCursoRaw, ...detalle.faqs]
+    .filter((faq) => {
+      const clave = faq.q.trim().toLowerCase();
+      if (vistosFaq.has(clave)) return false;
+      vistosFaq.add(clave);
+      return true;
+    })
+    .map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    }));
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -253,7 +265,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
       },
       {
         "@type": "FAQPage",
-        mainEntity: [...faqsCurso, ...faqsMercado],
+        mainEntity: faqsJsonLd,
       },
     ].filter(Boolean),
   };
@@ -286,6 +298,11 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         // profesor: es prueba social y no puede quedar bajo los bloques SEO. Se
         // oculta sola si no hay testimonios o con NEXT_PUBLIC_TESTIMONIOS=0.
         testimonios={<TestimoniosDeCurso cursoSlug={course.slug} />}
+        comparativa={
+          course.slug === "chatgpt" || course.slug === "gemini" ? (
+            <ComparativaCursosIA slug={course.slug} pais={pais} />
+          ) : null
+        }
       />
       <PeruPowerBiSection pais={pais} slug={course.slug} />
       {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.
@@ -312,6 +329,14 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
       {/* Enlaces internos que antes iban en el hero: landings, guías, caso y
           catálogo, en tarjetas y renderizados en el servidor (valor SEO). */}
       <RecursosRelacionadosCurso slug={course.slug} pais={pais} />
+      {course.slug === "chatgpt" || course.slug === "gemini" ? (
+        <div className="border-t border-line bg-canvas px-4 py-6 sm:px-6 lg:px-8">
+          <p className="mx-auto max-w-[1400px] text-xs leading-relaxed text-faint">
+            ProgramBI no está afiliado a OpenAI ni a Google. ChatGPT es marca de OpenAI; Gemini y
+            Google Workspace son marcas de Google.
+          </p>
+        </div>
+      ) : null}
     </>
   );
 }
