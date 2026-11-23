@@ -85,6 +85,18 @@ function promoPrecioParaPais(
 }
 
 /**
+ * Aísla las promociones activas a Chile: ningún otro país recibe promos del
+ * panel admin (como el precio fijo $169.000 o SQL Server $129.000).
+ */
+export function promocionesParaPais(
+  iso: string | null | undefined,
+  promotions?: readonly PromocionAplicable[]
+): PromocionAplicable[] {
+  if (!promotions || promotions.length === 0) return [];
+  return normalizarPais(iso) === ISO_CHILE ? [...promotions] : [];
+}
+
+/**
  * Selecciona la promoción activa aplicable a un curso en un país.
  * Prioriza reglas específicas de curso (`specific_course`) sobre generales
  * (`courses` / `all`), y ante empate elige la que ofrece el menor precio final.
@@ -96,13 +108,14 @@ export function seleccionarPromocionCurso(
   baseAmount: number,
   nowMs = Date.now()
 ): PromocionAplicable | null {
-  if (!promotions || promotions.length === 0 || baseAmount <= 0) return null;
   const paisIso = normalizarPais(iso);
+  const promosPais = promocionesParaPais(paisIso, promotions);
+  if (promosPais.length === 0 || baseAmount <= 0) return null;
   const pais = getPais(paisIso);
   if (pais.sinDescuento) return null;
   const decimales = pais.decimales;
 
-  const vigentes = promotions.filter((p) => {
+  const vigentes = promosPais.filter((p) => {
     if (p.is_active === false) return false;
     if (p.valid_until) {
       const exp = new Date(p.valid_until).getTime();
@@ -190,11 +203,14 @@ export function resolverPrecioCursoPais(
   let source: OrigenPrecioPais = effectiveBase < baseSale ? "override" : "catalog";
 
   if (pais.sinDescuento) {
+    const listPrice = precioListaPublico(paisIso, slug);
+    const discountPercentage =
+      listPrice != null ? porcentajeDescuento(listPrice, effectiveBase) : 0;
     return {
       finalPrice: effectiveBase,
       basePrice: effectiveBase,
-      listPrice: null,
-      discountPercentage: 0,
+      listPrice,
+      discountPercentage,
       hasPromoDiscount: false,
       promoName: null,
       promoDiscountPercentage: 0,
@@ -340,6 +356,7 @@ export function etiquetaDescuentoCatalogo(
   promotions?: readonly PromocionAplicable[],
   priceOverrides?: readonly OverridePrecio[]
 ): string | null {
+  if (getPais(normalizarPais(iso)).sinDescuento === true) return null;
   const pcts = slugs
     .map((slug) => descuentoPublico(iso, slug, promotions, priceOverrides))
     .filter((pct) => pct > 0);
@@ -351,12 +368,32 @@ export function etiquetaDescuentoCatalogo(
 
 export function formatMoneda(iso: string | null | undefined, monto: number): string {
   const pais = getPais(normalizarPais(iso));
+  const decimales = Number.isInteger(monto) ? 0 : 2;
   return new Intl.NumberFormat(pais.locale, {
     style: "currency",
     currency: pais.moneda,
-    minimumFractionDigits: pais.decimales,
-    maximumFractionDigits: pais.decimales,
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
   }).format(monto);
+}
+
+/**
+ * Monto de cada cuota sin interés. Si `precio` es divisible exacto, devuelve
+ * el cociente entero; si el país usa decimales redondea a 2 decimales, y si
+ * es moneda entera redondea al entero más cercano.
+ */
+export function calcularMontoCuota(
+  iso: string | null | undefined,
+  precio: number,
+  cuotas = 3
+): number {
+  if (cuotas <= 0) return precio;
+  if (precio % cuotas === 0) return precio / cuotas;
+  const pais = getPais(normalizarPais(iso));
+  if (pais.decimales > 0) {
+    return Math.round((precio / cuotas) * 100) / 100;
+  }
+  return Math.round(precio / cuotas);
 }
 
 export function formatCLP(monto: number): string {

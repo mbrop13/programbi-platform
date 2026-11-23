@@ -6,6 +6,7 @@ import {
   porcentajeDescuento,
   precioListaVenta,
   precioVenta,
+  promocionesParaPais,
   type PromocionAplicable,
 } from "@/lib/paises/precios";
 
@@ -87,10 +88,11 @@ export function precioTextoGuia(
   promotions?: readonly PromocionAplicable[]
 ): string {
   const targetIso = resolverIsoGuia(guia.country);
-  if (precioVenta(targetIso, guia.course, promotions) == null) {
+  const promosPais = promocionesParaPais(targetIso, promotions);
+  if (precioVenta(targetIso, guia.course, promosPais) == null) {
     return "consulta el valor vigente por WhatsApp";
   }
-  const pct = descuentoPublico(targetIso, guia.course, promotions);
+  const pct = descuentoPublico(targetIso, guia.course, promosPais);
   if (pct <= 0) {
     return "consulta los valores en el PDF de temario y precios";
   }
@@ -120,12 +122,13 @@ export function precioTextoFaqGuia(
   promotions?: readonly PromocionAplicable[]
 ): string {
   const targetIso = resolverIsoGuia(guia.country);
-  const cobro = precioVenta(targetIso, guia.course, promotions);
+  const promosPais = promocionesParaPais(targetIso, promotions);
+  const cobro = precioVenta(targetIso, guia.course, promosPais);
   if (cobro == null) {
     return "consulta el valor vigente por WhatsApp";
   }
   const cobroTexto = formatearMonedaGuia(targetIso, cobro);
-  const lista = precioListaVenta(targetIso, guia.course, promotions);
+  const lista = precioListaVenta(targetIso, guia.course, promosPais);
   const pct = lista != null ? porcentajeDescuento(lista, cobro) : 0;
   if (lista != null && pct > 0) {
     const listaTexto = formatearMonedaGuia(targetIso, lista);
