@@ -1,18 +1,10 @@
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
-import {
-  ArrowUpRight,
-  Building2,
-  Calculator,
-  Compass,
-  GitCompare,
-  GraduationCap,
-  Target,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { CollageCampus } from "@/components/datos/CollageCampus";
+import { getFotoInstitucion } from "@/lib/datos/instituciones-fotos";
+import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   areasUnicas,
@@ -26,7 +18,6 @@ import {
 } from "@/lib/datos/carreras";
 import {
   anosDesdeSemestres,
-  entero,
   fechaCorta,
   mesCorto,
   pesos,
@@ -61,10 +52,8 @@ import {
   type GrupoDirectorioArea,
   type GrupoMiniRanking,
 } from "@/components/datos/HubRankingsRapidos";
-import {
-  InstitucionesDestacadas,
-  type InstitucionResumenItem,
-} from "@/components/datos/InstitucionesDestacadas";
+import { InstitucionesDestacadas } from "@/components/datos/InstitucionesDestacadas";
+import { getTarjetasInstituciones } from "@/lib/datos/instituciones-paginas";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { RankingCarrerasProgresivo } from "@/components/datos/RankingCarrerasProgresivo";
 import { TablaRankingCarreras } from "@/components/datos/TablaRankingCarreras";
@@ -82,32 +71,44 @@ const CARRERAS_POPULARES = [
   { slug: "enfermeria", label: "Enfermería" },
 ] as const;
 
+// Jerarquía: el comparador es la herramienta más usada (sólida cobalto); el test, sólida tinta;
+// las calculadoras quedan en blanco para no competir.
 const HERRAMIENTAS = [
   {
     href: "/datos/carreras/comparar",
-    icon: GitCompare,
-    titulo: "Comparador",
-    desc: "Compara hasta 3 carreras lado a lado.",
-  },
-  {
-    href: "/datos/carreras/retorno",
-    icon: Calculator,
-    titulo: "Calculadora de Retorno",
-    desc: "Costo total vs. meses de sueldo al egresar.",
-  },
-  {
-    href: "/datos/carreras/puntaje-ponderado",
-    icon: Target,
-    titulo: "Puntaje Ponderado PAES",
-    desc: "Simula tu ponderación oficial 2025–2026.",
+    titulo: "Comparar carreras",
+    desc: "Hasta 3 carreras lado a lado.",
+    clase: "bg-carreras text-white",
   },
   {
     href: "/datos/carreras/test",
-    icon: Compass,
-    titulo: "Test Vocacional",
-    desc: "Ordena opciones según área y presupuesto.",
+    titulo: "Test por prioridades",
+    desc: "Ordena opciones según tus intereses y presupuesto.",
+    clase: "bg-foreground text-white",
+  },
+  {
+    href: "/datos/carreras/retorno",
+    titulo: "Calculadora de retorno",
+    desc: "Lo que cuesta estudiar vs. meses de sueldo.",
+    clase: "border border-line-strong bg-white text-foreground hover:border-foreground",
+  },
+  {
+    href: "/datos/carreras/puntaje-ponderado",
+    titulo: "Puntaje ponderado PAES",
+    desc: "Simula tu ponderación oficial 2025-2026.",
+    clase: "border border-line-strong bg-white text-foreground hover:border-foreground",
   },
 ] as const;
+
+// Fotos de campus para el collage de portada (sólo se muestran las que tienen foto con licencia libre).
+const CLAVES_COLLAGE = [
+  "PONTIFICIA UNIVERSIDAD CATOLICA DE CHILE",
+  "UNIVERSIDAD DE CONCEPCION",
+  "UNIVERSIDAD TECNICA FEDERICO SANTA MARIA",
+  "UNIVERSIDAD DE CHILE",
+  "UNIVERSIDAD AUSTRAL DE CHILE",
+  "PONTIFICIA UNIVERSIDAD CATOLICA DE VALPARAISO",
+];
 
 function toMiniFilas(filas: RankingItem[], metrica: (r: RankingItem) => string) {
   return filas.map((r) => ({
@@ -120,27 +121,6 @@ function toMiniFilas(filas: RankingItem[], metrica: (r: RankingItem) => string) 
   }));
 }
 
-function getStatsPorInstitucion(): Record<string, InstitucionResumenItem> {
-  const counts: Record<string, { programas: number; slugs: Set<string> }> = {};
-  for (const tipo of ["u", "ip", "cft"] as const) {
-    const file = join(process.cwd(), "public", "datos", "carreras", `programas-${tipo}.json`);
-    if (!existsSync(file)) continue;
-    const rows = JSON.parse(readFileSync(file, "utf8")) as { i: string; s: string }[];
-    for (const row of rows) {
-      const vis = getInstitucionVisual(row.i, tipo.toUpperCase());
-      const entry = counts[vis.key] ?? { programas: 0, slugs: new Set<string>() };
-      entry.programas += 1;
-      entry.slugs.add(row.s);
-      counts[vis.key] = entry;
-    }
-  }
-  const result: Record<string, InstitucionResumenItem> = {};
-  for (const [key, val] of Object.entries(counts)) {
-    result[key] = { key, programas: val.programas, carreras: val.slugs.size };
-  }
-  return result;
-}
-
 export default function CarrerasHubPage() {
   const meta = getMetaCarreras();
   const ranking = getRankingCarreras();
@@ -149,7 +129,11 @@ export default function CarrerasHubPage() {
   const ipcSeries = [...getIpcSeries()];
   const resumen = resumenHubCarreras();
   const faqs = faqsHubCarreras();
-  const statsPorInstitucion = getStatsPorInstitucion();
+  const tarjetasInstituciones = getTarjetasInstituciones();
+  const fotosCollage = CLAVES_COLLAGE.flatMap((key) => {
+    const foto = getFotoInstitucion(key);
+    return foto ? [{ key, nombre: getInstitucionVisual(key).nombreCorto, foto }] : [];
+  }).slice(0, 3);
 
   const arancelesOrdenados = ranking
     .map((r) => r.arancel_med)
@@ -275,37 +259,36 @@ export default function CarrerasHubPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      {/* Hero editorial 2 columnas */}
-      <div className="min-w-0 space-y-5">
+      {/* Portada: pregunta + buscador a la izquierda, collage de campus reales a la derecha */}
+      <div className="min-w-0 space-y-6">
         <MigasDatos migas={MIGAS_BASE} />
 
-        <header className="grid min-w-0 gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <div className="min-w-0 space-y-5">
-            <div className="space-y-3">
-              <Badge
-                variant="secondary"
-                className="h-auto rounded-md border border-blue-200/80 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-800"
-              >
-                Datos oficiales Mineduc · 2026 · Act. {fechaCorta(meta.fetched_at)}
-              </Badge>
+        <header className="grid min-w-0 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="min-w-0 space-y-6">
+            <div className="space-y-4">
+              <p className="text-sm font-semibold text-blue-700">
+                Ranking de carreras en Chile · mifuturo.cl, edición {meta.edicion} · act.{" "}
+                {fechaCorta(meta.fetched_at)}
+              </p>
               <h1 className="h1-datos text-foreground">
-                Ranking de carreras en Chile: sueldos y empleabilidad
+                ¿Qué estudiar? Mira cuánto ganan y{" "}
+                <span className="marcador">qué tan rápido encuentran pega</span>
               </h1>
-              <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
-                Compara cuánto ganan los titulados, qué tan rápido encuentran trabajo y cuánto
-                cuesta estudiar en universidades, IP y CFT.
+              <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">
+                Sueldos, empleabilidad y aranceles de {meta.conteos.genericas_unicas} carreras en
+                universidades, institutos profesionales y CFT.
               </p>
             </div>
 
-            <div className="max-w-xl space-y-2.5">
+            <div className="max-w-xl space-y-3">
               <BuscadorCarreras />
-              <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                <span className="text-muted-foreground">Populares:</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-muted-foreground">Lo más buscado:</span>
                 {CARRERAS_POPULARES.map((c) => (
                   <Link
                     key={c.slug}
                     href={`/datos/carreras/${c.slug}`}
-                    className="rounded-md border border-border bg-card px-2.5 py-1 font-medium text-foreground transition-colors hover:border-slate-300 hover:bg-muted"
+                    className="inline-flex min-h-10 items-center rounded-full border border-line-strong bg-white px-3.5 text-sm font-medium text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-white"
                   >
                     {c.label}
                   </Link>
@@ -314,68 +297,41 @@ export default function CarrerasHubPage() {
             </div>
           </div>
 
-          {/* Marco visual editorial */}
-          <div className="relative min-w-0">
-            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border bg-slate-100 shadow-sm">
-              <img
-                src="/images/datos/hero-carreras.jpg"
-                alt="Campus universitario moderno en Chile"
-                className="h-full w-full object-cover"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent"
-              />
-              <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center gap-2">
-                <div className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/95 px-3 py-1.5 text-xs shadow-sm backdrop-blur-xs">
-                  <GraduationCap className="size-3.5 text-blue-600" aria-hidden="true" />
-                  <span className="font-semibold text-slate-900 tabular-nums">
-                    {meta.conteos.genericas_unicas} carreras
-                  </span>
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/95 px-3 py-1.5 text-xs shadow-sm backdrop-blur-xs">
-                  <Building2 className="size-3.5 text-blue-600" aria-hidden="true" />
-                  <span className="font-semibold text-slate-900 tabular-nums">
-                    {entero(meta.conteos.filas_C)}+ programas
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CollageCampus
+            fotos={fotosCollage}
+            carreras={meta.conteos.genericas_unicas}
+            programas={meta.conteos.filas_C}
+          />
         </header>
       </div>
 
-      {/* Tira compacta de 4 herramientas rápidas */}
-      <section aria-labelledby="herramientas-titulo" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Herramientas: cuatro verbos claros, cada una con su color de tema */}
+      <section aria-labelledby="herramientas-titulo">
         <h2 id="herramientas-titulo" className="sr-only">
           Herramientas interactivas
         </h2>
-        {HERRAMIENTAS.map((tool) => {
-          const Icon = tool.icon;
-          return (
-            <Link
-              key={tool.href}
-              href={tool.href}
-              className="group flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm"
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-blue-700 transition-colors group-hover:bg-blue-50">
-                <Icon className="size-4" aria-hidden="true" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-1">
-                  <h3 className="truncate text-sm font-semibold text-foreground group-hover:text-blue-700">
-                    {tool.titulo}
-                  </h3>
-                  <ArrowUpRight
-                    className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-700"
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {HERRAMIENTAS.map((tool) => (
+            <li key={tool.href}>
+              <Link
+                href={tool.href}
+                className={cn(
+                  "group flex h-full min-h-[120px] flex-col justify-between gap-4 rounded-2xl p-5 transition-transform hover:-translate-y-0.5",
+                  tool.clase
+                )}
+              >
+                <span className="font-display text-xl leading-tight font-bold">{tool.titulo}</span>
+                <span className="flex items-end justify-between gap-3 text-[15px] leading-snug">
+                  {tool.desc}
+                  <ArrowRight
+                    className="size-5 shrink-0 transition-transform group-hover:translate-x-1"
                     aria-hidden="true"
                   />
-                </div>
-                <p className="mt-0.5 truncate text-xs text-muted-foreground">{tool.desc}</p>
-              </div>
-            </Link>
-          );
-        })}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Explorador interactivo principal (Áreas visuales + TanStack DataTable / Tarjetas + Scatter) */}
@@ -398,19 +354,19 @@ export default function CarrerasHubPage() {
           ipcSeries={ipcSeries}
         >
           <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 text-xs text-muted-foreground shadow-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-white px-4 py-1.5 text-sm text-muted-foreground">
               <span>
                 Universidades · Mejor sueldo (4.º año) · Pesos de {mesCorto(meta.pesos_de)}
               </span>
               <div className="flex gap-3">
                 <Link
-                  className="font-medium text-blue-700 hover:underline"
+                  className="inline-flex min-h-10 items-center font-semibold text-blue-700 hover:underline"
                   href="/datos/carreras/mejor-pagadas"
                 >
                   Mejor pagadas
                 </Link>
                 <Link
-                  className="font-medium text-blue-700 hover:underline"
+                  className="inline-flex min-h-10 items-center font-semibold text-blue-700 hover:underline"
                   href="/datos/carreras/mas-empleabilidad"
                 >
                   Más empleabilidad
@@ -437,7 +393,7 @@ export default function CarrerasHubPage() {
       </section>
 
       {/* Instituciones destacadas U / IP / CFT */}
-      <InstitucionesDestacadas statsPorInstitucion={statsPorInstitucion} />
+      <InstitucionesDestacadas instituciones={tarjetasInstituciones} />
 
       {/* Rankings rápidos consolidados con Tabs (SSR keepMounted) */}
       <section aria-label="Rankings rápidos destacados">
@@ -448,38 +404,41 @@ export default function CarrerasHubPage() {
       <section aria-labelledby="vistas-curadas-titulo" className="space-y-3">
         <div>
           <h2 id="vistas-curadas-titulo" className="h2-datos text-foreground">
-            Listas listas para revisar
+            Listas para revisar en un minuto
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Cruces preparados con las preguntas más comunes de postulantes y familias.
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {PRESET_SLUGS.map((slug) => {
+        <ol className="grid border-t border-line-strong sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3">
+          {PRESET_SLUGS.map((slug, i) => {
             const p = PRESETS_MAP[slug];
             return (
-              <Link
-                key={slug}
-                href={`/datos/carreras/${slug}`}
-                className="group flex flex-col justify-between rounded-xl border border-border bg-card p-4 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm"
-              >
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-700">
-                    {p.tituloCorto}
-                  </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    {p.descriptionSeo}
-                  </p>
-                </div>
-                <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-700">
-                  Ver ranking
-                  <ArrowUpRight className="size-3.5" aria-hidden="true" />
-                </span>
-              </Link>
+              <li key={slug} className="border-b border-line">
+                <Link
+                  href={`/datos/carreras/${slug}`}
+                  className="group flex h-full gap-4 py-5"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="font-display text-3xl leading-none font-extrabold text-blue-200 transition-colors group-hover:text-carreras"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="font-display text-lg font-bold text-foreground group-hover:underline group-hover:decoration-2 group-hover:underline-offset-4">
+                      {p.tituloCorto}
+                    </h3>
+                    <span className="mt-1 block text-[15px] leading-snug text-muted-foreground">
+                      {p.descriptionSeo}
+                    </span>
+                  </div>
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ol>
       </section>
 
       {/* Bloque de conocimiento agrupado (SSR keepMounted para 0 links huérfanos y SEO) */}

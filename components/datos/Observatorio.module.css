@@ -1,54 +1,64 @@
 .datos {
-  --primary: #0f172a;
+  /* Tokens alineados con components/datos/datos.css (papel cálido + tinta). */
+  --primary: #1b1a17;
   --primary-foreground: #fff;
-  --background: #f8f9fb;
-  --foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #475569;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
+  --background: #f7f4ee;
+  --foreground: #1b1a17;
+  --muted: #f0ece4;
+  --muted-foreground: #5b574f;
+  --accent: #f0ece4;
+  --accent-foreground: #1b1a17;
+  --secondary: #f0ece4;
+  --secondary-foreground: #1b1a17;
   --card: #fff;
-  --card-foreground: #0f172a;
+  --card-foreground: #1b1a17;
   --popover: #fff;
-  --popover-foreground: #0f172a;
-  --border: #e2e8f0;
-  --input: #cbd5e1;
-  --ring: #2563eb;
-  --chart-1: #2563eb;
-  --chart-2: #0ea5e9;
-  --chart-3: #d97706;
-  --chart-4: #10b981;
-  --chart-5: #64748b;
-  --dato-azul: #1d4ed8;
-  --dato-azul-oscuro: #0f172a;
-  --dato-papel: #f8f9fb;
-  --dato-linea: #e2e8f0;
-  --dato-texto: #475569;
-  --dato-radio: .75rem;
+  --popover-foreground: #1b1a17;
+  --border: #e6e0d5;
+  --input: #d3cbbc;
+  --ring: #3442de;
+  --chart-1: #3442de;
+  --chart-2: #0e7a55;
+  --chart-3: #e8590c;
+  --chart-4: #8a6b00;
+  --chart-5: #78716c;
+  --dato-azul: #2a35c2;
+  --dato-azul-oscuro: #1b1a17;
+  --dato-empleo: #0e7a55;
+  --dato-empleo-suave: #e2f5ec;
+  --dato-papel: #f7f4ee;
+  --dato-linea: #e6e0d5;
+  --dato-texto: #5b574f;
+  --dato-radio: 1rem;
+  --dato-display: var(--font-datos-display), var(--font-datos-sans), sans-serif;
   background: var(--dato-papel);
-  color: #0f172a;
+  color: #1b1a17;
   color-scheme: light;
   font-variant-numeric: tabular-nums;
   line-height: 1.6;
 }
 
+/*
+ * Estilos de elemento en la capa base: así las utilidades de Tailwind (carreras, inflación, hub)
+ * pueden sobrescribirlos. Fuera de capa le ganaban a cualquier clase y teñían títulos dentro de enlaces.
+ */
 @layer base {
   .datos :where(a) { color: var(--dato-azul); }
+  /* Enlaces con clase (tarjetas, botones) definen su propio color; sólo el enlace en texto va en cobalto. */
+  .datos :where(a[class]) { color: inherit; }
+  .datos :where(h1, h2, h3) { margin: 0; color: inherit; }
+  .datos h2 { font-family: var(--dato-display); font-weight: 750; font-size: clamp(1.35rem, 3vw, 1.65rem); line-height: 1.22; letter-spacing: -.035em; }
+  .datos h3 { font-family: var(--dato-display); font-weight: 700; line-height: 1.35; }
+  .datos :where(p) { max-width: 70ch; }
+  .datos sup { margin-inline-start: .22em; font-size: .7em; font-weight: 700; }
 }
 .datos :where(a, button, summary, select, [tabindex]):focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
 }
 .datos :where([id]) { scroll-margin-top: 6rem; }
-.datos :where(h1, h2, h3) { margin: 0; color: inherit; }
-.datos h2 { font-weight: 730; font-size: clamp(1.35rem, 3vw, 1.65rem); line-height: 1.22; letter-spacing: -.035em; }
-.datos h3 { font-weight: 700; line-height: 1.35; }
-.datos :where(p) { max-width: 70ch; }
-.datos sup { margin-inline-start: .22em; font-size: .7em; font-weight: 700; }
 
-.contenedor { width: min(100% - 2rem, 72rem); margin: 0 auto; padding: 2rem 0 4.5rem; min-width: 0; }
+.contenedor { width: min(100% - 2rem, 73.75rem); margin: 0 auto; padding: 2rem 0 4.5rem; min-width: 0; }
 .migas { margin: 0 0 2rem; color: var(--dato-texto); font-size: .875rem; }
 .migas ol, .migas li { display: flex; align-items: center; gap: .45rem; }
 .migas ol { margin: 0; padding: 0; flex-wrap: wrap; list-style: none; }
@@ -56,10 +66,11 @@
 .encabezado, .hubEncabezado { margin: 0 0 1.6rem; }
 .encabezado h1, .hubEncabezado h1 {
   margin: .6rem 0 .35rem;
-  font-size: clamp(2rem, 5vw, 3.4rem);
-  font-weight: 780;
-  line-height: 1.05;
-  letter-spacing: -.058em;
+  font-family: var(--dato-display);
+  font-size: clamp(2.2rem, 5.2vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -.035em;
   text-wrap: balance;
 }
 .encabezado > p:last-child, .hubEncabezado > p:last-child {
@@ -71,48 +82,51 @@
   display: flex;
   align-items: center;
   gap: .5rem;
-  color: #265475;
-  font-size: .875rem;
-  font-weight: 730;
+  color: var(--dato-empleo);
+  font-size: .9rem;
+  font-weight: 700;
 }
-.sello span { display: inline-grid; place-items: center; background: #e2effb; color: #155e99; border-radius: .35rem; width: 1.6rem; height: 1.6rem; }
+.sello span { display: inline-grid; place-items: center; background: var(--dato-empleo-suave); color: var(--dato-empleo); border-radius: .45rem; width: 1.7rem; height: 1.7rem; }
 
-.heroes { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; }
-.heroPrincipal, .heroComparacion { min-width: 0; border-radius: var(--dato-radio); border: 1px solid var(--dato-linea); }
+.heroes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
+.heroPrincipal, .heroComparacion { min-width: 0; border-radius: 1.75rem; border: 1px solid var(--dato-linea); }
 .heroPrincipal {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1.2rem .8rem;
-  background: #eaf4fc;
-  color: #142c43;
-  padding: clamp(1.15rem, 3.2vw, 2.2rem);
+  background: var(--dato-empleo);
+  border-color: var(--dato-empleo);
+  color: #fff;
+  padding: clamp(1.4rem, 3.6vw, 2.5rem);
 }
 .heroIndicador { min-width: 0; }
-.periodo { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: .875rem; font-weight: 720; color: #365974; }
+.periodo { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: .9rem; font-weight: 700; color: #fff; }
 .valorHero, .valorHub {
   margin: .22rem 0 .1rem;
   white-space: nowrap;
-  color: #102a42;
-  font-size: clamp(3.55rem, 8vw, 5.5rem);
-  font-weight: 810;
-  line-height: 1;
-  letter-spacing: -.08em;
+  color: #fff;
+  font-family: var(--dato-display);
+  font-size: clamp(4rem, 10vw, 6.5rem);
+  font-weight: 800;
+  line-height: .95;
+  letter-spacing: -.05em;
 }
-.valorHero span, .valorHub span { font-size: .55em; font-weight: 720; color: #1264a7; letter-spacing: -.045em; vertical-align: .105em; }
+.valorHero span, .valorHub span { font-size: .5em; font-weight: 800; color: #ffd84d; letter-spacing: -.03em; vertical-align: .12em; }
 .valorHero sup { font-size: .27em; vertical-align: super; letter-spacing: 0; }
-.etiquetaHero { margin: .55rem 0 0; font-weight: 740; }
-.recuento { margin: .16rem 0 0; font-size: .94rem; color: #34536b; }
-.heroFuente { border-top: 1px solid #c7dae9; padding-top: .8rem; grid-column: 1 / -1; }
-.fuente { margin: .55rem 0 0; color: #405970; font-size: .8125rem; }
+.etiquetaHero { margin: .6rem 0 0; font-weight: 700; font-size: 1.1rem; }
+.recuento { margin: .2rem 0 0; font-size: 1rem; color: #fff; }
+.heroFuente { border-top: 1px solid rgb(255 255 255 / .35); padding-top: .8rem; grid-column: 1 / -1; }
+.heroFuente .fuente { color: #fff; }
+.fuente { margin: .55rem 0 0; color: var(--dato-texto); font-size: .8125rem; }
 .heroFuente .fuente { margin: 0; }
 .fuente a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .miniSerie { margin: 0; min-width: 0; align-self: center; }
-.miniSerie figcaption { margin: 0 0 .1rem; color: #39586e; font-size: .8125rem; font-weight: 680; }
+.miniSerie figcaption { margin: 0 0 .1rem; color: inherit; font-size: .875rem; font-weight: 650; }
 .miniSerie svg { display: block; width: 100%; height: auto; overflow: visible; }
-.miniGuia { stroke: #c3d8e9; stroke-dasharray: 3 5; fill: none; }
-.miniLinea { stroke: #1469ad; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.miniPunto { fill: #1264a7; stroke: #fff; stroke-width: 2.75; }
-.miniFechas { display: flex; justify-content: space-between; gap: .5rem; color: #486276; font-size: .76rem; line-height: 1.4; }
+.miniGuia { stroke: currentColor; opacity: .3; stroke-dasharray: 3 5; fill: none; }
+.miniLinea { stroke: currentColor; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.miniPunto { fill: #ffd84d; stroke: currentColor; stroke-width: 2.75; }
+.miniFechas { display: flex; justify-content: space-between; gap: .5rem; color: inherit; font-size: .8rem; line-height: 1.4; }
 .heroComparacion {
   display: flex;
   flex-direction: column;
@@ -120,33 +134,35 @@
   background: #fff;
 }
 .heroComparacion h2 { display: flex; align-items: center; gap: .55rem; font-size: 1rem; letter-spacing: -.015em; }
-.heroComparacion h2 svg { color: var(--dato-azul); flex: none; }
-.valorDelta { margin: .3rem 0 .4rem; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.2; color: #173e60; letter-spacing: -.055em; font-weight: 780; }
+.heroComparacion h2 svg { color: var(--dato-empleo); flex: none; }
+.valorDelta { margin: .3rem 0 .4rem; font-family: var(--dato-display); font-size: clamp(2.2rem, 4.6vw, 3rem); line-height: 1.1; color: #1b1a17; letter-spacing: -.04em; font-weight: 800; }
 .parPeriodos { display: flex; flex-wrap: wrap; gap: .5rem 1.05rem; margin: 0; }
 .parPeriodos div { flex: 1 0 auto; min-width: 0; }
 .parPeriodos div + div { border-inline-start: 1px solid var(--dato-linea); padding-inline-start: .9rem; }
 .parPeriodos dt, .heroComparacion > p:not(.valorDelta) { color: var(--dato-texto); font-size: .84rem; }
-.parPeriodos dd { margin: 0; color: #193b57; font-size: 1.02rem; font-weight: 740; }
+.parPeriodos dd { margin: 0; color: #1b1a17; font-size: 1.02rem; font-weight: 740; }
 .heroComparacion > p:not(.valorDelta) { margin: .5rem 0 .75rem; }
-.comparacionPie { display: flex; flex-wrap: wrap; gap: .35rem .7rem; border-top: 1px solid #e1e7ed; padding-top: .65rem; margin-top: auto; font-size: .8rem; color: var(--dato-texto); }
-.comparacionPie strong { color: #123c60; }
+.comparacionPie { display: flex; flex-wrap: wrap; gap: .35rem .7rem; border-top: 1px solid var(--dato-linea); padding-top: .65rem; margin-top: auto; font-size: .8rem; color: var(--dato-texto); }
+.comparacionPie strong { color: #1b1a17; }
 
 .indice { display: flex; flex-wrap: wrap; gap: .45rem .55rem; margin: 1.1rem 0 2.1rem; }
 .indice a {
   display: inline-flex;
   align-items: center;
   gap: .43rem;
-  padding: .49rem .75rem;
+  min-height: 2.75rem;
+  padding: .45rem .95rem;
   background: #fff;
-  border: 1px solid #d8e1e7;
-  border-radius: .45rem;
-  font-size: .85rem;
-  font-weight: 680;
+  border: 1px solid #d3cbbc;
+  border-radius: 999px;
+  color: #1b1a17;
+  font-size: .92rem;
+  font-weight: 600;
   line-height: 1.35;
   text-decoration: none;
   transition: background-color .17s, border-color .17s;
 }
-.indice a:hover, .botonClaro:hover { background: #edf6ff; border-color: #9fbad0; }
+.indice a:hover, .botonClaro:hover { background: #1b1a17; border-color: #1b1a17; color: #fff; }
 .lecturaCorta { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; margin-bottom: 2.8rem; }
 .resumen, .cambios, .seccion, .cardDescarga, .cardCurso {
   padding: clamp(1.2rem, 3.2vw, 2rem);
@@ -155,12 +171,12 @@
   background: #fff;
   min-width: 0;
 }
-.resumen { border-top: 3px solid #367ead; }
+.resumen { background: var(--dato-empleo-suave); border-color: var(--dato-empleo-suave); }
 .resumen p, .seccion p, .cardDescarga p, .cardCurso p { margin: .65rem 0 0; }
-.resumen p, .cambios li, .lecturaRegional p { color: #2c4355; }
+.resumen p, .cambios li, .lecturaRegional p { color: #2b2925; }
 .cambios ul { list-style: none; padding: 0; margin: .65rem 0 0; }
 .cambios li { position: relative; margin: 0 0 .5rem; padding-left: 1rem; }
-.cambios li::before { content: ""; position: absolute; left: .12rem; top: .7em; width: .34rem; height: .34rem; border-radius: .15rem; background: #347eb8; }
+.cambios li::before { content: ""; position: absolute; left: .12rem; top: .7em; width: .34rem; height: .34rem; border-radius: .15rem; background: var(--dato-empleo); }
 .secundario { color: var(--dato-texto); font-size: .8125rem; }
 .bloque, .seccion, .descargas { margin-bottom: 2.65rem; }
 .tituloSeccion { margin-bottom: .9rem; }
@@ -171,7 +187,7 @@
 .regionesRelacionadas a { display: block; width: fit-content; margin-top: .4rem; }
 
 .descargas { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; }
-.cardCurso { background: #eaf4fc; color: #183e5c; }
+.cardCurso { background: #ffd84d; border-color: #ffd84d; color: #1b1a17; }
 .cardCurso a { display: block; width: fit-content; margin-top: .65rem; font-weight: 700; }
 .acciones { display: flex; flex-wrap: wrap; gap: .5rem; margin: .9rem 0; }
 .botonClaro, .botonPrincipal {
@@ -182,28 +198,28 @@
   gap: .45rem;
   min-height: 2.7rem;
   padding: .52rem .82rem;
-  border: 1px solid #c7d9e8;
-  border-radius: .45rem;
+  border: 1px solid #d3cbbc;
+  border-radius: .75rem;
   background: #fff;
-  color: #104f83;
-  font-size: .9rem;
-  font-weight: 720;
+  color: #1b1a17;
+  font-size: .92rem;
+  font-weight: 650;
   text-decoration: none;
   cursor: pointer;
   transition: background-color .17s, border-color .17s;
 }
-.botonPrincipal { color: #fff; background: #1264a7; border-color: #1264a7; }
-.botonPrincipal:hover { background: #0e5087; border-color: #0e5087; }
+.botonPrincipal { color: #fff; background: #1b1a17; border-color: #1b1a17; }
+.botonPrincipal:hover { background: #3a3833; border-color: #3a3833; }
 .copiarAccion { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; margin-top: .65rem; }
-.copiarAccion span { font-size: .88rem; color: #375c74; }
-.detalle { border-top: 1px solid #dbe5ec; padding: .65rem 0; }
-.detalle summary { font-weight: 720; cursor: pointer; color: #173e60; padding: .18rem 0; }
-.codigo { overflow-x: auto; padding: .9rem; margin: .65rem 0 0; border-radius: .5rem; background: #eef4f8; color: #14344c; font-size: .82rem; }
+.copiarAccion span { font-size: .88rem; color: var(--dato-texto); }
+.detalle { border-top: 1px solid var(--dato-linea); padding: .65rem 0; }
+.detalle summary { font-weight: 700; cursor: pointer; color: #1b1a17; padding: .18rem 0; }
+.codigo { overflow-x: auto; padding: .9rem; margin: .65rem 0 0; border-radius: .5rem; background: #f0ece4; color: #1b1a17; font-size: .82rem; }
 .metodoGrid { display: grid; gap: 1.25rem; margin-top: 1.1rem; }
 .definiciones { display: grid; gap: .75rem; margin: .7rem 0 0; }
 .definiciones dt { font-weight: 700; }
 .definiciones dd { color: var(--dato-texto); margin: .12rem 0 0; }
-.cita { background: #eef5fa; padding: 1rem; border-radius: .65rem; overflow-wrap: anywhere; }
+.cita { background: #f0ece4; padding: 1rem; border-radius: .65rem; overflow-wrap: anywhere; }
 .cita p { font-size: .94rem; }
 .faq { margin-top: .8rem; }
 .masDatos { display: flex; flex-wrap: wrap; gap: .8rem 1.4rem; padding: 1.1rem 0 0; border-top: 1px solid var(--dato-linea); }
@@ -213,9 +229,9 @@
 .tablaScroll { max-height: 57vh; overflow: auto; margin: .65rem 0 .5rem; }
 .tabla { width: 100%; border-collapse: collapse; font-size: .9rem; text-align: right; }
 .tabla caption { text-align: left; color: var(--dato-texto); font-size: .86rem; padding-bottom: .43rem; }
-.tabla th, .tabla td { border-bottom: 1px solid #e1e9ef; padding: .45rem .72rem; }
+.tabla th, .tabla td { border-bottom: 1px solid var(--dato-linea); padding: .45rem .72rem; }
 .tabla :is(th, td):first-child { text-align: left; }
-.tabla thead { position: sticky; top: 0; background: #eaf3fb; }
+.tabla thead { position: sticky; top: 0; background: #f0ece4; }
 .tabla tbody th { font-weight: 530; }
 
 .hubEncabezado { margin: 1.3rem 0 1.75rem; }

@@ -1,29 +1,38 @@
+/*
+ * Sistema visual de /datos ("Datos de Chile").
+ *
+ * Papel cálido (#f7f4ee) + tinta (#1b1a17): se lee como una revista de datos, no como un panel admin.
+ * Tres colores de tema, uno por observatorio, para orientarse de un vistazo:
+ *   carreras = cobalto, inflación = mandarina, empleo = esmeralda.
+ * Un único acento: el amarillo "marcador", que subraya la cifra o palabra clave de cada pantalla.
+ * Display: Bricolage Grotesque (titulares y cifras). Texto: Figtree.
+ */
 .datos-scope {
-  --radius: 0.625rem;
-  --background: #f8f9fb;
-  --foreground: #0f172a;
+  --radius: 0.875rem;
+  --background: #f7f4ee;
+  --foreground: #1b1a17;
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #1b1a17;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0f172a;
+  --popover-foreground: #1b1a17;
+  --primary: #1b1a17;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #475569;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
-  --destructive: #dc2626;
+  --secondary: #f0ece4;
+  --secondary-foreground: #1b1a17;
+  --muted: #f0ece4;
+  --muted-foreground: #5b574f;
+  --accent: #f0ece4;
+  --accent-foreground: #1b1a17;
+  --destructive: #c62828;
   --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #cbd5e1;
-  --ring: #2563eb;
-  --chart-1: #2563eb;
-  --chart-2: #0ea5e9;
-  --chart-3: #d97706;
-  --chart-4: #10b981;
-  --chart-5: #64748b;
+  --border: #e6e0d5;
+  --input: #d3cbbc;
+  --ring: #3442de;
+  --chart-1: #3442de;
+  --chart-2: #0e7a55;
+  --chart-3: #e8590c;
+  --chart-4: #8a6b00;
+  --chart-5: #78716c;
   background-color: var(--background);
   color: var(--foreground);
   color-scheme: light;
@@ -41,31 +50,63 @@
   outline-offset: 2px;
 }
 
+.datos-scope :where(a[href], button:not(:disabled), summary, select, label[for], [role="tab"], [role="button"]) {
+  cursor: pointer;
+}
+
 .datos-scope .kpi-hero {
-  font-size: clamp(2.125rem, 4.5vw, 3.25rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.035em;
+  font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif;
+  font-size: clamp(2.25rem, 4.8vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 .datos-scope .h1-datos {
-  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -0.03em;
+  font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif;
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
   text-wrap: balance;
 }
 
 .datos-scope .h2-datos {
-  font-size: 1.375rem;
-  font-weight: 650;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
+  font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif;
+  font-size: clamp(1.45rem, 2.6vw, 1.9rem);
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
 .datos-scope .prose-datos p {
   max-width: 72ch;
   line-height: 1.65;
+}
+
+/* Motivo de identidad: marcador amarillo detrás de la cifra o palabra que importa. */
+.datos-scope .marcador {
+  padding: 0 0.12em;
+  margin: 0 -0.04em;
+  border-radius: 0.18em;
+  background: linear-gradient(transparent 12%, #ffd84d 12%, #ffd84d 88%, transparent 88%);
+  color: inherit;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Etiqueta tipo sticker sobre fotos: rotación leve para restarle solemnidad. */
+.datos-scope .sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.6rem;
+  font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transform: rotate(-2.5deg);
 }
 
 @media (prefers-reduced-motion: reduce) {

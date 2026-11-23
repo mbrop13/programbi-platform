@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { TradingViewIpcChart } from "@/components/datos/charts/TradingViewIpcChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -197,18 +197,6 @@ export function InflacionInteractiva({
     };
   }, [sueldoAntes, sueldoHoy, mesOrigen, mesDestino, serie]);
 
-  const ultimoPunto = serie[serie.length - 1];
-  const penultimoPunto = serie.length >= 2 ? serie[serie.length - 2] : null;
-  const puntoHace12 = serie.find((p) => p.m === mesHace12) ?? null;
-  const varUltimoTramo =
-    penultimoPunto && ultimoPunto
-      ? variacionIpc(penultimoPunto.m, ultimoPunto.m, serie)
-      : null;
-  const var12Meses =
-    puntoHace12 && ultimoPunto
-      ? variacionIpc(puntoHace12.m, ultimoPunto.m, serie)
-      : null;
-
   const notificarCalculo = (tipo = "ipc") => {
     trackEvent("datos_calc", { calculadora: tipo });
   };
@@ -267,74 +255,28 @@ export function InflacionInteractiva({
 
   return (
     <div className="space-y-8">
-      {/* KPIs resumen de la serie oficial */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
-          <CardContent className="p-5">
-            <p className="text-xs font-medium text-muted-foreground">Inflación 12 meses</p>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-blue-700 tabular-nums sm:text-3xl">
-              {var12Meses !== null ? variacionPorcentual(var12Meses) : "—"}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {puntoHace12 && ultimoPunto
-                ? `${mesCorto(puntoHace12.m)} → ${mesCorto(ultimoPunto.m)} · INE oficial`
-                : "Variación interanual del IPC"}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
-          <CardContent className="p-5">
-            <p className="text-xs font-medium text-muted-foreground">
-              Última variación mensual
-            </p>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground tabular-nums sm:text-3xl">
-              {varUltimoTramo !== null ? variacionPorcentual(varUltimoTramo) : "—"}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {penultimoPunto && ultimoPunto
-                ? `${mesCorto(penultimoPunto.m)} → ${mesCorto(ultimoPunto.m)}`
-                : "Referencia oficial del INE"}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-0 rounded-xl border border-border bg-white py-0 shadow-xs ring-0">
-          <CardContent className="p-5">
-            <p className="text-xs font-medium text-muted-foreground">Índice IPC actual</p>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground tabular-nums sm:text-3xl">
-              {ultimoPunto ? ultimoPunto.v.toFixed(2).replace(".", ",") : "—"}
-              <span className="ml-1.5 text-sm font-normal text-muted-foreground">pts</span>
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {ultimoPunto ? `${capitalizar(mesLargo(ultimoPunto.m))} · Base 2023 = 100` : ""}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Herramienta principal con 3 modos */}
-      <Card className="gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
+      <Card className="gap-0 overflow-hidden rounded-[1.5rem] border border-line bg-card py-0 shadow-none ring-0">
         <Tabs value={tabActiva} onValueChange={setTabActiva} className="gap-0">
           <div className="border-b border-border bg-muted/35 px-4 pt-4 pb-3 sm:px-6">
-            <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-lg bg-muted p-1 sm:w-fit">
+            <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-xl bg-wash p-1 sm:w-fit">
               <TabsTrigger
                 value="ajustar"
-                className="h-8 gap-1.5 px-3 text-xs font-medium sm:text-sm"
+                className="h-10 gap-1.5 rounded-lg px-3.5 text-sm font-semibold"
               >
                 <Calculator className="size-3.5" aria-hidden="true" />
                 Ajustar un monto
               </TabsTrigger>
               <TabsTrigger
                 value="sueldo"
-                className="h-8 gap-1.5 px-3 text-xs font-medium sm:text-sm"
+                className="h-10 gap-1.5 rounded-lg px-3.5 text-sm font-semibold"
               >
                 <Scale className="size-3.5" aria-hidden="true" />
                 ¿Mi sueldo le ganó al IPC?
               </TabsTrigger>
               <TabsTrigger
                 value="referencias"
-                className="h-8 gap-1.5 px-3 text-xs font-medium sm:text-sm"
+                className="h-10 gap-1.5 rounded-lg px-3.5 text-sm font-semibold"
               >
                 <Table2 className="size-3.5" aria-hidden="true" />
                 Ejemplos cotidianos
@@ -499,7 +441,7 @@ export function InflacionInteractiva({
               </div>
 
               {/* Panel de resultado */}
-              <div className="flex flex-col justify-between rounded-xl border border-border bg-muted/35 p-5 sm:p-6">
+              <div className="flex flex-col justify-between rounded-[1.25rem] border border-ipc/40 bg-ipc-suave p-5 sm:p-6">
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs font-medium text-muted-foreground">

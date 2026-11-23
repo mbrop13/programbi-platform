@@ -12,8 +12,9 @@
 @custom-variant data-ending-style (&:where([data-ending-style]));
 
 @theme inline {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: var(--font-datos-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-datos-display), var(--font-datos-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -45,12 +46,51 @@
 }
 
 @theme {
-  --color-canvas: #f8f9fb;
+  --color-canvas: #f7f4ee;
   --color-paper: #ffffff;
-  --color-wash: #f1f5f9;
-  --color-ink: #0f172a;
-  --color-mute: #475569;
-  --color-faint: #64748b;
-  --color-line: #e2e8f0;
-  --color-line-strong: #cbd5e1;
+  --color-wash: #f0ece4;
+  --color-ink: #1b1a17;
+  --color-mute: #5b574f;
+  --color-faint: #78716c;
+  --color-line: #e6e0d5;
+  --color-line-strong: #d3cbbc;
+
+  /* Colores de tema por observatorio (orientación). Las variantes "-tinta" pasan AA sobre blanco. */
+  --color-carreras: #3442de;
+  --color-carreras-suave: #eceeff;
+  --color-ipc: #ff7a3d;
+  --color-ipc-tinta: #b8430a;
+  --color-ipc-suave: #ffeee3;
+  --color-empleo: #0e7a55;
+  --color-empleo-suave: #e2f5ec;
+  /* Único acento: marcador amarillo. */
+  --color-resalte: #ffd84d;
+
+  /*
+   * "blue" pasa a ser el cobalto de carreras y "slate" un neutro cálido, para que los
+   * componentes existentes (tablas, filtros, calculadoras) hereden la paleta sin reescribirse.
+   */
+  --color-blue-50: #eef0ff;
+  --color-blue-100: #e0e4ff;
+  --color-blue-200: #c5cbff;
+  --color-blue-300: #9ea8ff;
+  --color-blue-400: #7180f7;
+  --color-blue-500: #4a5bec;
+  --color-blue-600: #3442de;
+  --color-blue-700: #2a35c2;
+  --color-blue-800: #252e9c;
+  --color-blue-900: #22297b;
+  --color-blue-950: #161a4a;
+
+  --color-slate-50: #faf8f4;
+  --color-slate-100: #f0ece4;
+  --color-slate-200: #e6e0d5;
+  --color-slate-300: #d3cbbc;
+  --color-slate-400: #a8a093;
+  --color-slate-500: #78716c;
+  --color-slate-600: #5b574f;
+  --color-slate-700: #44403a;
+  --color-slate-800: #2b2925;
+  --color-slate-900: #1b1a17;
+  --color-slate-950: #0f0e0c;
 }

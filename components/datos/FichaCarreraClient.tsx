@@ -340,10 +340,12 @@ export function FichaCarreraClient({
       </div>
 
       {/* Tabla de instituciones */}
-      <TablaInstituciones
-        instituciones={institucionesTipo}
-        programas={programasTipo}
-      />
+      <div id="instituciones" className="scroll-mt-20">
+        <TablaInstituciones
+          instituciones={institucionesTipo}
+          programas={programasTipo}
+        />
+      </div>
 
       {/* Oferta 2026: Histograma de aranceles y Me Alcanza PAES */}
       {programasTipo.length > 0 ? (
@@ -391,7 +393,7 @@ export function CompartirFichaButton({ titulo }: { titulo: string }) {
       variant="outline"
       size="sm"
       onClick={handleShare}
-      className="h-9 shrink-0 gap-1.5 rounded-lg bg-card px-3.5 text-xs font-medium"
+      className="h-11 shrink-0 gap-2 rounded-xl border-line-strong bg-white px-4 text-sm font-semibold"
     >
       {copiado ? (
         <>

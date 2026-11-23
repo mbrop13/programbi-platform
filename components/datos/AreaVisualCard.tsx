@@ -1,7 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
 
-import { Card } from "@/components/ui/card";
 import { getAreaVisual } from "@/lib/datos/areas-visual";
 import { cn } from "@/lib/utils";
 
@@ -20,11 +19,15 @@ function formatMedianSalaryChip(value: number): string {
   if (value >= 1_000_000) {
     const millions = value / 1_000_000;
     const formatted = millions.toFixed(1).replace(".", ",");
-    return `$${formatted}M/mes`;
+    return `$${formatted}M`;
   }
-  return `$${Math.round(value / 1_000)}k/mes`;
+  return `$${Math.round(value / 1_000)}k`;
 }
 
+/**
+ * Filtro por área: mosaico tipográfico (sin ilustraciones genéricas). La cifra protagonista es el
+ * sueldo mediano del área; activo = fondo tinta, para que el estado no dependa sólo del color.
+ */
 export function AreaVisualCard({
   area,
   count,
@@ -45,59 +48,37 @@ export function AreaVisualCard({
   const countLabel = `${count} ${count === 1 ? "carrera" : "carreras"}`;
 
   const cardInner = (
-    <Card
+    <div
       className={cn(
-        "group/area relative gap-0 overflow-hidden rounded-xl border border-slate-200/90 bg-white p-0 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md",
-        active && "border-blue-600 ring-2 ring-blue-600 shadow-sm",
-        className,
+        "flex h-full min-h-[132px] flex-col justify-between gap-3 rounded-2xl border p-4 transition-colors",
+        active
+          ? "border-foreground bg-foreground text-white"
+          : "border-line bg-white text-foreground group-hover/area:border-foreground",
+        className
       )}
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
-        <img
-          src={visual.image}
-          alt={visual.nombre}
-          loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover/area:scale-105"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent"
-        />
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3">
-          <div className="min-w-0">
-            <h3 className="truncate text-sm font-semibold leading-tight text-white">
-              {visual.nombre}
-            </h3>
-            <p className="mt-0.5 truncate text-[11px] text-slate-200">
-              {visual.tagline}
-            </p>
-          </div>
-          {active && (
-            <span className="shrink-0 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-semibold text-white">
-              Activa
-            </span>
-          )}
-        </div>
+      <div className="min-w-0">
+        <h3 className="font-display text-base leading-tight font-bold">{visual.nombre}</h3>
+        <p className={cn("mt-0.5 line-clamp-1 text-xs", active ? "text-white" : "text-muted-foreground")}>
+          {visual.tagline}
+        </p>
       </div>
-
-      <div className="flex items-center justify-between gap-2 bg-white px-3 py-2.5">
-        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+      <div className="flex items-end justify-between gap-2">
+        {salaryChip ? (
+          <span className="font-display text-2xl leading-none font-extrabold tabular-nums">
+            {salaryChip}
+            <span className={cn("ml-0.5 text-xs font-semibold", active ? "text-white" : "text-muted-foreground")}>
+              /mes
+            </span>
+          </span>
+        ) : (
+          <span />
+        )}
+        <span className={cn("text-xs font-medium", active ? "text-white" : "text-muted-foreground")}>
           {countLabel}
         </span>
-        {salaryChip && (
-          <span
-            style={{
-              color: visual.accent,
-              backgroundColor: visual.softBg,
-              borderColor: visual.border,
-            }}
-            className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold tabular-nums"
-          >
-            {salaryChip}
-          </span>
-        )}
       </div>
-    </Card>
+    </div>
   );
 
   if (href) {
@@ -105,7 +86,7 @@ export function AreaVisualCard({
       <Link
         href={href}
         aria-current={active ? "page" : undefined}
-        className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+        className="group/area block h-full rounded-2xl"
       >
         {cardInner}
       </Link>
@@ -118,7 +99,8 @@ export function AreaVisualCard({
         type="button"
         onClick={onClick}
         aria-pressed={active}
-        className="block w-full cursor-pointer rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+        aria-label={`${visual.nombre}: ${countLabel}${salaryChip ? `, sueldo mediano ${salaryChip} al mes` : ""}`}
+        className="group/area block h-full w-full cursor-pointer rounded-2xl text-left"
       >
         {cardInner}
       </button>

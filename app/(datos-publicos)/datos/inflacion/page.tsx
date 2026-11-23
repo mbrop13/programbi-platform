@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
-import { ArrowUpRight, ChevronDown, GraduationCap } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { CtaDatos } from "@/components/datos/CtaDatos";
 import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";
 import { InflacionInteractiva } from "@/components/datos/InflacionInteractiva";
 import { MigasDatos } from "@/components/datos/MigasDatos";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button-variants";
-import { Card, CardContent } from "@/components/ui/card";
 import { mesLargo, variacionPorcentual } from "@/lib/datos/formato";
 import { getIpcSeries, getUltimoIpc, variacionIpc } from "@/lib/datos/ipc";
 import {
@@ -21,7 +17,6 @@ import {
   type MigajaDatos,
 } from "@/lib/datos/seo-carreras";
 import { jsonLdString, ORG_ID, SITE_URL } from "@/lib/seo";
-import { cn } from "@/lib/utils";
 
 export const dynamic = "force-static";
 
@@ -130,7 +125,7 @@ export default function InflacionPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
+    <div className="mx-auto max-w-[1180px] space-y-10 px-4 py-6 sm:px-6 lg:py-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
@@ -139,82 +134,62 @@ export default function InflacionPage() {
       <div className="space-y-4">
         <MigasDatos migas={MIGAS} />
 
-        <header className="grid items-center gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:gap-10">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                variant="secondary"
-                className="h-auto rounded-md border border-border bg-white px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
-              >
-                Datos oficiales del INE · Actualizado a {mesLargo(ultimo.m)}
-              </Badge>
-              {var12Meses !== null ? (
-                <Badge
-                  variant="secondary"
-                  className="h-auto rounded-md border border-blue-200/80 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 tabular-nums"
-                >
-                  Inflación 12m: {variacionPorcentual(var12Meses)}
-                </Badge>
-              ) : null}
-            </div>
-            <h1 className="h1-datos text-foreground">
-              Calculadora de IPC: cuánto valen tus pesos hoy
+        <header className="grid items-stretch gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+          <div className="flex flex-col justify-center py-2">
+            <p className="text-sm font-semibold text-ipc-tinta">
+              Calculadora de IPC · INE, actualizado a {mesLargo(ultimo.m)}
+            </p>
+            <h1 className="h1-datos mt-3 text-foreground">
+              ¿Cuánto valen <span className="marcador">tus pesos hoy</span>?
             </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
               Actualiza sueldos, arriendos o aranceles con la serie oficial del INE y comprueba si
-              tus ingresos le ganaron a la inflación en Chile.
+              tus ingresos le ganaron a la inflación.
             </p>
           </div>
 
-          <div className="hidden overflow-hidden rounded-xl border border-border bg-slate-100 shadow-xs md:block">
-            <div className="aspect-[16/10] w-full overflow-hidden">
-              <Image
-                src="/images/datos/hero-inflacion.jpg"
-                alt="Distrito financiero de Santiago de Chile"
-                width={640}
-                height={400}
-                priority
-                className="h-full w-full object-cover"
-              />
+          {var12Meses !== null ? (
+            <div className="flex flex-col justify-between gap-6 rounded-[1.75rem] bg-ipc p-6 text-foreground sm:p-8">
+              <p className="text-sm font-semibold">Inflación de los últimos 12 meses</p>
+              <p className="font-display text-[clamp(3.5rem,8vw,5.5rem)] leading-[0.9] font-extrabold tracking-[-0.05em] tabular-nums">
+                {variacionPorcentual(var12Meses)}
+              </p>
+              <p className="text-[15px] leading-snug font-medium">
+                {mesLargo(mesHace12)} a {mesLargo(ultimo.m)}. Índice actual:{" "}
+                {ultimo.v.toFixed(2).replace(".", ",")} puntos (base 2023 = 100).
+              </p>
             </div>
-          </div>
+          ) : null}
         </header>
       </div>
 
       <InflacionInteractiva serie={serie} />
 
-      {/* Enlace útil al observatorio de carreras */}
-      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
-        <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-          <div className="flex items-start gap-3.5">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-blue-700">
-              <GraduationCap className="size-5" aria-hidden="true" />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-foreground sm:text-base">
-                ¿Estabas revisando sueldos de carreras en Chile?
-              </h2>
-              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                En nuestro observatorio de carreras puedes activar el ajuste automático por IPC en
-                un clic para ver todos los sueldos de mifuturo.cl en pesos de hoy.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/datos/carreras"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "h-9 shrink-0 gap-1.5 bg-card px-3.5 text-xs font-medium"
-            )}
-          >
-            Explorar carreras y sueldos
-            <ArrowUpRight className="size-3.5" aria-hidden="true" />
-          </Link>
-        </CardContent>
-      </Card>
+      {/* Puente al observatorio de carreras (sus sueldos vienen en pesos de sep-2025) */}
+      <section
+        aria-labelledby="inflacion-carreras"
+        className="flex flex-col gap-5 rounded-[1.75rem] bg-carreras p-6 text-white sm:flex-row sm:items-center sm:justify-between sm:p-8"
+      >
+        <div className="max-w-2xl">
+          <h2 id="inflacion-carreras" className="font-display text-2xl font-bold">
+            ¿Revisando sueldos de carreras?
+          </h2>
+          <p className="mt-2 text-base leading-relaxed">
+            En el ranking de carreras puedes ver todos los sueldos de mifuturo.cl en pesos de hoy
+            con un clic, usando esta misma serie del IPC.
+          </p>
+        </div>
+        <Link
+          href="/datos/carreras"
+          className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-xl bg-white px-5 text-[15px] font-semibold text-foreground transition-colors hover:bg-resalte"
+        >
+          Ver sueldos de carreras
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </Link>
+      </section>
 
-      <details className="group rounded-xl border border-border bg-white shadow-xs">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-6 py-4 text-sm font-semibold text-foreground select-none hover:bg-slate-50/70">
+      <details className="group rounded-[1.25rem] border border-line bg-white">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-6 py-4 text-base font-semibold text-foreground select-none hover:bg-slate-50">
           <span>En resumen y nota metodológica oficial</span>
           <ChevronDown
             className="size-4 shrink-0 text-muted-foreground transition-transform duration-150 group-open:rotate-180"
