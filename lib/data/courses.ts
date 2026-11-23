@@ -317,6 +317,174 @@ const rawCourses: Course[] = [
     ],
   },
   {
+    slug: "chatgpt",
+    title: "ChatGPT",
+    shortDescription:
+      "Usa ChatGPT en tu trabajo: analiza datos y planillas de Excel, crea informes y presentaciones y automatiza tareas repetitivas, sin programar.",
+    description:
+      "Curso de 20 horas en vivo por Zoom para dominar ChatGPT en el trabajo administrativo y analítico, sin necesidad de programar. Aprenderás a estructurar prompts efectivos, elegir el modo adecuado y aprovechar el modelo más reciente disponible en tu plan según la complejidad de cada tarea.\n\nTrabajarás con planillas de Excel y archivos CSV para limpiar datos, detectar anomalías y generar fórmulas compatibles con Excel y Google Sheets. Además, organizarás tu área con Projects, crearás informes y presentaciones ejecutivas y conectarás tus aplicaciones mediante plugins y skills.\n\nEn la recta final explorarás ChatGPT Work, tareas programadas y automatización ligera con criterios claros de privacidad, verificación y cumplimiento normativo. El mismo programa aplica para particulares y empresas.",
+    category: "ia",
+    categoryLabel: "IA & Automatización",
+    badgeLabel: "NUEVO 2026",
+    badgeColor: "#10A37F",
+    techStack: ["ChatGPT", "Excel", "ChatGPT Work"],
+    durationHours: 20,
+    modality: "online",
+    level: "principiante",
+    imageUrl: "/images/courses/chatgpt-card.webp",
+    icon: "Sparkles",
+    accentColor: "#10A37F",
+    isFeatured: false,
+    sortOrder: 4,
+    whatYouLearn: [
+      "Escribir prompts claros, elegir el modo de trabajo y usar el razonamiento cuando hace falta",
+      "Analizar y limpiar planillas de Excel y archivos CSV sin programar",
+      "Generar fórmulas y hojas con ChatGPT para Excel y Google Sheets",
+      "Organizar Projects y crear informes y presentaciones listas para compartir",
+      "Automatizar tareas repetitivas con ChatGPT Work y tareas programadas",
+      "Aplicar criterios de privacidad, verificación y seguridad en el trabajo diario",
+    ],
+    syllabus: [
+      {
+        module: "Módulo 1: Configuración, planes y prompting profesional",
+        topics: [
+          "Planes, privacidad y uso del modelo más reciente disponible en tu plan",
+          "Estructura de prompts efectivos y modos de razonamiento",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 2: Documentos, Deep Research y Projects",
+        topics: [
+          "Lectura de PDF, Deep Research y análisis de licitaciones",
+          "Projects, Space y creación de informes y presentaciones",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 3: Análisis de datos y Excel con ChatGPT",
+        topics: [
+          "Limpieza y análisis de archivos CSV y planillas Excel en el chat",
+          "ChatGPT para Excel y Google Sheets con fórmulas en español y punto y coma",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 4: Apps, plugins, skills y ChatGPT Work",
+        topics: [
+          "Apps, plugins y skills (en reemplazo de los GPTs personalizados en retiro)",
+          "ChatGPT Work, tareas programadas y Codex explicado en sencillo",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 5: Privacidad, marco legal y proyecto final",
+        topics: [
+          "Protección de datos, verificación y marco legal en Latinoamérica y Europa",
+          "Proyecto final integrador aplicado a un flujo real de tu trabajo",
+        ],
+        hours: 4,
+      },
+    ],
+    levels: [
+      {
+        name: "Completo",
+        price: PRECIOS_CLP["claude"],
+        durationHours: 20,
+        whatYouLearn: [
+          "Prompts profesionales y Projects para tu área",
+          "Análisis de datos y Excel con ChatGPT",
+          "Informes, presentaciones y conectores con tus apps",
+          "ChatGPT Work y automatización ligera, con criterio de seguridad",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "gemini",
+    title: "Gemini",
+    shortDescription:
+      "Usa Gemini en Google Workspace: Gmail, Docs, Sheets y Meet, analiza PDF y documentos, e investiga con Gemini Notebook (NotebookLM) y Deep Research.",
+    description:
+      "Curso de 20 horas en vivo por Zoom para integrar Gemini en tu trabajo diario dentro del ecosistema Google, sin programar. Aprenderás a trabajar con el modelo más reciente disponible en tu plan y a distinguir qué funciones están en cuentas personales frente a Google Workspace Business Standard+.\n\nDominarás la redacción y síntesis en Gmail, Docs, Meet y Slides, el análisis de planillas con Fill with Gemini en Google Sheets y la extracción de tablas desde PDF extensos. También crearás skills reutilizables —que reemplazan a los antiguos Gems— para estandarizar tareas del equipo.\n\nPor último, profundizarás en Gemini Notebook (antes NotebookLM) con citas verificables, Deep Research y Workspace Studio para automatizar flujos cotidianos con seguridad y respaldo normativo.",
+    category: "ia",
+    categoryLabel: "IA & Automatización",
+    badgeLabel: "NUEVO 2026",
+    badgeColor: "#4285F4",
+    techStack: ["Gemini", "Google Workspace", "Gemini Notebook"],
+    durationHours: 20,
+    modality: "online",
+    level: "principiante",
+    imageUrl: "/images/courses/gemini-card.webp",
+    icon: "Sparkles",
+    accentColor: "#4285F4",
+    isFeatured: false,
+    sortOrder: 5,
+    whatYouLearn: [
+      "Redactar y resumir en Gmail y Docs manteniendo el tono de tu empresa",
+      "Trabajar en Google Sheets con tablas, fórmulas y gráficos asistidos por Gemini",
+      "Convertir PDF y documentos largos en tablas ordenadas y resúmenes accionables",
+      "Investigar sobre tus propias fuentes con Gemini Notebook (NotebookLM) y citas verificables",
+      "Ejecutar investigaciones profundas con Deep Research y validar fuentes",
+      "Usar Skills y Workspace Studio para automatizar flujos sin programar",
+    ],
+    syllabus: [
+      {
+        module: "Módulo 1: Ecosistema Gemini, prompting y Skills",
+        topics: [
+          "Gemini web y planes de Google Workspace (Starter vs Standard+)",
+          "Prompting práctico y Skills (en reemplazo de los antiguos Gems)",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 2: Gmail, Calendar, Meet, Docs y Slides",
+        topics: [
+          "Productividad en Gmail, Calendar y resúmenes de reuniones en Meet",
+          "Redacción en Docs, presentaciones en Slides y exportación a PPTX/PDF",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 3: Google Sheets y extracción desde PDF",
+        topics: [
+          "Tablas, fórmulas, gráficos y Fill with Gemini en Google Sheets",
+          "Extracción estructurada de datos desde PDF y documentos extensos",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 4: Gemini Notebook (NotebookLM) y Deep Research",
+        topics: [
+          "Cuadernos con fuentes propias, Audio y Video Overviews y citas",
+          "Deep Research y validación crítica de fuentes externas",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 5: Workspace Studio, seguridad y proyecto final",
+        topics: [
+          "Workspace Studio, panorama de agentes y cumplimiento de privacidad",
+          "Proyecto final integrador aplicado a un proceso real",
+        ],
+        hours: 4,
+      },
+    ],
+    levels: [
+      {
+        name: "Completo",
+        price: PRECIOS_CLP["claude"],
+        durationHours: 20,
+        whatYouLearn: [
+          "Gemini en Gmail, Docs, Meet y Slides",
+          "Google Sheets y PDF con Gemini",
+          "Gemini Notebook (NotebookLM) y Deep Research",
+          "Skills, Workspace Studio y automatización sin programar",
+        ],
+      },
+    ],
+  },
+  {
     slug: "power-automate",
     title: "Power Automate & RPA",
     shortDescription:
@@ -1125,7 +1293,7 @@ export const COURSE_NAV_GROUPS = [
   {
     id: "ia",
     label: "IA",
-    slugs: ["ia-productividad", "copilot", "claude", "power-automate", "machine-learning"],
+    slugs: ["ia-productividad", "copilot", "claude", "chatgpt", "gemini", "power-automate", "machine-learning"],
   },
 ] as const;
 

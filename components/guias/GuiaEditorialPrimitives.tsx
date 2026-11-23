@@ -112,6 +112,8 @@ export type GuiaToolKey =
   | "sql"
   | "python"
   | "automate"
+  | "chatgpt"
+  | "gemini"
   | "ia"
   | "datos";
 
@@ -132,7 +134,28 @@ function normalizeToolInput(value?: string): string {
 }
 
 export function getToolMeta(tool?: string, course?: string): GuiaToolMeta {
-  const combined = `${normalizeToolInput(tool)} ${normalizeToolInput(course)}`.trim();
+  const normCourse = normalizeToolInput(course);
+  const combined = `${normalizeToolInput(tool)} ${normCourse}`.trim();
+
+  if (normCourse === "chatgpt" || (!normCourse && combined.includes("chatgpt"))) {
+    return {
+      key: "chatgpt",
+      label: "ChatGPT",
+      accentHex: "#10A37F",
+      softBgClass: "bg-[#10A37F]/10 dark:bg-[#10A37F]/15",
+      textClass: "text-[#0e8a6b] dark:text-[#34d399]",
+    };
+  }
+
+  if (normCourse === "gemini" || (!normCourse && combined.includes("gemini"))) {
+    return {
+      key: "gemini",
+      label: "Gemini",
+      accentHex: "#4285F4",
+      softBgClass: "bg-[#4285F4]/10 dark:bg-[#4285F4]/15",
+      textClass: "text-[#2b6cb0] dark:text-[#60a5fa]",
+    };
+  }
 
   if (
     combined.includes("power bi") ||
@@ -319,6 +342,8 @@ function ToolGlyph({ toolKey, className }: { toolKey: GuiaToolKey; className: st
           />
         </svg>
       );
+    case "chatgpt":
+    case "gemini":
     case "ia":
       return (
         <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">

@@ -407,6 +407,78 @@ export const COURSE_SEO: Record<
       },
     ],
   },
+  chatgpt: {
+    title: "Curso de ChatGPT Chile: en vivo y certificado | ProgramBI",
+    description:
+      "Curso de ChatGPT en Chile, 20 h en vivo: análisis de datos, Excel, Projects, ChatGPT Work y automatización ligera sin programar. Con certificado.",
+    h1: "Curso de ChatGPT en vivo en Chile",
+    audience:
+      "Para profesionales, analistas, jefaturas y equipos administrativos que quieren usar ChatGPT en Excel, documentos, presentaciones y automatización diaria sin programar.",
+    intro:
+      `Este es un curso de ChatGPT en Chile, en vivo por Zoom, pensado para profesionales y equipos administrativos que quieren dominar la herramienta en su trabajo diario sin programar.\n\nEn ${courseDurationHours("chatgpt")} horas —horario vespertino, hora de Chile, con grabaciones en el campus— aprendes a escribir prompts claros, elegir el modo de razonamiento adecuado y aprovechar el modelo más reciente disponible en tu plan. Trabajas con archivos CSV y Excel (incluidas fórmulas en español con punto y coma), organizas áreas con Projects, creas presentaciones ejecutivas y conectas tus apps con plugins y skills.\n\nTambién aplicas ChatGPT Work y tareas programadas con criterios claros de privacidad y verificación. Es un programa completo de ${courseDurationHours("chatgpt")} horas válido para particulares y empresas, con certificado digital de ProgramBI.`,
+    faqs: [
+      {
+        q: "¿El curso de ChatGPT entrega certificado y se dicta en vivo?",
+        a: `Sí. Todas las clases se dictan en vivo por Zoom en horario vespertino (hora de Chile), con acceso al campus virtual, grabaciones y material descargable durante ${courseDurationHours("chatgpt")} horas en 5 módulos. Al completar obtienes tu certificado digital de ProgramBI.`,
+      },
+      {
+        q: "¿Necesito pagar ChatGPT Plus o puedo partir con el plan gratuito?",
+        a: "Puedes comenzar con una cuenta gratuita para aprender la estructura de prompts y flujos base. En el curso comparamos qué aporta cada plan pago (Plus o Business) para trabajar con el modelo más reciente disponible en tu plan, Projects, Deep Research y análisis de archivos.",
+      },
+      {
+        q: "¿Cómo se trabaja Excel y Google Sheets con ChatGPT en el curso?",
+        a: "Analizas y limpias bases en CSV y Excel directamente en el chat y generas fórmulas compatibles con Excel en español y Google Sheets usando punto y coma (;), evitando errores de configuración regional.",
+      },
+      {
+        q: "¿Qué es ChatGPT Work y qué automatizaciones se ven sin programar?",
+        a: "ChatGPT Work permite orquestar tareas recurrentes entre archivos, correo y calendario junto con tareas programadas. En el curso aprendes a configurar reportes periódicos y a distinguir qué automatizar tú y cuándo escalar un requerimiento técnico con Codex a TI.",
+      },
+      {
+        q: "¿Es seguro usar ChatGPT con datos de mi empresa?",
+        a: "Sí, siempre que se configure correctamente. En la primera y novena sesión revisamos ajustes de privacidad para no entrenar con tus datos, técnicas de anonimización y criterios alineados con leyes de protección de datos en Latinoamérica y Europa.",
+      },
+      {
+        q: "¿Puedo agendar una clase gratis antes de inscribirme?",
+        a: "Sí. Puedes agendar una clase gratis desde la ficha del curso para conocer la metodología en vivo por Zoom y resolver dudas antes de matricular.",
+      },
+    ],
+  },
+  gemini: {
+    title: "Curso de Gemini Chile: en vivo y certificado | ProgramBI",
+    description:
+      "Curso de Gemini (Google) en Chile, 20 h en vivo: Gmail, Docs, Sheets, PDF, Gemini Notebook y Deep Research en tu trabajo diario. Con certificado.",
+    h1: "Curso de Gemini en vivo en Chile",
+    audience:
+      "Para profesionales y equipos que usan Google Workspace (Gmail, Docs, Sheets, Meet, Slides) y quieren analizar PDF, investigar con Gemini Notebook y automatizar sin programar.",
+    intro:
+      `Este es un curso de Gemini en Chile, en vivo por Zoom, orientado a quienes trabajan en el ecosistema Google y buscan ahorrar horas cada semana en correos, documentos, planillas e investigación, sin programar.\n\nDurante ${courseDurationHours("gemini")} horas —en horario vespertino, hora de Chile, con grabaciones en el campus— usas el modelo más reciente disponible en tu plan en Gmail, Calendar, Meet, Docs, Slides y Google Sheets, distinguiendo con claridad qué funciones están en cuentas personales y cuáles requieren Google Workspace Business Standard+.\n\nAdemás, extraes tablas desde PDF extensos hacia Sheets, investigas con citas en Gemini Notebook (antes NotebookLM) y Deep Research, y automatizas flujos con Skills y Workspace Studio. Incluye certificado digital de ProgramBI.`,
+    faqs: [
+      {
+        q: "¿Necesito Google Workspace de pago o sirve con Gmail personal?",
+        a: "Puedes seguir el curso con tu cuenta personal gratuita para usar la app de Gemini, Gemini Notebook y Deep Research. Además, te mostramos qué integraciones nativas en Gmail, Docs, Meet y Sheets dependen de planes Google Workspace Business Starter o Standard+.",
+      },
+      {
+        q: "¿Qué es Gemini Notebook (antes NotebookLM) y para qué sirve?",
+        a: "Es el cuaderno de investigación de Google donde subes tus propios PDF, documentos y enlaces para consultar únicamente sobre esas fuentes con citas verificables, además de generar Audio Overviews, Video Overviews y sitios interactivos.",
+      },
+      {
+        q: "¿Cómo se pasan tablas desde PDF a Google Sheets o Excel?",
+        a: "En el módulo 3 trabajas flujos prácticos para extraer tablas, facturas o listados desde documentos PDF extensos hacia Google Sheets, validando totales y limpiando formatos para usarlos también en Excel.",
+      },
+      {
+        q: "¿Qué tareas resuelve Gemini dentro de Google Sheets?",
+        a: "Aprendes a generar fórmulas, tablas resumen y gráficos, además de usar Fill with Gemini para clasificar textos, normalizar categorías y completar columnas automáticamente dentro de la hoja de cálculo.",
+      },
+      {
+        q: "¿Qué pasó con los Gems de Gemini y cómo funcionan los Skills?",
+        a: "Los antiguos Gems de Gemini están en retiro y han sido reemplazados por Skills, que te permiten guardar instrucciones reutilizables, tono corporativo y documentos de referencia para estandarizar tareas del equipo.",
+      },
+      {
+        q: "¿El curso entrega certificado y puedo agendar una clase gratis?",
+        a: `Sí. Al finalizar las ${courseDurationHours("gemini")} horas recibes el certificado digital de ProgramBI. También puedes agendar una clase gratis desde esta página para probar la modalidad en vivo antes de inscribirte.`,
+      },
+    ],
+  },
   "ia-productividad": {
     title: "Curso IA en Productividad en vivo en Chile | ProgramBI",
     description:

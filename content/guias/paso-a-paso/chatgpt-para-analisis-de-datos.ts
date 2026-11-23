@@ -14,7 +14,7 @@ export const guia: GuiaPasoAPaso = {
     "chatgpt análisis de datos excel",
     "análisis de datos avanzado ChatGPT",
   ],
-  curso: "ia-productividad",
+  curso: "chatgpt",
   cursoSecundario: "analisis-de-datos",
   herramienta: "IA",
   nivel: "Básico",

@@ -6,7 +6,7 @@ import { precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import type { Course } from "@/lib/data/courses";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
-import { getFichaPais } from "@/lib/data/contenido-paises/fichas";
+import { getFichaPais, parrafosGenericosIA } from "@/lib/data/contenido-paises/fichas";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
 import { courseBrochurePath } from "@/lib/pricing-gate";
 import { faqDePais } from "@/lib/faq/contenido";
@@ -81,7 +81,13 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
   const info = getPais(iso);
   const ficha = getFichaPais(iso, curso.slug);
   const contenido = getContenidoPais(iso);
-  if (!ficha && !contenido) return null;
+  const esChatgptOGemini = curso.slug === "chatgpt" || curso.slug === "gemini";
+  const parrafosFicha =
+    ficha?.parrafos ??
+    (esChatgptOGemini
+      ? parrafosGenericosIA(curso.slug as "chatgpt" | "gemini", info.nombre)
+      : []);
+  if (!ficha && !contenido && parrafosFicha.length === 0) return null;
 
   const horario = horarioLocal(iso, { inicio, fin });
   const horaLocal = etiquetaHoraLocal(iso);
@@ -96,7 +102,8 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
         : curso.slug === "python"
           ? 0
           : 0;
-  const caso = casos[indiceCaso] ?? casos[0];
+  // Para ChatGPT y Gemini nunca se muestra el caso de Power BI de `contenido.casos`.
+  const caso = esChatgptOGemini ? null : (casos[indiceCaso] ?? casos[0]);
   const preguntas = preguntasDeFicha(iso);
   const nombreCurso = nombreEnProsa(curso);
 
@@ -136,7 +143,7 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
 
         <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.6fr)] lg:gap-12">
           <div className="space-y-4 text-base leading-relaxed text-mute">
-            {(ficha?.parrafos ?? []).map((parrafo) => (
+            {parrafosFicha.map((parrafo) => (
               <p key={parrafo}>{parrafo}</p>
             ))}
 

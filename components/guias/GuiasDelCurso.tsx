@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { GuiaToolVisual, GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
 import { getPais, ISO_CHILE } from "@/config/paises";
+import { GUIAS_PASO_A_PASO } from "@/content/guias/paso-a-paso";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { guiaDeCurso, guiasDePais, guiasDelCurso, indiceGuias } from "@/lib/guias";
 import { GUIAS } from "@/lib/guias/generado";
@@ -17,6 +18,33 @@ type Props = {
 
 /** Enlaces visibles en el bloque. */
 const MAXIMO = 6;
+
+const ORDEN_GUIAS_CURSO: Record<string, readonly string[]> = {
+  chatgpt: [
+    "chatgpt-para-analisis-de-datos",
+    "ia-para-excel-chatgpt-claude-gemini",
+    "prompts-para-excel",
+    "chatgpt-vs-gemini-vs-copilot",
+    "claude-vs-chatgpt-analisis-de-datos",
+    "ia-para-hacer-graficos",
+  ],
+  gemini: [
+    "gemini-para-analisis-de-datos",
+    "gemini-en-google-sheets",
+    "ia-para-analizar-pdf",
+    "notebooklm-que-es-y-como-usarlo",
+    "chatgpt-vs-gemini-vs-copilot",
+    "ia-para-excel-chatgpt-claude-gemini",
+  ],
+};
+
+type TarjetaGuiaCurso = {
+  path: string;
+  h1: string;
+  description: string;
+  badge: string;
+  esLocal: boolean;
+};
 
 /**
  * Quita los montos que traen las descripciones de las guías.
@@ -54,25 +82,81 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
   const nombre = getCourseBySlug(curso)?.title ?? curso;
 
   const delCurso = GUIAS.filter((guia) => guia.course === curso && esGuiaPublicada(guia));
-  if (delCurso.length === 0) return null;
+  const ordenEspecial = ORDEN_GUIAS_CURSO[curso];
 
-  const vistos = new Set<string>();
-  const destacada = guiaDeCurso(iso, curso);
-  const candidatas = [
-    ...(destacada && esGuiaPublicada(destacada) ? [destacada] : []),
-    ...guiasDelCurso(curso),
-    ...delCurso,
-  ];
-  const enlaces = candidatas
-    .filter((guia) => {
-      if (!esGuiaPublicada(guia) || vistos.has(guia.path)) return false;
-      vistos.add(guia.path);
-      return true;
-    })
-    .map((guia, orden) => ({ guia, orden }))
-    .sort((a, b) => prioridad(a.guia, iso) - prioridad(b.guia, iso) || a.orden - b.orden)
-    .slice(0, MAXIMO)
-    .map(({ guia }) => guia);
+  let tarjetas: TarjetaGuiaCurso[];
+  if (ordenEspecial) {
+    const vistos = new Set<string>();
+    const resultado: TarjetaGuiaCurso[] = [];
+    const destacada = guiaDeCurso(iso, curso);
+    if (destacada && esGuiaPublicada(destacada)) {
+      vistos.add(destacada.path);
+      resultado.push({
+        path: destacada.path,
+        h1: destacada.h1,
+        description: destacada.description,
+        badge: mercadoDe(destacada),
+        esLocal: destacada.country === iso,
+      });
+    }
+    for (const slug of ordenEspecial) {
+      const paso = GUIAS_PASO_A_PASO.find((item) => item.slug === slug);
+      if (paso) {
+        const path = `/guias/${paso.slug}`;
+        if (!vistos.has(path)) {
+          vistos.add(path);
+          resultado.push({
+            path,
+            h1: paso.h1,
+            description: paso.subtitle,
+            badge: "Paso a paso",
+            esLocal: false,
+          });
+        }
+        continue;
+      }
+      const mdGuia = GUIAS.find((item) => item.slug === slug && esGuiaPublicada(item));
+      if (mdGuia && !vistos.has(mdGuia.path)) {
+        vistos.add(mdGuia.path);
+        resultado.push({
+          path: mdGuia.path,
+          h1: mdGuia.h1,
+          description: mdGuia.description,
+          badge: mercadoDe(mdGuia),
+          esLocal: mdGuia.country === iso,
+        });
+      }
+    }
+    tarjetas = resultado;
+  } else {
+    if (delCurso.length === 0) return null;
+
+    const vistos = new Set<string>();
+    const destacada = guiaDeCurso(iso, curso);
+    const candidatas = [
+      ...(destacada && esGuiaPublicada(destacada) ? [destacada] : []),
+      ...guiasDelCurso(curso),
+      ...delCurso,
+    ];
+    tarjetas = candidatas
+      .filter((guia) => {
+        if (!esGuiaPublicada(guia) || vistos.has(guia.path)) return false;
+        vistos.add(guia.path);
+        return true;
+      })
+      .map((guia, orden) => ({ guia, orden }))
+      .sort((a, b) => prioridad(a.guia, iso) - prioridad(b.guia, iso) || a.orden - b.orden)
+      .slice(0, MAXIMO)
+      .map(({ guia }) => ({
+        path: guia.path,
+        h1: guia.h1,
+        description: guia.description,
+        badge: mercadoDe(guia),
+        esLocal: guia.country === iso,
+      }));
+  }
+
+  if (tarjetas.length === 0) return null;
 
   const hayGuiaLocal = delCurso.some((guia) => guia.country === iso);
 
@@ -114,9 +198,8 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
         </p>
 
         <ol className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-          {enlaces.map((guia, idx) => {
+          {tarjetas.map((guia, idx) => {
             const num = String(idx + 1).padStart(2, "0");
-            const esLocal = guia.country === iso;
             return (
               <li key={guia.path}>
                 <Link
@@ -130,8 +213,8 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
                         {num}
                       </span>
                     </div>
-                    <GuiaVisualBadge tone={esLocal ? "accent" : "neutral"}>
-                      {mercadoDe(guia)}
+                    <GuiaVisualBadge tone={guia.esLocal ? "accent" : "neutral"}>
+                      {guia.badge}
                     </GuiaVisualBadge>
                   </div>
 

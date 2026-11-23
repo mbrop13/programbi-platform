@@ -10,6 +10,8 @@ export const SLUGS_CURSO = [
   "analisis-de-datos",
   "copilot",
   "claude",
+  "chatgpt",
+  "gemini",
   "power-automate",
   "analitica-mineria",
   "ia-productividad",

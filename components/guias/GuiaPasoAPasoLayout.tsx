@@ -120,6 +120,10 @@ export default function GuiaPasoAPasoLayout({
   const cursoSecundario = cursoSecundarioData
     ? { slug: cursoSecundarioData.slug, nombre: cursoSecundarioData.nombre }
     : null;
+  const cursosSecundarios = (guia.cursosSecundarios ?? []).map((slug) => {
+    const data = datosCursoParaGuia(slug);
+    return { slug: data.slug, nombre: data.nombre };
+  });
   const lecturaMin = tiempoLecturaPasoAPaso(guia);
   const actualizado = fechaActualizado(guia.updated);
   const tocItems = construirToc(guia);
@@ -622,6 +626,7 @@ export default function GuiaPasoAPasoLayout({
                   guia={guia}
                   curso={curso}
                   cursoSecundario={cursoSecundario}
+                  cursosSecundarios={cursosSecundarios}
                   ctaPosition="guia_paso_a_paso_final_mobile"
                 />
               </div>
@@ -676,6 +681,7 @@ export default function GuiaPasoAPasoLayout({
                 guia={guia}
                 curso={curso}
                 cursoSecundario={cursoSecundario}
+                cursosSecundarios={cursosSecundarios}
                 ctaPosition="guia_paso_a_paso_lateral"
               />
               <GuiaPasoProgressWidget slug={guia.slug} stepIds={stepIds} />

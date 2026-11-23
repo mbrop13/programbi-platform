@@ -31,6 +31,8 @@ const HORAS_PUBLICADAS: Record<string, { horas: number; inicio: string | null }>
   "sql-server": { horas: courseDurationHours("sql-server"), inicio: null },
   excel: { horas: courseDurationHours("excel"), inicio: null },
   claude: { horas: courseDurationHours("claude"), inicio: null },
+  chatgpt: { horas: courseDurationHours("chatgpt"), inicio: null },
+  gemini: { horas: courseDurationHours("gemini"), inicio: null },
   copilot: { horas: courseDurationHours("copilot"), inicio: null },
   "ia-productividad": { horas: courseDurationHours("ia-productividad"), inicio: null },
   "power-automate": { horas: courseDurationHours("power-automate"), inicio: null },

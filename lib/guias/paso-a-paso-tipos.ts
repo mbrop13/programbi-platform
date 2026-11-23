@@ -22,6 +22,8 @@ export type CursoGuiaSlug =
   | "analisis-de-datos"
   | "copilot"
   | "claude"
+  | "chatgpt"
+  | "gemini"
   | "machine-learning";
 
 export type IconoPaso =
@@ -135,6 +137,7 @@ export interface GuiaPasoAPaso {
   keywords: string[];
   curso: CursoGuiaSlug;
   cursoSecundario?: CursoGuiaSlug;
+  cursosSecundarios?: CursoGuiaSlug[];
   herramienta: HerramientaGuia;
   nivel: NivelGuia;
   /** Fecha ISO `YYYY-MM-DD`, p. ej. `2026-11-21`. */

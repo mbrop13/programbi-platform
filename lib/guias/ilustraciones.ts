@@ -75,6 +75,12 @@ export function ilustracionDeGuia(
       : ILUSTRACIONES.claudeOficina;
   }
 
+  if (course === "chatgpt" || course === "gemini") {
+    return slug.includes("analisis-de-datos")
+      ? ILUSTRACIONES.claudeDatos
+      : ILUSTRACIONES.copilotFlujos;
+  }
+
   if (course === "copilot" || course === "power-automate" || course === "ia-productividad") {
     return ILUSTRACIONES.copilotFlujos;
   }

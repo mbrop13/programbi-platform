@@ -10,6 +10,8 @@ import { powerAutomateSyllabus } from "./power-automate";
 import { iaProductividadSyllabus } from "./ia-productividad";
 import { accessSyllabus } from "./access";
 import { mercadoFinancieroSyllabus } from "./mercado-financiero";
+import { chatgptSyllabus } from "./chatgpt";
+import { geminiSyllabus } from "./gemini";
 
 const dedicatedSyllabuses: Record<string, CourseSyllabusData> = {
   "power-bi": powerBiSyllabus,
@@ -22,6 +24,8 @@ const dedicatedSyllabuses: Record<string, CourseSyllabusData> = {
   "ia-productividad": iaProductividadSyllabus,
   access: accessSyllabus,
   "mercado-financiero": mercadoFinancieroSyllabus,
+  chatgpt: chatgptSyllabus,
+  gemini: geminiSyllabus,
 };
 
 /** Build a full syllabus from the coarse course.syllabus fallback. */

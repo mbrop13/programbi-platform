@@ -148,7 +148,7 @@ export function resumenPreciosCatalogo(
   const hFinanciero = courseDurationHours("mercado-financiero");
 
   const partes = [
-    `En ${pais.nombre}, los cursos en vivo de ${hEstandar} horas por nivel (Power BI, Excel, SQL Server, Python y Machine Learning, con 2 niveles: Básico-Intermedio y Avanzado) y los programas de nivel único de ${hEstandar} horas (Copilot, Claude, Power Automate, IA en Productividad y Access) tienen un valor vigente de ${estandarTexto}.`,
+    `En ${pais.nombre}, los cursos en vivo de ${hEstandar} horas por nivel (Power BI, Excel, SQL Server, Python y Machine Learning, con 2 niveles: Básico-Intermedio y Avanzado) y los programas de nivel único de ${hEstandar} horas (Copilot, Claude, ChatGPT, Gemini, Power Automate, IA en Productividad y Access) tienen un valor vigente de ${estandarTexto}.`,
   ];
   if (analisisTexto) {
     partes.push(

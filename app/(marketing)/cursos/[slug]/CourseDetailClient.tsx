@@ -76,6 +76,10 @@ import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { getPais, ISO_CHILE, muestraPrecioDirecto } from "@/config/paises";
+import {
+  OFERTA_CLASE_GRATIS_CURSO_ACTIVA,
+  OFERTA_CLASE_GRATIS_CURSO_TEXTO,
+} from "@/config/flags";
 import { cuotasSinInteres, textoCuotas } from "@/config/cuotas";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
@@ -258,6 +262,19 @@ function readOfferFromUrl(): { para: CourseOfferView | null; nivel: string | nul
   };
 }
 
+const PRIORIDAD_RELACIONADOS: Record<string, readonly string[]> = {
+  chatgpt: ["gemini", "claude", "ia-productividad"],
+  gemini: ["chatgpt", "claude", "ia-productividad"],
+  claude: ["chatgpt", "gemini", "ia-productividad"],
+  "ia-productividad": ["chatgpt", "gemini", "claude"],
+};
+
+function whatsappTextoCursoIA(course: Course, pais: string): string | undefined {
+  if (course.slug !== "chatgpt" && course.slug !== "gemini") return undefined;
+  const nombrePais = getPais(pais).nombre;
+  return `Hola, quiero info del curso ${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)}) desde ${nombrePais} [ref:${course.slug}]`;
+}
+
 export default function CourseDetailClient({
   course,
   initialSchedules,
@@ -267,6 +284,7 @@ export default function CourseDetailClient({
   promotions = [],
   resumen,
   testimonios,
+  comparativa,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
@@ -284,6 +302,8 @@ export default function CourseDetailClient({
   resumen?: ReactNode;
   /** Citas de alumnos, renderizadas en el servidor. Van tras el profesor. */
   testimonios?: ReactNode;
+  /** Tabla comparativa de cursos de IA (Server Component), para ChatGPT y Gemini. */
+  comparativa?: ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -312,7 +332,18 @@ export default function CourseDetailClient({
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
   const pais = usePaisRuta();
-  const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
+  const esChatgptOGemini = course.slug === "chatgpt" || course.slug === "gemini";
+  const whatsappTextoIA = whatsappTextoCursoIA(course, pais);
+  const relatedCourses = useMemo(() => {
+    const disponibles = courses.filter((c) => c.slug !== course.slug);
+    const prioridad = PRIORIDAD_RELACIONADOS[course.slug];
+    if (!prioridad) return disponibles.slice(0, 3);
+    const priorizados = prioridad
+      .map((s) => disponibles.find((c) => c.slug === s))
+      .filter((c): c is Course => Boolean(c));
+    const restantes = disponibles.filter((c) => !prioridad.includes(c.slug));
+    return [...priorizados, ...restantes].slice(0, 3);
+  }, [course.slug]);
   const scheduleZone = zonaDe(pais);
   const tiered = isTieredCourse(course);
   const isEmpresa = view === "empresas";
@@ -660,6 +691,7 @@ export default function CourseDetailClient({
                   courseSlug={course.slug}
                   country={pais}
                   ctaPosition="ficha_hero_mobile"
+                  customText={isEmpresa ? undefined : whatsappTextoIA}
                   className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
                 >
                   <MessageCircle size={16} aria-hidden />
@@ -904,6 +936,7 @@ export default function CourseDetailClient({
                           course={course.title}
                           courseSlug={course.slug}
                           country={pais}
+                          customText={whatsappTextoIA}
                           className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
                         >
                           <MessageCircle size={16} />
@@ -938,6 +971,21 @@ export default function CourseDetailClient({
                     )}
                   </>
                 )}
+                {esChatgptOGemini && OFERTA_CLASE_GRATIS_CURSO_ACTIVA && !isEmpresa ? (
+                  <WhatsAppCta
+                    page={`/cursos/${course.slug}`}
+                    intent="curso"
+                    course={course.title}
+                    courseSlug={course.slug}
+                    country={pais}
+                    ctaPosition="course_detail_free_class"
+                    customText={whatsappTextoIA}
+                    className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash"
+                  >
+                    <MessageCircle size={16} aria-hidden />
+                    {OFERTA_CLASE_GRATIS_CURSO_TEXTO}
+                  </WhatsAppCta>
+                ) : null}
               </div>
 
               {precioDirecto ? null : bloquePrecio}
@@ -1016,6 +1064,7 @@ export default function CourseDetailClient({
               embedded
               levelOverride={offerSyllabus ?? undefined}
             />
+            {comparativa}
           </div>
         </div>
       </section>
@@ -1082,6 +1131,7 @@ export default function CourseDetailClient({
             .filter(Boolean)
             .join(" · ")}
           brochureUrl={canSeePrice ? brochureUrl : null}
+          whatsappCustomText={whatsappTextoIA}
         />
       ) : null}
 
@@ -1274,6 +1324,7 @@ function CourseContactForm({ course }: { course: Course }) {
                 course={course.title}
                 courseSlug={course.slug}
                 country={pais}
+                customText={isPersonal ? whatsappTextoCursoIA(course, pais) : undefined}
                 className="mt-4 inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
               >
                 Escribir por WhatsApp
@@ -1465,6 +1516,7 @@ function BarraFijaFicha({
   pais,
   resumen,
   brochureUrl,
+  whatsappCustomText,
 }: {
   curso: string;
   cursoSlug: string;
@@ -1472,6 +1524,7 @@ function BarraFijaFicha({
   resumen: string;
   /** URL del brochure si el visitante ya puede ver precios; si no, null. */
   brochureUrl: string | null;
+  whatsappCustomText?: string;
 }) {
   const [formularioVisible, setFormularioVisible] = useState(true);
   const [footerVisible, setFooterVisible] = useState(false);
@@ -1566,6 +1619,7 @@ function BarraFijaFicha({
             courseSlug={cursoSlug}
             country={pais}
             ctaPosition="ficha_barra_fija"
+            customText={whatsappCustomText}
             className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-4 text-sm font-semibold text-ink no-underline"
           >
             <MessageCircle size={16} aria-hidden />
