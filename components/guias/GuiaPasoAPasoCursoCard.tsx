@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Check, MessageCircle } from "lucide-react";
+import { GuiaToolVisual } from "@/components/guias/GuiaEditorialPrimitives";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import type { DatosCursoGuia } from "@/lib/guias/paso-a-paso-curso";
 import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
@@ -11,7 +11,7 @@ export default function GuiaPasoAPasoCursoCard({
   sticky = false,
   ctaPosition = "guia_paso_a_paso_lateral",
 }: {
-  guia: Pick<GuiaPasoAPaso, "slug" | "h1" | "curso">;
+  guia: Pick<GuiaPasoAPaso, "slug" | "h1" | "curso"> & { herramienta?: string };
   curso: DatosCursoGuia;
   cursoSecundario?: { slug: string; nombre: string } | null;
   sticky?: boolean;
@@ -22,56 +22,69 @@ export default function GuiaPasoAPasoCursoCard({
   return (
     <aside
       aria-label={`Curso de ${curso.nombre}`}
-      className={`overflow-hidden rounded-2xl border border-line-strong bg-paper p-5 shadow-sm ${
+      className={`rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-4 shadow-[var(--g-card-shadow)] sm:p-5 ${
         sticky ? "sticky top-[var(--sticky-below-nav,6rem)]" : ""
       }`}
     >
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="inline-flex items-center rounded-full bg-ink px-2.5 py-0.5 text-[11px] font-bold text-canvas">
-          Clase gratis
-        </span>
-        {curso.textoCuotas ? (
-          <span className="inline-flex items-center rounded-full border border-line-strong bg-wash px-2.5 py-0.5 text-[11px] font-semibold text-ink">
-            {curso.textoCuotas}
-          </span>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
+          Clase gratis disponible
+        </p>
+        {curso.precioFormateado ? (
+          <div className="flex items-baseline gap-1.5 tabular-nums">
+            <span className="text-base font-bold tracking-tight text-[var(--g-ink)]">
+              {curso.precioFormateado}
+            </span>
+            {curso.precioListaFormateado ? (
+              <span className="text-[11px] text-[var(--g-subtle)] line-through">
+                {curso.precioListaFormateado}
+              </span>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
-      <h3 className="mt-3 text-base font-bold leading-snug tracking-tight text-ink">
-        ¿Te gustaría aprender a hacer esto y mucho más?
-      </h3>
+      <div className="mt-2 flex items-center gap-2.5">
+        <GuiaToolVisual tool={guia.herramienta} course={guia.curso} size="sm" />
+        <h3 className="min-w-0 text-base font-bold leading-snug tracking-[-0.015em] text-[var(--g-ink)]">
+          Curso de {curso.nombre}
+        </h3>
+      </div>
 
       {curso.descripcionCorta ? (
-        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-mute">
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
           {curso.descripcionCorta}
         </p>
       ) : null}
 
-      <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.14em] text-mute">
-        Curso de {curso.nombre} ({curso.horas}h en vivo)
-      </p>
+      <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 border-y border-[var(--g-border)] py-2 font-mono text-[11px] tabular-nums text-[var(--g-subtle)]">
+        <span>{curso.horas} horas en vivo</span>
+        {curso.textoCuotas ? (
+          <span className="truncate text-right">{curso.textoCuotas}</span>
+        ) : null}
+      </div>
 
-      <ul className="mt-2 space-y-1.5 text-xs leading-snug text-ink">
+      <ul className="mt-3 grid grid-cols-1 gap-x-3 gap-y-1.5 text-xs leading-snug text-[var(--g-muted)] sm:grid-cols-2">
         {curso.temarioBullets.map((item) => (
-          <li key={item} className="flex items-start gap-2">
-            <Check size={14} className="mt-0.5 shrink-0 text-ink" aria-hidden />
+          <li key={item} className="flex items-start gap-1.5">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--g-accent)]"
+            >
+              <path
+                d="M3.5 8.5l3 3 6-6.5"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
             <span>{item}</span>
           </li>
         ))}
       </ul>
-
-      {curso.precioFormateado ? (
-        <div className="mt-4 flex items-baseline gap-2 border-t border-line pt-3">
-          <span className="text-lg font-bold tracking-tight text-ink">
-            {curso.precioFormateado}
-          </span>
-          {curso.precioListaFormateado ? (
-            <span className="text-xs text-faint line-through">
-              {curso.precioListaFormateado}
-            </span>
-          ) : null}
-        </div>
-      ) : null}
 
       <div className="mt-4 flex flex-col gap-2">
         <WhatsAppCta
@@ -82,35 +95,35 @@ export default function GuiaPasoAPasoCursoCard({
           country="cl"
           ctaPosition={ctaPosition}
           customText={waText}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ink px-4 text-center text-xs font-semibold text-canvas no-underline transition-transform active:scale-[0.99]"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[var(--g-ink)] px-4 text-center text-xs font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
         >
-          <MessageCircle size={15} aria-hidden />
-          Quiero mi clase gratis
+          Solicitar clase gratis por WhatsApp
         </WhatsAppCta>
 
-        <Link
-          href={`/cursos/${guia.curso}`}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-line-strong bg-canvas px-4 text-xs font-semibold text-ink no-underline hover:bg-wash"
-        >
-          Ver el curso
-          <ArrowRight size={13} aria-hidden />
-        </Link>
+        <div className="grid grid-cols-2 gap-2">
+          <Link
+            href={`/cursos/${guia.curso}`}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-3 text-center text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
+          >
+            Ver temario
+          </Link>
+
+          <Link
+            href={`/registro?from=/guias/${guia.slug}`}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)] px-3 text-center text-xs font-semibold text-[var(--g-accent)] no-underline transition-colors hover:border-[var(--g-border-strong)] hover:text-[var(--g-ink)]"
+          >
+            Inscribirme
+          </Link>
+        </div>
 
         {cursoSecundario ? (
           <Link
             href={`/cursos/${cursoSecundario.slug}`}
-            className="mt-0.5 text-center text-xs font-medium text-mute underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink"
+            className="mt-0.5 inline-flex min-h-[44px] items-center justify-center text-center text-xs font-medium text-[var(--g-muted)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-ink)] sm:min-h-[36px]"
           >
             También te sirve: Curso de {cursoSecundario.nombre}
           </Link>
         ) : null}
-
-        <Link
-          href={`/registro?from=/guias/${guia.slug}`}
-          className="mt-0.5 inline-flex h-8 items-center justify-center text-xs font-semibold text-ink underline underline-offset-4 hover:text-mute"
-        >
-          Inscribirme en el curso
-        </Link>
       </div>
     </aside>
   );

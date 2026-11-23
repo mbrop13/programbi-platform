@@ -1,68 +1,59 @@
-import {
-  BarChart3,
-  Calendar,
-  CheckCircle2,
-  Code2,
-  Database,
-  FileSpreadsheet,
-  Layers,
-  Mail,
-  RefreshCw,
-  Settings,
-  ShieldCheck,
-  Sparkles,
-  Table2,
-  Terminal,
-  type LucideIcon,
-} from "lucide-react";
-import type { IconoPaso, PasoRutaVisual } from "@/lib/guias/paso-a-paso-tipos";
-
-const ICONOS: Record<IconoPaso, LucideIcon> = {
-  database: Database,
-  code: Code2,
-  table: Table2,
-  chart: BarChart3,
-  settings: Settings,
-  check: CheckCircle2,
-  sparkles: Sparkles,
-  mail: Mail,
-  calendar: Calendar,
-  shield: ShieldCheck,
-  file: FileSpreadsheet,
-  refresh: RefreshCw,
-  layers: Layers,
-  terminal: Terminal,
-};
+import { GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
+import type { PasoRutaVisual } from "@/lib/guias/paso-a-paso-tipos";
 
 export default function GuiaPasoAPasoRuta({ pasos }: { pasos: PasoRutaVisual[] }) {
   if (pasos.length === 0) return null;
 
   return (
     <section aria-labelledby="ruta-visual-titulo" className="mt-8">
-      <h2 id="ruta-visual-titulo" className="text-lg font-bold tracking-tight text-ink">
-        Ruta visual paso a paso
-      </h2>
-      <ol className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {pasos.map((paso) => {
-          const Icon = ICONOS[paso.icono] ?? CheckCircle2;
-          return (
-            <li key={`${paso.numero}-${paso.anchorId}`} className="min-w-0">
-              <a
-                href={`#${paso.anchorId}`}
-                className="group flex h-full flex-col rounded-2xl border border-line bg-paper p-4 no-underline transition-colors hover:border-ink/35 hover:bg-wash/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
-              >
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2
+          id="ruta-visual-titulo"
+          className="text-lg font-bold tracking-[-0.015em] text-[var(--g-ink)]"
+        >
+          Ruta paso a paso
+        </h2>
+        <GuiaVisualBadge tone="neutral">{pasos.length} pasos</GuiaVisualBadge>
+      </div>
+
+      <ol className="mt-4 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+        {pasos.map((paso) => (
+          <li key={`${paso.numero}-${paso.anchorId}`} className="min-w-0">
+            <a
+              href={`#${paso.anchorId}`}
+              className="group flex h-full min-h-[44px] flex-col justify-between rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] p-4 no-underline shadow-[var(--g-card-shadow)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--g-accent)] hover:shadow-[var(--g-card-shadow-hover)]"
+            >
+              <div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-ink px-2 text-xs font-bold text-canvas">
-                    {paso.numero}
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--g-accent-soft)] font-mono text-xs font-semibold tabular-nums text-[var(--g-accent)]">
+                    {String(paso.numero).padStart(2, "0")}
                   </span>
-                  <Icon size={16} className="text-mute group-hover:text-ink" aria-hidden />
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    aria-hidden="true"
+                    className="h-3.5 w-3.5 text-[var(--g-subtle)] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--g-accent)]"
+                  >
+                    <path
+                      d="M3.5 8h9M8.5 4l4 4-4 4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </div>
-                <p className="mt-3 text-sm font-bold leading-snug text-ink">{paso.titulo}</p>
-                <p className="mt-1 text-xs leading-relaxed text-mute">{paso.resumen}</p>
-              </a>
-            </li>
-          );
-        })}
+
+                <p className="mt-3 text-sm font-bold leading-snug text-[var(--g-ink)] transition-colors group-hover:text-[var(--g-accent)]">
+                  {paso.titulo}
+                </p>
+                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
+                  {paso.resumen}
+                </p>
+              </div>
+            </a>
+          </li>
+        ))}
       </ol>
     </section>
   );

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Copy, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { GuiaCodeShell, type GuiaCodeTab } from "@/components/guias/GuiaEditorialPrimitives";
 import type { BloqueCodigo } from "@/lib/guias/paso-a-paso-tipos";
 
 const ETIQUETA_LENGUAJE: Record<BloqueCodigo["lenguaje"], string> = {
@@ -18,120 +18,133 @@ const ETIQUETA_LENGUAJE: Record<BloqueCodigo["lenguaje"], string> = {
   bash: "Terminal",
 };
 
-export default function GuiaPasoAPasoCodeBlock({ bloque }: { bloque: BloqueCodigo }) {
-  const [idioma, setIdioma] = useState<"es" | "en">("es");
+function PromptBlock({ bloque }: { bloque: BloqueCodigo }) {
   const [copiado, setCopiado] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const esPrompt = bloque.lenguaje === "prompt";
-  const tieneEn = Boolean(bloque.codigoEn && bloque.codigoEn.trim().length > 0);
-  const codigoActivo = idioma === "en" && bloque.codigoEn ? bloque.codigoEn : bloque.codigo;
-  const lineas = codigoActivo.split("\n");
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
-  const copiar = async () => {
+  async function copiar() {
     try {
-      await navigator.clipboard.writeText(codigoActivo);
+      await navigator.clipboard.writeText(bloque.codigo);
       setCopiado(true);
-      window.setTimeout(() => setCopiado(false), 1800);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setCopiado(false), 1800);
     } catch {
-      /* clipboard API puede fallar en contextos sin permisos */
+      setCopiado(false);
     }
-  };
+  }
 
   return (
-    <div
-      className={`my-5 overflow-hidden rounded-2xl border bg-paper shadow-sm ${
-        esPrompt ? "border-amber-500/40" : "border-line-strong"
-      }`}
-    >
-      <div
-        className={`flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2.5 ${
-          esPrompt
-            ? "border-amber-500/25 bg-amber-500/10"
-            : "border-line bg-wash/70"
-        }`}
-      >
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span
-            className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-bold tracking-wide ${
-              esPrompt ? "bg-amber-700 text-white" : "bg-ink text-canvas"
-            }`}
-          >
-            {esPrompt ? <Sparkles size={11} aria-hidden /> : null}
-            {ETIQUETA_LENGUAJE[bloque.lenguaje]}
+    <div className="my-6 overflow-hidden rounded-xl border border-[var(--g-code-border)] bg-[var(--g-code-bg)] shadow-[var(--g-card-shadow)]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--g-code-border)] bg-[var(--g-code-surface)] px-4 py-2.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
+          <span className="inline-flex items-center rounded-md bg-[var(--g-accent-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--g-accent)]">
+            {ETIQUETA_LENGUAJE.prompt}
           </span>
-          <span className="truncate text-xs font-semibold text-ink">{bloque.titulo}</span>
+          {bloque.titulo ? (
+            <span className="truncate text-xs font-medium text-[var(--g-code-ink)]">
+              {bloque.titulo}
+            </span>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-2">
-          {tieneEn ? (
-            <div
-              role="group"
-              aria-label="Idioma de la fórmula"
-              className="inline-flex rounded-full border border-line-strong bg-canvas p-0.5 text-[11px]"
-            >
-              <button
-                type="button"
-                aria-pressed={idioma === "es"}
-                onClick={() => setIdioma("es")}
-                className={`rounded-full px-2.5 py-0.5 font-semibold transition-colors ${
-                  idioma === "es" ? "bg-ink text-canvas" : "text-mute hover:text-ink"
-                }`}
-              >
-                Español (;)
-              </button>
-              <button
-                type="button"
-                aria-pressed={idioma === "en"}
-                onClick={() => setIdioma("en")}
-                className={`rounded-full px-2.5 py-0.5 font-semibold transition-colors ${
-                  idioma === "en" ? "bg-ink text-canvas" : "text-mute hover:text-ink"
-                }`}
-              >
-                Inglés (,)
-              </button>
-            </div>
-          ) : null}
-
+          <span className="sr-only" aria-live="polite">
+            {copiado ? "Copiado" : ""}
+          </span>
           <button
             type="button"
             onClick={copiar}
-            aria-label={`Copiar ${bloque.titulo}`}
-            className="inline-flex h-7 items-center gap-1.5 rounded-full border border-line-strong bg-canvas px-3 text-xs font-semibold text-ink transition-colors hover:bg-wash focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+            aria-label={copiado ? "Prompt copiado" : `Copiar ${bloque.titulo || "prompt"}`}
+            className={[
+              "inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border px-3 text-xs font-medium transition-colors sm:min-h-[32px]",
+              copiado
+                ? "border-[var(--g-ok)]/30 bg-[var(--g-ok-soft)] text-[var(--g-ok)]"
+                : "border-[var(--g-code-border)] bg-[var(--g-code-bg)] text-[var(--g-code-ink)] hover:border-[var(--g-border-strong)]",
+            ].join(" ")}
           >
             {copiado ? (
-              <>
-                <Check size={13} aria-hidden />
-                Copiado
-              </>
+              <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+                <path
+                  d="M3.5 8.5l3 3 6-6.5"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             ) : (
-              <>
-                <Copy size={13} aria-hidden />
-                Copiar
-              </>
+              <svg viewBox="0 0 16 16" fill="none" className="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+                <rect x="5.5" y="5.5" width="7.5" height="7.5" rx="1.25" stroke="currentColor" strokeWidth="1.4" />
+                <path
+                  d="M10.5 5.5V4.25A1.25 1.25 0 009.25 3H4.25A1.25 1.25 0 003 4.25v5A1.25 1.25 0 004.25 10.5H5.5"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                />
+              </svg>
             )}
+            <span>{copiado ? "Copiado" : "Copiar"}</span>
           </button>
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-[#171716] px-4 py-3.5 text-[13px] leading-relaxed text-[#f5f5f2]">
-        <pre className="m-0 font-mono">
-          <code>
-            {bloque.mostrarLineas
-              ? lineas.map((linea, idx) => (
-                  <span key={idx} className="block">
-                    <span className="mr-4 inline-block w-6 select-none text-right text-[#8d8d86]">
-                      {idx + 1}
-                    </span>
-                    {linea}
-                  </span>
-                ))
-              : codigoActivo}
-          </code>
-        </pre>
-      </div>
+      <pre className="m-0 overflow-x-auto whitespace-pre-wrap break-words p-4 font-mono text-[13px] leading-relaxed text-[var(--g-code-ink)]">
+        <code>{bloque.codigo}</code>
+      </pre>
 
       {bloque.nota ? (
-        <p className="border-t border-line bg-wash/40 px-4 py-2 text-xs leading-relaxed text-mute">
+        <p className="border-t border-[var(--g-code-border)] bg-[var(--g-code-surface)] px-4 py-2.5 text-xs leading-relaxed text-[var(--g-code-muted)]">
+          {bloque.nota}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+export default function GuiaPasoAPasoCodeBlock({ bloque }: { bloque: BloqueCodigo }) {
+  if (bloque.lenguaje === "prompt") {
+    return <PromptBlock bloque={bloque} />;
+  }
+
+  const tieneEn = Boolean(bloque.codigoEn && bloque.codigoEn.trim().length > 0);
+  const etiqueta = ETIQUETA_LENGUAJE[bloque.lenguaje];
+  const titulo = bloque.titulo ? `${etiqueta}: ${bloque.titulo}` : etiqueta;
+
+  const tabs: GuiaCodeTab[] | undefined = tieneEn
+    ? [
+        {
+          id: "es",
+          label: "ES (;)",
+          code: bloque.codigo,
+          language: bloque.lenguaje,
+        },
+        {
+          id: "en",
+          label: "EN (,)",
+          code: bloque.codigoEn ?? bloque.codigo,
+          language: bloque.lenguaje,
+        },
+      ]
+    : undefined;
+
+  return (
+    <div className="my-6">
+      <GuiaCodeShell
+        code={bloque.codigo}
+        language={bloque.lenguaje}
+        title={titulo}
+        tabs={tabs}
+        defaultTabId="es"
+        showLineNumbers={bloque.mostrarLineas ?? true}
+        className="my-0"
+      />
+      {bloque.nota ? (
+        <p className="mt-2 px-1 text-xs leading-relaxed text-[var(--g-muted)]">
           {bloque.nota}
         </p>
       ) : null}

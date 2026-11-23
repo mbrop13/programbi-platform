@@ -1,14 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Clock } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Bloque30Segundos from "@/components/guias/Bloque30Segundos";
 import CursoShowcaseGuia from "@/components/guias/CursoShowcaseGuia";
 import ElementoVisual, { elegirVariante } from "@/components/guias/ElementoVisual";
 import FuentesGuia from "@/components/guias/FuentesGuia";
 import GuiaCTA from "@/components/guias/GuiaCTA";
 import GuiaCursoLateral from "@/components/guias/GuiaCursoLateral";
-import GuiaStickyCta from "@/components/guias/GuiaStickyCta";
+import {
+  GuiaBreadcrumbs,
+  GuiaFaqList,
+  GuiaReadingProgress,
+  GuiaScope,
+  GuiaToolVisual,
+  GuiaVisualBadge,
+} from "@/components/guias/GuiaEditorialPrimitives";
 import GuiaMarkdown from "@/components/guias/GuiaMarkdown";
+import GuiaStickyCta from "@/components/guias/GuiaStickyCta";
 import { IndiceGuiaMobile, IndiceGuiaNav } from "@/components/guias/IndiceGuia";
 import RutaAprendizaje from "@/components/guias/RutaAprendizaje";
 import TablaComparativa from "@/components/guias/TablaComparativa";
@@ -17,8 +25,8 @@ import { encabezadosVisibles } from "@/components/guias/indice";
 import { ISO_CHILE } from "@/config/paises";
 import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
 import { fichaCurso } from "@/lib/guias/curso";
-import { proximoInicioDeCurso } from "@/lib/guias/inicio";
 import { ilustracionDeGuia, tiempoLecturaMinutos } from "@/lib/guias/ilustraciones";
+import { proximoInicioDeCurso } from "@/lib/guias/inicio";
 import { buildGuiaJsonLd } from "@/lib/guias/jsonld";
 import { nombreCurso } from "@/lib/guias/opciones";
 import { fechaActualizado, resolverPrecios, resolverPreciosFaq } from "@/lib/guias/precio";
@@ -38,25 +46,19 @@ type Props = {
 };
 
 /**
- * Render de una guía: breadcrumb, H1, bloque «En 30 segundos» renderizado en
- * servidor, cuerpo Markdown con los CTA en sus marcadores, ruta de
- * aprendizaje, FAQ visible (la misma del JSON-LD), fuentes y enlazado interno.
- *
- * El precio sale de config/pricing.ts, así que el texto publicado y el JSON-LD
- * no pueden contradecir a la ficha.
+ * Render de una guía: barra de progreso, Hero Card editorial con ilustración,
+ * bloque «Resumen en 30 segundos» renderizado en servidor, cuerpo Markdown con
+ * CTA en sus marcadores, ruta de aprendizaje, FAQ visible (la misma del
+ * JSON-LD), fuentes y tarjetas de enlazado interno.
  */
 export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas }: Props) {
-  // Fecha real de la próxima cohorte. Se consulta al construir el sitio (la
-  // guía es estática), no en cada visita.
   const [inicio, promotions] = await Promise.all([
     proximoInicioDeCurso(guia.course),
     getActivePromotions(),
   ]);
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
   const brochureHref = guia.course === "general" ? undefined : courseBrochurePath(guia.course, iso);
-  const body = resolverPrecios(guia.body, guia, promotions)
-    // El cuerpo repite el H1 del frontmatter: se quita para no duplicar el H1.
-    .replace(/^#\s+.*\n+/, "");
+  const body = resolverPrecios(guia.body, guia, promotions).replace(/^#\s+.*\n+/, "");
   const actualizado = fechaActualizado(guia.updated);
   const encabezados = encabezadosVisibles(body);
   const faqs = guia.faqs.map((faq) => ({
@@ -67,117 +69,118 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
   const esCursoConocido = ficha.horas != null;
   const variante = elegirVariante(guia);
   const ilustracion = ilustracionDeGuia(guia);
+  const tieneIlustracion = Boolean(ilustracion?.src);
   const lecturaMin = tiempoLecturaMinutos(body);
   const instructor = miembroPorCurso(guia.course === "general" ? "power-bi" : guia.course);
   const cursoEtiqueta = guia.course === "general" ? "Guía práctica" : nombreCurso(guia.course);
-  // Tarjeta del curso en la columna derecha, solo desde 1360 px (85rem), salvo
-  // `power-bi-vs-excel` que la muestra desde `lg:` (1024 px).
   const conLateral = guia.course !== "general";
-  const lateralDesdeLg = guia.slug === "power-bi-vs-excel";
 
-  // El Markdown trae marcadores <!-- CTA-TOP|MID|END --> para intercalar los CTA.
   const partes = body.split(/<!--\s*CTA-(TOP|MID|END)\s*-->/g);
-
-  // Las guías declaran Article + FAQPage + BreadcrumbList (nunca Course/Offer:
-  // eso vive solo en la ficha del curso, para no duplicar el Course en 113 URLs).
   const jsonLd = buildGuiaJsonLd(guia, rutaIndice, nombreMercado, body, promotions);
+  const inicioHref = guia.country === "cl" || guia.country === "transversal" ? "/" : `/${guia.country}`;
 
   return (
-    <>
+    <GuiaScope>
+      <GuiaReadingProgress />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
-      <article className="bg-canvas px-4 pb-28 pt-10 sm:px-6 lg:px-8 lg:pb-20">
-        <div
-          className={`mx-auto max-w-[1120px] ${
-            conLateral
-              ? lateralDesdeLg
-                ? "lg:max-w-[1290px]"
-                : "min-[85rem]:max-w-[1290px]"
-              : ""
-          }`}
-        >
-          <nav aria-label="Migas de pan" className="text-xs text-mute">
-            <ol className="flex flex-wrap items-center gap-1.5">
-              <li>
-                <Link
-                  href={guia.country === "cl" || guia.country === "transversal" ? "/" : `/${guia.country}`}
-                  className="no-underline hover:text-ink"
-                >
-                  Inicio
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li>
-                <Link href={rutaIndice} className="no-underline hover:text-ink">
-                  Guías
-                </Link>
-              </li>
-              <li aria-hidden>/</li>
-              <li className="text-ink">{guia.h1}</li>
-            </ol>
-          </nav>
-
+      <article className="pb-28 pt-8 lg:pb-20 lg:pt-10">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10">
           <div
-            className={`mt-6 lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12 ${
+            className={`lg:grid lg:items-start lg:gap-10 xl:gap-14 ${
               conLateral
-                ? lateralDesdeLg
-                  ? "lg:grid-cols-[190px_minmax(0,760px)_260px] lg:gap-8 xl:gap-10"
-                  : "min-[85rem]:grid-cols-[190px_minmax(0,760px)_260px] min-[85rem]:gap-10"
-                : ""
+                ? "lg:grid-cols-[336px_minmax(0,1fr)] xl:grid-cols-[376px_minmax(0,1fr)]"
+                : "lg:grid-cols-[240px_minmax(0,1fr)]"
             }`}
           >
-            <div className="min-w-0 max-w-[760px] lg:col-start-2 lg:row-start-1">
-              <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-paper px-3 py-1 font-bold uppercase tracking-[0.12em] text-ink">
-                  <span
-                    className="inline-block h-2 w-2 rounded-full"
-                    style={{ backgroundColor: ficha.accentColor }}
-                    aria-hidden="true"
-                  />
-                  {cursoEtiqueta}
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-wash px-2.5 py-1 font-medium text-mute">
-                  <Clock size={12} aria-hidden /> {lecturaMin} min de lectura
-                </span>
-                <span className="text-faint">Actualizado el {actualizado} · {nombreMercado}</span>
-              </div>
+            <div className="min-w-0 max-w-[900px] lg:col-start-2 lg:row-start-1">
+              <header
+                className={`overflow-hidden rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] shadow-[var(--g-card-shadow)] ${
+                  tieneIlustracion ? "lg:grid lg:grid-cols-12" : ""
+                }`}
+              >
+                <div
+                  className={`flex flex-col justify-between p-6 sm:p-8 ${
+                    tieneIlustracion ? "lg:col-span-7" : ""
+                  }`}
+                >
+                  <div>
+                    <GuiaBreadcrumbs
+                      items={[
+                        { label: "Inicio", href: inicioHref },
+                        { label: "Guías", href: rutaIndice },
+                        { label: guia.h1 },
+                      ]}
+                    />
 
-              <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
-                {guia.h1}
-              </h1>
+                    <h1 className="mt-4 text-[clamp(1.75rem,3vw,2.5rem)] font-bold leading-[1.12] tracking-[-0.03em] text-[var(--g-ink)]">
+                      {guia.h1}
+                    </h1>
 
-              <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-mute">
-                {instructor.imageUrl ? (
-                  <Image
-                    src={instructor.imageUrl}
-                    alt={instructor.nombre}
-                    width={32}
-                    height={32}
-                    className="h-8 w-8 rounded-full border border-line object-cover object-[center_18%]"
-                  />
+                    {guia.description ? (
+                      <p className="mt-3 text-sm leading-relaxed text-[var(--g-muted)] sm:text-base">
+                        {guia.description}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-6 space-y-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <GuiaToolVisual tool={guia.course} course={guia.course} size="sm" />
+                      <GuiaVisualBadge tone="accent">{cursoEtiqueta}</GuiaVisualBadge>
+                      <GuiaVisualBadge tone="neutral">{nombreMercado}</GuiaVisualBadge>
+                      <GuiaVisualBadge tone="neutral" className="tabular-nums">
+                        {lecturaMin} min de lectura
+                      </GuiaVisualBadge>
+                      <GuiaVisualBadge tone="neutral" className="tabular-nums">
+                        Actualizado el {actualizado}
+                      </GuiaVisualBadge>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 border-t border-[var(--g-border)] pt-4 text-xs text-[var(--g-muted)]">
+                      {instructor.imageUrl ? (
+                        <Image
+                          src={instructor.imageUrl}
+                          alt={instructor.nombre}
+                          width={32}
+                          height={32}
+                          className="h-8 w-8 rounded-full border border-[var(--g-border)] object-cover object-[center_18%]"
+                        />
+                      ) : null}
+                      <span>
+                        Revisado por{" "}
+                        <Link
+                          href={rutaPerfil(instructor.slug)}
+                          className="font-semibold text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 hover:decoration-[var(--g-accent)]"
+                        >
+                          {instructor.nombre}
+                        </Link>{" "}
+                        · {instructor.cargo}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {tieneIlustracion ? (
+                  <figure className="flex flex-col justify-between border-t border-[var(--g-border)] bg-[var(--g-wash)] lg:col-span-5 lg:border-l lg:border-t-0">
+                    <div className="flex flex-1 items-center justify-center p-4 sm:p-5">
+                      <div className="w-full overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-surface)] shadow-[var(--g-card-shadow)]">
+                        <Image
+                          src={ilustracion.src}
+                          alt={ilustracion.alt}
+                          width={ilustracion.width}
+                          height={ilustracion.height}
+                          preload={true}
+                          sizes="(max-width: 1024px) calc(100vw - 64px), 360px"
+                          className="aspect-video h-auto w-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    <figcaption className="border-t border-[var(--g-border)] bg-[var(--g-wash)] px-4 py-2.5 text-xs leading-relaxed text-[var(--g-muted)]">
+                      {ilustracion.caption}
+                    </figcaption>
+                  </figure>
                 ) : null}
-                <span>
-                  Revisado por{" "}
-                  <Link href={rutaPerfil(instructor.slug)} className="font-semibold text-ink underline underline-offset-4">
-                    {instructor.nombre}
-                  </Link>{" "}
-                  · {instructor.cargo}
-                </span>
-              </div>
-
-              <figure className="mt-6 overflow-hidden rounded-[24px] border border-line-strong bg-paper shadow-sm">
-                <Image
-                  src={ilustracion.src}
-                  alt={ilustracion.alt}
-                  width={ilustracion.width}
-                  height={ilustracion.height}
-                  preload={true}
-                  sizes="(max-width: 1024px) calc(100vw - 32px), 760px"
-                  className="aspect-video h-auto w-full object-cover"
-                />
-                <figcaption className="border-t border-line bg-wash/60 px-4 py-2 text-xs text-mute">
-                  {ilustracion.caption}
-                </figcaption>
-              </figure>
+              </header>
 
               <Bloque30Segundos guia={guia} inicio={inicio} promotions={promotions} />
 
@@ -217,69 +220,77 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
               ) : null}
 
               {faqs.length > 0 ? (
-                <section aria-labelledby="faq-guia" className="mt-12 border-t border-line pt-8">
-                  <h2 id="faq-guia" className="text-2xl font-bold tracking-tight text-ink">
-                    Preguntas frecuentes
-                  </h2>
-                  <dl className="mt-6 space-y-5">
-                    {faqs.map((faq) => (
-                      <div key={faq.q} className="rounded-2xl border border-line bg-paper px-4 py-3">
-                        <dt className="text-sm font-semibold text-ink">{faq.q}</dt>
-                        <dd className="mt-1.5 text-sm leading-relaxed text-mute">{faq.a}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </section>
+                <div id="faq-guia" className="mt-12 border-t border-[var(--g-border)] pt-8">
+                  <GuiaFaqList
+                    heading="Preguntas frecuentes"
+                    items={faqs.map((faq, idx) => ({
+                      id: `faq-${idx}`,
+                      question: faq.q,
+                      answer: faq.a,
+                    }))}
+                  />
+                </div>
               ) : null}
 
               <FuentesGuia sources={guia.sources} updated={guia.updated} />
 
               {relacionadas.length > 0 ? (
-                <nav aria-labelledby="otras-guias" className="mt-12 border-t border-line pt-8">
-                  <h2 id="otras-guias" className="text-lg font-bold tracking-tight text-ink">
+                <nav aria-labelledby="otras-guias" className="mt-12 border-t border-[var(--g-border)] pt-8">
+                  <h2 id="otras-guias" className="text-lg font-bold tracking-tight text-[var(--g-ink)]">
                     Sigue con estas guías de {nombreMercado}
                   </h2>
-                  <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {relacionadas.slice(0, 6).map((otra) => (
+                  <ol className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {relacionadas.slice(0, 6).map((otra, idx) => (
                       <li key={otra.path}>
                         <Link
                           href={otra.path}
-                          className="block rounded-xl border border-line bg-paper px-4 py-3 text-sm font-medium text-ink no-underline transition-colors hover:border-ink/25"
+                          className="group flex h-full min-h-[44px] items-start justify-between gap-3 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-4 no-underline shadow-[var(--g-card-shadow)] transition-all hover:-translate-y-0.5 hover:border-[var(--g-border-strong)] hover:shadow-[var(--g-card-shadow-hover)]"
                         >
-                          {otra.h1}
+                          <div className="flex min-w-0 items-start gap-3">
+                            <GuiaToolVisual tool={otra.course} course={otra.course} size="sm" className="mt-0.5" />
+                            <div className="min-w-0">
+                              <span className="font-mono text-[11px] font-semibold tabular-nums text-[var(--g-subtle)]">
+                                {String(idx + 1).padStart(2, "0")}
+                              </span>
+                              <span className="mt-0.5 block text-sm font-semibold leading-snug text-[var(--g-ink)] group-hover:text-[var(--g-accent)]">
+                                {otra.h1}
+                              </span>
+                            </div>
+                          </div>
+                          <ArrowUpRight
+                            size={15}
+                            aria-hidden
+                            className="mt-1 shrink-0 text-[var(--g-subtle)] transition-colors group-hover:text-[var(--g-accent)]"
+                          />
                         </Link>
                       </li>
                     ))}
-                  </ul>
+                  </ol>
                 </nav>
               ) : null}
             </div>
 
-            <div className="hidden lg:col-start-1 lg:row-start-1 lg:block">
-              <IndiceGuiaNav items={encabezados} />
-            </div>
-
-            {conLateral ? (
-              <div
-                className={
-                  lateralDesdeLg
-                    ? "hidden lg:col-start-3 lg:row-start-1 lg:block"
-                    : "hidden min-[85rem]:col-start-3 min-[85rem]:row-start-1 min-[85rem]:block"
-                }
-              >
+            <div className="hidden lg:sticky lg:top-24 lg:col-start-1 lg:row-start-1 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:gap-6 lg:overflow-y-auto lg:pr-1">
+              {conLateral ? (
                 <GuiaCursoLateral
                   iso={iso}
                   course={guia.course}
                   inicio={inicio}
                   promotions={promotions}
                   guiaSlug={guia.slug}
+                  sticky={false}
                 />
-              </div>
-            ) : null}
+              ) : null}
+              {encabezados.length >= 3 ? (
+                <div className={conLateral ? "border-t border-[var(--g-border)] pt-5" : undefined}>
+                  <IndiceGuiaNav items={encabezados} sticky={false} />
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </article>
       <GuiaStickyCta iso={iso} course={guia.course} guiaSlug={guia.slug} />
-    </>
+    </GuiaScope>
   );
 }

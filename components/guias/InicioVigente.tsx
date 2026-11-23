@@ -9,7 +9,7 @@ const sinSuscripcion = () => () => {};
  * Muestra la fecha de la próxima cohorte solo mientras siga vigente.
  *
  * La guía es estática y la fecha se fijó al construir el sitio. Si el visitante
- * llega después de ese día, se cambia por `alterno` («Cupos abiertos — consulta
+ * llega después de ese día, se cambia por `alterno` («Cupos abiertos, consulta
  * fecha») para no anunciar una clase que ya empezó.
  */
 export default function InicioVigente({
@@ -31,11 +31,11 @@ export default function InicioVigente({
     () => false,
   );
 
-  if (!inicio || vencida) return <>{alterno}</>;
+  if (!inicio || vencida) return <span className="tabular-nums">{alterno}</span>;
   return (
-    <>
+    <span className="tabular-nums">
       {prefijo}
       {inicio.texto}
-    </>
+    </span>
   );
 }

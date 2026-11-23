@@ -36,11 +36,10 @@ const navLinks: Array<{
   hasRecursos?: boolean;
 }> = [
   { href: "/cursos", label: "Ver Cursos", hasMega: true },
-  { href: "/precios", label: "Precios" },
   { href: "/plantillas", label: "Recursos", hasRecursos: true },
   { href: "/empresas", label: "Empresas" },
   ...(COMUNIDAD_PUBLICA ? [{ href: "/comunidad", label: "Comunidad" }] : []),
-  { href: "/blog", label: "Blog" },
+  { href: "/guias", label: "Guías" },
 ];
 
 const RECURSOS_LINKS = [

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Clock, FileText, MessageCircle } from "lucide-react";
+import { CalendarDays, Clock, FileText, MessageCircle } from "lucide-react";
+import { GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
 import InicioVigente from "@/components/guias/InicioVigente";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { textoCuotas } from "@/config/cuotas";
@@ -12,9 +13,8 @@ import { horarioLocal } from "@/lib/paises/horarios";
 import { etiquetaDescuentoCurso, type PromocionAplicable } from "@/lib/paises/precios";
 
 /**
- * Tarjeta fija del curso para la columna derecha de la guía (solo escritorio
- * ancho; `GuiaPage` la oculta bajo 1360 px).
- *
+ * Tarjeta fija del curso para el rail lateral de la guía.
+ * Conserva el formato ancho y compacto arriba de «En esta guía».
  * Gate PDF: nunca muestra montos. Solo el porcentaje de descuento vigente
  * cuando el país y el curso lo tienen publicado.
  */
@@ -24,6 +24,7 @@ export default function GuiaCursoLateral({
   inicio,
   promotions,
   guiaSlug,
+  sticky = true,
 }: {
   iso: string;
   course: string;
@@ -31,6 +32,7 @@ export default function GuiaCursoLateral({
   inicio: InicioGuia | null;
   promotions?: readonly PromocionAplicable[];
   guiaSlug?: string;
+  sticky?: boolean;
 }) {
   if (course === "general") return null;
 
@@ -47,74 +49,71 @@ export default function GuiaCursoLateral({
     <aside
       data-testid="guia-curso-lateral"
       aria-label={`Curso en vivo de ${ficha.nombre}`}
-      className="sticky top-[var(--sticky-below-nav,6rem)] overflow-hidden rounded-2xl border border-line bg-paper shadow-sm transition-[top] duration-300 ease-out motion-reduce:transition-none"
+      className={`overflow-hidden rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] p-4 shadow-[var(--g-card-shadow)] sm:p-5 ${
+        sticky
+          ? "sticky top-[var(--sticky-below-nav,6rem)] transition-[top] duration-300 ease-out motion-reduce:transition-none"
+          : ""
+      }`}
     >
-      <Image
-        src={ficha.imagen}
-        alt={`Curso en vivo de ${ficha.nombre} en ProgramBI`}
-        width={520}
-        height={325}
-        sizes="260px"
-        className="aspect-[16/10] h-auto w-full border-b border-line object-cover"
-      />
-
-      <div className="px-4 pb-4 pt-3.5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-mute">Curso en vivo por Zoom</p>
-        <p className="mt-1 text-base font-bold leading-snug tracking-tight text-ink">{ficha.nombre}</p>
-
-        <ul className="mt-3 space-y-1.5 text-xs leading-snug text-mute">
-          <li className="flex items-start gap-1.5">
-            <CalendarDays size={13} className="mt-px shrink-0 text-ink" aria-hidden />
-            <span className="font-semibold text-ink">
-              <InicioVigente inicio={inicio} prefijo="Próximo inicio: " alterno={OPEN_COHORT_LABEL} />
-            </span>
-          </li>
-          <li className="flex items-start gap-1.5">
-            <Clock size={13} className="mt-px shrink-0 text-ink" aria-hidden />
-            <span>{horaLocal}</span>
-          </li>
-        </ul>
-
-        {esVsExcel ? (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            <span className="inline-flex items-center rounded-full bg-ink px-2.5 py-0.5 text-[11px] font-bold text-canvas">
-              Clase gratis
-            </span>
-            {cuotas ? (
-              <span className="inline-flex items-center rounded-full border border-line-strong bg-wash px-2.5 py-0.5 text-[11px] font-semibold text-ink">
-                {cuotas}
-              </span>
-            ) : null}
-          </div>
-        ) : etiquetaDescuento ? (
-          <p className="mt-3">
-            <span className="inline-flex items-center rounded-full border border-line-strong bg-wash px-2.5 py-1 text-[11px] font-semibold text-ink">
-              {etiquetaDescuento}
-            </span>
+      <div className="flex items-center gap-3">
+        <Image
+          src={ficha.imagen}
+          alt={`Curso en vivo de ${ficha.nombre} en ProgramBI`}
+          width={160}
+          height={100}
+          sizes="80px"
+          className="h-12 w-20 shrink-0 rounded-lg border border-[var(--g-border)] object-cover"
+        />
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
+            Curso en vivo por Zoom
           </p>
-        ) : null}
+          <p className="mt-0.5 text-base font-bold leading-snug tracking-tight text-[var(--g-ink)]">
+            {ficha.nombre}
+          </p>
+        </div>
+      </div>
 
-        <div className="mt-4 flex flex-col gap-2">
-          <Link
-            href="#temario-curso"
-            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full bg-ink px-4 text-[13px] font-semibold text-canvas no-underline transition-transform active:scale-[0.99]"
-          >
-            <FileText size={14} aria-hidden /> Ver temario y precios
-          </Link>
+      <ul className="mt-3 grid grid-cols-1 gap-x-3 gap-y-2 border-t border-[var(--g-border)] pt-3 text-xs leading-snug text-[var(--g-muted)] sm:grid-cols-2">
+        <li className="flex items-start gap-1.5">
+          <CalendarDays size={13} className="mt-px shrink-0 text-[var(--g-ink)]" aria-hidden />
+          <span className="font-semibold text-[var(--g-ink)]">
+            <InicioVigente inicio={inicio} prefijo="Inicio: " alterno={OPEN_COHORT_LABEL} />
+          </span>
+        </li>
+        <li className="flex items-start gap-1.5">
+          <Clock size={13} className="mt-px shrink-0 text-[var(--g-ink)]" aria-hidden />
+          <span className="tabular-nums">{horaLocal}</span>
+        </li>
+      </ul>
+
+      {esVsExcel ? (
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          <GuiaVisualBadge tone="accent">Clase gratis</GuiaVisualBadge>
+          {cuotas ? <GuiaVisualBadge tone="neutral">{cuotas}</GuiaVisualBadge> : null}
+        </div>
+      ) : etiquetaDescuento ? (
+        <p className="mt-2.5">
+          <GuiaVisualBadge tone="accent" className="tabular-nums">
+            {etiquetaDescuento}
+          </GuiaVisualBadge>
+        </p>
+      ) : null}
+
+      <div className="mt-3.5 flex flex-col gap-2">
+        <Link
+          href="#temario-curso"
+          className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-[var(--g-accent)] px-4 text-xs font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
+        >
+          <FileText size={14} aria-hidden /> Ver temario y precios
+        </Link>
+        <div className="grid grid-cols-2 gap-2">
           <Link
             href={rutaCurso}
-            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-line-strong bg-canvas px-4 text-[13px] font-semibold text-ink no-underline hover:bg-wash"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-3 text-center text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
           >
-            Ver curso <ArrowRight size={14} aria-hidden />
+            Ver programa
           </Link>
-          {esVsExcel ? (
-            <Link
-              href={rutaFichaCurso(iso, "excel")}
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-line bg-wash/60 px-4 text-xs font-semibold text-ink no-underline hover:bg-wash"
-            >
-              Ver curso de Excel <ArrowRight size={13} aria-hidden />
-            </Link>
-          ) : null}
           <WhatsAppCta
             page={esVsExcel ? "/guias/power-bi-vs-excel" : rutaCurso}
             intent="curso"
@@ -127,12 +126,20 @@ export default function GuiaCursoLateral({
                 ? "Hola, vengo de la guía Power BI vs Excel y quiero la clase gratis del curso de Power BI [power-bi-vs-excel]"
                 : undefined
             }
-            className="inline-flex h-9 items-center justify-center gap-1.5 text-xs font-semibold text-ink underline underline-offset-4 hover:text-mute"
+            className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)] px-3 text-center text-xs font-semibold text-[var(--g-accent)] no-underline transition-colors hover:border-[var(--g-border-strong)] hover:text-[var(--g-ink)]"
           >
-            <MessageCircle size={14} aria-hidden />
-            {esVsExcel ? "Quiero mi clase gratis" : "Hablar por WhatsApp"}
+            <MessageCircle size={13} aria-hidden />
+            {esVsExcel ? "Clase gratis" : "WhatsApp"}
           </WhatsAppCta>
         </div>
+        {esVsExcel ? (
+          <Link
+            href={rutaFichaCurso(iso, "excel")}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-border-strong)]"
+          >
+            Ver curso de Excel
+          </Link>
+        ) : null}
       </div>
     </aside>
   );

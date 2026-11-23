@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ExternalLink, GraduationCap, MessageCircle } from "lucide-react";
+import { Check, ExternalLink, MessageCircle } from "lucide-react";
+import { GuiaToolVisual, GuiaVisualBadge } from "@/components/guias/GuiaEditorialPrimitives";
+import InicioVigente from "@/components/guias/InicioVigente";
 import { BrochureGateForm } from "@/components/marketing/BrochureGateForm";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
@@ -10,17 +12,14 @@ import { offerSyllabusSections } from "@/lib/data/course-views";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
-import InicioVigente from "@/components/guias/InicioVigente";
 import type { InicioGuia } from "@/lib/guias/inicio";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
  * Bloque de conversión editorial integrado al final de la lectura de cada
- * guía: muestra el curso por dentro (portada, módulos reales, capturas de
- * clases reales cuando existen, perfil del profesor) junto al formulario de
- * 3 campos para abrir al instante el PDF con temario y arancel local.
- * Sin montos en HTML inicial: cumple al 100% la arquitectura Gate PDF.
+ * guía: muestra el curso por dentro junto al formulario de 3 campos para abrir
+ * al instante el PDF con temario y arancel local.
  */
 export default function CursoShowcaseGuia({
   courseSlug,
@@ -43,32 +42,38 @@ export default function CursoShowcaseGuia({
       <section
         id="temario-curso"
         aria-labelledby="titulo-showcase-general"
-        className="mt-12 rounded-[28px] border border-line-strong bg-paper p-6 shadow-sm sm:p-8"
+        className="mt-12 rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] p-6 shadow-[var(--g-card-shadow)] sm:p-8"
       >
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">Cursos en vivo · ProgramBI</p>
-        <h2 id="titulo-showcase-general" className="mt-2 text-2xl font-bold tracking-tight text-ink">
+        <div className="flex flex-wrap items-center gap-3">
+          <GuiaToolVisual tool="datos" course="general" size="sm" />
+          <GuiaVisualBadge tone="accent">Cursos en vivo · ProgramBI</GuiaVisualBadge>
+        </div>
+        <h2
+          id="titulo-showcase-general"
+          className="mt-3 text-2xl font-bold tracking-tight text-[var(--g-ink)]"
+        >
           Aprende estas herramientas en vivo con un proyecto real
         </h2>
-        <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-mute">
+        <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-[var(--g-muted)]">
           Elige tu ruta entre Power BI, Claude para oficina y datos, SQL Server, Python o el programa completo de
           Análisis de Datos (60 horas). Todas las clases son en vivo por Zoom en horario de {lugar}.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
             href={rutaLocal(iso, "/cursos")}
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+            className="inline-flex min-h-[44px] items-center rounded-xl bg-[var(--g-accent)] px-6 text-sm font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95"
           >
-            Explorar cursos en vivo <ArrowRight size={15} aria-hidden />
+            Ver cursos en vivo
           </Link>
           <Link
             href={rutaLocal(iso, "/cursos/claude")}
-            className="inline-flex h-11 items-center gap-2 rounded-full border border-line-strong bg-canvas px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
+            className="inline-flex min-h-[44px] items-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
           >
             Curso de Claude
           </Link>
           <Link
             href={rutaLocal(iso, "/cursos/power-bi")}
-            className="inline-flex h-11 items-center gap-2 rounded-full border border-line-strong bg-canvas px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
+            className="inline-flex min-h-[44px] items-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)]"
           >
             Curso de Power BI
           </Link>
@@ -90,22 +95,24 @@ export default function CursoShowcaseGuia({
       id="temario-curso"
       data-testid="curso-showcase-guia"
       aria-labelledby="titulo-showcase-curso"
-      className="mt-12 scroll-mt-24 overflow-hidden rounded-[28px] border border-line-strong bg-paper shadow-sm"
+      className="mt-12 scroll-mt-24 overflow-hidden rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] shadow-[var(--g-card-shadow)]"
     >
       <div className="grid grid-cols-1 gap-8 p-5 sm:p-7 lg:grid-cols-12 lg:gap-8">
         <div className="flex flex-col justify-between lg:col-span-7">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-wash px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-ink">
-                <GraduationCap size={13} aria-hidden /> Curso en vivo recomendado
-              </span>
-              <span className="text-xs font-medium text-mute">
-                {ficha.horasTexto} · {horario.inicio}–{horario.fin} ({lugar})
-              </span>
+              <GuiaToolVisual tool={curso.slug} course={curso.slug} size="sm" />
+              <GuiaVisualBadge tone="accent">Curso en vivo</GuiaVisualBadge>
+              <GuiaVisualBadge tone="neutral" className="tabular-nums">
+                {ficha.horasTexto}
+              </GuiaVisualBadge>
+              <GuiaVisualBadge tone="neutral" className="tabular-nums">
+                {horario.inicio} a {horario.fin} ({lugar})
+              </GuiaVisualBadge>
             </div>
 
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-[180px_minmax(0,1fr)] sm:items-center">
-              <div className="overflow-hidden rounded-2xl border border-line bg-wash">
+              <div className="overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)] shadow-[var(--g-card-shadow)]">
                 <Image
                   src={curso.imageUrl}
                   alt={`Curso en vivo de ${curso.title} en ProgramBI`}
@@ -116,11 +123,16 @@ export default function CursoShowcaseGuia({
                 />
               </div>
               <div>
-                <h2 id="titulo-showcase-curso" className="text-2xl font-bold tracking-tight text-ink">
+                <h2
+                  id="titulo-showcase-curso"
+                  className="text-2xl font-bold tracking-tight text-[var(--g-ink)]"
+                >
                   {curso.title} en vivo
                 </h2>
-                <p className="mt-1.5 text-sm leading-relaxed text-mute">{curso.shortDescription}</p>
-                <p className="mt-2 text-xs font-medium text-ink">
+                <p className="mt-1.5 text-sm leading-relaxed text-[var(--g-muted)]">
+                  {curso.shortDescription}
+                </p>
+                <p className="mt-2 text-xs font-medium text-[var(--g-ink)]">
                   <InicioVigente inicio={inicio} prefijo="Próximo inicio: " alterno={OPEN_COHORT_LABEL} /> · Campus
                   virtual con clases y material
                 </p>
@@ -129,25 +141,22 @@ export default function CursoShowcaseGuia({
 
             {modulos.length > 0 ? (
               <div className="mt-6">
-                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-mute">
+                <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
                   Lo que construyes en el programa ({modulos.length} módulos)
                 </p>
-                <ol className="mt-3 space-y-2">
+                <ol className="mt-3 grid grid-cols-1 gap-2">
                   {modulos.map((mod, index) => (
                     <li
                       key={mod.name}
-                      className="flex items-start gap-3 rounded-2xl border border-line bg-canvas/80 px-3.5 py-2.5"
+                      className="flex items-baseline gap-3 rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]/45 px-3.5 py-2.5"
                     >
-                      <span
-                        className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-canvas"
-                        style={{ backgroundColor: curso.accentColor === "#F2C811" ? "#171716" : curso.accentColor }}
-                      >
-                        {index + 1}
+                      <span className="shrink-0 font-mono text-xs font-semibold tabular-nums text-[var(--g-accent)]">
+                        {String(index + 1).padStart(2, "0")}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-ink">{mod.name}</p>
+                        <p className="text-xs font-semibold text-[var(--g-ink)]">{mod.name}</p>
                         {mod.description ? (
-                          <p className="mt-0.5 line-clamp-1 text-[11px] text-mute">{mod.description}</p>
+                          <p className="mt-0.5 line-clamp-1 text-xs text-[var(--g-muted)]">{mod.description}</p>
                         ) : null}
                       </div>
                     </li>
@@ -157,8 +166,8 @@ export default function CursoShowcaseGuia({
             ) : (
               <ul className="mt-6 space-y-2">
                 {curso.whatYouLearn.slice(0, 4).map((punto) => (
-                  <li key={punto} className="flex items-start gap-2 text-sm text-mute">
-                    <Check size={15} className="mt-0.5 shrink-0 text-ink" aria-hidden />
+                  <li key={punto} className="flex items-start gap-2 text-sm text-[var(--g-muted)]">
+                    <Check size={15} className="mt-0.5 shrink-0 text-[var(--g-ok)]" aria-hidden />
                     <span>{punto}</span>
                   </li>
                 ))}
@@ -167,12 +176,15 @@ export default function CursoShowcaseGuia({
 
             {galeria.length > 0 ? (
               <div className="mt-6">
-                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-mute">
+                <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
                   Capturas reales de clase en vivo
                 </p>
                 <div className="mt-2.5 grid grid-cols-3 gap-2.5">
                   {galeria.map((foto) => (
-                    <div key={foto.src} className="overflow-hidden rounded-xl border border-line bg-wash">
+                    <div
+                      key={foto.src}
+                      className="overflow-hidden rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)] shadow-[var(--g-card-shadow)]"
+                    >
                       <Image
                         src={foto.src}
                         alt={`${foto.tool}: ${foto.caption}`}
@@ -188,7 +200,7 @@ export default function CursoShowcaseGuia({
             ) : null}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-5">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--g-border)] pt-5">
             <div className="flex items-center gap-3">
               {profesor.imageUrl ? (
                 <Image
@@ -196,24 +208,27 @@ export default function CursoShowcaseGuia({
                   alt={profesor.nombre}
                   width={48}
                   height={48}
-                  className="h-12 w-12 shrink-0 rounded-full border border-line object-cover object-[center_18%]"
+                  className="h-12 w-12 shrink-0 rounded-full border border-[var(--g-border)] object-cover object-[center_18%]"
                 />
               ) : null}
               <div className="min-w-0">
-                <p className="text-xs font-bold text-ink">
+                <p className="text-xs font-bold text-[var(--g-ink)]">
                   Profe:{" "}
-                  <Link href={perfilProfesor} className="underline decoration-line-strong underline-offset-4">
+                  <Link
+                    href={perfilProfesor}
+                    className="text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 hover:decoration-[var(--g-accent)]"
+                  >
                     {profesor.nombre}
                   </Link>
                 </p>
-                <p className="text-[11px] text-mute">{profesor.cargo}</p>
+                <p className="text-xs text-[var(--g-muted)]">{profesor.cargo}</p>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={rutaCurso}
-                className="inline-flex h-10 items-center gap-1.5 rounded-full border border-line-strong bg-canvas px-4 text-xs font-semibold text-ink no-underline hover:bg-wash"
+                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
               >
                 Ver ficha completa
                 <ExternalLink size={13} aria-hidden />
@@ -224,7 +239,7 @@ export default function CursoShowcaseGuia({
                 course={curso.title}
                 courseSlug={curso.slug}
                 country={iso}
-                className="inline-flex h-10 items-center gap-1.5 rounded-full border border-line-strong bg-canvas px-4 text-xs font-semibold text-ink no-underline hover:bg-wash"
+                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
               >
                 <MessageCircle size={13} aria-hidden />
                 WhatsApp
@@ -243,7 +258,7 @@ export default function CursoShowcaseGuia({
             heading="Desbloquea temario y precios"
             subheading={`Abre el PDF completo con la malla de ${curso.title}, arancel en ${pais.moneda}, cuotas y fechas para ${lugar}.`}
             buttonLabel="Ver temario y precios (PDF)"
-            className="bg-canvas"
+            className="bg-[var(--g-bg)]"
           />
         </div>
       </div>

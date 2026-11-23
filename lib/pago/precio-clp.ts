@@ -1,4 +1,5 @@
 import { ISO_CHILE } from "@/config/paises";
+import { esCursoConPrecio, PRECIOS_LISTA_CLP } from "@/config/pricing";
 import type { CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
 import { aplicarPorcentajeDescuento, seleccionarPromocionCurso } from "@/lib/paises/precios";
 
@@ -70,7 +71,13 @@ export function resolverPrecioClp(
     hasDiscount = finalPrice < effectiveBase;
   }
 
-  const listCandidates = [effectiveBase, catalogListPrice || 0].filter(
+  const resolvedCatalogListPrice =
+    catalogListPrice !== undefined
+      ? catalogListPrice
+      : esCursoConPrecio(slug)
+        ? PRECIOS_LISTA_CLP[slug]
+        : 0;
+  const listCandidates = [effectiveBase, resolvedCatalogListPrice].filter(
     (amount) => amount > finalPrice
   );
   const listPrice = finalPrice > 0 && listCandidates.length > 0

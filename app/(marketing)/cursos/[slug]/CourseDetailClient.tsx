@@ -992,7 +992,7 @@ export default function CourseDetailClient({
         </div>
       </section>
 
-      <TuProfesor cursoSlug={course.slug} />
+      <TuProfesor />
 
       {testimonios}
 

@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Search, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, SlidersHorizontal, X } from "lucide-react";
 import GuiaCard from "@/components/guias/GuiaCard";
+import {
+  GuiaBreadcrumbs,
+  GuiaToolVisual,
+  type GuiaBreadcrumbItem,
+} from "@/components/guias/GuiaEditorialPrimitives";
 import { ISO_CHILE } from "@/config/paises";
 import {
   agruparPorCurso,
@@ -14,6 +19,8 @@ import {
 import { rutaLocal } from "@/lib/paises/rutas";
 
 const TODOS = "todos";
+const LIMITE_INICIAL_CURSO = 6;
+
 const HERRAMIENTAS_ORDEN = [
   "IA",
   "Excel",
@@ -62,81 +69,7 @@ function leerFiltros(
   };
 }
 
-function Chip({
-  activo,
-  onClick,
-  children,
-}: {
-  activo: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={activo}
-      onClick={onClick}
-      className={`inline-flex min-h-10 max-w-full shrink-0 items-center whitespace-nowrap rounded-full border px-4 py-2 text-left text-[13px] font-medium leading-snug transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper sm:min-h-8 sm:shrink sm:whitespace-normal sm:px-3 sm:py-1 ${
-        activo
-          ? "border-ink bg-ink text-canvas"
-          : "border-line-strong bg-paper text-ink hover:border-ink/30"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-/**
- * Fila de chips de un filtro. En mobile es una sola línea con scroll horizontal
- * que sangra hasta el borde de la tarjeta; desde `sm` vuelve a envolver.
- * El padding vertical (compensado con margen negativo) deja ver el anillo de foco.
- */
-function FilaChips({ activo, children }: { activo: string; children: React.ReactNode }) {
-  const fila = useRef<HTMLDivElement>(null);
-
-  // Si el filtro activo quedó fuera de la fila (por ejemplo al llegar con
-  // ?curso= en la URL), se desplaza solo en horizontal para mostrarlo.
-  useEffect(() => {
-    const contenedor = fila.current;
-    const chip = contenedor?.querySelector<HTMLElement>('[aria-pressed="true"]');
-    if (!contenedor || !chip || contenedor.scrollWidth <= contenedor.clientWidth) return;
-    const caja = contenedor.getBoundingClientRect();
-    const rect = chip.getBoundingClientRect();
-    const margen = 16;
-    if (rect.left < caja.left + margen) contenedor.scrollLeft -= caja.left + margen - rect.left;
-    else if (rect.right > caja.right - margen) contenedor.scrollLeft += rect.right - (caja.right - margen);
-  }, [activo]);
-
-  return (
-    <div
-      ref={fila}
-      className="scrollbar-hide -mx-4 -mb-1 mt-1 flex flex-nowrap gap-2 overflow-x-auto px-4 py-1 sm:mx-0 sm:mb-0 sm:mt-2 sm:flex-wrap sm:gap-1.5 sm:overflow-visible sm:p-0"
-    >
-      {children}
-    </div>
-  );
-}
-
-/**
- * Hub de guías con buscador y filtros por país y curso.
- *
- * Decisión de render: la página sigue siendo estática y la primera
- * renderización ocurre en el servidor con todas las tarjetas (SEO/GEO). Leer
- * `searchParams` en el servidor obligaría a render dinámico por request y a
- * repetir la lista completa en cada visita; un formulario nativo tampoco
- * filtraría sin volver a renderizar. Por eso el filtro solo oculta tarjetas
- * que ya están en el DOM y el estado se sincroniza con la URL después de
- * hidratar: los enlaces con ?pais=&curso=&q= se comparten y sobreviven al
- * botón atrás.
- */
-export default function GuiasHub({
-  guias,
-  paises,
-  cursos,
-  mostrarPais = true,
-  iso = ISO_CHILE,
-}: {
+export interface GuiasHubProps {
   guias: TarjetaGuia[];
   paises: Opcion[];
   cursos: Opcion[];
@@ -144,23 +77,78 @@ export default function GuiasHub({
   mostrarPais?: boolean;
   /** Mercado de la página, para enlazar ficha de curso y precios. */
   iso?: string;
-}) {
+  /** Título principal del Hero de Biblioteca. */
+  titulo?: string;
+  /** Subtítulo descriptivo del Hero de Biblioteca. */
+  subtitulo?: string;
+  /** Migas de pan opcionales integradas dentro del Hero. */
+  breadcrumbs?: GuiaBreadcrumbItem[];
+}
+
+/**
+ * Hub visual y táctil de guías con Hero de Biblioteca, tarjetas por herramienta,
+ * bloque de recomendadas, buscador protagonista y directorio por curso.
+ */
+export default function GuiasHub({
+  guias,
+  paises,
+  cursos,
+  mostrarPais = true,
+  iso = ISO_CHILE,
+  titulo = "Guías prácticas de datos, IA y Power BI",
+  subtitulo = "Aprende con rutas claras, ejemplos aplicados, prompts listos y referencias locales para Latinoamérica.",
+  breadcrumbs,
+}: GuiasHubProps) {
   const [texto, setTexto] = useState("");
   const [pais, setPais] = useState(TODOS);
   const [curso, setCurso] = useState(TODOS);
   const [herramienta, setHerramienta] = useState(TODOS);
   const [nivel, setNivel] = useState(TODOS);
   const [listo, setListo] = useState(false);
+  const [filtrosMovilAbiertos, setFiltrosMovilAbiertos] = useState(false);
+  const [cursosExpandidos, setCursosExpandidos] = useState<Record<string, boolean>>({});
 
-  const herramientasDisponibles = useMemo(() => {
-    const presentes = new Set(guias.map((g) => g.herramienta).filter((h): h is string => Boolean(h)));
-    return HERRAMIENTAS_ORDEN.filter((h) => presentes.has(h));
+  const filtrosBtnRef = useRef<HTMLButtonElement | null>(null);
+  const resultadosRef = useRef<HTMLDivElement | null>(null);
+  const panelFiltrosId = useId();
+  const ayudaBusquedaId = useId();
+  const buscarInputId = useId();
+
+  const herramientasConConteo = useMemo(() => {
+    const conteo = new Map<string, number>();
+    for (const g of guias) {
+      if (!g.herramienta) continue;
+      conteo.set(g.herramienta, (conteo.get(g.herramienta) ?? 0) + 1);
+    }
+    return HERRAMIENTAS_ORDEN.filter((h) => (conteo.get(h) ?? 0) > 0).map((h) => ({
+      nombre: h,
+      cantidad: conteo.get(h) ?? 0,
+    }));
   }, [guias]);
+
+  const herramientasDisponibles = useMemo(
+    () => herramientasConConteo.map((h) => h.nombre),
+    [herramientasConConteo]
+  );
 
   const nivelesDisponibles = useMemo(() => {
     const presentes = new Set(guias.map((g) => g.nivel).filter((n): n is string => Boolean(n)));
     return NIVELES_ORDEN.filter((n) => presentes.has(n));
   }, [guias]);
+
+  const cursosConConteo = useMemo(() => {
+    const conteo = new Map<string, number>();
+    for (const g of guias) {
+      conteo.set(g.course, (conteo.get(g.course) ?? 0) + 1);
+    }
+    return cursos
+      .map((c) => ({
+        valor: c.valor,
+        etiqueta: c.etiqueta,
+        cantidad: conteo.get(c.valor) ?? c.cantidad ?? 0,
+      }))
+      .filter((c) => c.cantidad > 0);
+  }, [guias, cursos]);
 
   useEffect(() => {
     const iniciales = leerFiltros(
@@ -193,7 +181,6 @@ export default function GuiasHub({
     if (nivel !== TODOS) url.searchParams.set("nivel", nivel);
     if (texto.trim()) url.searchParams.set("q", texto.trim());
 
-    // Se conserva el state de Next: reemplazarlo por null rompe su historial.
     window.history.replaceState(
       window.history.state,
       "",
@@ -221,17 +208,31 @@ export default function GuiasHub({
     return () => window.removeEventListener("popstate", alVolver);
   }, [listo, mostrarPais, paises, cursos, herramientasDisponibles, nivelesDisponibles]);
 
+  useEffect(() => {
+    if (!filtrosMovilAbiertos) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setFiltrosMovilAbiertos(false);
+        filtrosBtnRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [filtrosMovilAbiertos]);
+
   const visibles = useMemo(
     () => filtrarGuias(guias, { pais, curso, herramienta, nivel, q: texto }),
     [guias, pais, curso, herramienta, nivel, texto]
   );
   const grupos = useMemo(() => agruparPorCurso(visibles, cursos), [visibles, cursos]);
-  const hayFiltros =
-    texto.trim() !== "" ||
-    (mostrarPais && pais !== TODOS) ||
-    curso !== TODOS ||
-    herramienta !== TODOS ||
-    nivel !== TODOS;
+
+  const conteoSelectsActivos =
+    (mostrarPais && pais !== TODOS ? 1 : 0) +
+    (curso !== TODOS ? 1 : 0) +
+    (herramienta !== TODOS ? 1 : 0) +
+    (nivel !== TODOS ? 1 : 0);
+
+  const hayFiltros = texto.trim() !== "" || conteoSelectsActivos > 0;
 
   const destacadas = useMemo(() => {
     const prioridades = [
@@ -258,9 +259,9 @@ export default function GuiasHub({
     for (const p of prioridades) {
       const hit = guias.find((g) => g.path === p);
       if (hit) agregar(hit, true);
-      if (elegidas.length >= 3) break;
+      if (elegidas.length >= 4) break;
     }
-    if (elegidas.length < 3) {
+    if (elegidas.length < 4) {
       for (const candidato of guias) {
         if (
           candidato.course === "claude" ||
@@ -270,23 +271,46 @@ export default function GuiasHub({
         ) {
           agregar(candidato, true);
         }
-        if (elegidas.length >= 3) break;
+        if (elegidas.length >= 4) break;
       }
     }
-    if (elegidas.length < 3) {
+    if (elegidas.length < 4) {
       for (const candidato of guias) {
         agregar(candidato, true);
-        if (elegidas.length >= 3) break;
+        if (elegidas.length >= 4) break;
       }
     }
-    if (elegidas.length < 3) {
+    if (elegidas.length < 4) {
       for (const candidato of guias) {
         agregar(candidato, false);
-        if (elegidas.length >= 3) break;
+        if (elegidas.length >= 4) break;
       }
     }
     return elegidas;
   }, [guias]);
+
+  function desplazarAResultados() {
+    const nodo = resultadosRef.current;
+    if (!nodo) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    nodo.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }
+
+  function seleccionarHerramientaRapida(nombre: string) {
+    const siguiente = herramienta === nombre ? TODOS : nombre;
+    setHerramienta(siguiente);
+    if (siguiente !== TODOS) {
+      requestAnimationFrame(desplazarAResultados);
+    }
+  }
+
+  function seleccionarCursoRapido(valor: string) {
+    const siguiente = curso === valor ? TODOS : valor;
+    setCurso(siguiente);
+    if (siguiente !== TODOS) {
+      requestAnimationFrame(desplazarAResultados);
+    }
+  }
 
   function limpiar() {
     setTexto("");
@@ -296,254 +320,556 @@ export default function GuiasHub({
     setNivel(TODOS);
   }
 
+  const chipsFiltrosActivos = useMemo(() => {
+    const chips: Array<{ id: string; etiqueta: string; quitar: () => void }> = [];
+    if (texto.trim()) {
+      chips.push({
+        id: "q",
+        etiqueta: `Búsqueda: "${texto.trim()}"`,
+        quitar: () => setTexto(""),
+      });
+    }
+    if (mostrarPais && pais !== TODOS) {
+      const etiqueta = paises.find((p) => p.valor === pais)?.etiqueta ?? pais;
+      chips.push({
+        id: "pais",
+        etiqueta: `País: ${etiqueta}`,
+        quitar: () => setPais(TODOS),
+      });
+    }
+    if (curso !== TODOS) {
+      const etiqueta = cursos.find((c) => c.valor === curso)?.etiqueta ?? curso;
+      chips.push({
+        id: "curso",
+        etiqueta: `Curso: ${etiqueta}`,
+        quitar: () => setCurso(TODOS),
+      });
+    }
+    if (herramienta !== TODOS) {
+      chips.push({
+        id: "herramienta",
+        etiqueta: `Herramienta: ${herramienta}`,
+        quitar: () => setHerramienta(TODOS),
+      });
+    }
+    if (nivel !== TODOS) {
+      chips.push({
+        id: "nivel",
+        etiqueta: `Nivel: ${nivel}`,
+        quitar: () => setNivel(TODOS),
+      });
+    }
+    return chips;
+  }, [texto, mostrarPais, pais, paises, curso, cursos, herramienta, nivel]);
+
+  const descripcionFiltrosActivos = chipsFiltrosActivos.map((c) => c.etiqueta).join(", ");
+
+  const tieneSelects =
+    cursos.length > 0 ||
+    herramientasDisponibles.length > 0 ||
+    nivelesDisponibles.length > 0 ||
+    (mostrarPais && paises.length > 0);
+
+  const tarjetasHerramienta = useMemo(() => {
+    if (herramientasConConteo.length > 0) {
+      return herramientasConConteo.slice(0, 6).map((item) => ({
+        tipo: "herramienta" as const,
+        valor: item.nombre,
+        etiqueta: item.nombre,
+        cantidad: item.cantidad,
+        activo: herramienta === item.nombre,
+        onClick: () => seleccionarHerramientaRapida(item.nombre),
+      }));
+    }
+    return cursosConConteo.slice(0, 6).map((item) => ({
+      tipo: "curso" as const,
+      valor: item.valor,
+      etiqueta: item.etiqueta,
+      cantidad: item.cantidad,
+      activo: curso === item.valor,
+      onClick: () => seleccionarCursoRapido(item.valor),
+    }));
+  }, [herramientasConConteo, cursosConConteo, herramienta, curso]);
+
   return (
     <div>
-      <form
-        role="search"
-        aria-label="Buscar y filtrar guías"
-        onSubmit={(event) => event.preventDefault()}
-        className="rounded-[26px] border border-line bg-paper px-4 py-4 sm:px-5"
+      {/* Hero de Biblioteca Interactivo */}
+      <section
+        aria-label="Buscador y acceso rápido a la biblioteca de guías"
+        className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-6 shadow-[var(--g-card-shadow)] sm:p-8 lg:p-10"
       >
-        <label htmlFor="buscar-guia" className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-          Buscar en las guías
-        </label>
-        <p id="ayuda-busqueda" className="sr-only">
-          Busca por título, descripción, curso o país.
-        </p>
-        <div className="relative mt-2">
-          <Search
-            size={16}
-            aria-hidden
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint"
-          />
-          <input
-            id="buscar-guia"
-            type="search"
-            value={texto}
-            onChange={(event) => setTexto(event.target.value)}
-            placeholder="Power BI, sueldos, SQL, certificado…"
-            aria-controls="resultados-guias"
-            aria-describedby="ayuda-busqueda"
-            autoComplete="off"
-            enterKeyHint="search"
-            className="h-11 w-full rounded-full border border-line-strong bg-canvas pl-10 pr-10 text-sm text-ink outline-none placeholder:text-faint focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
-          />
-          {texto ? (
-            <button
-              type="button"
-              onClick={() => setTexto("")}
-              aria-label="Borrar la búsqueda"
-              className="absolute right-2 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-mute transition-colors hover:bg-wash hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
+          <div className="min-w-0 lg:col-span-7">
+            {breadcrumbs && breadcrumbs.length > 0 ? (
+              <GuiaBreadcrumbs items={breadcrumbs} className="mb-4" />
+            ) : null}
+
+            <h1 className="max-w-[22ch] text-pretty text-[clamp(1.85rem,3.4vw,2.75rem)] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--g-ink)]">
+              {titulo}
+            </h1>
+            <p className="mt-3 max-w-[60ch] text-base leading-relaxed text-[var(--g-muted)]">
+              {subtitulo}
+            </p>
+
+            {/* Buscador protagonista */}
+            <form
+              role="search"
+              aria-label="Buscar en las guías"
+              onSubmit={(event) => event.preventDefault()}
+              className="mt-6"
             >
-              <X size={15} aria-hidden />
-            </button>
+              <label htmlFor={buscarInputId} className="sr-only">
+                Buscar en las guías
+              </label>
+              <p id={ayudaBusquedaId} className="sr-only">
+                Busca por título, descripción, curso, herramienta o país.
+              </p>
+              <div className="relative flex items-center">
+                <Search
+                  size={18}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-4 text-[var(--g-subtle)]"
+                />
+                <input
+                  id={buscarInputId}
+                  type="search"
+                  value={texto}
+                  onChange={(event) => setTexto(event.target.value)}
+                  placeholder="Busca Power BI, DAX, SQL, Python, sueldos o prompts..."
+                  aria-controls="resultados-guias"
+                  aria-describedby={ayudaBusquedaId}
+                  autoComplete="off"
+                  enterKeyHint="search"
+                  className="min-h-[48px] w-full rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] pl-11 pr-32 text-[15px] text-[var(--g-ink)] placeholder:text-[var(--g-subtle)] focus-visible:border-[var(--g-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--g-surface)]"
+                />
+                <div className="absolute right-2 flex items-center gap-1.5">
+                  {texto ? (
+                    <button
+                      type="button"
+                      onClick={() => setTexto("")}
+                      aria-label="Limpiar búsqueda"
+                      className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center rounded-lg text-[var(--g-muted)] transition-colors hover:bg-[var(--g-wash)] hover:text-[var(--g-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)]"
+                    >
+                      <X size={16} aria-hidden="true" />
+                    </button>
+                  ) : null}
+                  <span className="hidden rounded-lg bg-[var(--g-wash)] px-2.5 py-1 text-xs font-medium tabular-nums text-[var(--g-muted)] sm:inline-flex">
+                    {visibles.length} {visibles.length === 1 ? "guía" : "guías"}
+                  </span>
+                </div>
+              </div>
+            </form>
+
+            {/* Accesos rápidos clicables por tema / curso */}
+            {cursosConConteo.length > 0 ? (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-[var(--g-subtle)]">
+                  Temas rápidos:
+                </span>
+                {cursosConConteo.slice(0, 6).map((item) => {
+                  const activo = curso === item.valor;
+                  return (
+                    <button
+                      key={item.valor}
+                      type="button"
+                      aria-pressed={activo}
+                      onClick={() => seleccionarCursoRapido(item.valor)}
+                      className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-full border px-3.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--g-surface)] sm:min-h-[34px] ${
+                        activo
+                          ? "border-[var(--g-accent)] bg-[var(--g-accent)] text-[var(--g-accent-ink)]"
+                          : "border-[var(--g-border-strong)] bg-[var(--g-bg)] text-[var(--g-ink)] hover:border-[var(--g-accent)] hover:text-[var(--g-accent)]"
+                      }`}
+                    >
+                      <span>{item.etiqueta}</span>
+                      <span
+                        className={`tabular-nums ${
+                          activo ? "text-[var(--g-accent-ink)]/85" : "text-[var(--g-subtle)]"
+                        }`}
+                      >
+                        {item.cantidad}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+
+          {/* Panel derecho: Empieza por tu herramienta */}
+          {tarjetasHerramienta.length > 0 ? (
+            <div className="min-w-0 rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]/55 p-4 sm:p-5 lg:col-span-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--g-subtle)]">
+                Empieza por tu herramienta
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2">
+                {tarjetasHerramienta.map((item) => (
+                  <button
+                    key={`${item.tipo}-${item.valor}`}
+                    type="button"
+                    aria-pressed={item.activo}
+                    onClick={item.onClick}
+                    className={`group flex min-h-[56px] min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--g-surface)] ${
+                      item.activo
+                        ? "border-[var(--g-accent)] bg-[var(--g-accent-soft)] shadow-[var(--g-card-shadow)]"
+                        : "border-[var(--g-border)] bg-[var(--g-surface)] shadow-[var(--g-card-shadow)] hover:-translate-y-0.5 hover:border-[var(--g-border-strong)] hover:shadow-[var(--g-card-shadow-hover)]"
+                    }`}
+                  >
+                    <GuiaToolVisual
+                      tool={item.tipo === "herramienta" ? item.valor : undefined}
+                      course={item.tipo === "curso" ? item.valor : undefined}
+                      size="sm"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-[var(--g-ink)]">
+                        {item.etiqueta}
+                      </p>
+                      <p className="text-xs tabular-nums text-[var(--g-subtle)]">
+                        {item.cantidad} {item.cantidad === 1 ? "guía" : "guías"}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
           ) : null}
         </div>
+      </section>
 
-        {mostrarPais ? (
-          <fieldset className="mt-3 min-w-0 border-0 p-0">
-            <legend className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-              Filtrar por país
-            </legend>
-            <FilaChips activo={pais}>
-              <Chip activo={pais === TODOS} onClick={() => setPais(TODOS)}>
-                Todos
-              </Chip>
-              {paises.map((opcion) => (
-                <Chip
-                  key={opcion.valor}
-                  activo={pais === opcion.valor}
-                  onClick={() => setPais(opcion.valor)}
+      {/* Barra de filtros secundarios compacta */}
+      {tieneSelects ? (
+        <div className="mt-6 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-4 shadow-[var(--g-card-shadow)]">
+          <div className="flex flex-wrap items-center justify-between gap-3 md:hidden">
+            <button
+              ref={filtrosBtnRef}
+              type="button"
+              aria-expanded={filtrosMovilAbiertos}
+              aria-controls={panelFiltrosId}
+              onClick={() => setFiltrosMovilAbiertos((prev) => !prev)}
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-sm font-medium text-[var(--g-ink)] transition-colors hover:bg-[var(--g-wash)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)]"
+            >
+              <SlidersHorizontal size={15} aria-hidden="true" />
+              <span>Filtros</span>
+              {conteoSelectsActivos > 0 ? (
+                <span className="tabular-nums text-xs font-semibold text-[var(--g-accent)]">
+                  ({conteoSelectsActivos})
+                </span>
+              ) : null}
+            </button>
+            <span className="text-xs font-medium tabular-nums text-[var(--g-subtle)]">
+              {visibles.length} de {guias.length}
+            </span>
+          </div>
+
+          <div
+            id={panelFiltrosId}
+            className={`${
+              filtrosMovilAbiertos ? "mt-4 grid" : "hidden"
+            } grid-cols-1 gap-3 sm:grid-cols-2 md:mt-0 md:grid md:grid-cols-4`}
+          >
+            {mostrarPais && paises.length > 0 ? (
+              <div className="min-w-0">
+                <label
+                  htmlFor="filtro-pais"
+                  className="block text-xs font-medium text-[var(--g-muted)]"
                 >
-                  {opcion.etiqueta}
-                </Chip>
-              ))}
-            </FilaChips>
-          </fieldset>
-        ) : null}
+                  País
+                </label>
+                <select
+                  id="filtro-pais"
+                  value={pais}
+                  onChange={(event) => setPais(event.target.value)}
+                  className="mt-1.5 min-h-[44px] w-full rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-3 text-sm text-[var(--g-ink)] focus-visible:border-[var(--g-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)]"
+                >
+                  <option value={TODOS}>Todos los países</option>
+                  {paises.map((opcion) => (
+                    <option key={opcion.valor} value={opcion.valor}>
+                      {opcion.etiqueta}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
 
-        <fieldset className="mt-3 min-w-0 border-0 p-0">
-          <legend className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-            Filtrar por curso
-          </legend>
-          <FilaChips activo={curso}>
-            <Chip activo={curso === TODOS} onClick={() => setCurso(TODOS)}>
-              Todos
-            </Chip>
-            {cursos.map((opcion) => (
-              <Chip
-                key={opcion.valor}
-                activo={curso === opcion.valor}
-                onClick={() => setCurso(opcion.valor)}
+            {cursos.length > 0 ? (
+              <div className="min-w-0">
+                <label
+                  htmlFor="filtro-curso"
+                  className="block text-xs font-medium text-[var(--g-muted)]"
+                >
+                  Curso
+                </label>
+                <select
+                  id="filtro-curso"
+                  value={curso}
+                  onChange={(event) => setCurso(event.target.value)}
+                  className="mt-1.5 min-h-[44px] w-full rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-3 text-sm text-[var(--g-ink)] focus-visible:border-[var(--g-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)]"
+                >
+                  <option value={TODOS}>Todos los cursos</option>
+                  {cursos.map((opcion) => (
+                    <option key={opcion.valor} value={opcion.valor}>
+                      {opcion.etiqueta}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+
+            {herramientasDisponibles.length > 0 ? (
+              <div className="min-w-0">
+                <label
+                  htmlFor="filtro-herramienta"
+                  className="block text-xs font-medium text-[var(--g-muted)]"
+                >
+                  Herramienta
+                </label>
+                <select
+                  id="filtro-herramienta"
+                  value={herramienta}
+                  onChange={(event) => setHerramienta(event.target.value)}
+                  className="mt-1.5 min-h-[44px] w-full rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-3 text-sm text-[var(--g-ink)] focus-visible:border-[var(--g-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)]"
+                >
+                  <option value={TODOS}>Todas las herramientas</option>
+                  {herramientasDisponibles.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+
+            {nivelesDisponibles.length > 0 ? (
+              <div className="min-w-0">
+                <label
+                  htmlFor="filtro-nivel"
+                  className="block text-xs font-medium text-[var(--g-muted)]"
+                >
+                  Nivel
+                </label>
+                <select
+                  id="filtro-nivel"
+                  value={nivel}
+                  onChange={(event) => setNivel(event.target.value)}
+                  className="mt-1.5 min-h-[44px] w-full rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-3 text-sm text-[var(--g-ink)] focus-visible:border-[var(--g-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)]"
+                >
+                  <option value={TODOS}>Todos los niveles</option>
+                  {nivelesDisponibles.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
+      {/* Chips de filtros activos eliminables + conteo */}
+      {hayFiltros ? (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--g-border)] pb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <p
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              className="mr-1 text-sm font-medium tabular-nums text-[var(--g-muted)]"
+            >
+              {visibles.length} de {guias.length} {guias.length === 1 ? "guía" : "guías"}
+            </p>
+            {chipsFiltrosActivos.map((chip) => (
+              <button
+                key={chip.id}
+                type="button"
+                onClick={chip.quitar}
+                aria-label={`Quitar filtro ${chip.etiqueta}`}
+                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-[var(--g-accent)]/30 bg-[var(--g-accent-soft)] px-3 text-xs font-medium text-[var(--g-accent)] transition-colors hover:bg-[var(--g-accent)] hover:text-[var(--g-accent-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)] sm:min-h-[32px]"
               >
-                {opcion.etiqueta}
-              </Chip>
+                <span>{chip.etiqueta}</span>
+                <X size={13} aria-hidden="true" />
+              </button>
             ))}
-          </FilaChips>
-        </fieldset>
+          </div>
 
-        {herramientasDisponibles.length > 0 ? (
-          <fieldset className="mt-3 min-w-0 border-0 p-0">
-            <legend className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-              Filtrar por herramienta
-            </legend>
-            <FilaChips activo={herramienta}>
-              <Chip activo={herramienta === TODOS} onClick={() => setHerramienta(TODOS)}>
-                Todas
-              </Chip>
-              {herramientasDisponibles.map((item) => (
-                <Chip
-                  key={item}
-                  activo={herramienta === item}
-                  onClick={() => setHerramienta(item)}
-                >
-                  {item}
-                </Chip>
-              ))}
-            </FilaChips>
-          </fieldset>
-        ) : null}
-
-        {nivelesDisponibles.length > 0 ? (
-          <fieldset className="mt-3 min-w-0 border-0 p-0">
-            <legend className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-              Filtrar por nivel
-            </legend>
-            <FilaChips activo={nivel}>
-              <Chip activo={nivel === TODOS} onClick={() => setNivel(TODOS)}>
-                Todos
-              </Chip>
-              {nivelesDisponibles.map((item) => (
-                <Chip
-                  key={item}
-                  activo={nivel === item}
-                  onClick={() => setNivel(item)}
-                >
-                  {item}
-                </Chip>
-              ))}
-            </FilaChips>
-          </fieldset>
-        ) : null}
-      </form>
-
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <p role="status" aria-live="polite" aria-atomic="true" className="text-sm text-mute">
-          {hayFiltros ? `${visibles.length} de ${guias.length} guías` : `${guias.length} guías`}
-        </p>
-        {hayFiltros ? (
           <button
             type="button"
             onClick={limpiar}
-            className="text-sm font-medium text-ink underline underline-offset-4 hover:text-ink/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+            className="inline-flex min-h-[44px] items-center text-sm font-medium text-[var(--g-accent)] underline underline-offset-4 transition-colors hover:text-[var(--g-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)] sm:min-h-[36px]"
           >
             Limpiar filtros
           </button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
+      {/* Resultados / Biblioteca */}
       <div
         id="resultados-guias"
+        ref={resultadosRef}
         role="region"
         aria-label="Resultados de guías"
-        className="mt-4"
+        className="mt-8 scroll-mt-24"
       >
         {visibles.length === 0 ? (
-          <div className="rounded-[26px] border border-line bg-paper px-5 py-6">
-            <p className="text-base font-semibold text-ink">
-              {texto.trim()
-                ? `No encontramos guías para «${texto.trim()}».`
-                : "No encontramos guías con esos filtros."}
+          <div className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] px-6 py-8 shadow-[var(--g-card-shadow)]">
+            <p className="text-base font-semibold text-[var(--g-ink)]">
+              No hay guías que coincidan con {descripcionFiltrosActivos || "tu selección"}.
             </p>
-            <p className="mt-1.5 text-sm leading-relaxed text-mute">
-              Prueba con otro curso, cambia el país o quita la búsqueda. También puedes revisar el catálogo
-              completo o los precios vigentes.
+            <p className="mt-1.5 text-sm leading-relaxed text-[var(--g-muted)]">
+              Quita uno o más filtros para volver al directorio completo, o revisa el catálogo de cursos y precios vigentes.
             </p>
-            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            <div className="mt-5 flex flex-wrap items-center gap-4 text-sm">
               <button
                 type="button"
                 onClick={limpiar}
-                className="font-medium text-ink underline underline-offset-4 hover:text-ink/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+                className="inline-flex min-h-[44px] items-center rounded-xl bg-[var(--g-accent)] px-5 font-semibold text-[var(--g-accent-ink)] transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)] focus-visible:ring-offset-2"
               >
                 Limpiar filtros
               </button>
-              <Link href={rutaLocal(iso, "/cursos")} className="font-medium text-ink underline underline-offset-4">
-                Ver cursos
+              <Link
+                href={rutaLocal(iso, "/cursos")}
+                className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)]"
+              >
+                Catálogo de cursos
               </Link>
-              <Link href={rutaLocal(iso, "/precios")} className="font-medium text-ink underline underline-offset-4">
-                Ver precios
+              <Link
+                href={rutaLocal(iso, "/precios")}
+                className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)]"
+              >
+                Precios por país
               </Link>
             </div>
           </div>
+        ) : hayFiltros ? (
+          <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {visibles.map((guia) => (
+              <li key={guia.path} className="min-w-0">
+                <GuiaCard guia={guia} variant="visual" preferEditorialImage />
+              </li>
+            ))}
+          </ul>
         ) : (
-          <div className="space-y-10">
-            {!hayFiltros && destacadas.length >= 2 ? (
-              <section aria-labelledby="guias-recomendadas">
-                <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9A3F20]">
-                      Lo más leído en ProgramBI
-                    </p>
-                    <h2 id="guias-recomendadas" className="text-lg font-bold tracking-tight text-ink">
-                      Guías recomendadas para empezar
-                    </h2>
-                  </div>
-                  <p className="text-xs text-faint">Con prompts copiables, ejemplos y hoja de ruta</p>
+          <div className="space-y-14">
+            {/* Bloque Destacado Visual */}
+            {destacadas.length >= 2 ? (
+              <section aria-labelledby="guias-destacadas">
+                <div className="flex flex-wrap items-baseline justify-between gap-2 pb-4">
+                  <h2
+                    id="guias-destacadas"
+                    className="text-xl font-bold tracking-tight text-[var(--g-ink)] sm:text-2xl"
+                  >
+                    Guías recomendadas para empezar
+                  </h2>
+                  <p className="text-xs text-[var(--g-subtle)]">
+                    Rutas iniciales, prompts copiables y comparativas clave
+                  </p>
                 </div>
-                <ul className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {destacadas.map((guia) => (
-                    <li key={`top-${guia.path}`} className="min-w-0">
-                      <GuiaCard guia={guia} preferEditorialImage />
-                    </li>
-                  ))}
-                </ul>
+
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-stretch">
+                  <div className="min-w-0 lg:col-span-7">
+                    <GuiaCard
+                      guia={destacadas[0]}
+                      variant="featured"
+                      preferEditorialImage
+                      isHero
+                    />
+                  </div>
+                  <ol className="flex min-w-0 flex-col justify-between gap-4 lg:col-span-5">
+                    {destacadas.slice(1, 4).map((guia, idx) => (
+                      <li key={`top-${guia.path}`} className="min-w-0 flex-1">
+                        <GuiaCard
+                          guia={guia}
+                          variant="compact"
+                          preferEditorialImage
+                          indexLabel={`0${idx + 1}`}
+                        />
+                      </li>
+                    ))}
+                  </ol>
+                </div>
               </section>
             ) : null}
-            {grupos.map((grupo, indice) => {
-              const rutaCurso = grupo.curso === "general" ? null : rutaLocal(iso, `/cursos/${grupo.curso}`);
+
+            {/* Directorio por Curso con Tarjetas Visuales Táctiles */}
+            {grupos.map((grupo) => {
+              const rutaCurso =
+                grupo.curso === "general" ? null : rutaLocal(iso, `/cursos/${grupo.curso}`);
+              const expandido = Boolean(cursosExpandidos[grupo.curso]);
+              const tieneMas = grupo.guias.length > LIMITE_INICIAL_CURSO;
+              const visiblesGrupo =
+                tieneMas && !expandido
+                  ? grupo.guias.slice(0, LIMITE_INICIAL_CURSO)
+                  : grupo.guias;
+
               return (
                 <section key={grupo.curso} aria-labelledby={`curso-${grupo.curso}`}>
-                  <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-line pb-3">
-                    <div className="min-w-0">
-                      {indice === 0 && !hayFiltros ? (
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-faint">
-                          Empieza por aquí
-                        </p>
-                      ) : null}
+                  <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-[var(--g-border)] pb-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <GuiaToolVisual course={grupo.curso} size="sm" />
                       <h2
                         id={`curso-${grupo.curso}`}
-                        className="text-pretty break-words text-lg font-bold tracking-tight text-ink"
+                        className="text-pretty break-words text-xl font-bold tracking-tight text-[var(--g-ink)]"
                       >
                         {grupo.nombre}
                       </h2>
-                      <p className="mt-0.5 text-xs text-faint">
+                      <span className="rounded-full bg-[var(--g-wash)] px-2.5 py-0.5 text-xs font-medium tabular-nums text-[var(--g-muted)]">
                         {grupo.guias.length} {grupo.guias.length === 1 ? "guía" : "guías"}
-                      </p>
+                      </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
                       {rutaCurso ? (
                         <Link
                           href={rutaCurso}
-                          className="inline-flex items-center gap-1 font-medium text-ink no-underline hover:underline"
+                          className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)] sm:min-h-0"
                         >
-                          Ver curso <ArrowRight size={13} aria-hidden />
+                          Ficha del curso
                         </Link>
                       ) : null}
                       <Link
                         href={rutaLocal(iso, "/precios")}
-                        className="font-medium text-ink no-underline hover:underline"
+                        className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-muted)] underline underline-offset-4 hover:text-[var(--g-ink)] sm:min-h-0"
                       >
                         Precios
                       </Link>
                     </div>
                   </div>
-                  <ul className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {grupo.guias.map((guia) => (
+
+                  <ul className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {visiblesGrupo.map((guia) => (
                       <li key={guia.path} className="min-w-0">
-                        <GuiaCard guia={guia} />
+                        <GuiaCard guia={guia} variant="visual" preferEditorialImage />
                       </li>
                     ))}
                   </ul>
+
+                  {tieneMas ? (
+                    <div className="mt-6 flex justify-center">
+                      <button
+                        type="button"
+                        aria-expanded={expandido}
+                        onClick={() =>
+                          setCursosExpandidos((prev) => ({
+                            ...prev,
+                            [grupo.curso]: !prev[grupo.curso],
+                          }))
+                        }
+                        className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] px-5 text-sm font-semibold text-[var(--g-ink)] shadow-[var(--g-card-shadow)] transition-colors hover:border-[var(--g-accent)] hover:text-[var(--g-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)] focus-visible:ring-offset-2"
+                      >
+                        {expandido ? (
+                          <>
+                            <span>Mostrar menos de {grupo.nombre}</span>
+                            <ChevronUp size={16} aria-hidden="true" />
+                          </>
+                        ) : (
+                          <>
+                            <span>
+                              Ver todas las {grupo.guias.length} guías de {grupo.nombre}
+                            </span>
+                            <ChevronDown size={16} aria-hidden="true" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  ) : null}
                 </section>
               );
             })}

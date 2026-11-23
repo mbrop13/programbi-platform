@@ -40,7 +40,7 @@ import { getPais, normalizarPais } from "@/config/paises";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { formatMoneda, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal, totalLocalConCupon } from "@/lib/paises/precios";
 import { NOTA_CUOTAS_MEDIOS } from "@/config/cuotas";
-import { precioDescontadoClp } from "@/lib/pago/precio-clp";
+import { resolverPrecioClp } from "@/lib/pago/precio-clp";
 import { whatsappHref } from "@/lib/whatsapp";
 import type { CheckoutCatalog, CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
 
@@ -73,7 +73,7 @@ function discountedPrice(
   priceOverrides: CheckoutPriceOverride[],
   promotions: CheckoutPromotion[]
 ) {
-  return precioDescontadoClp(slug, basePrice, levelName, priceOverrides, promotions);
+  return resolverPrecioClp(slug, basePrice, levelName, priceOverrides, promotions);
 }
 
 function selectionFromQuery(
@@ -102,7 +102,9 @@ function selectionFromQuery(
         levelName: picked.name,
         price: pricing.finalPrice,
         quantity: 1,
-        originalPrice: isBundle ? 747000 : pricing.originalPrice,
+        originalPrice: isBundle
+          ? Math.max(747000, pricing.listPrice ?? pricing.originalPrice)
+          : (pricing.listPrice ?? pricing.originalPrice),
         hasDiscount: isBundle ? true : pricing.hasDiscount,
       };
     }
@@ -395,7 +397,9 @@ export default function PagoClient({
         incoming &&
         existing &&
         existing.price === incoming.price &&
-        existing.levelName === incoming.levelName
+        existing.levelName === incoming.levelName &&
+        existing.originalPrice === incoming.originalPrice &&
+        existing.hasDiscount === incoming.hasDiscount
       ) {
         return current;
       }
@@ -484,17 +488,19 @@ export default function PagoClient({
 
       const course = allCourses.find(c => c.slug === slug);
       const level = course?.levels?.find(l => l.name === levelName);
-      const isBundle = ["analisis-de-datos", "analitica-mineria"].includes(slug);
+      const isBundle = BUNDLE_SLUGS.includes(slug);
       let itemOriginalPrice = price;
       let itemHasDiscount = false;
       
-      if (isBundle) {
+      if (course && level && level.price) {
+        const pricing = getDiscountedPrice(slug, level.price, levelName);
+        itemOriginalPrice = isBundle
+          ? Math.max(747000, pricing.listPrice ?? pricing.originalPrice)
+          : (pricing.listPrice ?? pricing.originalPrice);
+        itemHasDiscount = isBundle ? true : pricing.hasDiscount;
+      } else if (isBundle) {
         itemOriginalPrice = 747000;
         itemHasDiscount = true;
-      } else if (course && level && level.price) {
-        const pricing = getDiscountedPrice(slug, level.price, levelName);
-        itemOriginalPrice = pricing.originalPrice;
-        itemHasDiscount = pricing.hasDiscount;
       }
 
       return {
@@ -1069,44 +1075,34 @@ export default function PagoClient({
                               <div className="flex flex-col items-start sm:items-end">
                                  {(() => {
                                     const pricing = getDiscountedPrice(course.slug, currentLevelData.price, activeLevel);
-                                    if (isBundle) {
-                                      const tachado = tachadoLocal(course.slug);
-                                      return (
-                                        <>
-                                           {paisPago === "cl" ? <span className="text-xs font-semibold text-faint line-through">{convertAndFormat(747000)}</span> : null}
-                                           {tachado ? <span className="text-xs font-semibold text-faint line-through">{tachado.texto} · {tachado.pct}% off</span> : null}
-                                           <div className="flex flex-col items-start sm:items-end">
-                                              <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
-                                              {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                                <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
-                                              )}
-                                           </div>
-                                        </>
-                                      );
-                                    } else if (pricing.hasDiscount || tachadoLocal(course.slug)) {
-                                      const tachado = tachadoLocal(course.slug);
-                                      return (
-                                        <>
-                                           <span className="mb-1 text-xs font-semibold text-ink">Promoción</span>
-                                           <span className="text-xs font-semibold text-faint line-through">{tachado ? `${tachado.texto} · ${tachado.pct}% off` : convertAndFormat(pricing.originalPrice)}</span>
-                                           <div className="flex flex-col items-start sm:items-end">
-                                              <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
-                                              {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                                <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
-                                              )}
-                                           </div>
-                                        </>
-                                      );
-                                    } else {
-                                      return (
+                                    const tachado = tachadoLocal(course.slug);
+                                    const listPrice = isBundle
+                                      ? Math.max(747000, pricing.listPrice ?? 0)
+                                      : pricing.listPrice;
+                                    const discountPct = listPrice && listPrice > pricing.finalPrice
+                                      ? Math.round(((listPrice - pricing.finalPrice) / listPrice) * 100)
+                                      : 0;
+                                    const showDiscount = Boolean(tachado) || (listPrice != null && listPrice > pricing.finalPrice);
+                                    return (
+                                      <>
+                                        {pricing.hasDiscount && !isBundle ? (
+                                          <span className="mb-1 text-xs font-semibold text-ink">Promoción</span>
+                                        ) : null}
+                                        {showDiscount ? (
+                                          <span className="text-xs font-semibold text-faint line-through">
+                                            {tachado
+                                              ? `${tachado.texto} · ${tachado.pct}% off`
+                                              : `${convertAndFormat(listPrice!)} · ${discountPct}% off`}
+                                          </span>
+                                        ) : null}
                                         <div className="flex flex-col items-start sm:items-end">
-                                           <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
-                                           {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                             <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
-                                           )}
+                                          <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
+                                          {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                            <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
+                                          )}
                                         </div>
-                                      );
-                                    }
+                                      </>
+                                    );
                                  })()}
                                  {notaClp(getDiscountedPrice(course.slug, currentLevelData.price, activeLevel).finalPrice)}
                               </div>
@@ -1256,7 +1252,7 @@ export default function PagoClient({
                                                 −{tachadoLocal(item.slug, item.quantity)?.pct}%
                                               </span>
                                             </div>
-                                          ) : item.hasDiscount && item.originalPrice && item.originalPrice > item.price ? (
+                                          ) : item.originalPrice && item.originalPrice > item.price ? (
                                             <div className="mb-1 flex items-center gap-1.5">
                                               <span className="text-[11px] font-semibold text-faint line-through">
                                                 {convertAndFormat(item.originalPrice * item.quantity)}
@@ -1708,7 +1704,7 @@ export default function PagoClient({
                                   −{tachadoLocal(item.slug, item.quantity)?.pct}%
                                 </span>
                               </div>
-                            ) : item.hasDiscount && item.originalPrice && item.originalPrice > item.price ? (
+                            ) : item.originalPrice && item.originalPrice > item.price ? (
                               <div className="mb-0.5 flex items-center gap-1.5">
                                 <span className="text-[11px] font-semibold text-faint line-through">
                                   {convertAndFormat(item.originalPrice * item.quantity)}
