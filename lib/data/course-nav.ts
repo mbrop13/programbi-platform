@@ -16,7 +16,7 @@ export const COURSE_FILTER_GROUPS = [
   {
     id: "ia" as const,
     label: "IA",
-    slugs: ["ia-productividad", "copilot", "claude", "power-automate", "machine-learning"],
+    slugs: ["ia-productividad", "copilot", "claude", "chatgpt", "gemini", "power-automate", "machine-learning"],
   },
 ];
 
@@ -76,6 +76,18 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
         slug: "claude",
         title: "Claude",
         imageUrl: "/images/courses/claude-card.webp",
+        durationHours: 20,
+      },
+      {
+        slug: "chatgpt",
+        title: "ChatGPT",
+        imageUrl: "/images/courses/chatgpt-card.webp",
+        durationHours: 20,
+      },
+      {
+        slug: "gemini",
+        title: "Gemini",
+        imageUrl: "/images/courses/gemini-card.webp",
         durationHours: 20,
       },
       {

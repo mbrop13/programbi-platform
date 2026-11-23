@@ -40,3 +40,7 @@ export const CLASE_GRATIS = {
 export function claseGratisPublicada(): boolean {
   return CLASE_GRATIS_HABILITADA && CLASE_GRATIS.fecha != null;
 }
+
+export const OFERTA_CLASE_GRATIS_CURSO_TEXTO = "Agenda una clase gratis";
+export const OFERTA_CLASE_GRATIS_CURSO_ACTIVA =
+  env(process.env.NEXT_PUBLIC_OFERTA_CLASE_GRATIS_CURSO).toLowerCase() !== "0";

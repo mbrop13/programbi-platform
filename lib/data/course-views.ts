@@ -184,6 +184,22 @@ export function offerLowPrice(course: Course, view: CourseOfferView): number | u
 }
 
 export function offerTeaches(course: Course, view: CourseOfferView): string[] {
+  if (course.slug === "chatgpt") {
+    return [
+      "Prompts profesionales para el trabajo",
+      "Análisis de datos y Excel con ChatGPT",
+      "Projects, informes y presentaciones",
+      "ChatGPT Work y automatización ligera sin programar",
+    ];
+  }
+  if (course.slug === "gemini") {
+    return [
+      "Gemini en Gmail, Docs, Sheets y Meet",
+      "Análisis de PDF y documentos",
+      "Gemini Notebook (NotebookLM) y Deep Research",
+      "Skills y Workspace Studio sin programar",
+    ];
+  }
   const fromLevels = levelsForView(course, view).flatMap((level) => level.whatYouLearn);
   return fromLevels.length > 0 ? fromLevels : course.whatYouLearn;
 }
