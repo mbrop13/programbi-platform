@@ -16,7 +16,7 @@ export const guia: GuiaPasoAPaso = {
     "crear gráficos con ChatGPT",
   ],
   curso: "excel",
-  cursoSecundario: "power-bi",
+  cursoSecundario: "chatgpt",
   herramienta: "IA",
   nivel: "Básico",
   updated: "2026-11-21",

@@ -8,16 +8,26 @@ export default function GuiaPasoAPasoCursoCard({
   guia,
   curso,
   cursoSecundario = null,
+  cursosSecundarios = [],
   sticky = false,
   ctaPosition = "guia_paso_a_paso_lateral",
 }: {
   guia: Pick<GuiaPasoAPaso, "slug" | "h1" | "curso"> & { herramienta?: string };
   curso: DatosCursoGuia;
   cursoSecundario?: { slug: string; nombre: string } | null;
+  cursosSecundarios?: Array<{ slug: string; nombre: string }>;
   sticky?: boolean;
   ctaPosition?: string;
 }) {
   const waText = `Hola, vengo de la guía ${guia.h1} y quiero la clase gratis del curso de ${curso.nombre} [${guia.slug}]`;
+  const secundarios = [
+    ...(cursoSecundario ? [cursoSecundario] : []),
+    ...cursosSecundarios,
+  ].filter(
+    (item, idx, arr) =>
+      item.slug !== guia.curso &&
+      arr.findIndex((other) => other.slug === item.slug) === idx
+  );
 
   return (
     <aside
@@ -116,13 +126,30 @@ export default function GuiaPasoAPasoCursoCard({
           </Link>
         </div>
 
-        {cursoSecundario ? (
+        {secundarios.length === 1 ? (
           <Link
-            href={`/cursos/${cursoSecundario.slug}`}
+            href={`/cursos/${secundarios[0].slug}`}
             className="mt-0.5 inline-flex min-h-[44px] items-center justify-center text-center text-xs font-medium text-[var(--g-muted)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-ink)] sm:min-h-[36px]"
           >
-            También te sirve: Curso de {cursoSecundario.nombre}
+            También te sirve: Curso de {secundarios[0].nombre}
           </Link>
+        ) : secundarios.length > 1 ? (
+          <div className="mt-1 border-t border-[var(--g-border)] pt-2.5">
+            <p className="text-center text-[11px] font-medium text-[var(--g-subtle)]">
+              También te sirven:
+            </p>
+            <div className="mt-1.5 flex flex-wrap justify-center gap-1.5">
+              {secundarios.map((sec) => (
+                <Link
+                  key={sec.slug}
+                  href={`/cursos/${sec.slug}`}
+                  className="inline-flex min-h-[36px] items-center rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] px-2.5 text-xs font-medium text-[var(--g-muted)] no-underline transition-colors hover:border-[var(--g-border-strong)] hover:text-[var(--g-ink)]"
+                >
+                  {sec.nombre}
+                </Link>
+              ))}
+            </div>
+          </div>
         ) : null}
       </div>
     </aside>
