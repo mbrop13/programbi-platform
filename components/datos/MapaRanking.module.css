@@ -363,3 +363,36 @@
 }
 .tarjetaBoton:hover { background: #2b2d31; }
 .tarjetaBoton:focus-visible, .tarjetaCerrar:focus-visible { outline: 2px solid #3442de; outline-offset: 2px; }
+
+/* Celular: la tarjeta sube desde abajo sobre toda la página, con fondo oscurecido para cerrarla. */
+.tarjetaFondo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgb(17 18 20 / 0.35);
+}
+.tarjetaPanel {
+  position: fixed;
+  z-index: 61;
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  width: auto;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 1.15rem 1.15rem 1.2rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 -8px 40px rgb(17 18 20 / 0.22);
+  animation: subirTarjeta .18s ease-out;
+}
+.tarjetaPanel .tarjetaTasa { font-size: 3rem; }
+.tarjetaPanel .tarjetaDatos dt { font-size: .78rem; }
+.tarjetaPanel .tarjetaDatos dd { font-size: 1rem; }
+.tarjetaPanel .tarjetaBoton { min-height: 3rem; font-size: 1rem; }
+@keyframes subirTarjeta {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tarjetaPanel { animation: none; }
+}

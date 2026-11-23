@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { trackEvent } from "@/lib/analytics/marketing";
 import { colores, numero, type FilaMapa } from "./mapa-ranking-utils";
 import styles from "./MapaRanking.module.css";
@@ -18,6 +19,15 @@ export function MapaRankingCliente({ filas, tasaChile, mapa }: Props) {
   const [activa, setActiva] = useState<Activa | null>(null);
   const geoRef = useRef<HTMLDivElement>(null);
   const ocultar = useRef<number | null>(null);
+  // En celular la tarjeta es un panel inferior sobre toda la página (el recuadro del mapa es angosto).
+  const [compacto, setCompacto] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const actualizar = () => setCompacto(mq.matches);
+    actualizar();
+    mq.addEventListener("change", actualizar);
+    return () => mq.removeEventListener("change", actualizar);
+  }, []);
 
   const porTasa = [...filas].sort((a, b) => b.tasa - a.tasa);
   const filaActiva = activa ? filas.find((f) => f.slug === activa.slug) ?? null : null;
@@ -78,6 +88,38 @@ export function MapaRankingCliente({ filas, tasaChile, mapa }: Props) {
     setVista(nuevaVista);
     trackEvent("datos_filter", { tipo: "vista_mapa", valor: nuevaVista });
   }
+  // Tarjeta de región: flotante junto al cursor en escritorio; en celular, panel inferior en un
+  // portal sobre toda la página (la sección usa content-visibility, que encerraría un panel fixed).
+  const tarjetaNodo =
+    vista === "mapa" && filaActiva && activa
+      ? (() => {
+          const tarjeta = (
+            <TarjetaRegion
+              panel={compacto}
+              fila={filaActiva}
+              puesto={puesto}
+              total={filas.length}
+              tasaChile={tasaChile}
+              x={activa.x}
+              y={activa.y}
+              anchoContenedor={activa.ancho}
+              fijada={activa.fijada}
+              onEntrar={cancelarOcultar}
+              onSalir={() => !activa.fijada && programarOcultar()}
+              onCerrar={() => setActiva(null)}
+            />
+          );
+          if (!compacto) return tarjeta;
+          return createPortal(
+            <>
+              <div className={styles.tarjetaFondo} aria-hidden="true" onClick={() => setActiva(null)} />
+              {tarjeta}
+            </>,
+            document.body
+          );
+        })()
+      : null;
+
   return (
     <div className={styles.contenedor}>
       <div className={styles.encabezado}>
@@ -182,21 +224,7 @@ export function MapaRankingCliente({ filas, tasaChile, mapa }: Props) {
               ))}
             </ol>
           )}
-          {vista === "mapa" && filaActiva && activa ? (
-            <TarjetaRegion
-              fila={filaActiva}
-              puesto={puesto}
-              total={filas.length}
-              tasaChile={tasaChile}
-              x={activa.x}
-              y={activa.y}
-              anchoContenedor={activa.ancho}
-              fijada={activa.fijada}
-              onEntrar={cancelarOcultar}
-              onSalir={() => !activa.fijada && programarOcultar()}
-              onCerrar={() => setActiva(null)}
-            />
-          ) : null}
+          {tarjetaNodo}
           <div className={styles.leyenda}>
             <span>Menor</span>
             <span className={styles.gradiente} />
@@ -272,6 +300,7 @@ export function MapaRankingCliente({ filas, tasaChile, mapa }: Props) {
 
 /** Tarjeta flotante con los datos de la región (al pasar el cursor, enfocar o tocar el mapa). */
 function TarjetaRegion({
+  panel,
   fila,
   puesto,
   total,
@@ -284,6 +313,7 @@ function TarjetaRegion({
   onSalir,
   onCerrar,
 }: {
+  panel: boolean;
   fila: FilaMapa;
   puesto: number;
   total: number;
@@ -305,8 +335,8 @@ function TarjetaRegion({
       : Math.min(x + 18, Math.max(8, anchoContenedor - ANCHO - 8));
   return (
     <div
-      className={styles.tarjeta}
-      style={{ left: izquierda, top: Math.max(8, y - 40) }}
+      className={panel ? `${styles.tarjeta} ${styles.tarjetaPanel}` : styles.tarjeta}
+      style={panel ? undefined : { left: izquierda, top: Math.max(8, y - 40) }}
       role="dialog"
       aria-label={`Desempleo en ${fila.nombre}`}
       onPointerEnter={onEntrar}
@@ -314,7 +344,7 @@ function TarjetaRegion({
     >
       <div className={styles.tarjetaCabecera}>
         <strong>{fila.nombre}</strong>
-        {fijada ? (
+        {fijada || panel ? (
           <button type="button" onClick={onCerrar} aria-label="Cerrar tarjeta" className={styles.tarjetaCerrar}>
             ×
           </button>
