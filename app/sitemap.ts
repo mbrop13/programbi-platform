@@ -16,18 +16,19 @@ import {
   esRutaNoindexPais,
 } from "@/lib/seo/indexabilidad";
 import { TESTIMONIOS_PUBLICADOS } from "@/lib/data/testimonials";
+import { casesOfUse } from "@/lib/data/cases";
 import { SITE_ACTUALIZADO, lastmodDe } from "@/lib/seo/lastmod";
 import { PAISES_CARPETA, esIndexable, esIsoPais } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
 import { GUIAS_PASO_A_PASO } from "@/content/guias/paso-a-paso";
 import { PLANTILLAS } from "@/lib/data/plantillas";
-import { guiasDePais, alternatesDeGuia } from "@/lib/guias";
+import { alternatesDeGuia } from "@/lib/guias";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
-import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
 import { METADATOS, rutasObservatorio } from "@/lib/datos/desempleo";
 import { datosJovenes, EDAD, fechaIsoDesglose } from "@/lib/datos/desempleo-desgloses";
 import { esFichaIndexable, getCarreras, getMetaCarreras } from "@/lib/datos/carreras";
+import { getTarjetasInstituciones } from "@/lib/datos/instituciones-paginas";
 import { PRESET_SLUGS } from "@/lib/datos/presets";
 import { ogUrlDe } from "@/lib/datos/seo-carreras";
 
@@ -165,7 +166,6 @@ async function publishedBlogUrls(): Promise<MetadataRoute.Sitemap> {
     return data.flatMap((row) => {
       const slug = typeof row.slug === "string" ? blogSlug(row.slug) : null;
       if (!slug) return [];
-      if (isVanityBlogPost(row.title, row.excerpt, slug)) return [];
       return [
         {
           url: sitemapLoc(`/blog/${slug}`) ?? "",
@@ -242,6 +242,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entrada("/glosario", 0.45, "weekly"),
     entrada("/blog", 0.25, "weekly"),
     entrada("/versus", 0.4, "monthly"),
+    entrada("/us/miami", 0.7, "monthly"),
+    entrada("/empleos", 0.55, "weekly"),
+    entrada("/empleos/talento", 0.5, "weekly"),
+    entrada("/empleos/para-empresas", 0.5, "monthly"),
     entrada("/privacidad", 0.1, "yearly"),
     entrada("/terminos", 0.1, "yearly"),
   ];
@@ -253,9 +257,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entrada(`/cursos/${course.slug}`, coursePriority(course.slug), "weekly")
   );
 
-  // Los casos de uso (/casos/[slug]) usan marcas de demostración y llevan
-  // robots: { index: false, follow: true }, por lo que quedan fuera del sitemap.
-  // La página índice /casos (testimonios reales) sí se mantiene en staticPages.
+  const casePages: EntradaPosible[] = casesOfUse.map((c) =>
+    entrada(`/casos/${c.slug}`, 0.5, "monthly")
+  );
 
   const comparativasLastModified = COMPARATIVAS_ACTUALIZADO;
 
@@ -359,7 +363,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...PAISES_CARPETA.filter(
       (pais) =>
         pais.indexable &&
-        guiasDePais(pais.iso).length > 0 &&
         esRutaIndexablePais(pais.iso, "/guias")
     ).map((pais) => entrada(`/${pais.iso}/guias`, 0.6, "weekly")),
     entrada("/preguntas-frecuentes", 0.6, "monthly"),
@@ -391,6 +394,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           ogUrlDe(`/datos/carreras/${c.slug}`, carrerasVersion),
         ])
       ),
+    entrada("/datos/carreras/instituciones", 0.8, "monthly", carrerasLastmod),
+    ...getTarjetasInstituciones()
+      .filter((inst) => Boolean(inst.slug))
+      .map((inst) =>
+        entrada(`/datos/carreras/instituciones/${inst.slug}`, 0.7, "monthly", carrerasLastmod)
+      ),
   ];
 
   const pasoAPasoPages: EntradaPosible[] = GUIAS_PASO_A_PASO.map((g) =>
@@ -400,6 +409,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return uniqueEntries([
     ...staticPages,
     ...coursePages,
+    ...casePages,
     ...versusPages,
     ...blogPages,
     ...countryPages,
