@@ -13,7 +13,17 @@ import {
 } from "@/lib/experiments/config";
 import { analyticsContext } from "@/lib/analytics/context";
 
-export type AnalyticsParams = Record<string, string | number | boolean | null | undefined>;
+export type AnalyticsEcommerceItem = {
+  item_id: string;
+  item_name: string;
+  price?: number;
+  quantity: number;
+};
+
+export type AnalyticsParams = Record<
+  string,
+  string | number | boolean | AnalyticsEcommerceItem[] | null | undefined
+>;
 
 const UTM_KEYS = [
   "utm_source",
@@ -240,6 +250,7 @@ export const GA_LEAD_EVENTS = {
   CLICK_CTA_PRIMARY: "click_cta_primary",
   CLICK_REGISTRO: "click_registro",
   SUBMIT_REGISTRO: "submit_registro",
+  SIGN_UP: "sign_up",
   GENERATE_LEAD: "generate_lead",
   CLICK_WHATSAPP: "click_whatsapp",
   CLICK_COTIZAR_EMPRESAS: "click_cotizar_empresas",
@@ -282,6 +293,33 @@ function markRegistroLeadFired(): void {
   if (!isBrowser()) return;
   try {
     sessionStorage.setItem(REGISTRO_LEAD_KEY, String(Date.now()));
+  } catch {
+    // ignore
+  }
+}
+
+const COMMERCIAL_LEAD_WINDOW_MS = 60_000;
+const commercialLeadMemory = new Map<string, number>();
+
+function commercialLeadFiredRecently(key: string): boolean {
+  const now = Date.now();
+  const memAt = commercialLeadMemory.get(key);
+  if (memAt !== undefined && now - memAt < COMMERCIAL_LEAD_WINDOW_MS) return true;
+  if (!isBrowser()) return false;
+  try {
+    const at = Number(sessionStorage.getItem(key));
+    return Number.isFinite(at) && now - at < COMMERCIAL_LEAD_WINDOW_MS;
+  } catch {
+    return false;
+  }
+}
+
+function markCommercialLeadFired(key: string): void {
+  const now = Date.now();
+  commercialLeadMemory.set(key, now);
+  if (!isBrowser()) return;
+  try {
+    sessionStorage.setItem(key, String(now));
   } catch {
     // ignore
   }
@@ -561,6 +599,16 @@ export function trackGenerateLead(opts: {
   const country = opts.country || analyticsContext().country;
   const landing_page = opts.landing_page || readLandingPath();
   const form_name = opts.form_name || opts.lead_source || opts.lead_type || undefined;
+  const dedupeKey = `pb_generate_lead:${form_name || "default"}:${course_slug || "general"}`;
+  if (commercialLeadFiredRecently(dedupeKey)) {
+    gaDebug("generate_lead skipped", {
+      reason: "dedupe-60s",
+      form_name: form_name || null,
+      course_slug: course_slug || null,
+    });
+    return;
+  }
+  markCommercialLeadFired(dedupeKey);
   // (b) Never let a lead be the first hit: queue the page_view before it.
   ensurePageViewBeforeHit();
   const transport = sendGenerateLeadBeacon({
@@ -760,11 +808,30 @@ export function markGa4Loaded(): void {
   window.__pbGtagLoaded = true;
 }
 
+function sanitizeEcommerceItems(items: AnalyticsEcommerceItem[]): AnalyticsEcommerceItem[] {
+  return items.map((item) => {
+    const clean: AnalyticsEcommerceItem = {
+      item_id: item.item_id,
+      item_name: item.item_name,
+      quantity: item.quantity,
+    };
+    if (typeof item.price === "number" && Number.isFinite(item.price)) {
+      clean.price = item.price;
+    }
+    return clean;
+  });
+}
+
 /** gtag drops a recommended event such as generate_lead when a param is undefined. */
 function definedParams(params: AnalyticsParams): AnalyticsParams {
   const out: AnalyticsParams = {};
   for (const [key, value] of Object.entries(params)) {
     if (value === undefined || value === null || value === "") continue;
+    if (Array.isArray(value)) {
+      if (value.length === 0) continue;
+      out[key] = sanitizeEcommerceItems(value);
+      continue;
+    }
     out[key] = value;
   }
   return out;
@@ -787,6 +854,15 @@ function stripReservedCampaignParams(params?: AnalyticsParams): AnalyticsParams 
     delete out[reserved];
     const current = out[alias];
     if (current === undefined || current === null || current === "") out[alias] = value;
+  }
+  for (const [key, value] of Object.entries(out)) {
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        delete out[key];
+      } else {
+        out[key] = sanitizeEcommerceItems(value);
+      }
+    }
   }
   return out;
 }
@@ -1105,6 +1181,15 @@ export function trackEventOnce(key: string, eventName: string, params?: Analytic
   trackEvent(eventName, params);
 }
 
+function buildFallbackItems(courseSlugs?: string[]): AnalyticsEcommerceItem[] {
+  if (!courseSlugs || courseSlugs.length === 0) return [];
+  return courseSlugs.map((slug) => ({
+    item_id: slug,
+    item_name: slug,
+    quantity: 1,
+  }));
+}
+
 export function trackCourseView(
   courseSlug: string,
   courseTitle?: string,
@@ -1113,48 +1198,68 @@ export function trackCourseView(
   currency?: string
 ): void {
   const country = pais || "cl";
+  const resolvedCurrency = currency || "CLP";
+  const itemName = courseTitle || courseSlug;
   trackEventOnce(`view_curso:${country}:${courseSlug}`, GA_LEAD_EVENTS.VIEW_CURSO, {
     curso_slug: courseSlug,
     course_title: courseTitle,
     value: value ?? undefined,
-    currency: value != null ? (currency || "CLP") : undefined,
+    currency: value != null ? resolvedCurrency : undefined,
     pais: country,
   });
   // GA4 recommended event, con los mismos datos para los informes de monetización.
   trackEventOnce(`view_item:${country}:${courseSlug}`, "view_item", {
-    currency: currency || "CLP",
+    currency: resolvedCurrency,
     value: value ?? undefined,
-    items: JSON.stringify([
+    item_id: courseSlug,
+    item_name: itemName,
+    price: value ?? undefined,
+    items: [
       {
         item_id: courseSlug,
-        item_name: courseTitle || courseSlug,
-        price: value ?? undefined,
+        item_name: itemName,
+        ...(value != null ? { price: value } : {}),
         quantity: 1,
       },
-    ]),
+    ],
     course: courseSlug,
+    course_slug: courseSlug,
   });
 }
 
 export function trackCheckoutStart(opts: {
   courseSlugs: string[];
+  items?: AnalyticsEcommerceItem[];
   value?: number;
   currency?: string;
   location?: string;
   pais?: string;
 }): void {
+  const country = opts.pais || "cl";
+  const currency = opts.currency || "CLP";
+  const courseSlugsStr = opts.courseSlugs.join(",");
+  const items =
+    opts.items && opts.items.length > 0
+      ? opts.items
+      : buildFallbackItems(opts.courseSlugs);
+
   trackEvent("checkout_start", {
-    course_slugs: opts.courseSlugs.join(","),
+    course_slugs: courseSlugsStr,
     value: opts.value,
-    currency: opts.currency || "CLP",
+    currency,
     location: opts.location || "pago",
-    pais: opts.pais || "cl",
+    pais: country,
+    country,
   });
-  trackEvent("begin_checkout", {
-    currency: opts.currency || "CLP",
+
+  const sortedSlugs = [...opts.courseSlugs].sort().join(",");
+  trackEventOnce(`begin_checkout:${country}:${sortedSlugs}`, "begin_checkout", {
+    currency,
     value: opts.value ?? 0,
-    course_slugs: opts.courseSlugs.join(","),
-    pais: opts.pais || "cl",
+    items,
+    course_slugs: courseSlugsStr,
+    pais: country,
+    country,
   });
 }
 
@@ -1163,6 +1268,7 @@ export function trackPurchase(opts?: {
   value?: number;
   currency?: string;
   courseSlugs?: string[];
+  items?: AnalyticsEcommerceItem[];
   pais?: string;
 }): void {
   if (!isBrowser()) return;
@@ -1175,13 +1281,79 @@ export function trackPurchase(opts?: {
     // continue
   }
 
+  const country = opts?.pais || "cl";
+  const currency = opts?.currency || "CLP";
+  const items: AnalyticsEcommerceItem[] =
+    opts?.items && opts.items.length > 0
+      ? opts.items
+      : opts?.courseSlugs && opts.courseSlugs.length > 0
+        ? buildFallbackItems(opts.courseSlugs)
+        : opts?.value != null
+          ? [
+              {
+                item_id: "curso",
+                item_name: "Curso",
+                price: opts.value,
+                quantity: 1,
+              },
+            ]
+          : [];
+
   trackEvent("purchase", {
     transaction_id: opts?.transactionId,
     value: opts?.value,
-    currency: opts?.currency || "CLP",
+    currency,
+    items,
     course_slugs: opts?.courseSlugs?.join(","),
-    pais: opts?.pais || "cl",
+    pais: country,
+    country,
   });
+}
+
+export type WhatsAppCtaPosition =
+  | "header_global"
+  | "floating"
+  | "footer"
+  | "guia_cta"
+  | "curso_hero"
+  | "curso_ayuda"
+  | "ficha_sueldo"
+  | "ficha_final"
+  | "datos_portada"
+  | "datos_desempleo"
+  | "otros";
+
+const WHATSAPP_CTA_POSITIONS = new Set<WhatsAppCtaPosition>([
+  "header_global",
+  "floating",
+  "footer",
+  "guia_cta",
+  "curso_hero",
+  "curso_ayuda",
+  "ficha_sueldo",
+  "ficha_final",
+  "datos_portada",
+  "datos_desempleo",
+  "otros",
+]);
+
+export function normalizeWhatsAppCtaPosition(raw?: string | null): WhatsAppCtaPosition {
+  const val = (raw || "").trim().toLowerCase();
+  if (!val) return "otros";
+  if (WHATSAPP_CTA_POSITIONS.has(val as WhatsAppCtaPosition)) {
+    return val as WhatsAppCtaPosition;
+  }
+  if (val.startsWith("guia_")) return "guia_cta";
+  if (val === "ficha_hero_mobile" || val === "ficha_barra_fija") return "curso_hero";
+  if (
+    val.startsWith("course_detail_") ||
+    val === "ficha_avisame_fecha" ||
+    val === "ficha_temario_final"
+  ) {
+    return "curso_ayuda";
+  }
+  if (val === "datos_desempleo_region") return "datos_desempleo";
+  return "otros";
 }
 
 /** Último click_whatsapp enviado, para descartar el doble aviso del mismo clic. */
@@ -1229,15 +1401,15 @@ export function trackWhatsAppClick(opts?: {
   const courseSlug = rawCourse && rawCourse !== "general" ? rawCourse : "general";
   const country = (opts?.country || ctx.country || "cl").trim();
   const pagePath = page || (isBrowser() ? window.location.pathname : "/");
-  const location = opts?.cta_position || opts?.cta_location || undefined;
+  const pos = normalizeWhatsAppCtaPosition(opts?.cta_position || opts?.cta_location);
   trackEvent(GA_LEAD_EVENTS.CLICK_WHATSAPP, {
     course: courseSlug,
     course_slug: courseSlug,
     country,
-    cta_position: location,
-    cta_location: opts?.cta_location || undefined,
+    cta_position: pos,
+    cta_location: pos,
     carrera_slug: opts?.carrera_slug || undefined,
-    wa_location: location,
+    wa_location: pos,
     page: pagePath,
     // Keep legacy params for existing GA4 reports/explorations.
     page_path: pagePath,
@@ -1360,13 +1532,13 @@ export function trackSubmitRegistro(opts?: {
   }
   const method = opts?.method ?? "form";
   const formName = opts?.form_name || (method === "oauth" ? "registro_oauth" : "registro_form");
-  gaDebug("trackSubmitRegistro", { method, form_name: formName, course_slug: opts?.course_slug || null });
-  trackGenerateLead({
+  const courseSlug = inferCourseSlug(opts?.course_slug);
+  gaDebug("trackSubmitRegistro", { method, form_name: formName, course_slug: courseSlug || null });
+  trackEvent(GA_LEAD_EVENTS.SIGN_UP, {
     method,
     form_name: formName,
-    lead_type: "registro",
-    lead_source: formName,
-    course_slug: opts?.course_slug,
+    course_slug: courseSlug,
+    transport_type: "beacon",
   });
   markRegistroLeadFired();
 }

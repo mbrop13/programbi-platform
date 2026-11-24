@@ -81,11 +81,12 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
   const info = getPais(iso);
   const ficha = getFichaPais(iso, curso.slug);
   const contenido = getContenidoPais(iso);
-  const esChatgptOGemini = curso.slug === "chatgpt" || curso.slug === "gemini";
+  const esCursoIA =
+    curso.slug === "chatgpt" || curso.slug === "gemini" || curso.slug === "claude";
   const parrafosFicha =
     ficha?.parrafos ??
-    (esChatgptOGemini
-      ? parrafosGenericosIA(curso.slug as "chatgpt" | "gemini", info.nombre)
+    (esCursoIA
+      ? parrafosGenericosIA(curso.slug as "chatgpt" | "gemini" | "claude", info.nombre)
       : []);
   if (!ficha && !contenido && parrafosFicha.length === 0) return null;
 
@@ -102,8 +103,8 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin, promotions }
         : curso.slug === "python"
           ? 0
           : 0;
-  // Para ChatGPT y Gemini nunca se muestra el caso de Power BI de `contenido.casos`.
-  const caso = esChatgptOGemini ? null : (casos[indiceCaso] ?? casos[0]);
+  // Para ChatGPT, Gemini y Claude nunca se muestra el caso de Power BI de `contenido.casos`.
+  const caso = esCursoIA ? null : (casos[indiceCaso] ?? casos[0]);
   const preguntas = preguntasDeFicha(iso);
   const nombreCurso = nombreEnProsa(curso);
 

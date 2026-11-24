@@ -634,6 +634,12 @@ export default function PagoClient({
     setIsCheckingOut(true);
     trackCheckoutStart({
       courseSlugs: cartItems.map((item) => item.slug),
+      items: cartItems.map((item) => ({
+        item_id: item.slug,
+        item_name: item.title || item.slug,
+        ...(typeof item.price === "number" ? { price: item.price } : {}),
+        quantity: item.quantity || 1,
+      })),
       value: finalPriceWithCoupon,
       currency: puedeMonedaLocal ? estadoPago?.moneda : "CLP",
       pais: paisPago,

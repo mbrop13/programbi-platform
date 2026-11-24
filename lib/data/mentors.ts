@@ -78,7 +78,7 @@ export const mentors: Mentor[] = [
       "Experto en Visualización.",
     ],
     icon: "Monitor",
-    linkedinUrl: "https://cl.linkedin.com/in/rodrigo-vega-olave-25581172?trk=org-employees",
+    linkedinUrl: "https://cl.linkedin.com/in/rodrigo-vega-olave-25581172",
     imageUrl: "/images/mentors/rodrigo-vega.webp",
     isFounder: false,
     founderBio:

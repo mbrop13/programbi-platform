@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import CapturaPendiente from "@/components/guias/CapturaPendiente";
@@ -105,6 +106,36 @@ function construirToc(guia: GuiaPasoAPaso): ItemTocPasoAPaso[] {
 
 const AVISO_PRIVACIDAD_ESTANDAR =
   "No subas datos personales ni sensibles (RUT, sueldos con nombre, correos o bases reales de clientes) a herramientas de IA sin un contrato empresarial aprobado. Anonimiza nombres, reemplaza identificadores por códigos ficticios y trabaja sobre muestras agregadas.";
+
+function renderTextoConEnlaces(texto: string): ReactNode {
+  const regex = /\[([^\]]+)\]\((\/(?!\/)[^)\s]*)\)/g;
+  const partes: ReactNode[] = [];
+  let ultimoIndice = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(texto)) !== null) {
+    if (match.index > ultimoIndice) {
+      partes.push(texto.slice(ultimoIndice, match.index));
+    }
+    const [, ancla, ruta] = match;
+    partes.push(
+      <Link
+        key={`${match.index}-${ruta}`}
+        href={ruta}
+        className="font-semibold text-[var(--g-ink)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-accent)] hover:decoration-[var(--g-accent)]"
+      >
+        {ancla}
+      </Link>
+    );
+    ultimoIndice = match.index + match[0].length;
+  }
+
+  if (ultimoIndice === 0) return texto;
+  if (ultimoIndice < texto.length) {
+    partes.push(texto.slice(ultimoIndice));
+  }
+  return partes;
+}
 
 export default function GuiaPasoAPasoLayout({
   guia,
@@ -317,7 +348,7 @@ export default function GuiaPasoAPasoLayout({
 
                       <div className="mt-4 space-y-3 text-base leading-[1.7] text-[var(--g-muted)]">
                         {sec.parrafos.map((p, pIdx) => (
-                          <p key={pIdx}>{p}</p>
+                          <p key={pIdx}>{renderTextoConEnlaces(p)}</p>
                         ))}
                       </div>
 
@@ -379,7 +410,7 @@ export default function GuiaPasoAPasoLayout({
                               </h3>
                               <div className="mt-2 space-y-2.5 text-base leading-[1.7] text-[var(--g-muted)]">
                                 {sub.parrafos.map((p, pIdx) => (
-                                  <p key={pIdx}>{p}</p>
+                                  <p key={pIdx}>{renderTextoConEnlaces(p)}</p>
                                 ))}
                               </div>
                               {sub.lista && sub.lista.length > 0 ? (
