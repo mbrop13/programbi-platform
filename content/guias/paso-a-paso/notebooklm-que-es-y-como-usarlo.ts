@@ -105,7 +105,7 @@ export const guia: GuiaPasoAPaso = {
       parrafos: [
         "NotebookLM es un asistente de investigación y notas desarrollado por Google cuyo principio central es el anclaje en fuentes (source-grounding). Según la documentación oficial de Google (notebooklm.google y support.google.com, consultado el 21 de noviembre de 2026), en lugar de responder desde conocimiento general abierto en internet, NotebookLM convierte los documentos que tú subes en la base principal de cada conversación.",
         "Muchas personas confunden NotebookLM con Gemini porque ambos pertenecen al ecosistema de Google y utilizan modelos de la familia Gemini por debajo. Sin embargo, cumplen roles distintos en el flujo de trabajo diario.",
-        "Cuando necesitas lluvia de ideas abierta, redactar un correo desde cero o resolver una duda de programación sin documentos previos, Gemini es la herramienta natural. En cambio, cuando tienes quince PDFs de normativa tributaria, tres manuales técnicos y seis actas de reunión, y necesitas respuestas que citen exactamente en qué página está cada regla sin inventar definiciones externas, NotebookLM reduce drásticamente las alucinaciones.",
+        "Cuando necesitas lluvia de ideas abierta, redactar un correo desde cero o resolver una duda de programación sin documentos previos, Gemini es la herramienta natural. En cambio, cuando tienes quince PDFs de normativa tributaria, tres manuales técnicos y seis actas de reunión, y necesitas respuestas que citen exactamente en qué página está cada regla sin inventar definiciones externas, NotebookLM reduce drásticamente las alucinaciones. Si además quieres dominar los flujos de trabajo de Gemini junto a Google Workspace en tu trabajo diario, puedes profundizar en nuestro [curso de Gemini en vivo](/cursos/gemini).",
       ],
       tabla: {
         caption:
@@ -250,7 +250,7 @@ Evita introducciones largas, explica las siglas técnicas la primera vez que apa
         "Aplica NotebookLM en tareas reales de análisis: consolidar actas de levantamiento, auditar diccionarios de tablas y estudiar documentación técnica.",
       parrafos: [
         "Más allá del estudio académico, NotebookLM encaja muy bien en el día a día de analistas de datos, consultores BI y equipos de operaciones. Cada vez que un proyecto arranca con diez documentos dispersos entre correos exportados, minutas de reunión y manuales del ERP, un cuaderno dedicado actúa como memoria técnica consultable.",
-        "Por ejemplo, puedes subir el diccionario de datos de un sistema comercial junto con las actas de definición de KPIs y pedirle a NotebookLM que detecte qué métricas solicitadas por gerencia no tienen campo de respaldo en las tablas documentadas. También resulta muy práctico para preparar entrevistas o certificaciones técnicas cargando la documentación oficial en un cuaderno de estudio.",
+        "Por ejemplo, puedes subir el diccionario de datos de un sistema comercial junto con las actas de definición de KPIs y pedirle a NotebookLM que detecte qué métricas solicitadas por gerencia no tienen campo de respaldo en las tablas documentadas. También resulta muy práctico para preparar entrevistas o certificaciones técnicas cargando la documentación oficial en un cuaderno de estudio. Y si buscas dar el paso completo desde el levantamiento de métricas hasta el modelado y la visualización, te servirá nuestro [curso de análisis de datos](/cursos/analisis-de-datos).",
       ],
       codigos: [
         {

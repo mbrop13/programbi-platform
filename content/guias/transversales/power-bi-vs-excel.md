@@ -115,7 +115,7 @@ DIVIDE (
 )
 ```
 
-Elige tu guía para aprender Power BI con ejemplos de tu país: [Chile](/guias/como-aprender-power-bi-en-chile) · [México](/mx/guias/como-aprender-power-bi-en-mexico) · [Colombia](/co/guias/como-aprender-power-bi-en-colombia) · [Argentina](/ar/guias/como-aprender-power-bi-en-argentina) · [Perú](/pe/guias/como-aprender-power-bi-en-peru) · [Uruguay](/uy/guias/como-aprender-power-bi-en-uruguay). Si prefieres reforzar primero tus planillas y fórmulas, revisa el [curso de Excel](/cursos/excel); y cuando estés listo para modelado estrella, DAX y tableros automatizados, pasa al [curso de Power BI](/cursos/power-bi) o al programa completo de [Análisis de datos](/cursos/analisis-de-datos).
+Elige tu guía para aprender Power BI con ejemplos de tu país: [Chile](/guias/como-aprender-power-bi-en-chile) · [México](/mx/guias/como-aprender-power-bi-en-mexico) · [Colombia](/co/guias/como-aprender-power-bi-en-colombia) · [Argentina](/ar/guias/como-aprender-power-bi-en-argentina) · [Perú](/pe/guias/como-aprender-power-bi-en-peru) · [Uruguay](/uy/guias/como-aprender-power-bi-en-uruguay). Si prefieres reforzar primero tus planillas y fórmulas, revisa el [curso de Excel](/cursos/excel); y cuando estés listo para modelado estrella, DAX y tableros automatizados, pasa al [curso de Power BI](/cursos/power-bi) o al programa completo de [curso de análisis de datos](/cursos/analisis-de-datos).
 
 <!-- CTA-END -->
 

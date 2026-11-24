@@ -4,9 +4,13 @@ import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, ORG_ID, pageOg, SITE_URL } from "@/lib/seo";
 
+function limpiarEnlacesMarkdown(texto: string): string {
+  return texto.replace(/\[([^\]]+)\]\(\/(?!\/)[^)\s]*\)/g, "$1");
+}
+
 function contarPalabrasTexto(texto: string | undefined): number {
   if (!texto) return 0;
-  const tokens = texto.trim().split(/\s+/).filter(Boolean);
+  const tokens = limpiarEnlacesMarkdown(texto).trim().split(/\s+/).filter(Boolean);
   return tokens.length;
 }
 
@@ -170,7 +174,7 @@ export function jsonLdDeGuiaPasoAPaso(guia: GuiaPasoAPaso) {
       "@type": "HowToStep",
       position: idx + 1,
       name: s.titulo,
-      text: s.parrafos[0] || s.resumenHowTo || s.titulo,
+      text: limpiarEnlacesMarkdown(s.parrafos[0] || s.resumenHowTo || s.titulo),
       url: `${canonical}#${s.id}`,
     }));
 

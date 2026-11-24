@@ -347,7 +347,7 @@ export const guia: GuiaPasoAPaso = {
       parrafos: [
         "En la parte inferior de la hoja Liquidacion crea dos subtotales claros: Total_Descuentos_Legales (AFP + Salud + AFC + Impuesto Único) y Otros_Descuentos (donde se anotan anticipos de quincena, cuotas de préstamos internos o descuentos pactados autorizados).",
         "El Sueldo_Liquido (Alcance Líquido a pagar) se obtiene restando a Total_Haberes (Imponibles + No Imponibles) la suma de Total_Descuentos_Legales y Otros_Descuentos. Añade una fila de verificación al pie que compruebe que el Sueldo_Liquido sea positivo y muestre la fecha de vigencia de los parámetros utilizados en la cabecera del comprobante.",
-        "Si quieres profundizar en el diseño de hojas parametrizadas y buenas prácticas de validación en Excel, revisa los cursos de Excel (/cursos/excel) disponibles en ProgramBI.",
+        "Si quieres profundizar en el diseño de hojas parametrizadas, fórmulas y buenas prácticas de validación en Excel, revisa nuestro [curso de Excel en vivo](/cursos/excel) en ProgramBI.",
       ],
       codigos: [
         {
