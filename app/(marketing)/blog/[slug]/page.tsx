@@ -5,7 +5,6 @@ import BlogArticleClient from "./BlogArticleClient";
 import { isVideoUrl, getOptimizedShareImage } from "@/lib/utils";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString, tituloSeo } from "@/lib/seo";
-import { isVanityBlogPost } from "@/lib/seo/money";
 
 export const revalidate = 3600;
 
@@ -95,9 +94,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: { absolute: title },
     description,
-    ...(isVanityBlogPost(article.title, article.excerpt, slug)
-      ? { robots: { index: false, follow: true } }
-      : {}),
     alternates: { canonical: absoluteUrl(`/blog/${slug}`) },
     openGraph: {
       title,

@@ -194,7 +194,7 @@ export function etiquetaHoraLocal(
       return `hora de Uruguay (UYT, ${offset})`;
     case "us":
       // EE.UU. tiene cuatro husos: la referencia publicada es la del Este.
-      return `hora del Este de EE.UU. (ET, Miami y Nueva York, ${offset})`;
+      return `hora del Este de EE.UU. (ET, Miami y Nueva York, ${offset}; 1 h menos en CT y 3 h menos en PT)`;
     case "es":
       return `hora peninsular de España (${offset})`;
     default:

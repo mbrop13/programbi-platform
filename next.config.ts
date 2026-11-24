@@ -157,6 +157,11 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
+        source: "/versus/desafio-latam-vs-programbi",
+        destination: "/versus",
+        statusCode: 301,
+      },
+      {
         source: "/analisis-de-datos-mineria",
         destination: "/power-bi-mineria-chile",
         statusCode: 301,
@@ -773,6 +778,10 @@ const nextConfig: NextConfig = {
             value: "public, max-age=86400, stale-while-revalidate=604800",
           },
         ],
+      },
+      {
+        source: "/datos/:path(.*\\.(?:csv|xlsx))",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
     ];
   },
