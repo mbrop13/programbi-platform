@@ -19,6 +19,8 @@ export default function robots(): MetadataRoute.Robots {
           "PerplexityBot",
           "Anthropic-ai",
           "ClaudeBot",
+          "Claude-SearchBot",
+          "Claude-User",
           "CCBot",
         ],
         allow: "/",

@@ -13,6 +13,8 @@ import {
 } from "@/lib/paises/precios";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { courseBrochurePath } from "@/lib/pricing-gate";
+import { miembroPorCurso, rutaPerfil } from "@/lib/data/equipo";
+import { OFERTA_CLASE_GRATIS_WHATSAPP } from "@/config/flags";
 
 const REQUISITOS_POR_CURSO: Record<string, string> = {
   "power-bi":
@@ -33,6 +35,10 @@ const REQUISITOS_POR_CURSO: Record<string, string> = {
     "No necesitas saber programar: es automatización sin código (no-code) con flujos de Microsoft 365, RPA de escritorio y Copilot.",
   claude:
     "No necesitas saber programar; está enfocado en uso práctico de Claude (Anthropic) para documentos, Excel y tareas diarias.",
+  chatgpt:
+    "No necesitas saber programar; está enfocado en uso práctico de ChatGPT para trabajo administrativo, análisis en Excel/Google Sheets, informes y automatización ligera.",
+  gemini:
+    "No necesitas saber programar; está enfocado en uso práctico de Gemini en Google Workspace (Gmail, Docs, Sheets, Meet), documentos PDF y Gemini Notebook.",
   "ia-productividad":
     "No necesitas conocimientos previos ni saber programar; se trabaja con flujos sin código y plantillas de prompts reutilizables.",
   copilot:
@@ -139,6 +145,8 @@ export default function CourseSummaryBox({
     : etiquetaDescuentoCurso(iso, course.slug, promotions);
   const cuotas = textoCuotas(iso);
   const brochureHref = courseBrochurePath(course.slug, iso);
+  const profesor = miembroPorCurso(course.slug);
+  const tieneClaseGratis = OFERTA_CLASE_GRATIS_WHATSAPP && !muestraPrecioDirecto(iso);
 
   return (
     <section
@@ -191,6 +199,30 @@ export default function CourseSummaryBox({
               {cuotas ? `, con pago en ${cuotas}` : ""}.
             </>
           )}
+        </li>
+        {tieneClaseGratis && (
+          <li>
+            <strong className="font-semibold">Clase de prueba:</strong>{" "}
+            Disponible clase gratis introductoria coordinada vía WhatsApp antes de inscribirte.
+          </li>
+        )}
+        <li>
+          <strong className="font-semibold">Docente y casos:</strong>{" "}
+          Dictado por{" "}
+          <Link
+            href={rutaPerfil(profesor.slug)}
+            className="font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
+          >
+            {profesor.nombre}
+          </Link>{" "}
+          ({profesor.cargo}) ·{" "}
+          <Link
+            href="/casos"
+            className="font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
+          >
+            ver testimonios de alumnos
+          </Link>
+          .
         </li>
       </ul>
     </section>
