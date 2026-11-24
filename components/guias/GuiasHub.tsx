@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import GuiaCard from "@/components/guias/GuiaCard";
 import {
   GuiaBreadcrumbs,
@@ -19,7 +19,6 @@ import {
 import { rutaLocal } from "@/lib/paises/rutas";
 
 const TODOS = "todos";
-const LIMITE_INICIAL_CURSO = 6;
 
 const HERRAMIENTAS_ORDEN = [
   "IA",
@@ -106,7 +105,6 @@ export default function GuiasHub({
   const [nivel, setNivel] = useState(TODOS);
   const [listo, setListo] = useState(false);
   const [filtrosMovilAbiertos, setFiltrosMovilAbiertos] = useState(false);
-  const [cursosExpandidos, setCursosExpandidos] = useState<Record<string, boolean>>({});
 
   const filtrosBtnRef = useRef<HTMLButtonElement | null>(null);
   const resultadosRef = useRef<HTMLDivElement | null>(null);
@@ -793,12 +791,6 @@ export default function GuiasHub({
             {grupos.map((grupo) => {
               const rutaCurso =
                 grupo.curso === "general" ? null : rutaLocal(iso, `/cursos/${grupo.curso}`);
-              const expandido = Boolean(cursosExpandidos[grupo.curso]);
-              const tieneMas = grupo.guias.length > LIMITE_INICIAL_CURSO;
-              const visiblesGrupo =
-                tieneMas && !expandido
-                  ? grupo.guias.slice(0, LIMITE_INICIAL_CURSO)
-                  : grupo.guias;
 
               return (
                 <section key={grupo.curso} aria-labelledby={`curso-${grupo.curso}`}>
@@ -834,42 +826,12 @@ export default function GuiasHub({
                   </div>
 
                   <ul className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {visiblesGrupo.map((guia) => (
+                    {grupo.guias.map((guia) => (
                       <li key={guia.path} className="min-w-0">
                         <GuiaCard guia={guia} variant="visual" preferEditorialImage />
                       </li>
                     ))}
                   </ul>
-
-                  {tieneMas ? (
-                    <div className="mt-6 flex justify-center">
-                      <button
-                        type="button"
-                        aria-expanded={expandido}
-                        onClick={() =>
-                          setCursosExpandidos((prev) => ({
-                            ...prev,
-                            [grupo.curso]: !prev[grupo.curso],
-                          }))
-                        }
-                        className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] px-5 text-sm font-semibold text-[var(--g-ink)] shadow-[var(--g-card-shadow)] transition-colors hover:border-[var(--g-accent)] hover:text-[var(--g-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--g-accent)] focus-visible:ring-offset-2"
-                      >
-                        {expandido ? (
-                          <>
-                            <span>Mostrar menos de {grupo.nombre}</span>
-                            <ChevronUp size={16} aria-hidden="true" />
-                          </>
-                        ) : (
-                          <>
-                            <span>
-                              Ver todas las {grupo.guias.length} guías de {grupo.nombre}
-                            </span>
-                            <ChevronDown size={16} aria-hidden="true" />
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  ) : null}
                 </section>
               );
             })}
