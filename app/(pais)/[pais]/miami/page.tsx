@@ -95,7 +95,7 @@ export default async function MiamiPage({
     },
     {
       q: "¿A qué hora son las clases en Miami?",
-      a: `La sesión de 2 horas es de ${horario.inicio} a ${horario.fin}, ${horaLocal}. En Chile son de ${horario.inicioChile} a ${horario.finChile}. Estados Unidos y Chile cambian la hora en fechas distintas, así que la equivalencia se mueve entre las 17:30 y las 19:30 en Miami según la época del año; la ficha de cada cohorte muestra la hora exacta.`,
+      a: `La sesión de 2 horas es de ${horario.inicio} a ${horario.fin}, ${horaLocal}. El horario base de 19:30–21:30 Chile (America/Santiago) equivale a 17:30–19:30 ET (EST), 16:30–18:30 CT (CST) y 14:30–16:30 PT (PST). Estados Unidos y Chile cambian la hora en fechas distintas, así que la ficha de cada cohorte muestra la hora exacta.`,
     },
     {
       q: "¿Cuánto cuesta un curso de Power BI o Excel en español en Miami?",
@@ -175,8 +175,9 @@ export default async function MiamiPage({
         </h1>
         <p className="mt-5 max-w-[62ch] text-lg leading-relaxed text-mute">
           Aprende con profesor real, por Zoom, en tu idioma. La clase empieza a las{" "}
-          {horario.inicio} hora de Miami, al salir de la oficina, y el software se trabaja en
-          inglés como en tu trabajo. Los precios están en dólares y se ven sin formularios.
+          {horario.inicio} hora de Miami (17:30–19:30 ET, 16:30–18:30 CT, 14:30–16:30 PT /{" "}
+          19:30–21:30 Chile), al salir de la oficina, y el software se trabaja en inglés como en
+          tu trabajo. Los precios están en dólares y se ven sin formularios.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">

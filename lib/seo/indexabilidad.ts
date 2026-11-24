@@ -102,7 +102,7 @@ function coincide(ruta: string, patron: string): boolean {
 /**
  * Rutas que NUNCA se anuncian ni llevan hreflang, en ningún país.
  *
- * - `/pago`, `/empleos`, `/webinar`: noindex, follow.
+ * - `/pago`, `/webinar`: noindex, follow.
  * - `/curso-power-bi`, `/curso-python`, `/curso-sql-online`,
  *   `/analisis-de-datos-mineria`, `/versus/power-bi-vs-excel`, `/faq`:
  *   redirigen con 301 a su URL canónica (sus variantes de país también).
@@ -115,7 +115,6 @@ export const RUTAS_NOINDEX_GLOBAL: readonly string[] = [
   "/analisis-de-datos-mineria",
   "/versus/power-bi-vs-excel",
   "/faq",
-  "/empleos",
   "/webinar",
 ];
 
