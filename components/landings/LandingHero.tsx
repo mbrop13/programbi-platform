@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
+import { ISO_CHILE } from "@/config/paises";
+import { textoCuotas } from "@/config/cuotas";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { catalogHours, levelsForView } from "@/lib/data/course-views";
 import type { NicheLanding } from "@/lib/data/landings-nicho";
@@ -29,6 +32,8 @@ function factsDelCurso(slug: string): { label: string; value: string }[] {
 
 export function LandingHero({ landing }: { landing: NicheLanding }) {
   const facts = landing.courseSlug ? factsDelCurso(landing.courseSlug) : (landing.facts ?? []);
+  const heroWhatsApp = landing.heroWhatsApp;
+  const cuotas = textoCuotas(ISO_CHILE);
 
   return (
     <section className="border-b border-line">
@@ -55,24 +60,78 @@ export function LandingHero({ landing }: { landing: NicheLanding }) {
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-mute">{landing.lead}</p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <LandingCta link={landing.primaryCta} />
-              <LandingCta link={landing.secondaryCta} variant="secondary" />
-            </div>
+            {heroWhatsApp ? (
+              <>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <WhatsAppCta
+                    page={landing.path}
+                    intent="curso"
+                    courseSlug={heroWhatsApp.courseSlug}
+                    country="cl"
+                    ctaPosition="niche_hero"
+                    customText={heroWhatsApp.text}
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline transition-transform hover:opacity-90 active:scale-[0.98]"
+                  >
+                    <MessageCircle size={16} aria-hidden />
+                    {heroWhatsApp.label}
+                  </WhatsAppCta>
+                  <Link
+                    href={landing.primaryCta.href}
+                    className="inline-flex h-12 items-center justify-center rounded-full border border-line-strong bg-paper px-6 text-sm font-semibold text-ink no-underline transition-transform hover:bg-wash active:scale-[0.98]"
+                  >
+                    {landing.primaryCta.label}
+                  </Link>
+                </div>
 
-            <p className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-faint">
-              <Link href="/precios" className="font-semibold text-mute no-underline hover:text-ink">
-                Precio y cuotas
-              </Link>
-              <span aria-hidden="true">·</span>
-              <Link href="/preguntas-frecuentes" className="font-semibold text-mute no-underline hover:text-ink">
-                Preguntas frecuentes
-              </Link>
-              <span aria-hidden="true">·</span>
-              <Link href="/test-nivel" className="font-semibold text-mute no-underline hover:text-ink">
-                Test de nivel
-              </Link>
-            </p>
+                <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-mute">
+                  <span>Clase gratis · sesión abierta por Zoom sin costo</span>
+                  {cuotas ? (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span>{cuotas}</span>
+                    </>
+                  ) : null}
+                  <span aria-hidden="true">·</span>
+                  <Link
+                    href={landing.courseSlug ? `/cursos/${landing.courseSlug}` : landing.secondaryCta.href}
+                    className="font-semibold text-ink no-underline hover:text-mute"
+                  >
+                    Temario y precios
+                  </Link>
+                </p>
+
+                <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-faint">
+                  <Link href="/preguntas-frecuentes" className="font-semibold text-mute no-underline hover:text-ink">
+                    Preguntas frecuentes
+                  </Link>
+                  <span aria-hidden="true">·</span>
+                  <Link href="/test-nivel" className="font-semibold text-mute no-underline hover:text-ink">
+                    Test de nivel
+                  </Link>
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <LandingCta link={landing.primaryCta} />
+                  <LandingCta link={landing.secondaryCta} variant="secondary" />
+                </div>
+
+                <p className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-faint">
+                  <Link href="/precios" className="font-semibold text-mute no-underline hover:text-ink">
+                    Precio y cuotas
+                  </Link>
+                  <span aria-hidden="true">·</span>
+                  <Link href="/preguntas-frecuentes" className="font-semibold text-mute no-underline hover:text-ink">
+                    Preguntas frecuentes
+                  </Link>
+                  <span aria-hidden="true">·</span>
+                  <Link href="/test-nivel" className="font-semibold text-mute no-underline hover:text-ink">
+                    Test de nivel
+                  </Link>
+                </p>
+              </>
+            )}
           </div>
 
           <aside className="rounded-[26px] border border-line bg-paper p-6 sm:p-7">

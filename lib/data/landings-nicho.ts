@@ -53,6 +53,7 @@ export type NicheLanding = {
   tags: string[];
   parentCrumb: LandingLink;
   courseSlug?: string;
+  heroWhatsApp?: { label: string; text: string; courseSlug: string };
   /** Fichas individuales del stack, para el ItemList y los enlaces visibles. */
   stack?: { name: string; href: string; note: string }[];
   primaryCta: LandingLink;
@@ -88,8 +89,13 @@ const FINANZAS: NicheLanding = {
   tags: ["Power BI", "Finanzas", "Control de gestión"],
   parentCrumb: { href: "/cursos", label: "Cursos" },
   courseSlug: "power-bi",
-  primaryCta: { href: "/cursos/power-bi", label: "Ver el curso Power BI" },
-  secondaryCta: { href: "/test-nivel", label: "Test de nivel" },
+  heroWhatsApp: {
+    label: "Pedir clase gratis por WhatsApp",
+    courseSlug: "power-bi",
+    text: "Hola, vengo de /power-bi-para-finanzas y quiero la clase gratis del curso de Power BI para finanzas [ref:power-bi-para-finanzas]",
+  },
+  primaryCta: { href: "/cursos/power-bi", label: "Ver fechas y precio" },
+  secondaryCta: { href: "/cursos/power-bi", label: "Temario y precios" },
   sections: [
     {
       id: "a-quien-sirve",
@@ -290,8 +296,13 @@ const STACK: NicheLanding = {
       note: "Pandas, visualización y automatización de procesos de datos.",
     },
   ],
-  primaryCta: { href: "/cursos/analisis-de-datos", label: "Ver la ruta completa" },
-  secondaryCta: { href: "/test-nivel", label: "Test de nivel" },
+  primaryCta: { href: "/cursos/analisis-de-datos", label: "Ver fechas y precio" },
+  secondaryCta: { href: "/cursos/analisis-de-datos", label: "Temario y precios" },
+  heroWhatsApp: {
+    label: "Pedir clase gratis por WhatsApp",
+    courseSlug: "analisis-de-datos",
+    text: "Hola, vengo de /power-bi-sql-server-python y quiero la clase gratis del curso de Análisis de Datos [ref:power-bi-sql-server-python]",
+  },
   sections: [
     {
       id: "por-que",

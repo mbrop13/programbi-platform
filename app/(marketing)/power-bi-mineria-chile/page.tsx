@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
-import { courseDurationHours } from "@/lib/data/courses";
+import { ISO_CHILE } from "@/config/paises";
+import { textoCuotas } from "@/config/cuotas";
+import { courseDurationHours, getCourseBySlug } from "@/lib/data/courses";
+import { OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
+import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { GUIDE_SEO } from "@/lib/seo/money";
 
 const copy = GUIDE_SEO["power-bi-mineria-chile"];
+const mineriaCourse = getCourseBySlug("analitica-mineria");
 const mineriaHours = courseDurationHours("analitica-mineria");
 
 const share = pageOg({
@@ -41,6 +46,10 @@ const faqs = [
 ];
 
 export default function Page() {
+  const courseNode = mineriaCourse
+    ? getCourseJsonLd(mineriaCourse, "publico", ISO_CHILE)
+    : null;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -52,6 +61,7 @@ export default function Page() {
         inLanguage: "es-CL",
         author: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
       },
+      ...(courseNode ? [courseNode] : []),
       {
         "@type": "FAQPage",
         mainEntity: faqs.map((faq) => ({
@@ -79,6 +89,18 @@ export default function Page() {
         h1={copy.h1}
         lead="Integra reportes de turno, disponibilidad de flota, consumo de combustible y mantenimiento en un modelo único de datos. Power BI genera impacto en faena cuando se conecta a tus fuentes operativas y el equipo del área domina su actualización."
         pagePath={copy.path}
+        courseHero={{
+          courseHref: "/cursos/analitica-mineria",
+          courseSlug: "analitica-mineria",
+          whatsappLabel: "Pedir clase gratis por WhatsApp",
+          whatsappText:
+            "Hola, vengo de /power-bi-mineria-chile y quiero la clase gratis del curso de Análisis de Datos para la Minería [ref:power-bi-mineria-chile]",
+          fichaLabel: "Ver fechas y precio",
+          temarioLabel: "Temario y precios",
+          claseGratisText: "Clase gratis · sesión abierta por Zoom sin costo",
+          cuotasText: textoCuotas(ISO_CHILE),
+          cohortNote: OPEN_COHORT_LABEL,
+        }}
         crumbs={[
           { href: "/", label: "Inicio" },
           { href: "/cursos/analitica-mineria", label: "Curso minería" },
