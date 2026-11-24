@@ -41,6 +41,27 @@ export function CtaDatos({ slug, area, nombreCorto, pagina, className }: CtaDato
   const recomendacion =
     slug && area ? cursosParaCarrera(slug, area) : null;
 
+  if (esFichaCarrera && recomendacion?.banda === "baja") {
+    return (
+      <p
+        className={cn(
+          "rounded-xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground",
+          className,
+        )}
+      >
+        Puedes comparar esta carrera con otras en el{" "}
+        <Link href="/datos/carreras/comparar" className="font-medium text-blue-700 hover:underline">
+          comparador de sueldos y empleabilidad
+        </Link>{" "}
+        o volver al{" "}
+        <Link href="/datos/carreras" className="font-medium text-blue-700 hover:underline">
+          ranking de carreras en Chile
+        </Link>
+        .
+      </p>
+    );
+  }
+
   const waBase = recomendacion && slug
     ? whatsappHref({
         page: pagePath,
@@ -108,7 +129,11 @@ export function CtaDatos({ slug, area, nombreCorto, pagina, className }: CtaDato
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {recomendacion && slug
-                ? `Para ${nombreCorto ?? slug} te recomendamos ${recomendacion.principal.nombre} y ${recomendacion.secundario.nombre}. Clases en vivo con proyectos reales, ${CUOTAS_SIN_INTERES} cuotas sin interés${OFERTA_CLASE_GRATIS_WHATSAPP ? " y clase gratis." : "."}`
+                ? recomendacion.banda === "alta" && recomendacion.chips.length === 3
+                  ? `Para ${nombreCorto ?? slug} te recomendamos SQL Server, Python y Análisis de Datos. Clases en vivo con proyectos reales, ${CUOTAS_SIN_INTERES} cuotas sin interés${OFERTA_CLASE_GRATIS_WHATSAPP ? " y clase gratis." : "."}`
+                  : recomendacion.banda === "mineria"
+                    ? `Para ${nombreCorto ?? slug} te recomendamos Análisis de Datos para la Minería y ${recomendacion.secundario.nombre} para aplicar datos, Power BI y SQL en faena minera. Clases en vivo con proyectos reales, ${CUOTAS_SIN_INTERES} cuotas sin interés${OFERTA_CLASE_GRATIS_WHATSAPP ? " y clase gratis." : "."}`
+                    : `Para ${nombreCorto ?? slug} te recomendamos ${recomendacion.principal.nombre} y ${recomendacion.secundario.nombre}. Clases en vivo con proyectos reales, ${CUOTAS_SIN_INTERES} cuotas sin interés${OFERTA_CLASE_GRATIS_WHATSAPP ? " y clase gratis." : "."}`
                 : `Aprende herramientas prácticas de análisis, visualización y bases de datos con clases en vivo y proyectos reales. Disponible en ${CUOTAS_SIN_INTERES} cuotas sin interés.`}
             </p>
 

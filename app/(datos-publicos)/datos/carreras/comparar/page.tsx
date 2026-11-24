@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { Badge } from "@/components/ui/badge";
+import { CarrerasAltaAfinidad } from "@/components/datos/CarrerasAltaAfinidad";
 import { ComparadorActivador } from "@/components/datos/ComparadorActivador";
 import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
@@ -176,6 +177,8 @@ export default function CompararCarrerasPage() {
           ) : null}
         </div>
       ) : null}
+
+      <CarrerasAltaAfinidad />
 
       <FaqDatos faqs={FAQS} />
 

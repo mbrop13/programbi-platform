@@ -21,6 +21,7 @@ import {
   MIGAS_BASE,
 } from "@/lib/datos/seo-carreras";
 import { cn } from "@/lib/utils";
+import { CarrerasAltaAfinidad } from "./CarrerasAltaAfinidad";
 import { CtaDatos } from "./CtaDatos";
 import { EnResumen } from "./EnResumen";
 import { FaqDatos } from "./FaqDatos";
@@ -318,6 +319,8 @@ export function VistaPreset({ slug }: { slug: PresetSlug }) {
           })}
         </div>
       </section>
+
+      <CarrerasAltaAfinidad />
 
       <FaqDatos faqs={def.faqs} />
 
