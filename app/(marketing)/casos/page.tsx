@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Testimonios from "@/components/marketing/Testimonios";
+import { casesOfUse } from "@/lib/data/cases";
 import { courses } from "@/lib/data/courses";
 import {
   TESTIMONIOS_PUBLICADOS,
@@ -197,6 +198,53 @@ export default function CasosPage() {
             </div>
           </section>
         )}
+
+        <section
+          aria-labelledby="casos-de-uso-practicos"
+          className="mt-16 border-t border-line pt-12"
+        >
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+            Aplicaciones reales
+          </p>
+          <h2
+            id="casos-de-uso-practicos"
+            className="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl"
+          >
+            Casos de uso prácticos
+          </h2>
+          <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-mute">
+            Ejemplos aplicados de automatización, Business Intelligence, SQL Server y Python en
+            equipos de finanzas, retail, marketing, logística y gestión de personas.
+          </p>
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            {casesOfUse.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/casos/${c.slug}`}
+                className="group flex flex-col justify-between rounded-2xl border border-line bg-paper p-6 no-underline transition-colors hover:border-ink/30"
+              >
+                <div>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-mute">
+                      {c.category}
+                    </span>
+                    <span className="rounded-full bg-wash px-2.5 py-0.5 text-[11px] font-semibold text-mute">
+                      {c.techBadge}
+                    </span>
+                  </div>
+                  <h3 className="mt-2 text-lg font-bold leading-snug tracking-tight text-ink group-hover:underline">
+                    {c.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-mute">{c.description}</p>
+                </div>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ink">
+                  {c.linkText}
+                  <ArrowRight size={14} aria-hidden />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         <section className="mt-16 rounded-3xl border border-line bg-paper px-6 py-8 sm:px-10">
           <h2 className="text-2xl font-bold tracking-tight text-ink">

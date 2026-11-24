@@ -52,7 +52,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: { absolute: tituloSeo(currentCase.title) },
     description,
-    robots: { index: false, follow: true },
     alternates: { canonical: `/casos/${slug}` },
     openGraph: {
       title: ogTitle,
