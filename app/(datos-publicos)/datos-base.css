@@ -12,6 +12,7 @@
 @source "../../components/datos/MigasDatos.tsx";
 @source "../../components/datos/InstitucionAvatar.tsx";
 @source "../../components/datos/AreaVisualCard.tsx";
+@source "../../components/datos/CtaDatosPortada.tsx";
 @source "../../components/ui/card.tsx";
 @source "../../components/ui/badge.tsx";
 @source "../../components/ui/button.tsx";

@@ -1,6 +1,7 @@
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
+import { CtaDatosPortada } from "@/components/datos/CtaDatosPortada";
 import { DatosEstructurados, Fuente } from "@/components/datos/ElementosDatos";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { datosTerritorio, RANKING } from "@/lib/datos/desempleo";
@@ -389,6 +390,8 @@ export default function DatosPage() {
           </div>
         </div>
       </section>
+
+      <CtaDatosPortada className="mt-10 lg:mt-14" />
     </div>
   );
 }
