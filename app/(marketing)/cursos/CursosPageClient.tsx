@@ -245,9 +245,27 @@ export default function CursosPageClient({
             Cursos de Power BI, SQL y análisis de datos en {paisNombre}
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-mute sm:text-base">
-            Catálogo completo de cursos de datos en vivo por Zoom para {paisNombre}: programas de
-            análisis de datos, SQL Server, Python, Power BI, Excel, automatización e inteligencia
-            artificial, con horario local y certificado digital.
+            {pais === "pe" ? (
+              <>
+                Catálogo completo de cursos de datos en vivo por Zoom para Perú, en horario de Lima
+                (17:30 a 19:30 PET, UTC-5) y con precios en soles (PEN). Incluye programas de
+                análisis de datos, SQL Server, Python, Power BI, Excel e IA con clase gratis, 3
+                cuotas sin interés y certificado digital.
+              </>
+            ) : pais === "co" ? (
+              <>
+                Catálogo completo de cursos de datos en vivo por Zoom para Colombia, en horario de
+                Bogotá (17:30 a 19:30 COT, UTC-5) y con precios en pesos colombianos (COP). Incluye
+                programas de análisis de datos, SQL Server, Python, Power BI, Excel e IA con clase
+                gratis, 3 cuotas sin interés y certificado digital.
+              </>
+            ) : (
+              <>
+                Catálogo completo de cursos de datos en vivo por Zoom para {paisNombre}: programas
+                de análisis de datos, SQL Server, Python, Power BI, Excel, automatización e
+                inteligencia artificial, con horario local y certificado digital.
+              </>
+            )}
           </p>
           <p
             aria-hidden="true"
@@ -499,7 +517,7 @@ export default function CursosPageClient({
                   Capacitación para empresas
                 </Link>
                 <WhatsAppCta
-                  page="/cursos"
+                  page={hrefLocal("/cursos")}
                   intent="general"
                   className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
                 >
@@ -517,7 +535,7 @@ export default function CursosPageClient({
               </p>
             </div>
             <WhatsAppCta
-              page="/cursos"
+              page={hrefLocal("/cursos")}
               intent="general"
               className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
             >

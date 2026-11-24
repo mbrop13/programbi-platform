@@ -1,9 +1,21 @@
 import Link from "next/link";
+import { MessageCircle } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 
 export type GuideSection = { h2: string; paragraphs: string[] };
 export type GuideFaq = { q: string; a: string };
 export type GuideLink = { href: string; label: string };
+export type GuideCourseHero = {
+  courseHref: string;
+  courseSlug: string;
+  whatsappLabel: string;
+  whatsappText: string;
+  fichaLabel: string;
+  temarioLabel: string;
+  claseGratisText: string;
+  cuotasText: string;
+  cohortNote?: string;
+};
 
 export default function SeoGuide({
   kicker,
@@ -16,6 +28,7 @@ export default function SeoGuide({
   pagePath,
   empresasHref = "/empresas",
   nota,
+  courseHero,
 }: {
   kicker: string;
   h1: string;
@@ -27,6 +40,7 @@ export default function SeoGuide({
   pagePath: string;
   empresasHref?: string;
   nota?: string;
+  courseHero?: GuideCourseHero;
 }) {
   return (
     <article className="bg-canvas px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -52,21 +66,76 @@ export default function SeoGuide({
         </h1>
         <p className="mt-5 text-lg leading-relaxed text-mute">{lead}</p>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link
-            href={empresasHref}
-            className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
-          >
-            Soluciones para empresas
-          </Link>
-          <WhatsAppCta
-            page={pagePath}
-            intent="general"
-            className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
-          >
-            WhatsApp
-          </WhatsAppCta>
-        </div>
+        {courseHero ? (
+          <>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <WhatsAppCta
+                page={pagePath}
+                intent="curso"
+                courseSlug={courseHero.courseSlug}
+                country="cl"
+                ctaPosition="niche_hero"
+                customText={courseHero.whatsappText}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+              >
+                <MessageCircle size={16} aria-hidden />
+                {courseHero.whatsappLabel}
+              </WhatsAppCta>
+              <Link
+                href={courseHero.courseHref}
+                className="inline-flex h-12 items-center justify-center rounded-full border border-line-strong bg-paper px-6 text-sm font-semibold text-ink no-underline hover:bg-wash"
+              >
+                {courseHero.fichaLabel}
+              </Link>
+            </div>
+
+            <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-mute">
+              <span>{courseHero.claseGratisText}</span>
+              {courseHero.cuotasText ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{courseHero.cuotasText}</span>
+                </>
+              ) : null}
+              {courseHero.cohortNote ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{courseHero.cohortNote}</span>
+                </>
+              ) : null}
+              <span aria-hidden="true">·</span>
+              <Link
+                href={courseHero.courseHref}
+                className="font-semibold text-ink no-underline hover:text-mute"
+              >
+                {courseHero.temarioLabel}
+              </Link>
+              <span aria-hidden="true">·</span>
+              <Link
+                href={empresasHref}
+                className="font-semibold text-mute no-underline hover:text-ink"
+              >
+                Soluciones para empresas
+              </Link>
+            </p>
+          </>
+        ) : (
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={empresasHref}
+              className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+            >
+              Soluciones para empresas
+            </Link>
+            <WhatsAppCta
+              page={pagePath}
+              intent="general"
+              className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
+            >
+              WhatsApp
+            </WhatsAppCta>
+          </div>
+        )}
 
         {sections.map((section) => (
           <section key={section.h2} className="mt-12">

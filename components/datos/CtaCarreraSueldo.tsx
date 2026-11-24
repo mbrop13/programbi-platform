@@ -25,7 +25,12 @@ export function CtaCarreraSueldo({
   area,
   className,
 }: CtaCarreraSueldoProps) {
-  const { principal } = cursosParaCarrera(slug, area);
+  const { principal, banda } = cursosParaCarrera(slug, area);
+
+  if (banda === "baja") {
+    return null;
+  }
+
   const pagePath = `/datos/carreras/${slug}`;
 
   const mensajeWa = OFERTA_CLASE_GRATIS_WHATSAPP
@@ -79,6 +84,7 @@ export function CtaCarreraSueldo({
               ¿Quieres subir tu sueldo? Aprende análisis de datos
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
+              {banda === "mineria" ? "Aplica datos, Power BI y SQL en faena minera. " : null}
               {OFERTA_CLASE_GRATIS_WHATSAPP
                 ? `Suma ${principal.nombre} a tu perfil de ${nombreCorto}: clases en vivo por Zoom, ${CUOTAS_SIN_INTERES} cuotas sin interés y clase gratis para probar.`
                 : `Suma ${principal.nombre} a tu perfil de ${nombreCorto}: clases en vivo por Zoom y ${CUOTAS_SIN_INTERES} cuotas sin interés.`}

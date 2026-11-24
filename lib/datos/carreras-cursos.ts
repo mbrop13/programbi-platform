@@ -7,7 +7,7 @@ export interface CursoCarrera {
 const CURSOS_CATALOGO = {
   "analitica-mineria": {
     slug: "analitica-mineria",
-    nombre: "Power BI para minería",
+    nombre: "Análisis de Datos para la Minería",
     href: "/cursos/analitica-mineria",
   },
   "power-bi": {
@@ -17,7 +17,7 @@ const CURSOS_CATALOGO = {
   },
   python: {
     slug: "python",
-    nombre: "Python para datos",
+    nombre: "Python",
     href: "/cursos/python",
   },
   "sql-server": {
@@ -86,6 +86,74 @@ function parCursos(slug: string, area: string): [CursoSlug, CursoSlug] {
   }
 }
 
+export type BandaAfinidad = "alta" | "mineria" | "baja" | "neutra";
+
+const RE_CONTADOR = /contador|contabilidad/i;
+const RE_INFORMATICA = /computacion|informatica/i;
+const RE_FINANZAS = /finanzas|financiera/i;
+
+export function bandaAfinidadCarrera(slug: string, area: string): BandaAfinidad {
+  // 1) Banda 3 ("baja") primero para evitar falsos positivos (ej. pedagogia-en-matematicas-y-computacion)
+  if (
+    area === "Salud" ||
+    slug === "medicina-veterinaria" ||
+    slug === "tecnico-veterinario" ||
+    area === "Educación" ||
+    /pedagog/i.test(slug) ||
+    area === "Derecho" ||
+    area === "Arte y Arquitectura" ||
+    area === "Humanidades" ||
+    /periodismo|^comunicacion|-comunicacion/i.test(slug)
+  ) {
+    return "baja";
+  }
+
+  // 2) Banda 2 ("mineria")
+  if (/minas|mineria|metalurg|geomineria/i.test(slug)) {
+    return "mineria";
+  }
+
+  // 3) Banda 1 ("alta")
+  if (
+    slug === "ingenieria-comercial" ||
+    slug === "contador-auditor" ||
+    RE_CONTADOR.test(slug) ||
+    slug === "ingenieria-industrial" ||
+    slug === "ingenieria-civil-industrial" ||
+    slug === "ingenieria-en-computacion-e-informatica" ||
+    slug === "ingenieria-civil-en-computacion-e-informatica" ||
+    slug === "tecnico-en-computacion-e-informatica" ||
+    RE_INFORMATICA.test(slug) ||
+    slug === "ingenieria-en-control-de-gestion" ||
+    slug === "ingenieria-en-finanzas" ||
+    slug === "tecnico-en-administracion-financiera-y-finanzas" ||
+    RE_FINANZAS.test(slug)
+  ) {
+    return "alta";
+  }
+
+  // 4) Resto
+  return "neutra";
+}
+
+function crearRecomendacion(
+  claves: readonly [CursoSlug, CursoSlug, ...CursoSlug[]],
+  banda: BandaAfinidad,
+): {
+  principal: CursoCarrera;
+  secundario: CursoCarrera;
+  chips: CursoCarrera[];
+  banda: BandaAfinidad;
+} {
+  const [principalKey, secundarioKey] = claves;
+  return {
+    principal: CURSOS_CATALOGO[principalKey],
+    secundario: CURSOS_CATALOGO[secundarioKey],
+    chips: claves.map((k) => CURSOS_CATALOGO[k]),
+    banda,
+  };
+}
+
 export function cursosParaCarrera(
   slug: string,
   area: string,
@@ -93,7 +161,32 @@ export function cursosParaCarrera(
   principal: CursoCarrera;
   secundario: CursoCarrera;
   chips: CursoCarrera[];
+  banda: BandaAfinidad;
 } {
+  const banda = bandaAfinidadCarrera(slug, area);
+
+  if (banda === "mineria") {
+    return crearRecomendacion(["analitica-mineria", "power-bi"], banda);
+  }
+
+  if (banda === "alta") {
+    if (slug === "contador-auditor" || RE_CONTADOR.test(slug)) {
+      return crearRecomendacion(["excel", "power-bi"], banda);
+    }
+    if (slug === "ingenieria-industrial" || slug === "ingenieria-civil-industrial") {
+      return crearRecomendacion(["power-bi", "analisis-de-datos"], banda);
+    }
+    if (
+      slug === "ingenieria-en-computacion-e-informatica" ||
+      slug === "ingenieria-civil-en-computacion-e-informatica" ||
+      slug === "tecnico-en-computacion-e-informatica" ||
+      RE_INFORMATICA.test(slug)
+    ) {
+      return crearRecomendacion(["sql-server", "python", "analisis-de-datos"], banda);
+    }
+    return crearRecomendacion(["power-bi", "excel"], banda);
+  }
+
   const [principalKey, secundarioKey] = parCursos(slug, area);
   const principal = CURSOS_CATALOGO[principalKey];
   const secundario = CURSOS_CATALOGO[secundarioKey];
@@ -107,5 +200,5 @@ export function cursosParaCarrera(
     }
   }
 
-  return { principal, secundario, chips };
+  return { principal, secundario, chips, banda };
 }

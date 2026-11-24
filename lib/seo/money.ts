@@ -60,12 +60,12 @@ export const COURSE_SEO: Record<
   }
 > = {
   "power-bi": {
-    title: "Curso de Power BI en Chile: en vivo y con certificado",
-    titleCl: "Curso de Power BI en Chile: en vivo y con certificado",
+    title: "Curso Power BI en Chile: en vivo, certificado y clase gratis",
+    titleCl: "Curso Power BI en Chile: en vivo, certificado y clase gratis",
     description:
-      "Curso de Power BI en Chile con clases en vivo por Zoom: dashboards con Power Query y DAX, de básico a intermedio. Certificado y cuotas sin interés.",
+      "Curso de Power BI en Chile, en vivo: Power Query, DAX y dashboards. Clase gratis, 3 cuotas sin interés y certificado. Consulta temario y precios.",
     descriptionCl:
-      "Curso de Power BI en Chile con clases en vivo: dashboards con Power Query y DAX, básico e intermedio. Certificado y cuotas; temario y precios en PDF.",
+      "Curso de Power BI en Chile, en vivo: Power Query, DAX y dashboards. Clase gratis, 3 cuotas sin interés y certificado. Consulta temario y precios.",
     h1: "Curso Power BI en vivo en Chile",
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
@@ -108,12 +108,12 @@ export const COURSE_SEO: Record<
     ],
   },
   "analisis-de-datos": {
-    title: "Curso de Análisis de Datos en Chile: SQL, Power BI y Python",
-    titleCl: "Curso de Análisis de Datos en Chile: SQL, Power BI y Python",
+    title: "Curso de analista de datos en Chile: SQL, Power BI y Python",
+    titleCl: "Curso de analista de datos en Chile: SQL, Power BI y Python",
     description:
-      `Curso de análisis de datos en vivo en Chile: SQL, Power BI y Python, ${courseDurationHours("analisis-de-datos")} h por nivel. Para ser analista de datos desde cero. Con certificado y cuotas.`,
+      "Curso de analista de datos en Chile, en vivo: SQL, Power BI y Python, 60 h por nivel. Clase gratis, 3 cuotas sin interés y certificado digital.",
     descriptionCl:
-      `Curso de análisis de datos en vivo en Chile: SQL, Power BI y Python, ${courseDurationHours("analisis-de-datos")} h por nivel. Para ser analista de datos desde cero. Con certificado y cuotas.`,
+      "Curso de analista de datos en Chile, en vivo: SQL, Power BI y Python, 60 h por nivel. Clase gratis, 3 cuotas sin interés y certificado digital.",
     h1: "Curso de análisis de datos en vivo en Chile",
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
@@ -157,9 +157,9 @@ export const COURSE_SEO: Record<
     ],
   },
   "analitica-mineria": {
-    title: "Curso Power BI para minería Chile | ProgramBI",
+    title: "Curso de Power BI para minería en Chile: en vivo",
     description:
-      `Power BI para minería en Chile, en vivo: reportes de faena, OEE y SQL. Básico-intermedio y avanzado, ${courseDurationHours("analitica-mineria")} horas cada uno.`,
+      "Curso de Power BI para minería en Chile, en vivo: reportes de faena, OEE y SQL. 60 h por nivel, clase gratis, 3 cuotas sin interés y certificado.",
     h1: "Power BI y análisis de datos para minería en Chile",
     audience:
       "Para analistas de faena, planificación y mantenimiento que reportan en Excel.",
@@ -219,17 +219,21 @@ export const COURSE_SEO: Record<
     ],
   },
   python: {
-    title: "Curso de Python para datos en Chile: desde cero y en vivo",
-    titleCl: "Curso de Python para datos en Chile: desde cero y en vivo",
+    title: "Curso de Python en Chile: desde cero, en vivo y clase gratis",
+    titleCl: "Curso de Python en Chile: desde cero, en vivo y clase gratis",
     description:
-      "Curso de Python para datos en Chile, en vivo: Pandas, visualización y automatización, desde fundamentos hasta análisis aplicado a negocios.",
+      "Curso de Python para datos en Chile, desde cero y en vivo: Pandas y automatización. Agenda tu clase gratis, 3 cuotas sin interés y certificado.",
     descriptionCl:
-      "Curso de Python para análisis de datos en Chile, desde cero y en vivo: Pandas, visualización y automatización aplicadas a negocio. Con certificado.",
+      "Curso de Python para datos en Chile, desde cero y en vivo: Pandas y automatización. Agenda tu clase gratis, 3 cuotas sin interés y certificado.",
     h1: "Curso Python para datos en vivo en Chile",
     h1Cl: "Curso de Python desde cero para datos, en vivo en Chile",
     audience:
       "Para profesionales que quieren analizar datos con Python y Pandas, sin un programa de ciencia de datos de meses.",
     faqs: [
+      {
+        q: "¿Hay un curso de Python en Chile, en vivo?",
+        a: "Sí. ProgramBI dicta el curso de Python para datos en vivo por Zoom, en horario vespertino hora de Chile, con 20 horas por nivel, grabaciones en el campus, clase gratis, 3 cuotas sin interés y certificado digital al completar.",
+      },
       {
         q: "¿El curso Python es para análisis de datos?",
         a: "Sí. Está enfocado en Pandas, limpieza, visualización y automatización de reportes, no en desarrollo de software genérico.",
@@ -245,12 +249,12 @@ export const COURSE_SEO: Record<
     ],
   },
   "sql-server": {
-    title: "Curso de SQL en Chile: SQL Server en vivo, de básico a avanzado",
-    titleCl: "Curso de SQL en Chile: SQL Server en vivo, de básico a avanzado",
+    title: "Curso de SQL Server en Chile: en vivo, de básico a avanzado",
+    titleCl: "Curso de SQL Server en Chile: en vivo, de básico a avanzado",
     description:
-      "Curso de SQL en Chile con SQL Server en vivo: consultas, JOINs, procedimientos almacenados y diseño de esquemas, de básico a avanzado. Con certificado.",
+      "Curso de SQL Server en Chile, en vivo: consultas, JOINs y procedimientos de básico a avanzado. Clase gratis, 3 cuotas sin interés y certificado.",
     descriptionCl:
-      "Curso de SQL en Chile con SQL Server en vivo: consultas, JOINs, vistas y procedimientos de básico a avanzado. Certificado y cuotas; precios en PDF.",
+      "Curso de SQL Server en Chile, en vivo: consultas, JOINs y procedimientos de básico a avanzado. Clase gratis, 3 cuotas sin interés y certificado.",
     h1: "Curso SQL Server en vivo en Chile",
     audience:
       "Para analistas que salen de Excel y necesitan extraer datos de bases SQL Server con consultas propias.",
@@ -375,9 +379,9 @@ export const COURSE_SEO: Record<
     ],
   },
   claude: {
-    title: "Curso de Claude Chile: en vivo y certificado | ProgramBI",
+    title: "Curso de Claude en Chile: en vivo y con certificado",
     description:
-      `Curso de Claude (Anthropic) en Chile, ${courseDurationHours("claude")} h en vivo: prompts, Projects, Artifacts, Docs, Slides, Excel y Cowork sin programar. Con certificado.`,
+      "Curso de Claude en Chile, 20 h en vivo: prompts, Projects, Artifacts, Docs, Slides, Excel y Cowork, sin programar. Clase gratis y certificado.",
     h1: "Curso de Claude en vivo en Chile",
     audience:
       "Para personal administrativo y profesionales que quieren usar Claude (Anthropic) en documentos, presentaciones, Excel y tareas diarias sin programar.",

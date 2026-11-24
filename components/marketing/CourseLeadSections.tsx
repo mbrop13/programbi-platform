@@ -108,12 +108,30 @@ export function CourseAudienceAndResults({
         <div className="mt-12">
           <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">En este nivel</h2>
           <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
-            {results.map((item) => (
-              <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
-                <Check size={16} className="mt-0.5 shrink-0" strokeWidth={2.2} />
-                {item}
-              </li>
-            ))}
+            {results.map((item) => {
+              const notebookTarget = "Gemini Notebook (NotebookLM)";
+              const linkNotebook = course.slug === "gemini" && item.includes(notebookTarget);
+              const [before, after] = linkNotebook ? item.split(notebookTarget) : [item, ""];
+              return (
+                <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
+                  <Check size={16} className="mt-0.5 shrink-0" strokeWidth={2.2} />
+                  {linkNotebook ? (
+                    <span>
+                      {before}
+                      <Link
+                        href="/guias/notebooklm-que-es-y-como-usarlo"
+                        className="underline decoration-line-strong underline-offset-4 hover:text-mute"
+                      >
+                        {notebookTarget}
+                      </Link>
+                      {after}
+                    </span>
+                  ) : (
+                    item
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : null}

@@ -14,7 +14,9 @@ import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
 import { getPais, ISO_CHILE, normalizarPais, PAISES_INDEXABLES } from "@/config/paises";
-import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
+import { textoCuotas } from "@/config/cuotas";
+import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
+import { formatMoneda, muestraPrecioLocal, precioVenta } from "@/lib/paises/precios";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
 export const revalidate = 86400;
@@ -96,7 +98,7 @@ export default async function CursosPage({
     numberOfItems: courses.length,
     itemListElement: courses.map((course, index) => {
       const url = absoluteUrl(rutaLocal(pais, `/cursos/${course.slug}`));
-      const local = muestraPrecioLocal(pais) ? precioCurso(pais, course.slug, promotions) : null;
+      const local = muestraPrecioLocal(pais) ? precioVenta(pais, course.slug, promotions) : null;
       return {
         "@type": "ListItem",
         position: index + 1,
@@ -108,6 +110,8 @@ export default async function CursosPage({
                 "@type": "Course",
                 name: course.title,
                 url,
+                courseMode: "Online",
+                timeRequired: `PT${catalogHours(course)}H`,
                 offers: {
                   "@type": "Offer",
                   price: local,
@@ -159,6 +163,64 @@ export default async function CursosPage({
               : undefined,
         }))}
       />
+      {(pais === "pe" || pais === "co") && (() => {
+        const infoPais = getPais(pais);
+        const horario = horarioLocal(pais);
+        const etiquetaZona = etiquetaHoraLocal(pais);
+        const cuotas = textoCuotas(pais);
+        const cursosConPrecio = courses
+          .map((c) => {
+            const precio = precioVenta(pais, c.slug, promotions);
+            if (precio == null) return null;
+            const horas = catalogHours(c);
+            const niveles = publicLevelCount(c);
+            const duracion = niveles > 1 ? `${horas} h por nivel` : `${horas} h`;
+            return `${c.title} (${duracion}): ${formatMoneda(pais, precio)}`;
+          })
+          .filter((item): item is string => Boolean(item));
+
+        return (
+          <section
+            aria-labelledby="resumen-catalogo-pais"
+            data-testid="catalogo-en-resumen"
+            className="border-t border-line bg-canvas px-4 py-12 sm:px-6 lg:px-8"
+          >
+            <div className="mx-auto max-w-[1400px] rounded-[26px] border border-line bg-paper p-6 sm:p-8">
+              <h2
+                id="resumen-catalogo-pais"
+                className="text-xs font-bold uppercase tracking-[0.18em] text-mute"
+              >
+                En resumen · Cursos en vivo en {infoPais.nombre}
+              </h2>
+              <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-ink">
+                <li>
+                  <strong className="font-semibold">Modalidad:</strong> Clases 100 % en vivo por
+                  Zoom, con grabaciones y material de práctica disponibles en el campus virtual.
+                </li>
+                <li>
+                  <strong className="font-semibold">Duración:</strong> Cursos de 20 h por nivel
+                  (Power BI, Python, SQL Server, Excel, Claude, ChatGPT, Gemini, Copilot, Power
+                  Automate, Access, IA en Productividad), 60 h por nivel (Análisis de Datos y
+                  Analítica para Minería) y 30 h (Mercado Financiero).
+                </li>
+                <li>
+                  <strong className="font-semibold">Horario en {infoPais.nombre}:</strong>{" "}
+                  {horario.inicio} a {horario.fin}, {etiquetaZona}, dos veces por semana.
+                </li>
+                <li>
+                  <strong className="font-semibold">Precios vigentes en {infoPais.moneda}:</strong>{" "}
+                  {cursosConPrecio.join(" · ")}.
+                </li>
+                <li>
+                  <strong className="font-semibold">Facilidades y certificado:</strong>{" "}
+                  {cuotas ? `Pago en ${cuotas}, ` : ""}clase gratis introductoria por Zoom y
+                  certificado digital de ProgramBI al completar.
+                </li>
+              </ul>
+            </div>
+          </section>
+        );
+      })()}
       {bloque ? (
         <BloqueLocalPais iso={pais} bloque={bloque} contexto="cursos" conFaq conEnlaces />
       ) : null}

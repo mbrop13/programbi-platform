@@ -282,6 +282,7 @@ export default function CourseDetailClient({
   initialLevelName,
   detalleLocal,
   promotions = [],
+  referenceDateIso,
   resumen,
   testimonios,
   comparativa,
@@ -298,6 +299,8 @@ export default function CourseDetailClient({
   initialLevelName?: string;
   detalleLocal?: DetalleCursoLocal;
   promotions?: readonly PromocionAplicable[];
+  /** Fecha de referencia YYYY-MM-DD para evaluar la regla de inicio lejano (> 21 días). */
+  referenceDateIso?: string;
   /** Bloque «En resumen» renderizado en el servidor (100% SSR HTML). */
   resumen?: ReactNode;
   /** Citas de alumnos, renderizadas en el servidor. Van tras el profesor. */
@@ -504,6 +507,15 @@ export default function CourseDetailClient({
   }, [levelSchedules]);
 
   const levelSchedule = activeSchedulesList[selectedScheduleIndex] || activeSchedulesList[0] || null;
+  const esInicioLejano =
+    pais === ISO_CHILE &&
+    view !== "empresas" &&
+    new Set(["power-bi", "python", "analisis-de-datos", "sql-server"]).has(course.slug) &&
+    Boolean(levelSchedule?.start_date) &&
+    Date.parse(`${levelSchedule!.start_date}T12:00:00Z`) -
+      Date.parse(`${referenceDateIso ?? new Date().toISOString().slice(0, 10)}T12:00:00Z`) >
+      21 * 86_400_000;
+  const whatsappClaseGratisTexto = `Hola, quiero la clase gratis del curso ${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)}) desde Chile [ref:${course.slug}]`;
 
   useEffect(() => {
     setSelectedScheduleIndex(0);
@@ -670,6 +682,34 @@ export default function CourseDetailClient({
                     Cotizar para mi empresa
                     <ArrowRight size={16} aria-hidden />
                   </Link>
+                ) : esInicioLejano ? (
+                  <>
+                    <WhatsAppCta
+                      page={rutaLocal(pais, `/cursos/${course.slug}`)}
+                      intent="curso"
+                      course={`${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)})`}
+                      courseSlug={course.slug}
+                      country={pais}
+                      ctaPosition="curso_hero"
+                      customText={whatsappClaseGratisTexto}
+                      className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+                    >
+                      <MessageCircle size={16} aria-hidden />
+                      Agenda tu clase gratis
+                    </WhatsAppCta>
+                    <a
+                      href="#inscripcion"
+                      onClick={() =>
+                        trackCtaClick("Ver fechas y precio", "course_detail_hero_mobile", {
+                          course_slug: course.slug,
+                        })
+                      }
+                      className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
+                    >
+                      Ver fechas y precio
+                      <ArrowRight size={16} aria-hidden />
+                    </a>
+                  </>
                 ) : (
                   <a
                     href="#inscripcion"
@@ -684,19 +724,21 @@ export default function CourseDetailClient({
                     <ArrowRight size={16} aria-hidden />
                   </a>
                 )}
-                <WhatsAppCta
-                  page={rutaLocal(pais, isEmpresa ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`)}
-                  intent={isEmpresa ? "empresas" : "curso"}
-                  course={`${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)})`}
-                  courseSlug={course.slug}
-                  country={pais}
-                  ctaPosition="curso_hero"
-                  customText={isEmpresa ? undefined : whatsappTextoIA}
-                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
-                >
-                  <MessageCircle size={16} aria-hidden />
-                  Hablar por WhatsApp
-                </WhatsAppCta>
+                {!esInicioLejano || isEmpresa ? (
+                  <WhatsAppCta
+                    page={rutaLocal(pais, isEmpresa ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`)}
+                    intent={isEmpresa ? "empresas" : "curso"}
+                    course={`${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)})`}
+                    courseSlug={course.slug}
+                    country={pais}
+                    ctaPosition="curso_hero"
+                    customText={isEmpresa ? undefined : whatsappTextoIA}
+                    className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
+                  >
+                    <MessageCircle size={16} aria-hidden />
+                    Hablar por WhatsApp
+                  </WhatsAppCta>
+                ) : null}
               </div>
 
               {hasGallery ? (
@@ -895,6 +937,23 @@ export default function CourseDetailClient({
                   </p>
                 ) : (
                   <>
+                    {esInicioLejano ? (
+                      <div className="mb-4">
+                        <WhatsAppCta
+                          page={rutaLocal(pais, `/cursos/${course.slug}`)}
+                          intent="curso"
+                          course={`${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)})`}
+                          courseSlug={course.slug}
+                          country={pais}
+                          ctaPosition="curso_inscripcion_top"
+                          customText={whatsappClaseGratisTexto}
+                          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+                        >
+                          <MessageCircle size={16} aria-hidden />
+                          Agenda tu clase gratis
+                        </WhatsAppCta>
+                      </div>
+                    ) : null}
                     {!canSeePrice || precioLocalCliente == null ? (
                       <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl border border-line bg-canvas px-3.5 py-2.5 text-xs">
                         {!canSeePrice && descuentoLocalCliente > 0 ? (

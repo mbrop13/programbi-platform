@@ -183,6 +183,31 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
                 ) : null}
               </header>
 
+              {guia.slug === "curso-claude-chile" ? (
+                <div
+                  data-testid="guia-claude-cta-oficial"
+                  className="mt-6 flex flex-col gap-4 rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] p-5 shadow-[var(--g-card-shadow)] sm:flex-row sm:items-center sm:justify-between sm:p-6"
+                >
+                  <p className="text-sm font-medium leading-relaxed text-[var(--g-ink)] sm:text-base">
+                    La inscripción y el temario oficial están en la ficha del curso de Claude en Chile.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2.5 sm:shrink-0">
+                    <Link
+                      href="/cursos/claude"
+                      className="inline-flex h-10 items-center justify-center rounded-full bg-[var(--g-ink)] px-5 text-sm font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
+                    >
+                      Ver ficha oficial de inscripción
+                    </Link>
+                    <Link
+                      href="/cursos/claude#inscripcion"
+                      className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--g-border-strong)] bg-[var(--g-wash)] px-4 text-sm font-semibold text-[var(--g-ink)] no-underline hover:opacity-90"
+                    >
+                      Temario y precios
+                    </Link>
+                  </div>
+                </div>
+              ) : null}
+
               <Bloque30Segundos guia={guia} inicio={inicio} promotions={promotions} />
 
               <IndiceGuiaMobile items={encabezados} />

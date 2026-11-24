@@ -2,11 +2,11 @@ import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
 
 export const guia: GuiaPasoAPaso = {
   slug: "notebooklm-que-es-y-como-usarlo",
-  title: "NotebookLM: qué es y cómo usarlo paso a paso (guía 2026)",
-  meta: "Qué es NotebookLM de Google, si es gratis y cómo usarlo: carga tus fuentes, haz preguntas con citas y crea resúmenes de audio. Guía paso a paso.",
-  h1: "Qué es NotebookLM y cómo usarlo paso a paso",
+  title: "NotebookLM (ya Gemini Notebook): qué es y cómo entrar",
+  meta: "Qué es NotebookLM (ahora Gemini Notebook), si es gratis y cómo entrar: crea un cuaderno, sube PDF o Docs y pregunta con citas. Guía actualizada 2026.",
+  h1: "Qué es NotebookLM (Gemini Notebook) y cómo entrar",
   subtitle:
-    "Aprende a trabajar con tus propios documentos en NotebookLM: sube PDFs, Google Docs y enlaces web, obtén respuestas con citas clicables y genera resúmenes de audio o guías de estudio sin mezclar fuentes externas.",
+    "NotebookLM —renombrado a Gemini Notebook el 16 de julio de 2026, según el [anuncio oficial de Google](https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/)— es una herramienta gratis con tu cuenta de Google para preguntar solo sobre tus propios documentos. Para entrar, ve a [notebooklm.google](https://notebooklm.google), crea un cuaderno, sube un PDF o un Google Docs y haz preguntas con citas.",
   keywordPrincipal: "notebooklm",
   keywords: [
     "notebooklm",
@@ -19,7 +19,7 @@ export const guia: GuiaPasoAPaso = {
   cursoSecundario: "ia-productividad",
   herramienta: "IA",
   nivel: "Básico",
-  updated: "2026-11-21",
+  updated: "2026-11-24",
   published: "2026-11-21",
   totalTimeIso: "PT20M",
   esGuiaIA: true,
@@ -103,7 +103,7 @@ export const guia: GuiaPasoAPaso = {
       resumenHowTo:
         "Comprende por qué NotebookLM responde acotado a tus fuentes cargadas mientras Gemini funciona como asistente general.",
       parrafos: [
-        "NotebookLM es un asistente de investigación y notas desarrollado por Google cuyo principio central es el anclaje en fuentes (source-grounding). Según la documentación oficial de Google (notebooklm.google y support.google.com, consultado el 21 de noviembre de 2026), en lugar de responder desde conocimiento general abierto en internet, NotebookLM convierte los documentos que tú subes en la base principal de cada conversación.",
+        "NotebookLM —que desde el 16 de julio de 2026 pasó a llamarse Gemini Notebook y al que entras directamente en notebooklm.google— es un asistente de investigación y notas desarrollado por Google cuyo principio central es el anclaje en fuentes (source-grounding). Según la documentación oficial de Google (notebooklm.google y support.google.com, consultado el 21 de noviembre de 2026), en lugar de responder desde conocimiento general abierto en internet, convierte los documentos que tú subes en la base principal de cada conversación.",
         "Muchas personas confunden NotebookLM con Gemini porque ambos pertenecen al ecosistema de Google y utilizan modelos de la familia Gemini por debajo. Sin embargo, cumplen roles distintos en el flujo de trabajo diario.",
         "Cuando necesitas lluvia de ideas abierta, redactar un correo desde cero o resolver una duda de programación sin documentos previos, Gemini es la herramienta natural. En cambio, cuando tienes quince PDFs de normativa tributaria, tres manuales técnicos y seis actas de reunión, y necesitas respuestas que citen exactamente en qué página está cada regla sin inventar definiciones externas, NotebookLM reduce drásticamente las alucinaciones. Si además quieres dominar los flujos de trabajo de Gemini junto a Google Workspace en tu trabajo diario, puedes profundizar en nuestro [curso de Gemini en vivo](/cursos/gemini).",
       ],
@@ -352,11 +352,19 @@ Para cada término entrega: definición en máximo 2 líneas y en qué fuente ap
       q: "¿Cuántas fuentes y qué tamaño máximo acepta por cuaderno?",
       a: "Según el centro de ayuda oficial de Google (consultado el 21 de noviembre de 2026), el nivel estándar admite hasta 50 fuentes por cuaderno, con hasta 500.000 palabras por fuente y hasta 200 MB por archivo local.",
     },
+    {
+      q: "¿NotebookLM ahora se llama Gemini Notebook?",
+      a: "Sí. El 16 de julio de 2026 Google anunció que NotebookLM pasa a llamarse Gemini Notebook. Sigue siendo el mismo producto para trabajar con tus propias fuentes; el nombre nuevo lo alinea con Gemini. La entrada sigue siendo notebooklm.google.",
+    },
+    {
+      q: "¿Cómo entro a NotebookLM?",
+      a: "Entra a notebooklm.google con tu cuenta de Google (personal o Workspace), crea un cuaderno y carga un PDF, un Google Docs u otra fuente admitida. Desde ahí puedes preguntar con citas y generar resúmenes de audio o guías de estudio.",
+    },
   ],
   relacionadas: [
     "ia-para-analizar-pdf",
     "gemini-para-analisis-de-datos",
-    "automatizar-tareas-con-ia",
+    "chatgpt-vs-gemini-vs-copilot",
   ],
   enlacesExternos: [
     {
@@ -370,23 +378,12 @@ Para cada término entrega: definición en máximo 2 líneas y en qué fuente ap
       fuente: "Google Support",
     },
     {
-      label: "Centro de ayuda de Claude",
-      url: "https://support.claude.com",
-      fuente: "Anthropic Support",
+      label: "NotebookLM is now Gemini Notebook (anuncio oficial)",
+      url: "https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/",
+      fuente: "Google Blog",
     },
   ],
-  enlacesInternosExtra: [
-    {
-      label: "Cómo usar Claude para análisis de datos",
-      href: "/guias/como-usar-claude-para-analisis-de-datos",
-      descripcion: "Aprende a trabajar con documentos y tablas en Claude con Projects y artefactos.",
-    },
-    {
-      label: "Claude vs ChatGPT para análisis de datos",
-      href: "/guias/claude-vs-chatgpt-analisis-de-datos",
-      descripcion: "Compara las fortalezas de Claude y ChatGPT cuando necesitas analizar datos numéricos.",
-    },
-  ],
+  enlacesInternosExtra: [],
 };
 
 export default guia;

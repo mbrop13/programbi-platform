@@ -5,7 +5,7 @@ import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, ORG_ID, pageOg, SITE_URL } from "@/lib/seo";
 
 function limpiarEnlacesMarkdown(texto: string): string {
-  return texto.replace(/\[([^\]]+)\]\(\/(?!\/)[^)\s]*\)/g, "$1");
+  return texto.replace(/\[([^\]]+)\]\((?:\/(?!\/)[^)\s]*|https?:\/\/[^)\s]+)\)/g, "$1");
 }
 
 function contarPalabrasTexto(texto: string | undefined): number {

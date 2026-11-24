@@ -37,6 +37,7 @@ import {
 } from "@/lib/datos/seo-carreras";
 import { faqsHubCarreras, resumenHubCarreras } from "@/lib/datos/textos-carreras";
 import { BuscadorCarreras } from "@/components/datos/BuscadorCarreras";
+import { CarrerasAltaAfinidad } from "@/components/datos/CarrerasAltaAfinidad";
 import { CtaDatos } from "@/components/datos/CtaDatos";
 import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
@@ -394,6 +395,9 @@ export default function CarrerasHubPage() {
 
       {/* Instituciones destacadas U / IP / CFT */}
       <InstitucionesDestacadas instituciones={tarjetasInstituciones} />
+
+      {/* Carreras destacadas con alta afinidad a datos, Power BI y SQL */}
+      <CarrerasAltaAfinidad />
 
       {/* Rankings rápidos consolidados con Tabs (SSR keepMounted) */}
       <section aria-label="Rankings rápidos destacados">
