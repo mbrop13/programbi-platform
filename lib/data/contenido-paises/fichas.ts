@@ -20,16 +20,22 @@ export type FichaPais = {
 };
 
 /**
- * Párrafos regionales genéricos para ChatGPT y Gemini en mercados sin normativa
+ * Párrafos regionales genéricos para ChatGPT, Gemini y Claude en mercados sin normativa
  * local específica (`bo`, `cr`, `ec`, `sv`, `gt`, `do`, `ve`, `pa`, `ni`, `hn`, `py`).
  */
 export function parrafosGenericosIA(
-  slug: "chatgpt" | "gemini",
+  slug: "chatgpt" | "gemini" | "claude",
   nombrePais: string
 ): string[] {
   if (slug === "chatgpt") {
     return [
       `En ${nombrePais}, ChatGPT aplicado al trabajo diario permite resumir documentos extensos, limpiar planillas de Excel y CSV, redactar informes y automatizar tareas repetitivas con ChatGPT Work, sin escribir código. El programa parte desde cero y trabaja con casos reales de oficina y control de gestión.`,
+      `Las 20 horas en vivo por Zoom (5 módulos de 4 horas) se adaptan al horario local de ${nombrePais}, con acceso a las grabaciones y materiales en el campus virtual y certificado digital al completar. Consulta los medios de pago y el detalle del programa en el PDF de temario y precios de esta ficha.`,
+    ];
+  }
+  if (slug === "claude") {
+    return [
+      `En ${nombrePais}, Claude (Anthropic) aplicado al trabajo diario permite armar prompts reutilizables, organizar documentación y criterios en Projects, generar documentos, presentaciones y planillas con Artifacts, Docs, Slides y Excel, y delegar tareas repetidas con Cowork, sin programar. El programa parte desde cero y trabaja con casos reales de oficina, análisis y gestión.`,
       `Las 20 horas en vivo por Zoom (5 módulos de 4 horas) se adaptan al horario local de ${nombrePais}, con acceso a las grabaciones y materiales en el campus virtual y certificado digital al completar. Consulta los medios de pago y el detalle del programa en el PDF de temario y precios de esta ficha.`,
     ];
   }
@@ -43,6 +49,7 @@ function porCursoRegional(nombrePais: string): Record<string, string[]> {
   return {
     chatgpt: parrafosGenericosIA("chatgpt", nombrePais),
     gemini: parrafosGenericosIA("gemini", nombrePais),
+    claude: parrafosGenericosIA("claude", nombrePais),
   };
 }
 
@@ -61,6 +68,10 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
       gemini: [
         "Para equipos en Chile que trabajan en Google Workspace, Gemini permite acelerar correos, actas de Meet, documentos en Docs y planillas en Sheets con casos locales: control de IVA y boletas de honorarios, liquidaciones de sueldo, conciliación bancaria, lectura de bases de licitación de Mercado Público y reportes para gerencia en pesos y UF.",
         "En 20 horas en vivo por Zoom desde Santiago recorres Gmail, Docs, Slides, Google Sheets, extracción desde PDF, Gemini Notebook (NotebookLM) y Deep Research sin escribir código. Las sesiones quedan grabadas en el campus virtual y el valor en pesos chilenos se abona directamente en el checkout.",
+      ],
+      claude: [
+        "En Chile el trabajo administrativo y de análisis suele vivir en el correo, las planillas de Excel y los PDF que llegan de distintas áreas. Este curso se dicta en vivo por Zoom desde Santiago y enseña a usar Claude en ese día a día: armar prompts que se puedan reutilizar, organizar el trabajo en Projects, generar documentos, presentaciones y planillas con Artifacts, Docs, Slides y Excel, y delegar tareas repetidas con Cowork, sin programar. Las clases quedan grabadas en el campus, así que quien trabaja en región o tiene turnos puede repetirlas.",
+        "Los ejercicios usan situaciones reales de empresas chilenas: actas y correos, informes de gestión, cruce de planillas, revisión de contratos y reportes que hoy se arman a mano. El precio se publica en pesos chilenos y se paga con los medios habilitados en el checkout. Los proyectos para empresas se cotizan aparte, con alcance y moneda en la propuesta.",
       ],
     },
   },
@@ -90,6 +101,10 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
         "En empresas y estudios de Argentina que operan sobre Google Workspace, Gemini agiliza la redacción en Gmail y Docs, la limpieza y fórmulas en Google Sheets, la lectura de PDF y la preparación de reportes multimoneda (ARS/USD), además de investigar con Gemini Notebook (NotebookLM) y Deep Research.",
         "Las sesiones en vivo de 20 horas (5 módulos de 4 h, sin programar) se siguen desde Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. El valor en pesos argentinos (ARS) se descarga en el PDF de temario y precios y se paga con Mercado Pago Argentina en 3 cuotas sin interés.",
       ],
+      claude: [
+        "En Argentina, usar Claude (Anthropic) en el trabajo diario ayuda a ordenar planillas, resumir contratos, revisar comprobantes y armar reportes multimoneda (ARS/USD) sin rehacer cálculos cada semana. En 20 horas en vivo por Zoom, sin programar, aprendes a armar prompts reutilizables, organizar criterios en Projects, generar documentos, presentaciones y planillas con Artifacts, Docs, Slides y Excel, y delegar tareas repetidas con Cowork.",
+        "La cohorte se dicta en la franja de 19:30 a 21:30 de Chile, que en hora de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) equivale a 19:30 a 21:30 en verano chileno y a 20:30 a 22:30 en invierno chileno, con grabaciones disponibles en el campus virtual. El arancel en pesos argentinos (ARS) se consulta en el PDF de temario y precios de la ficha y se abona con Mercado Pago Argentina en 3 cuotas sin interés.",
+      ],
     },
   },
   mx: {
@@ -105,6 +120,10 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
       gemini: [
         "Para equipos en México que usan Google Workspace, Gemini ayuda a automatizar correos en Gmail, minutas en Meet, documentos en Docs, fórmulas en Google Sheets y extracción de datos desde PDF para revisar CFDI, conciliación con el SAT y reportes en MXN, sumando Gemini Notebook (NotebookLM) y Deep Research.",
         "El programa completo de 20 horas en vivo por Zoom (sin programar) se cursa en hora del centro de México (16:30 a 17:30 o 17:30 a 19:30 según la temporada) y queda grabado en el campus virtual. Consulta el arancel en pesos mexicanos (MXN) en el PDF de temario y precios.",
+      ],
+      claude: [
+        "En México, Claude (Anthropic) aplicado al trabajo de oficina permite revisar listados de CFDI, apoyar la conciliación con el SAT, limpiar planillas de Excel, resumir contratos y preparar reportes en MXN sin programar. En 20 horas en vivo por Zoom aprendes a crear prompts reutilizables, organizar el trabajo en Projects, generar entregables con Artifacts, Docs, Slides y Excel, y delegar tareas repetidas con Cowork.",
+        "Las clases se siguen en hora del centro de México (entre 16:30 y 17:30 según la época del año, ya que México no cambia la hora y Chile sí), con grabaciones en el campus virtual y certificado al terminar. El precio en pesos mexicanos (MXN) y las opciones de pago están en el PDF de temario y precios de esta ficha.",
       ],
     },
   },
@@ -126,6 +145,10 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
         "Si tu empresa u oficina en Perú trabaja con Google Workspace, este curso de Gemini de 20 horas en vivo te enseña a redactar en Gmail y Docs, extraer datos de comprobantes y PDF de SUNAT hacia Google Sheets, armar reportes en soles y usar Gemini Notebook (NotebookLM) y Deep Research con fuentes verificadas.",
         "Se cursa en horario de Lima (America/Lima, UTC-5: de 17:30 a 19:30 cuando Chile está en horario de verano y de 18:30 a 20:30 en invierno chileno), sin conocimientos previos de programación. Consulta el arancel en soles (PEN) y las 3 cuotas sin interés en el PDF de temario y precios.",
       ],
+      claude: [
+        "En Perú, Claude (Anthropic) te ayuda a ordenar comprobantes y registros de SUNAT, cruzar planillas de Excel, revisar contratos y preparar reportes en soles sin hacer todo a mano. En 20 horas en vivo por Zoom, sin programar, trabajas con prompts reutilizables, organización en Projects, creación de documentos, presentaciones y planillas con Artifacts, Docs, Slides y Excel, y automatización de tareas repetidas con Cowork.",
+        "Las clases se dictan en horario de Lima (America/Lima, UTC-5: de 17:30 a 19:30 en verano chileno y de 18:30 a 20:30 en invierno chileno), con grabaciones en el campus virtual y certificado digital. El precio en soles (PEN) con 3 cuotas sin interés se consulta en el PDF de temario y precios de esta ficha.",
+      ],
     },
   },
   co: {
@@ -141,6 +164,10 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
       gemini: [
         "Para equipos en Colombia que trabajan con Google Workspace, Gemini agiliza correos en Gmail, actas en Meet, documentos en Docs, fórmulas en Google Sheets y lectura de PDF de facturación electrónica DIAN para armar reportes en COP, además de investigar con Gemini Notebook (NotebookLM) y Deep Research.",
         "El curso completo de 20 horas en vivo por Zoom (sin programar) se sigue en hora de Bogotá (17:30 o 18:30 según la época del año) y queda grabado en el campus virtual. Consulta el arancel en pesos colombianos (COP) en el PDF de temario y precios de esta ficha.",
+      ],
+      claude: [
+        "En Colombia, Claude (Anthropic) aplicado al trabajo diario permite revisar listados de facturación electrónica DIAN, limpiar planillas de Excel, resumir documentos y preparar reportes en COP sin programar. En 20 horas en vivo por Zoom dominas prompts reutilizables, organización del trabajo en Projects, generación de entregables con Artifacts, Docs, Slides y Excel, y delegación de tareas repetidas con Cowork.",
+        "Las sesiones se ven en hora de Bogotá (UTC-5 todo el año; entre 17:30 y 18:30 según el horario de verano en Chile), con grabaciones en el campus virtual y certificado digital. El precio en pesos colombianos (COP) y los medios de pago están en el PDF de temario y precios de esta ficha.",
       ],
     },
   },
@@ -158,6 +185,10 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
         "Para equipos en Uruguay que trabajan en Google Workspace, Gemini permite acelerar correos en Gmail, minutas en Meet, documentos en Docs, fórmulas en Google Sheets y análisis de PDF operativos, además de investigar con Gemini Notebook (NotebookLM) y Deep Research.",
         "El curso de 20 horas en vivo por Zoom (sin programar) se sigue en hora de Montevideo (UTC-3) y deja todas las grabaciones disponibles en el campus virtual. Consulta el arancel vigente y las opciones de pago en el PDF de temario y precios.",
       ],
+      claude: [
+        "En Uruguay, usar Claude (Anthropic) en la gestión diaria ayuda a ordenar planillas de operación, resumir contratos, cruzar reportes de facturación electrónica de DGI y preparar informes claros de margen para gerencia, sin programar. En 20 horas en vivo por Zoom aprendes a armar prompts reutilizables, organizar documentación en Projects, generar archivos con Artifacts, Docs, Slides y Excel, y delegar tareas repetidas con Cowork.",
+        "Las sesiones se ven en hora de Montevideo (UTC-3 todo el año, ajustando su equivalencia cuando Chile cambia al horario de verano) y quedan grabadas en el campus virtual. El precio local y los medios de pago se consultan en el PDF de temario y precios de esta ficha.",
+      ],
     },
   },
   us: {
@@ -173,6 +204,10 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
       gemini: [
         "Pensado para profesionales hispanohablantes en Estados Unidos que usan Google Workspace en inglés en su oficina y quieren dominar Gemini en español en vivo. En 20 horas prácticas cubres Gmail, Docs, Slides, Google Sheets, extracción de datos desde PDF, Gemini Notebook (NotebookLM) y Deep Research sin escribir código.",
         "La cohorte se dicta en hora del Este (entre 17:30 y 19:30 según el cambio horario) con grabaciones en el campus virtual. El valor en dólares (USD) aparece publicado directamente en esta ficha y entregamos recibo en USD por si tu empleador ofrece reembolso educativo.",
+      ],
+      claude: [
+        "En Estados Unidos muchos profesionales hispanohablantes trabajan todo el día con documentos, correos y planillas en inglés, pero prefieren dominar la herramienta en español. Este curso de Claude (Anthropic), de 20 horas en vivo por Zoom y sin programar, enseña a armar prompts reutilizables, organizar el trabajo en Projects, generar documentos, presentaciones y planillas con Artifacts, Docs, Slides y Excel, y delegar tareas repetidas con Cowork.",
+        "Las clases se siguen en hora del Este (Miami y Nueva York, entre 17:30 y 19:30 según la época del año; una hora menos en Central y tres en Pacífico) y quedan grabadas en el campus virtual. El precio se publica en dólares (USD) en esta misma ficha, sin formularios, y recibes recibo en USD para programas de asistencia educativa.",
       ],
     },
   },
