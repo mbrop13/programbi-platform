@@ -10,7 +10,7 @@ import { usePaisRuta } from "@/lib/paises/cliente";
 import { esRutaLocalizable, rutaLocal } from "@/lib/paises/rutas";
 import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
 import { esRutaIndexablePais, LISTADO_PROFESORES_INDEXABLE } from "@/lib/seo/indexabilidad";
-import { whatsappHref } from "@/lib/whatsapp";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
   { name: "LinkedIn", href: "https://cl.linkedin.com/company/programbi" },
@@ -166,7 +166,15 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
             </a>
           ))}
           <a href="mailto:contacto@programbi.cl" className="transition-colors hover:text-text-primary">contacto@programbi.cl</a>
-          <a href={whatsappHref({ page: "/", country: pais, intent: "general" })} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-text-primary">WhatsApp</a>
+          <WhatsAppCta
+            page={pathname || "/"}
+            country={pais}
+            intent="general"
+            ctaPosition="footer"
+            className="transition-colors hover:text-text-primary"
+          >
+            WhatsApp
+          </WhatsAppCta>
           <Link href="/privacidad" className="no-underline transition-colors hover:text-text-primary">
             Privacidad
           </Link>

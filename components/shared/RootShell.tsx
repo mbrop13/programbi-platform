@@ -1,10 +1,7 @@
 import type { ReactNode } from "react";
-import { Suspense } from "react";
 import { Geist, Geist_Mono, Dancing_Script } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/app/providers";
-import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
+import SiteAnalytics from "@/components/shared/SiteAnalytics";
 import AttributionCapture from "@/components/shared/AttributionCapture";
 import ReferralClaim from "@/components/shared/ReferralClaim";
 import { ORG_ID, SITE_URL, WEBSITE_ID, jsonLdString } from "@/lib/seo";
@@ -140,11 +137,7 @@ export default function RootShell({
           <ReferralClaim />
           {children}
         </Providers>
-        <Suspense fallback={null}>
-          <MarketingAnalytics />
-        </Suspense>
-        <Analytics />
-        <SpeedInsights />
+        <SiteAnalytics />
       </body>
     </html>
   );
