@@ -10,9 +10,9 @@ const contenido: ContenidoPais = {
   },
   seoPaginas: {
     cursos: {
-      title: "Cursos Power BI, SQL y datos en Colombia | ProgramBI",
+      title: "Cursos de datos en Colombia: Power BI, SQL y Python",
       description:
-        "Catálogo en vivo para Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP y proyecto final.",
+        "Cursos de datos en vivo en Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP, clase gratis y certificado.",
     },
     faq: {
       title: "Preguntas frecuentes de cursos en Colombia | ProgramBI",

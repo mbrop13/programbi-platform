@@ -121,12 +121,14 @@ export default function CourseSummaryBox({
   inicio,
   fin,
   promotions,
+  tieneCohorteConfirmada,
 }: {
   course: Course;
   pais?: string | null;
   inicio?: string;
   fin?: string;
   promotions?: readonly PromocionAplicable[];
+  tieneCohorteConfirmada?: boolean;
 }) {
   const iso = normalizarPais(rawPais);
   const info = getPais(iso);
@@ -140,6 +142,11 @@ export default function CourseSummaryBox({
   const precioDirecto = muestraPrecioDirecto(iso)
     ? precioVenta(iso, course.slug, promotions)
     : null;
+  const precioVigente = precioVenta(iso, course.slug, promotions);
+  const muestraPrecioExactoChile =
+    iso === ISO_CHILE &&
+    (course.slug === "sql-server" || course.slug === "analitica-mineria") &&
+    precioVigente != null;
   const etiquetaDescuento = muestraPrecioDirecto(iso)
     ? null
     : etiquetaDescuentoCurso(iso, course.slug, promotions);
@@ -178,7 +185,9 @@ export default function CourseSummaryBox({
         </li>
         <li>
           <strong className="font-semibold">Horario en {iso === ISO_CHILE ? "Chile" : info.nombre}:</strong>{" "}
-          {horarioResumenTexto(iso, horario)}
+          {tieneCohorteConfirmada === false
+            ? "Por confirmar (cupos abiertos — consulta fecha)"
+            : horarioResumenTexto(iso, horario)}
         </li>
         <li>
           <strong className="font-semibold">Arancel vigente:</strong>{" "}
@@ -186,6 +195,19 @@ export default function CourseSummaryBox({
             <>
               {montoConCodigo(iso, precioDirecto)}
               {niveles > 1 ? " por nivel" : ""} (pago directo en {info.moneda}).
+            </>
+          ) : muestraPrecioExactoChile && precioVigente != null ? (
+            <>
+              {montoConCodigo(iso, precioVigente)}
+              {niveles > 1 ? " por nivel" : ""}
+              {cuotas ? `, pago en ${cuotas}` : ""} ·{" "}
+              <Link
+                href={brochureHref}
+                className="font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
+              >
+                Temario y precios
+              </Link>
+              .
             </>
           ) : (
             <>

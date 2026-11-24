@@ -60,9 +60,9 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
         "Formación en vivo en Power BI, análisis de datos y Python para profesionales de Colombia: horario de Bogotá, precios en COP y {cuotas}.",
     },
     cursos: {
-      title: "Cursos Power BI y datos en Colombia | ProgramBI",
+      title: "Cursos de datos en Colombia: Power BI, SQL y Python",
       description:
-        "Catálogo en vivo para Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP, proyecto final y certificado.",
+        "Cursos de datos en vivo en Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP, clase gratis y certificado.",
     },
     "curso:power-bi": {
       title: "Curso Power BI en vivo en Colombia | ProgramBI",

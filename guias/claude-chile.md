@@ -5,9 +5,9 @@ pais: cl
 hreflang: es-CL
 curso: claude
 url_curso: https://www.programbi.com/cursos/claude
-title: "Curso de Claude en Chile: guía práctica y clases en vivo"
-meta: "Aprende a usar Claude (Anthropic) en Chile: prompts, Projects, Artifacts y Excel sin programar. Guía práctica y curso en vivo de 20 h."
-h1: Cómo usar Claude AI para trabajo administrativo en Chile
+title: "Cómo elegir un curso de Claude en Chile (guía 2026)"
+meta: "Guía para elegir un curso de Claude en Chile: qué revisar en el temario, la modalidad en vivo y la ficha oficial de inscripción. Actualizada 2026."
+h1: Cómo elegir un curso de Claude en Chile
 updated: 2026-11-14
 sources:
   - https://www.programbi.com/cursos/claude
@@ -21,9 +21,9 @@ nota_hermes: |
   - WhatsApp: "Hola, vengo de la guía de Claude para Chile en programbi.com y quiero info del curso en vivo".
 ---
 
-# Curso de Claude en Chile: IA para tu trabajo administrativo, en vivo
+# Cómo elegir un curso de Claude en Chile
 
-**Respuesta corta:** el [curso de Claude de ProgramBI](https://www.programbi.com/cursos/claude) es un programa **en vivo por Zoom de 20 horas en 5 módulos de 4 horas** para usar Claude, el asistente de IA de Anthropic, en el trabajo administrativo: prompts que funcionan, Projects, Docs y Slides, Excel y automatización ligera, **sin programar**. Tiene **inicios todos los meses** (próxima fecha en la ficha), con clases los **lunes y miércoles de 19:30 a 21:30, hora de Chile**, y cuesta **$169.000 CLP**.
+**Respuesta corta:** al elegir un curso de Claude en Chile conviene revisar que incluya práctica **en vivo por Zoom**, temario aplicado (prompts, Projects, Docs, Slides, Excel y Cowork sin programar) y una ficha oficial transparente con horarios y valores vigentes. Si buscas un programa con esas características, la ficha oficial de inscripción del [curso de Claude de ProgramBI](/cursos/claude) detalla los **5 módulos de 4 horas (20 horas)**, horario vespertino en Chile y **$169.000 CLP**.
 
 Incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado y un proyecto final integrador con un proceso real de tu pega. Datos según la ficha del curso, revisada el 4 de noviembre de 2026.
 

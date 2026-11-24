@@ -205,7 +205,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
     promotions,
   });
 
-  const courseJsonLd = getCourseJsonLd(course, "publico", pais, { promotions });
+  const courseJsonLd = getCourseJsonLd(course, "publico", pais, { schedules, promotions });
   const bloque = getBloqueLocal(pais, { curso: slug });
   // El bloque «Preguntas frecuentes» de la ficha sale de dos fuentes y el
   // FAQPage declara exactamente las que se ven: `CourseFaq` pinta las de
@@ -286,6 +286,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         initialSchedules={schedules}
         detalleLocal={detalle}
         promotions={promotions}
+        referenceDateIso={new Date().toISOString().slice(0, 10)}
         resumen={
           <CourseSummaryBox
             course={course}
@@ -293,6 +294,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
             inicio={inicio}
             fin={fin}
             promotions={promotions}
+            tieneCohorteConfirmada={Boolean(cohorte)}
           />
         }
         // Citas reales de alumnos de este curso (LinkedIn), justo después del

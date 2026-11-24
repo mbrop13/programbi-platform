@@ -92,8 +92,14 @@ function resolveCourseStartDate(
         ? s.course_slug === "analisis-de-datos" || analisisDeDatosSlugs.includes(s.course_slug)
         : s.course_slug === courseSlug
     )
-    .map((s, idx) => ({ ...s, id: s.id ?? String(idx) }));
-  const nearest = getNearestSchedule(matching);
+    .map((s, idx) => ({ ...s, id: s.id ?? String(idx), is_active: s.is_active !== false }));
+  const entryLevel =
+    getNearestSchedule(matching.filter((s) => s.level_name === "Básico")) ??
+    (courseSlug === "analisis-de-datos"
+      ? getNearestSchedule(matching.filter((s) => s.level_name === "Intermedio"))
+      : null);
+  const nearest =
+    entryLevel ?? (courseSlug === "analisis-de-datos" ? null : getNearestSchedule(matching));
   return toIsoDate(nearest?.start_date);
 }
 

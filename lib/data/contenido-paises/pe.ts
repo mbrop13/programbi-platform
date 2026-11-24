@@ -11,9 +11,9 @@ const contenido: ContenidoPais = {
   },
   seoPaginas: {
     cursos: {
-      title: "Cursos de datos en vivo en Perú: SQL, Python, Power BI y más",
+      title: "Cursos de datos en Perú: SQL, Power BI y Python en vivo",
       description:
-        "Catálogo de cursos de datos en vivo en Perú: análisis de datos, SQL Server, Python, Power BI, Excel e IA. Horario de Lima, precios en soles y certificado.",
+        "Cursos de datos en vivo en Perú: Power BI, SQL, Python y análisis de datos, con horario de Lima, precios en soles, clase gratis y certificado.",
     },
     faq: {
       title: "Preguntas frecuentes de cursos en Perú | ProgramBI",
@@ -218,9 +218,9 @@ export const bloqueLocal: DefinicionBloqueLocal = {
         "Cursos en vivo por Zoom para Perú: análisis de datos, Power BI, SQL y Python. Horario de Lima, precios en soles, 3 cuotas sin interés y certificado.",
     },
     cursos: {
-      title: "Cursos de datos en vivo en Perú: SQL, Python, Power BI y más",
+      title: "Cursos de datos en Perú: SQL, Power BI y Python en vivo",
       description:
-        "Catálogo de cursos de datos en vivo en Perú: análisis de datos, SQL Server, Python, Power BI, Excel e IA. Horario de Lima, precios en soles y certificado.",
+        "Cursos de datos en vivo en Perú: Power BI, SQL, Python y análisis de datos, con horario de Lima, precios en soles, clase gratis y certificado.",
     },
     "power-bi": {
       title: "Curso de Power BI en Perú: en vivo, con certificado",
