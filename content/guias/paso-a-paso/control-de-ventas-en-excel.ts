@@ -157,7 +157,7 @@ export const guia: GuiaPasoAPaso = {
       parrafos: [
         "Antes de ingresar la primera venta, crea una hoja llamada Catalogos con dos listas pequeñas: una columna con los nombres oficiales de tus vendedores y otra con tus productos o líneas de negocio (junto a su precio unitario de lista si manejas precios estándar). Tener un catálogo central evita que en una fila alguien escriba «María» y en otra «Maria » con espacio al final, lo que luego dividiría a la misma vendedora en dos filas distintas en el reporte.",
         "En la hoja principal llamada Ventas, define los encabezados en la fila 1: Fecha, Mes, NroDocumento, Cliente, Vendedor, Categoria, Producto, Cantidad, PrecioUnitario, DescuentoPct y TotalNeto. Convierte el rango en una Tabla de Excel presionando Ctrl + T y asígnale el nombre tblVentas en Diseño de tabla.",
-        "Aplica Validación de datos en las columnas Vendedor y Producto (pestaña Datos > Validación de datos > Permitir: Lista) apuntando a las columnas de tu hoja Catalogos. Si usas una Tabla para los catálogos, las listas desplegables crecerán automáticamente cuando incorpores nuevos vendedores o productos.",
+        "Aplica Validación de datos en las columnas Vendedor y Producto (pestaña Datos > Validación de datos > Permitir: Lista) apuntando a las columnas de tu hoja Catalogos. Si usas una Tabla para los catálogos, las listas desplegables crecerán automáticamente cuando incorpores nuevos vendedores o productos. Si quieres dominar tablas estructuradas, validaciones y fórmulas dinámicas para armar este tipo de plantillas desde cero, revisa nuestro [curso de Excel en vivo](/cursos/excel).",
       ],
       listaOrdenada: [
         "En la hoja Catalogos, crea tblVendedores (columna Vendedor) y tblProductos (columnas Producto, Categoria, PrecioLista).",
@@ -304,7 +304,7 @@ export const guia: GuiaPasoAPaso = {
       parrafos: [
         "Excel maneja con soltura decenas de miles de filas de ventas, pero cuando acumulas varios años de boletas, necesitas cruzar inventario y cobranza en paralelo, o quieres compartir un tablero web interactivo con gerencia sin enviar archivos adjuntos por correo, es momento de dar el salto a Power BI.",
         "La buena noticia es que, como construiste tblVentas en formato tabular largo y mantuviste tus catálogos separados en la hoja Catalogos, tu archivo ya cumple con las reglas de un modelo en estrella. Solo necesitas abrir Power BI Desktop, conectar este mismo libro de Excel, seleccionar tblVentas, tblProductos, tblVendedores y tblMetas, y empezar a crear tus medidas DAX.",
-        "Si quieres ver paso a paso cómo transformar este registro comercial en un tablero interactivo con KPIs, mapas y filtros cruzados, revisa nuestra guía dedicada de dashboard de ventas en Power BI.",
+        "Si quieres ver paso a paso cómo transformar este registro comercial en un tablero interactivo con KPIs, mapas y filtros cruzados, revisa nuestra guía dedicada de dashboard de ventas en Power BI. Y si quieres aprender a pasar de estas planillas a un tablero automatizado que se actualiza solo, conoce nuestro [curso de Power BI en vivo](/cursos/power-bi).",
       ],
       lista: [
         "Mantén los nombres de columnas sin tildes ni espacios raros si planeas automatizar la carga luego.",
