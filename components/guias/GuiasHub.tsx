@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import GuiaCard from "@/components/guias/GuiaCard";
@@ -149,19 +149,26 @@ export default function GuiasHub({
   }, [guias, cursos]);
 
   useEffect(() => {
-    const iniciales = leerFiltros(
-      mostrarPais,
-      paises,
-      cursos,
-      herramientasDisponibles,
-      nivelesDisponibles
-    );
-    setPais(iniciales.pais);
-    setCurso(iniciales.curso);
-    setHerramienta(iniciales.herramienta);
-    setNivel(iniciales.nivel);
-    setTexto(iniciales.texto);
-    setListo(true);
+    let cancelado = false;
+    queueMicrotask(() => {
+      if (cancelado) return;
+      const iniciales = leerFiltros(
+        mostrarPais,
+        paises,
+        cursos,
+        herramientasDisponibles,
+        nivelesDisponibles
+      );
+      setPais(iniciales.pais);
+      setCurso(iniciales.curso);
+      setHerramienta(iniciales.herramienta);
+      setNivel(iniciales.nivel);
+      setTexto(iniciales.texto);
+      setListo(true);
+    });
+    return () => {
+      cancelado = true;
+    };
   }, [mostrarPais, paises, cursos, herramientasDisponibles, nivelesDisponibles]);
 
   useEffect(() => {
@@ -287,28 +294,34 @@ export default function GuiasHub({
     return elegidas;
   }, [guias]);
 
-  function desplazarAResultados() {
+  const desplazarAResultados = useCallback(() => {
     const nodo = resultadosRef.current;
     if (!nodo) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     nodo.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
-  }
+  }, []);
 
-  function seleccionarHerramientaRapida(nombre: string) {
-    const siguiente = herramienta === nombre ? TODOS : nombre;
-    setHerramienta(siguiente);
-    if (siguiente !== TODOS) {
-      requestAnimationFrame(desplazarAResultados);
-    }
-  }
+  const seleccionarHerramientaRapida = useCallback(
+    (nombre: string) => {
+      const siguiente = herramienta === nombre ? TODOS : nombre;
+      setHerramienta(siguiente);
+      if (siguiente !== TODOS) {
+        requestAnimationFrame(desplazarAResultados);
+      }
+    },
+    [herramienta, desplazarAResultados]
+  );
 
-  function seleccionarCursoRapido(valor: string) {
-    const siguiente = curso === valor ? TODOS : valor;
-    setCurso(siguiente);
-    if (siguiente !== TODOS) {
-      requestAnimationFrame(desplazarAResultados);
-    }
-  }
+  const seleccionarCursoRapido = useCallback(
+    (valor: string) => {
+      const siguiente = curso === valor ? TODOS : valor;
+      setCurso(siguiente);
+      if (siguiente !== TODOS) {
+        requestAnimationFrame(desplazarAResultados);
+      }
+    },
+    [curso, desplazarAResultados]
+  );
 
   function limpiar() {
     setTexto("");
@@ -387,7 +400,14 @@ export default function GuiasHub({
       activo: curso === item.valor,
       onClick: () => seleccionarCursoRapido(item.valor),
     }));
-  }, [herramientasConConteo, cursosConConteo, herramienta, curso]);
+  }, [
+    herramientasConConteo,
+    cursosConConteo,
+    herramienta,
+    curso,
+    seleccionarHerramientaRapida,
+    seleccionarCursoRapido,
+  ]);
 
   return (
     <div>
