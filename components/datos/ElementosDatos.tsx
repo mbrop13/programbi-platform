@@ -4,7 +4,7 @@ import { SITE_URL } from "@/lib/seo";
 import { CARTOGRAFIA, FECHA_EDICION, FUENTE_ENE, LICENCIA, METADATOS, REVISION_DESEMPLEO, TERMINOS_INE, hayPbix, type Observacion } from "@/lib/datos/desempleo";
 import { fechaCorta, periodo, tasa } from "@/lib/datos/desempleo-formato";
 import type { Migaja, Pregunta } from "@/lib/datos/seo";
-import { CopiarDatos, EnlaceDatos } from "./AccionesDatos";
+import { CopiarDatos, EnlaceDatos, WhatsAppDesempleoCta } from "./AccionesDatos";
 import { EmbedDialog } from "./EmbedDialog";
 import estilos from "./Observatorio.module.css";
 
@@ -138,6 +138,7 @@ in
         <p>Practica con series públicas. Aprende a importar los datos, modelar períodos y crear visualizaciones en Power BI.</p>
         <a href="/cursos/power-bi">Curso de Power BI</a>
         <a href="/cursos/analisis-de-datos">Curso de análisis de datos</a>
+        <WhatsAppDesempleoCta slug={slug} />
       </aside>
     </section>
   );

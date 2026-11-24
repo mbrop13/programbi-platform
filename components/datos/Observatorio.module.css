@@ -189,6 +189,22 @@
 .descargas { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; }
 .cardCurso { background: #ffd84d; border-color: #ffd84d; color: #111214; }
 .cardCurso a { display: block; width: fit-content; margin-top: .65rem; font-weight: 700; }
+.cardCurso a.botonCursoWa {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-top: 1rem;
+  padding: .6rem .95rem;
+  border-radius: .75rem;
+  min-height: 2.7rem;
+  background: #111214;
+  color: #fff;
+  text-decoration: none;
+  font-size: .92rem;
+  font-weight: 650;
+  transition: background-color .17s;
+}
+.cardCurso a.botonCursoWa:hover { background: #2b2d31; }
 .acciones { display: flex; flex-wrap: wrap; gap: .5rem; margin: .9rem 0; }
 .botonClaro, .botonPrincipal {
   display: inline-flex;

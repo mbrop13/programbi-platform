@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Check, Copy, Download } from "lucide-react";
-import { trackEvent, trackEventOnce } from "@/lib/analytics/marketing";
+import { type MouseEvent, useEffect, useState } from "react";
+import { Check, Copy, Download, MessageCircle } from "lucide-react";
+import { OFERTA_CLASE_GRATIS_WHATSAPP } from "@/config/flags";
+import { trackEvent, trackEventOnce, trackWhatsAppClick } from "@/lib/analytics/marketing";
+import { whatsappHref, withPageUtms } from "@/lib/whatsapp";
 import estilos from "./Observatorio.module.css";
 
 export function VistaDatos({ territorio, periodo }: { territorio: string; periodo: string }) {
@@ -52,5 +54,43 @@ export function CopiarDatos({ texto, etiqueta, territorio, powerQuery = false }:
         {estado === "error" && "Selecciona el texto y cópialo manualmente."}
       </span>
     </div>
+  );
+}
+
+export function WhatsAppDesempleoCta({ slug }: { slug: string }) {
+  const pagePath = slug === "nacional" ? "/datos/desempleo" : `/datos/desempleo/${slug}`;
+  const customText = OFERTA_CLASE_GRATIS_WHATSAPP
+    ? `Hola, soy de Chile y vengo de ${pagePath}. Quiero consultar o solicitar una clase gratis de los cursos de datos.`
+    : `Hola, soy de Chile y vengo de ${pagePath}. Quiero más información sobre los cursos de datos.`;
+  const waBase = whatsappHref({ page: pagePath, country: "cl", customText });
+  const posicion = slug === "nacional" ? "datos_desempleo" : "datos_desempleo_region";
+
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    const hrefConUtm = withPageUtms(waBase);
+    e.currentTarget.href = hrefConUtm;
+
+    trackWhatsAppClick({
+      cta_position: posicion,
+      cta_location: posicion,
+      course_slug: "analisis-de-datos",
+      country: "cl",
+      page: pagePath,
+      page_path: pagePath,
+      href: hrefConUtm,
+    });
+  };
+
+  return (
+    <a
+      className={estilos.botonCursoWa}
+      href={waBase}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-wa-tracked="1"
+      onClick={handleClick}
+    >
+      <MessageCircle size={16} aria-hidden="true" />
+      {OFERTA_CLASE_GRATIS_WHATSAPP ? "Pedir clase gratis por WhatsApp" : "Consultar por WhatsApp"}
+    </a>
   );
 }
