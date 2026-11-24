@@ -309,7 +309,7 @@ function bloquePrecios(): string[] {
 
   lineas.push(
     "",
-    "* Cursos estándar de 20 h por nivel: Power BI, SQL Server, Python, Excel, Machine Learning, Copilot, Claude, Power Automate, IA en Productividad y Microsoft Access.",
+    "* Cursos estándar de 20 h por nivel: Power BI, SQL Server, Python, Excel, Machine Learning, Copilot, Claude, ChatGPT, Gemini, Power Automate, IA en Productividad y Microsoft Access.",
     ""
   );
   return lineas;

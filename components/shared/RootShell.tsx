@@ -8,6 +8,8 @@ import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
 import AttributionCapture from "@/components/shared/AttributionCapture";
 import ReferralClaim from "@/components/shared/ReferralClaim";
 import { ORG_ID, SITE_URL, WEBSITE_ID, jsonLdString } from "@/lib/seo";
+import { fundadorEquipo } from "@/lib/data/equipo";
+import { getPersonaJsonLd } from "@/lib/seo/course-jsonld";
 import "@/app/globals.css";
 
 const geist = Geist({
@@ -33,10 +35,10 @@ const dancing = Dancing_Script({
 function buildJsonLd(lang: string) {
   const description =
     lang === "es-CL"
-      ? "ProgramBI (Chile) dicta cursos en vivo de Power BI, SQL y Python, y trabaja con empresas en capacitación e implementación de Business Intelligence."
+      ? "ProgramBI (Chile) dicta cursos en vivo de Power BI, SQL, Python e Inteligencia Artificial (Claude, ChatGPT y Gemini), y trabaja con empresas en capacitación e implementación de Business Intelligence."
       : lang === "es-ES"
-        ? "ProgramBI imparte formación online en directo de Power BI, SQL Server, Python y análisis de datos para profesionales y empresas en España, con proyectos de Business Intelligence."
-        : "ProgramBI dicta cursos en vivo de Power BI, SQL y Python para profesionales y empresas en Latinoamérica, junto con proyectos de implementación de Business Intelligence.";
+        ? "ProgramBI imparte formación online en directo de Power BI, SQL Server, Python, análisis de datos e Inteligencia Artificial (Claude, ChatGPT y Gemini) para profesionales y empresas en España, con proyectos de Business Intelligence."
+        : "ProgramBI dicta cursos en vivo de Power BI, SQL, Python e Inteligencia Artificial (Claude, ChatGPT y Gemini) para profesionales y empresas en Latinoamérica, junto con proyectos de implementación de Business Intelligence.";
 
   return {
     "@context": "https://schema.org",
@@ -59,32 +61,10 @@ function buildJsonLd(lang: string) {
         knowsAbout: [
           "Power BI", "DAX", "SQL Server", "Python", "Pandas",
           "Business Intelligence", "Control de gestión",
+          "Inteligencia Artificial", "Claude", "ChatGPT", "Gemini",
           "Excel a Power BI", "Minería", "Retail", "Finanzas",
         ],
-        founder: {
-          "@type": "Person",
-          // @id estable del fundador: debe coincidir con idPersona("manuel-oliva")
-          // de lib/seo/course-jsonld.ts y con el nodo Person de /profesores.
-          "@id": `${SITE_URL}/#person-manuel-oliva`,
-          name: "Manuel Oliva",
-          jobTitle: "Fundador y Director",
-          url: `${SITE_URL}/profesores/manuel-oliva`,
-          description:
-            "Contador Auditor (UdeC) y Magíster en Data Science (UAI). Experiencia como Gerente de Riesgos Financieros en Renta 4 Corredores de Bolsa y Analista de Riesgos en Banco Itaú Chile, y profesor universitario de postgrado en el MBA de la UGM (Data Analytics para la toma de decisiones).",
-          alumniOf: [
-            { "@type": "EducationalOrganization", name: "Universidad Adolfo Ibáñez" },
-            { "@type": "EducationalOrganization", name: "Universidad de Concepción" },
-          ],
-          knowsAbout: [
-            "Data Science",
-            "Data Analytics para la toma de decisiones",
-            "Riesgo Financiero",
-            "Econometría",
-            "Power BI",
-            "Python",
-            "SQL Server",
-          ],
-        },
+        founder: getPersonaJsonLd(fundadorEquipo()),
         sameAs: [
           "https://www.instagram.com/programbi_capacitaciones/",
           "https://www.tiktok.com/@programbi",
