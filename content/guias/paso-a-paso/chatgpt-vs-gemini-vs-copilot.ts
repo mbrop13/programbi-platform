@@ -91,7 +91,7 @@ export const guia: GuiaPasoAPaso = {
       titulo: "Resumen rápido por perfil de usuario",
       parrafos: [
         "No existe un único ganador universal entre ChatGPT, Gemini, Microsoft Copilot y Claude. La elección correcta depende menos de los puntajes teóricos de laboratorio y más de tres factores cotidianos: dónde viven tus archivos, qué tipo de entregables produces cada semana y qué políticas de seguridad exige tu organización.",
-        "En oficinas chilenas es habitual encontrar empresas que pagan Microsoft 365 por su correo y Excel, equipos que colaboran en Google Workspace y analistas que además abren una pestaña independiente para redactar o depurar código. Entender el punto fuerte de cada plataforma evita pagar licencias duplicadas.",
+        "En oficinas chilenas es habitual encontrar empresas que pagan Microsoft 365 por su correo y Excel, equipos que colaboran en Google Workspace y analistas que además abren una pestaña independiente para redactar o depurar código. Entender el punto fuerte de cada plataforma evita pagar licencias duplicadas. Además, dentro del ecosistema de Google conviene distinguir el chat general de Gemini de Gemini Notebook (antes NotebookLM), pensado para trabajar acotado a tus propios documentos con citas verificables; puedes ver el detalle en nuestra [guía de NotebookLM](/guias/notebooklm-que-es-y-como-usarlo).",
       ],
       lista: [
         "Si tu trabajo vive en Excel, Word, PowerPoint, Outlook y Teams: Microsoft Copilot ofrece la ventaja de actuar directamente sobre tus documentos y reuniones sin copiar y pegar entre ventanas.",

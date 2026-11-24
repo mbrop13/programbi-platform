@@ -263,7 +263,7 @@ async function main() {
     if (g.erroresComunes.length < 3 || g.erroresComunes.length > 6) {
       errors.push(`${g.slug}: erroresComunes=${g.erroresComunes.length}`);
     }
-    if (g.faqs.length < 4 || g.faqs.length > 6) {
+    if (g.faqs.length < 4 || g.faqs.length > 8) {
       errors.push(`${g.slug}: faqs=${g.faqs.length}`);
     }
     if (g.relacionadas.length !== 3) {

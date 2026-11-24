@@ -108,25 +108,37 @@ const AVISO_PRIVACIDAD_ESTANDAR =
   "No subas datos personales ni sensibles (RUT, sueldos con nombre, correos o bases reales de clientes) a herramientas de IA sin un contrato empresarial aprobado. Anonimiza nombres, reemplaza identificadores por códigos ficticios y trabaja sobre muestras agregadas.";
 
 function renderTextoConEnlaces(texto: string): ReactNode {
-  const regex = /\[([^\]]+)\]\((\/(?!\/)[^)\s]*)\)/g;
+  const regex = /\[([^\]]+)\]\((\/(?!\/)[^)\s]*|https?:\/\/[^)\s]+)\)/g;
   const partes: ReactNode[] = [];
   let ultimoIndice = 0;
   let match: RegExpExecArray | null;
+  const linkClassName =
+    "font-semibold text-[var(--g-ink)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-accent)] hover:decoration-[var(--g-accent)]";
 
   while ((match = regex.exec(texto)) !== null) {
     if (match.index > ultimoIndice) {
       partes.push(texto.slice(ultimoIndice, match.index));
     }
-    const [, ancla, ruta] = match;
-    partes.push(
-      <Link
-        key={`${match.index}-${ruta}`}
-        href={ruta}
-        className="font-semibold text-[var(--g-ink)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-accent)] hover:decoration-[var(--g-accent)]"
-      >
-        {ancla}
-      </Link>
-    );
+    const [, ancla, url] = match;
+    if (url.startsWith("http")) {
+      partes.push(
+        <a
+          key={`${match.index}-${url}`}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkClassName}
+        >
+          {ancla}
+        </a>
+      );
+    } else {
+      partes.push(
+        <Link key={`${match.index}-${url}`} href={url} className={linkClassName}>
+          {ancla}
+        </Link>
+      );
+    }
     ultimoIndice = match.index + match[0].length;
   }
 
@@ -191,7 +203,7 @@ export default function GuiaPasoAPasoLayout({
                 </h1>
 
                 <p className="mt-4 max-w-[72ch] text-base leading-[1.65] text-[var(--g-muted)] sm:text-lg">
-                  {guia.subtitle}
+                  {renderTextoConEnlaces(guia.subtitle)}
                 </p>
 
                 {/* Tira de metadatos visuales */}

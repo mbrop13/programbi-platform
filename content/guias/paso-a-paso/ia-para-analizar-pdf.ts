@@ -94,7 +94,7 @@ export const guia: GuiaPasoAPaso = {
       resumenHowTo:
         "Selecciona el asistente más adecuado según si necesitas leer gráficos visuales, trabajar con múltiples documentos o extraer tablas.",
       parrafos: [
-        "No todos los lectores de PDF con inteligencia artificial procesan los archivos de la misma manera. Un documento de diez páginas con texto limpio se lee sin problemas en cualquiera, pero cuando enfrentas una memoria anual con gráficos insertados como imagen, unas bases de licitación extensas o diez anexos distintos, la elección de herramienta marca la diferencia.",
+        "No todos los lectores de PDF con inteligencia artificial procesan los archivos de la misma manera. Un documento de diez páginas con texto limpio se lee sin problemas en cualquiera, pero cuando enfrentas una memoria anual con gráficos insertados como imagen, unas bases de licitación extensas o diez anexos distintos, la elección de herramienta marca la diferencia. Si buscas trabajar estrictamente sobre varias fuentes propias con citas clicables, revisa primero [qué es NotebookLM y cómo entrar](/guias/notebooklm-que-es-y-como-usarlo) (ahora Gemini Notebook).",
         "Según las fuentes oficiales de Google (https://support.google.com/gemini/ y https://notebooklm.google/), OpenAI (https://help.openai.com/) y Anthropic (https://support.claude.com/), consultadas el 21 de noviembre de 2026, cada plataforma maneja los PDF con un enfoque particular:",
       ],
       tabla: {
