@@ -74,11 +74,16 @@ export default function MarketingAnalytics() {
     const params = new URLSearchParams(window.location.search);
     const payment = params.get("payment");
     if (payment === "success") {
+      const rawCursos = params.get("cursos") || params.get("curso");
+      const courseSlugs = rawCursos
+        ? rawCursos.split(",").map((s) => s.trim()).filter(Boolean)
+        : undefined;
       trackPurchase({
         transactionId: params.get("payment_id") || params.get("collection_id") || undefined,
         pais: params.get("pais") || undefined,
         currency: params.get("moneda") || undefined,
         value: params.get("valor") ? Number(params.get("valor")) : undefined,
+        courseSlugs: courseSlugs && courseSlugs.length > 0 ? courseSlugs : undefined,
       });
     }
   }, [pathname, analyticsDisabled]);
@@ -114,13 +119,18 @@ export default function MarketingAnalytics() {
           const currentPath = window.location.pathname;
           const fullPage = currentPath + window.location.search;
           const courseSlug = courseSlugFromLocation(fullPage);
+          const ctaPosition = anchor.closest("header")
+            ? "header_global"
+            : anchor.closest("footer")
+              ? "footer"
+              : "otros";
           trackWhatsAppClick({
             course: courseSlug,
             course_slug: courseSlug,
             country: paisDesdeRuta(currentPath) ?? ISO_CHILE,
             page: fullPage,
             page_path: fullPage,
-            cta_position: "global_link",
+            cta_position: ctaPosition,
             href: anchor.href,
           });
         }

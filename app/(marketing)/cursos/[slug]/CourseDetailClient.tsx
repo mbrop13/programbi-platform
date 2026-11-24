@@ -690,7 +690,7 @@ export default function CourseDetailClient({
                   course={`${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)})`}
                   courseSlug={course.slug}
                   country={pais}
-                  ctaPosition="ficha_hero_mobile"
+                  ctaPosition="curso_hero"
                   customText={isEmpresa ? undefined : whatsappTextoIA}
                   className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
                 >
@@ -784,7 +784,7 @@ export default function CourseDetailClient({
                     data-wa-tracked="1"
                     onClick={() =>
                       trackWhatsAppClick({
-                        cta_position: "ficha_avisame_fecha",
+                        cta_position: "curso_ayuda",
                         course: course.slug,
                         course_slug: course.slug,
                         country: pais,
@@ -936,6 +936,7 @@ export default function CourseDetailClient({
                           course={course.title}
                           courseSlug={course.slug}
                           country={pais}
+                          ctaPosition="curso_ayuda"
                           customText={whatsappTextoIA}
                           className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
                         >
@@ -978,7 +979,7 @@ export default function CourseDetailClient({
                     course={course.title}
                     courseSlug={course.slug}
                     country={pais}
-                    ctaPosition="course_detail_free_class"
+                    ctaPosition="curso_ayuda"
                     customText={whatsappTextoIA}
                     className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash"
                   >
@@ -1005,6 +1006,7 @@ export default function CourseDetailClient({
                     course={course.title}
                     courseSlug={course.slug}
                     country={pais}
+                    ctaPosition="curso_ayuda"
                     className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
                   >
                     <MessageCircle size={16} />
@@ -1324,6 +1326,7 @@ function CourseContactForm({ course }: { course: Course }) {
                 course={course.title}
                 courseSlug={course.slug}
                 country={pais}
+                ctaPosition="curso_ayuda"
                 customText={isPersonal ? whatsappTextoCursoIA(course, pais) : undefined}
                 className="mt-4 inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
               >
@@ -1618,7 +1621,7 @@ function BarraFijaFicha({
             course={curso}
             courseSlug={cursoSlug}
             country={pais}
-            ctaPosition="ficha_barra_fija"
+            ctaPosition="curso_hero"
             customText={whatsappCustomText}
             className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-4 text-sm font-semibold text-ink no-underline"
           >

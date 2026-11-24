@@ -45,7 +45,7 @@ function cursoDesdeSegmentos(parts: string[]): string | undefined {
   return undefined;
 }
 
-/** Tipo de página: home, curso, cursos, guia, guia_indice, blog, precios, landing, faq, auth, otro. */
+/** Tipo de página: home, curso, cursos, guia, guia_indice, blog, precios, datos, profesor, nosotros, casos, landing, faq, auth, otro. */
 export function tipoDePagina(parts: string[]): string {
   if (parts.length === 0) return "home";
   const primero = parts[0];
@@ -56,6 +56,11 @@ export function tipoDePagina(parts: string[]): string {
 
   if (primero === "cursos") return parts.length === 1 ? "cursos" : "curso";
   if (segundo === "cursos") return parts.length === 2 ? "cursos" : "curso";
+
+  if (primero === "datos" || segundo === "datos") return "datos";
+  if (primero === "profesores" || segundo === "profesores") return "profesor";
+  if (primero === "nosotros" || segundo === "nosotros") return "nosotros";
+  if (primero === "casos" || segundo === "casos") return "casos";
 
   if (primero === "blog") return "blog";
   if (primero === "precios" || segundo === "precios") return "precios";
