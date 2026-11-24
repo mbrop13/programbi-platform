@@ -94,7 +94,7 @@ export default function WhatsAppButton() {
   if (!href) return null;
 
   return (
-    <div className="pointer-events-none fixed right-6 bottom-6 z-[9998] flex items-center justify-end select-none">
+    <div className="wa-flotante pointer-events-none fixed right-6 bottom-6 z-[9998] flex items-center justify-end select-none">
         {showTooltip && (
           <div
             className="absolute right-full top-1/2 -translate-y-1/2 mr-3 flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-ink px-3.5 py-2 text-[13px] font-semibold text-canvas shadow-lg pointer-events-auto"

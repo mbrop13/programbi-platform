@@ -1187,7 +1187,10 @@ export default function CourseDetailClient({
           pais={pais}
           resumen={[
             descuentoLocalCliente > 0 ? `${descuentoLocalCliente}% de descuento` : null,
-            nextStart ? `Inicia ${nextStart.date.toLowerCase()}` : null,
+            // "Lunes, 7 de diciembre de 2026" → "Inicia 7 de diciembre": la barra es angosta.
+            nextStart
+              ? `Inicia ${nextStart.date.replace(/^[^,]+,\s*/, "").replace(/\s+de\s+\d{4}$/, "").toLowerCase()}`
+              : null,
           ]
             .filter(Boolean)
             .join(" · ")}
@@ -1565,12 +1568,13 @@ function CourseContactForm({ course }: { course: Course }) {
 
 /**
  * Barra fija inferior de la ficha, solo en móvil y tablet (en escritorio la
- * columna derecha ya es fija). Aparece cuando el formulario de temario sale
- * de la pantalla y se esconde al llegar el footer.
+ * columna derecha ya es fija). Está visible desde que se abre la ficha y solo
+ * se esconde al llegar el footer o mientras se escribe en un formulario (el
+ * teclado del teléfono la empujaría sobre los campos).
  *
  * Sin precio desbloqueado lleva al formulario; con precio, abre el brochure.
- * Mientras está visible oculta la burbuja flotante de WhatsApp (clase en
- * `body`), porque la barra ya trae ese botón.
+ * Como la barra ya trae WhatsApp, la burbuja flotante no se muestra en las
+ * fichas que la tienen (regla `:has()` en `globals.css`).
  */
 function BarraFijaFicha({
   curso,
@@ -1588,51 +1592,39 @@ function BarraFijaFicha({
   brochureUrl: string | null;
   whatsappCustomText?: string;
 }) {
-  const [formularioVisible, setFormularioVisible] = useState(true);
   const [footerVisible, setFooterVisible] = useState(false);
-  const [avanzo, setAvanzo] = useState(false);
-  const frame = useRef<number | null>(null);
-
-  useEffect(() => {
-    const actualizar = () => {
-      frame.current = null;
-      setAvanzo(window.scrollY > 320);
-    };
-    const onScroll = () => {
-      if (frame.current == null) frame.current = window.requestAnimationFrame(actualizar);
-    };
-    actualizar();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (frame.current != null) window.cancelAnimationFrame(frame.current);
-    };
-  }, []);
+  const [escribiendo, setEscribiendo] = useState(false);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
-    const formulario = document.getElementById("inscripcion");
     const footer = document.querySelector("footer");
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.target === formulario) setFormularioVisible(entry.isIntersecting);
-        else setFooterVisible(entry.isIntersecting);
-      }
-    });
-    if (formulario) observer.observe(formulario);
-    if (footer) observer.observe(footer);
+    if (!footer) return;
+    const observer = new IntersectionObserver(([entry]) => setFooterVisible(entry.isIntersecting));
+    observer.observe(footer);
     return () => observer.disconnect();
   }, []);
 
-  const visible = avanzo && !formularioVisible && !footerVisible;
-
   useEffect(() => {
-    document.body.classList.toggle("cta-fija-visible", visible);
-    return () => document.body.classList.remove("cta-fija-visible");
-  }, [visible]);
+    const esCampo = (el: EventTarget | null) =>
+      el instanceof HTMLElement && el.matches("input:not([type=checkbox]):not([type=radio]), textarea, select");
+    const alEnfocar = (e: FocusEvent) => setEscribiendo(esCampo(e.target));
+    const alSalir = (e: FocusEvent) => {
+      if (!esCampo(e.relatedTarget)) setEscribiendo(false);
+    };
+    document.addEventListener("focusin", alEnfocar);
+    document.addEventListener("focusout", alSalir);
+    return () => {
+      document.removeEventListener("focusin", alEnfocar);
+      document.removeEventListener("focusout", alSalir);
+    };
+  }, []);
+
+  const visible = !footerVisible && !escribiendo;
 
   const principal =
-    "inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-canvas no-underline";
+    "inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-ink px-4 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]";
+  const secundario =
+    "inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold no-underline transition-transform active:scale-[0.98]";
 
   return (
     <div
@@ -1641,13 +1633,18 @@ function BarraFijaFicha({
       data-testid="ficha-barra-fija"
       aria-hidden={!visible}
       inert={!visible}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-10px_30px_rgba(23,23,22,0.10)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden ${
-        visible ? "translate-y-0" : "translate-y-full"
+      className={`fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 mx-auto max-w-xl rounded-2xl border border-line bg-paper/95 p-2 shadow-[0_12px_40px_rgba(23,23,22,0.18)] backdrop-blur-md transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none lg:hidden ${
+        visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[calc(100%+1.5rem)] opacity-0"
       }`}
     >
-      {resumen ? (
-        <p className="mb-1.5 truncate px-1 text-center text-xs font-medium text-mute">{resumen}</p>
-      ) : null}
+      <div className="flex items-center justify-between gap-3 px-2 pb-2 pt-0.5">
+        <p className="min-w-0 truncate text-sm font-semibold text-ink">{curso}</p>
+        {resumen ? (
+          <p className="max-w-[62%] shrink-0 truncate rounded-full bg-canvas px-2.5 py-0.5 text-xs font-medium text-mute">
+            {resumen}
+          </p>
+        ) : null}
+      </div>
       <div className="flex items-stretch gap-2">
         {brochureUrl ? (
           <a
@@ -1666,28 +1663,19 @@ function BarraFijaFicha({
             <FileText size={16} aria-hidden /> Ver temario y precios
           </a>
         )}
-        {muestraPrecioDirecto(pais) ? (
-          <a
-            href="#cotizar"
-            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-4 text-sm font-semibold text-ink no-underline"
-          >
-            Consultar
-          </a>
-        ) : (
-          <WhatsAppCta
-            page={`/cursos/${cursoSlug}`}
-            intent="curso"
-            course={curso}
-            courseSlug={cursoSlug}
-            country={pais}
-            ctaPosition="curso_hero"
-            customText={whatsappCustomText}
-            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-4 text-sm font-semibold text-ink no-underline"
-          >
-            <MessageCircle size={16} aria-hidden />
-            WhatsApp
-          </WhatsAppCta>
-        )}
+        <WhatsAppCta
+          page={`/cursos/${cursoSlug}`}
+          intent="curso"
+          course={curso}
+          courseSlug={cursoSlug}
+          country={pais}
+          ctaPosition="curso_hero"
+          customText={whatsappCustomText}
+          className={`${secundario} bg-[#15803D] text-white shadow-[0_6px_16px_rgba(21,128,61,0.30)] hover:bg-[#126c34]`}
+        >
+          <MessageCircle size={17} aria-hidden />
+          WhatsApp
+        </WhatsAppCta>
       </div>
     </div>
   );

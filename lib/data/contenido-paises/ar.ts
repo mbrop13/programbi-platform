@@ -54,7 +54,7 @@ const contenido: ContenidoPais = {
     titulo: "Del Excel de todos los días al tablero que se usa en la reunión",
     parrafos: [
       "En Argentina el dato suele estar repartido entre la facturación electrónica de ARCA (ex AFIP), el ERP, las planillas de campo y algún archivo que finanzas arma a mano. Los programas están pensados para analistas financieros, pymes y equipos de agro y exportación, fintech, retail e industria que necesitan llegar al comité con una única versión del número.",
-      `El recorrido arranca en Excel, sigue en SQL Server y termina en Power BI y Python, trabajando inflación con el IPC del INDEC y tipo de cambio con series del BCRA. La clase de 19:30 a 21:30 en Chile se cursa en horario de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno, con valores en pesos argentinos (ARS) en el PDF de temario y precios y pago por Mercado Pago Argentina en ${cuotasAr}.`,
+      `El recorrido arranca en Excel, sigue en SQL Server y termina en Power BI y Python, trabajando inflación con el IPC del INDEC y tipo de cambio con series del BCRA. La clase de 19:30 a 21:30 en Chile se cursa en horario de Buenos Aires de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno, con valores en pesos argentinos (ARS) en el PDF de temario y precios y pago por Mercado Pago Argentina en ${cuotasAr}.`,
     ],
   },
   casos: [
@@ -115,7 +115,7 @@ const contenido: ContenidoPais = {
     ejemplo:
       "Una empresa argentina típica llega con las ventas en el ERP, los comprobantes de ARCA (ex AFIP) y una planilla de tesorería para seguir el tipo de cambio. El primer tablero útil cruza ventas y margen por canal y se actualiza sin depender de un cierre manual.",
     horario:
-      "Argentina mantiene America/Argentina/Buenos_Aires (UTC-3) todo el año. Chile pasa a UTC-3 en verano y UTC-4 en invierno, así que la clase de 19:30 a 21:30 en Chile se ve de 19:30 a 21:30 o de 20:30 a 22:30 en Buenos Aires. La ficha de la cohorte muestra la conversión exacta.",
+      "Argentina mantiene la misma hora todo el año. Chile pasa a UTC-3 en verano y UTC-4 en invierno, así que la clase de 19:30 a 21:30 en Chile se ve de 19:30 a 21:30 o de 20:30 a 22:30 en Buenos Aires. La ficha de la cohorte muestra la conversión exacta.",
     facturacion:
       `Los cursos abiertos se abonan en pesos argentinos (ARS) por Mercado Pago Argentina en ${cuotasAr}. Los proyectos in-company se cotizan aparte; la propuesta indica alcance, moneda y condiciones de facturación.`,
   },
@@ -131,7 +131,7 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿Cómo se sigue la clase desde Buenos Aires?",
-      a: "La clase base de 19:30 a 21:30 en Chile se dicta en vivo por Zoom y se muestra convertida a la hora de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3): 19:30 a 21:30 en verano chileno y 20:30 a 22:30 en invierno chileno. La ficha de la cohorte indica el horario exacto.",
+      a: "La clase base de 19:30 a 21:30 en Chile se dicta en vivo por Zoom y se muestra convertida a la hora de Buenos Aires: 19:30 a 21:30 en verano chileno y 20:30 a 22:30 en invierno chileno. La ficha de la cohorte indica el horario exacto.",
       categoria: "cursos",
     },
     {

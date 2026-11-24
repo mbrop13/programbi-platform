@@ -78,32 +78,32 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
   ar: {
     parrafos: [
       "En Argentina el número casi nunca está en un solo sistema: se reparte entre la facturación electrónica de ARCA (ex AFIP), el ERP, las planillas de campo y el archivo que finanzas arma a mano. El curso parte de ese desorden real para analistas financieros, pymes y equipos de agro y exportación, fintech, retail e industria, y muestra cómo construir un modelo que contemple inflación con el IPC del INDEC y tipo de cambio del BCRA sin rehacer la planilla cada mes.",
-      "La clase base de 19:30 a 21:30 en Chile se sigue en vivo por Zoom en horario de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3): de 19:30 a 21:30 durante el verano chileno y de 20:30 a 22:30 en invierno chileno. El arancel en pesos argentinos (ARS) se consulta en el PDF de temario y precios de la ficha y se abona con Mercado Pago Argentina en 3 cuotas sin interés.",
+      "La clase base de 19:30 a 21:30 en Chile se sigue en vivo por Zoom en horario de Buenos Aires: de 19:30 a 21:30 durante el verano chileno y de 20:30 a 22:30 en invierno chileno. El arancel en pesos argentinos (ARS) se consulta en el PDF de temario y precios de la ficha y se abona con Mercado Pago Argentina en 3 cuotas sin interés.",
     ],
     porCurso: {
       "power-bi": [
         "En las empresas argentinas los reportes de gestión suelen depender de cruzar comprobantes de ARCA (ex AFIP), ventas del ERP y listas de precios que cambian varias veces en el año. Este curso de Power BI (20 horas en vivo por Zoom) está pensado para analistas financieros, control de gestión y equipos de pymes, agro y exportación, fintech, retail e industria que necesitan armar un modelo estrella con Power Query y medidas DAX ajustadas por el IPC del INDEC y el tipo de cambio del BCRA.",
-        "La cohorte se dicta en la franja de 19:30 a 21:30 de Chile, que en hora de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) equivale a 19:30 a 21:30 en verano chileno y a 20:30 a 22:30 en invierno chileno. El valor en pesos argentinos (ARS) se descarga en el PDF de temario y precios y se paga con Mercado Pago Argentina en 3 cuotas sin interés.",
+        "La cohorte se dicta en la franja de 19:30 a 21:30 de Chile, que en hora de Buenos Aires equivale a 19:30 a 21:30 en verano chileno y a 20:30 a 22:30 en invierno chileno. El valor en pesos argentinos (ARS) se descarga en el PDF de temario y precios y se paga con Mercado Pago Argentina en 3 cuotas sin interés.",
       ],
       "analisis-de-datos": [
         "El programa de Análisis de Datos reúne en 60 horas por nivel (20 de SQL Server, 20 de Power BI y 20 de Python; 120 horas el recorrido completo) las tres herramientas que más piden las búsquedas de analista en Argentina relevadas por la encuesta de Sysarmy. Está orientado a profesionales de finanzas, pymes, agro y exportación, fintech, retail e industria que quieren consultar bases transaccionales y comprobantes de ARCA (ex AFIP), limpiar tablas con Pandas y publicar tableros deflactados con series del INDEC y del BCRA.",
-        "Las sesiones en vivo de 19:30 a 21:30 (hora de Chile) se cursan desde Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. Cada nivel publica su precio en pesos argentinos (ARS) en el PDF de temario y precios y admite pago por Mercado Pago Argentina en 3 cuotas sin interés.",
+        "Las sesiones en vivo de 19:30 a 21:30 (hora de Chile) se cursan desde Buenos Aires de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. Cada nivel publica su precio en pesos argentinos (ARS) en el PDF de temario y precios y admite pago por Mercado Pago Argentina en 3 cuotas sin interés.",
       ],
       python: [
         "Cuando las listas de proveedores, costos de reposición y cotizaciones cambiarias se actualizan cada semana, consolidar planillas a mano deja de escalar. El curso de Python para Datos (20 horas en vivo por Zoom) entrena a analistas financieros, administrativos de pymes y equipos de agro y exportación, fintech, retail e industria en Argentina para automatizar la lectura de archivos con Pandas, limpiar montos con punto de miles y coma decimal, normalizar el CUIT de ARCA (ex AFIP) y cruzar series del INDEC y del BCRA.",
-        "El horario base de 19:30 a 21:30 en Chile corresponde en Argentina (America/Argentina/Buenos_Aires, UTC-3) a 19:30 a 21:30 durante el verano chileno y a 20:30 a 22:30 en el invierno chileno. Descargá el PDF de temario y precios para ver el arancel en pesos argentinos (ARS) y abonar con Mercado Pago Argentina en 3 cuotas sin interés.",
+        "El horario base de 19:30 a 21:30 en Chile corresponde en Argentina a 19:30 a 21:30 durante el verano chileno y a 20:30 a 22:30 en el invierno chileno. Descargá el PDF de temario y precios para ver el arancel en pesos argentinos (ARS) y abonar con Mercado Pago Argentina en 3 cuotas sin interés.",
       ],
       chatgpt: [
         "En Argentina, usar ChatGPT en el trabajo diario ayuda a ordenar planillas, resumir contratos y armar reportes multimoneda (ARS/USD) sin rehacer cálculos cada semana. En 20 horas en vivo por Zoom, sin programar, aprendes a escribir prompts estructurados, analizar archivos CSV y Excel, armar Projects y automatizar tareas repetitivas con ChatGPT Work y criterio de privacidad.",
-        "La cohorte se dicta en la franja de 19:30 a 21:30 de Chile, que en hora de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) equivale a 19:30 a 21:30 en verano chileno y a 20:30 a 22:30 en invierno chileno. El arancel en pesos argentinos (ARS) se consulta en el PDF de temario y precios de la ficha y se abona con Mercado Pago Argentina en 3 cuotas sin interés.",
+        "La cohorte se dicta en la franja de 19:30 a 21:30 de Chile, que en hora de Buenos Aires equivale a 19:30 a 21:30 en verano chileno y a 20:30 a 22:30 en invierno chileno. El arancel en pesos argentinos (ARS) se consulta en el PDF de temario y precios de la ficha y se abona con Mercado Pago Argentina en 3 cuotas sin interés.",
       ],
       gemini: [
         "En empresas y estudios de Argentina que operan sobre Google Workspace, Gemini agiliza la redacción en Gmail y Docs, la limpieza y fórmulas en Google Sheets, la lectura de PDF y la preparación de reportes multimoneda (ARS/USD), además de investigar con Gemini Notebook (NotebookLM) y Deep Research.",
-        "Las sesiones en vivo de 20 horas (5 módulos de 4 h, sin programar) se siguen desde Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. El valor en pesos argentinos (ARS) se descarga en el PDF de temario y precios y se paga con Mercado Pago Argentina en 3 cuotas sin interés.",
+        "Las sesiones en vivo de 20 horas (5 módulos de 4 h, sin programar) se siguen desde Buenos Aires de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno. El valor en pesos argentinos (ARS) se descarga en el PDF de temario y precios y se paga con Mercado Pago Argentina en 3 cuotas sin interés.",
       ],
       claude: [
         "En Argentina, usar Claude (Anthropic) en el trabajo diario ayuda a ordenar planillas, resumir contratos, revisar comprobantes y armar reportes multimoneda (ARS/USD) sin rehacer cálculos cada semana. En 20 horas en vivo por Zoom, sin programar, aprendes a armar prompts reutilizables, organizar criterios en Projects, generar documentos, presentaciones y planillas con Artifacts, Docs, Slides y Excel, y delegar tareas repetidas con Cowork.",
-        "La cohorte se dicta en la franja de 19:30 a 21:30 de Chile, que en hora de Buenos Aires (America/Argentina/Buenos_Aires, UTC-3) equivale a 19:30 a 21:30 en verano chileno y a 20:30 a 22:30 en invierno chileno, con grabaciones disponibles en el campus virtual. El arancel en pesos argentinos (ARS) se consulta en el PDF de temario y precios de la ficha y se abona con Mercado Pago Argentina en 3 cuotas sin interés.",
+        "La cohorte se dicta en la franja de 19:30 a 21:30 de Chile, que en hora de Buenos Aires equivale a 19:30 a 21:30 en verano chileno y a 20:30 a 22:30 en invierno chileno, con grabaciones disponibles en el campus virtual. El arancel en pesos argentinos (ARS) se consulta en el PDF de temario y precios de la ficha y se abona con Mercado Pago Argentina en 3 cuotas sin interés.",
       ],
     },
   },
@@ -135,19 +135,19 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
     porCurso: {
       "power-bi": [
         "Este curso de Power BI en Perú se dicta en vivo por Zoom (20 horas en el nivel básico-intermedio y 20 horas en el nivel avanzado) para profesionales y equipos que hoy arman reportes a mano en Excel —bajando comprobantes electrónicos de SUNAT, cruzándolos con reportes de planta o planillas de campo— y necesitan automatizar la limpieza con Power Query (lenguaje M), estructurar un modelo estrella y escribir medidas DAX en soles y dólares.",
-        "Las clases se siguen en horario de Lima (America/Lima, UTC-5: de 17:30 a 19:30 cuando Chile está en horario de verano y de 18:30 a 20:30 en invierno chileno), con grabaciones y material de práctica en el campus virtual y certificado digital de ProgramBI al completar. Puedes empezar desde cero sin saber programar, y el precio en soles (PEN) con 3 cuotas sin interés se consulta en el PDF de temario y precios de esta ficha.",
+        "Las clases se siguen en horario de Lima (de 17:30 a 19:30 cuando Chile está en horario de verano y de 18:30 a 20:30 en invierno chileno), con grabaciones y material de práctica en el campus virtual y certificado digital de ProgramBI al completar. Puedes empezar desde cero sin saber programar, y el precio en soles (PEN) con 3 cuotas sin interés se consulta en el PDF de temario y precios de esta ficha.",
       ],
       chatgpt: [
         "En Perú, ChatGPT te ayuda a dejar atrás el trabajo manual de bajar comprobantes y registros de SUNAT para ordenarlos en Excel o preparar reportes en soles. En 20 horas en vivo por Zoom aprendes a redactar prompts claros, analizar planillas CSV y Excel, organizar documentación en Projects y automatizar tareas repetitivas con ChatGPT Work, sin programar.",
-        "Las clases se dictan en horario de Lima (America/Lima, UTC-5: de 17:30 a 19:30 en verano chileno y de 18:30 a 20:30 en invierno chileno), con grabaciones en el campus virtual y certificado digital. El precio en soles (PEN) con 3 cuotas sin interés se consulta en el PDF de temario y precios de esta ficha.",
+        "Las clases se dictan en horario de Lima (de 17:30 a 19:30 en verano chileno y de 18:30 a 20:30 en invierno chileno), con grabaciones en el campus virtual y certificado digital. El precio en soles (PEN) con 3 cuotas sin interés se consulta en el PDF de temario y precios de esta ficha.",
       ],
       gemini: [
         "Si tu empresa u oficina en Perú trabaja con Google Workspace, este curso de Gemini de 20 horas en vivo te enseña a redactar en Gmail y Docs, extraer datos de comprobantes y PDF de SUNAT hacia Google Sheets, armar reportes en soles y usar Gemini Notebook (NotebookLM) y Deep Research con fuentes verificadas.",
-        "Se cursa en horario de Lima (America/Lima, UTC-5: de 17:30 a 19:30 cuando Chile está en horario de verano y de 18:30 a 20:30 en invierno chileno), sin conocimientos previos de programación. Consulta el arancel en soles (PEN) y las 3 cuotas sin interés en el PDF de temario y precios.",
+        "Se cursa en horario de Lima (de 17:30 a 19:30 cuando Chile está en horario de verano y de 18:30 a 20:30 en invierno chileno), sin conocimientos previos de programación. Consulta el arancel en soles (PEN) y las 3 cuotas sin interés en el PDF de temario y precios.",
       ],
       claude: [
         "En Perú, Claude (Anthropic) te ayuda a ordenar comprobantes y registros de SUNAT, cruzar planillas de Excel, revisar contratos y preparar reportes en soles sin hacer todo a mano. En 20 horas en vivo por Zoom, sin programar, trabajas con prompts reutilizables, organización en Projects, creación de documentos, presentaciones y planillas con Artifacts, Docs, Slides y Excel, y automatización de tareas repetidas con Cowork.",
-        "Las clases se dictan en horario de Lima (America/Lima, UTC-5: de 17:30 a 19:30 en verano chileno y de 18:30 a 20:30 en invierno chileno), con grabaciones en el campus virtual y certificado digital. El precio en soles (PEN) con 3 cuotas sin interés se consulta en el PDF de temario y precios de esta ficha.",
+        "Las clases se dictan en horario de Lima (de 17:30 a 19:30 en verano chileno y de 18:30 a 20:30 en invierno chileno), con grabaciones en el campus virtual y certificado digital. El precio en soles (PEN) con 3 cuotas sin interés se consulta en el PDF de temario y precios de esta ficha.",
       ],
     },
   },
@@ -299,6 +299,34 @@ export const FICHA_PAIS: Record<string, FichaPais> = {
       "Las clases se dictan desde Chile y se ven en hora de Caracas: Venezuela se mantiene en UTC-4 todo el año, igual que Bolivia, mientras Chile cambia con el horario de verano, así que la equivalencia se mueve en parte del año. Los casos de práctica incluyen servicios: costo por atención, tiempo de respuesta y rentabilidad por contrato. Los datos de partida son los comprobantes del SENIAT, los registros del sistema comercial y las planillas de operación.",
     ],
     porCurso: porCursoRegional("Venezuela"),
+  },
+  pa: {
+    parrafos: [
+      "En Panamá buena parte del trabajo con datos gira alrededor del movimiento de carga: contenedores, reexportación desde la Zona Libre de Colón, servicios al Canal y operaciones bancarias con clientes de varios países. El curso toma ese tipo de operación y la ordena en un modelo que se actualiza solo: el sistema de bodega o de operación aporta el volumen, la factura electrónica de la DGI aporta el ingreso y el tablero muestra margen por cliente, ruta o línea de servicio sin rearmar la planilla cada semana.",
+      "Las clases se ven en hora de Ciudad de Panamá: el país se mantiene en UTC-5 todo el año y Chile cambia por el horario de verano, así que la clase de 19:30 en Chile se ve a las 17:30 o a las 18:30 en Panamá según la época. Como el dólar circula como moneda local, el precio publicado en USD es el mismo número que vas a reconocer en tu tarjeta. Los casos incluyen también banca y servicios corporativos: cartera por segmento, cumplimiento y tiempos de atención.",
+    ],
+    porCurso: porCursoRegional("Panamá"),
+  },
+  ni: {
+    parrafos: [
+      "En Nicaragua el análisis de gestión suele partir del campo y de la planta: cosecha de café por finca, ganado y carne para exportación, y líneas de producción en zona franca. El curso convierte esos registros, muchas veces repartidos entre planillas y el sistema contable, en un modelo único donde el costo por quintal, el rendimiento por línea y el margen por destino se calculan con la misma definición para todas las áreas.",
+      "Las clases se ven en hora de Managua: Nicaragua se mantiene en UTC-6 todo el año y Chile cambia con el horario de verano, por eso la clase de 19:30 en Chile se ve a las 16:30 o a las 17:30 según la época, y quedan grabadas para quien sale tarde del trabajo. Los ejercicios también trabajan con montos en córdobas y en dólares en el mismo reporte, una situación habitual en empresas que venden en el mercado local y exportan.",
+    ],
+    porCurso: porCursoRegional("Nicaragua"),
+  },
+  hn: {
+    parrafos: [
+      "En Honduras el control de gestión de muchas empresas se reparte entre la maquila de San Pedro Sula, la agroexportación de café y camarón y los centros de atención que trabajan para clientes del exterior. El curso parte de esos datos tal como llegan: órdenes de producción, facturas emitidas con CAI bajo el régimen de facturación del SAR y planillas de operación, y los ordena en un modelo que muestra eficiencia por línea, costo por pedido y margen por cliente.",
+      "Las clases se ven en hora de Tegucigalpa: Honduras se mantiene en UTC-6 todo el año y Chile cambia por el horario de verano, así que la clase de 19:30 en Chile se ve a las 16:30 o a las 17:30 en Honduras según la época. Los casos de práctica incluyen banca y remesas: cartera, recaudo y conciliación de pagos, con reportes en lempiras y en dólares cuando la operación lo pide.",
+    ],
+    porCurso: porCursoRegional("Honduras"),
+  },
+  py: {
+    parrafos: [
+      "En Paraguay el dato de gestión está muy ligado al agronegocio: campaña de soja, acopio, flete fluvial y ganadería con destino a frigorífico. El curso toma esos registros y los cruza con la factura electrónica del SIFEN, para que el modelo calcule costo por tonelada, margen por campaña y rendimiento por lote sin depender de una planilla que solo una persona entiende.",
+      "Desde octubre de 2024 Paraguay se mantiene en UTC-3 todo el año. Por eso la clase de 19:30 en Chile se ve a la misma hora en Asunción durante el verano chileno y a las 20:30 en el invierno chileno; la ficha de cada cohorte muestra la hora exacta. Los ejercicios incluyen también comercio fronterizo y maquila: inventario por depósito, venta por canal y costo por orden, con montos en guaraníes y en dólares.",
+    ],
+    porCurso: porCursoRegional("Paraguay"),
   },
 };
 

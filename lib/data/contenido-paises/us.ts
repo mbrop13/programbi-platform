@@ -42,10 +42,10 @@ const contenido: ContenidoPais = {
     },
   },
   hero: {
-    h1: "Cursos de datos e IA en vivo y en español para hispanohablantes en Estados Unidos",
+    h1: "Cursos de datos e IA en vivo y en español en Estados Unidos",
     parrafo:
-      "Power BI, Excel, SQL, Python e IA en vivo por Zoom y en español para hispanohablantes en Estados Unidos. El horario de 19:30–21:30 hora Chile (America/Santiago) equivale a 17:30–19:30 ET (EST), 16:30–18:30 CT (CST) y 14:30–16:30 PT (PST); el software y los términos se enseñan en inglés, tal como los usas en la oficina.",
-    nota: "Clases en vivo y en español · 17:30–19:30 ET / 16:30–18:30 CT / 14:30–16:30 PT · Precios en USD",
+      "Power BI, Excel, SQL, Python e IA en vivo por Zoom. Aprendes en español y con el software en inglés, tal como lo usas en la oficina.",
+    nota: "Clases en vivo y en español · Horario en ET, CT y PT · Precios en USD",
   },
   intro: {
     kicker: "Datos para equipos hispanohablantes en EE.UU.",
@@ -53,7 +53,7 @@ const contenido: ContenidoPais = {
     parrafos: [
       "Muchos profesionales en Estados Unidos ya piensan en español pero entregan reportes en inglés: dashboards, payroll, cuentas por cobrar, inventario. El obstáculo rara vez es la capacidad; suele ser que el curso disponible o está en inglés a un ritmo difícil de seguir, o es un video grabado sin nadie a quien preguntar.",
       "Aquí la explicación es en español y la herramienta se ve como en tu trabajo: menús de Power BI, funciones de Excel y consultas SQL en inglés, con el vocabulario técnico que vas a usar con tu jefe o tu cliente. Los ejercicios parten de lo que se encuentra en una empresa estadounidense: exportaciones de QuickBooks o NetSuite, reportes de Salesforce o ADP, y datos públicos del Census Bureau, el BLS y FRED.",
-      "Las sesiones son en vivo y en español para hispanohablantes en Estados Unidos, de 2 horas (19:30–21:30 hora Chile, America/Santiago), lo que equivale a 17:30–19:30 ET (EST), 16:30–18:30 CT (CST) y 14:30–16:30 PT (PST) según la época del año. No exige saber programar. Si tu empresa tiene un programa de asistencia educativa, la academia entrega recibo en USD y la descripción del curso para que la solicites.",
+      "Las sesiones son en vivo y en español para hispanohablantes en Estados Unidos, de 2 horas (19:30–21:30 hora de Chile), lo que equivale a 17:30–19:30 ET, 16:30–18:30 CT y 14:30–16:30 PT según la época del año. No exige saber programar. Si tu empresa tiene un programa de asistencia educativa, la academia entrega recibo en USD y la descripción del curso para que la solicites.",
     ],
   },
   casos: [
@@ -153,7 +153,7 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿A qué hora es la clase en Miami, Texas o California?",
-      a: "La sesión es de 2 horas, en vivo y en español para hispanohablantes en Estados Unidos, y se dicta de 19:30–21:30 hora Chile (America/Santiago). Eso equivale a 17:30–19:30 ET (EST) en Miami y Nueva York, 16:30–18:30 CT (CST) en Texas y Chicago, y 14:30–16:30 PT (PST) en California, según la época del año porque EE.UU. y Chile cambian la hora en fechas distintas. La ficha de cada curso muestra la hora exacta de la cohorte.",
+      a: "La sesión es de 2 horas, en vivo y en español para hispanohablantes en Estados Unidos, y se dicta de 19:30–21:30 hora de Chile. Eso equivale a 17:30–19:30 ET en Miami y Nueva York, 16:30–18:30 CT en Texas y Chicago, y 14:30–16:30 PT en California, según la época del año porque EE.UU. y Chile cambian la hora en fechas distintas. La ficha de cada curso muestra la hora exacta de la cohorte.",
       categoria: "cursos",
     },
     {
@@ -233,7 +233,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
   preguntas: [
     {
       q: "¿A qué hora son las clases en Miami, Texas y California?",
-      a: "Las clases en vivo por Zoom y en español para hispanohablantes en Estados Unidos son de {horario}, {horaLocal}, según la cohorte. El horario base de 19:30–21:30 hora Chile (America/Santiago) equivale a 17:30–19:30 ET (EST), 16:30–18:30 CT (CST) y 14:30–16:30 PT (PST). EE.UU. y Chile cambian la hora en fechas distintas, por eso la ficha muestra la hora exacta de cada cohorte.",
+      a: "Las clases en vivo por Zoom y en español para hispanohablantes en Estados Unidos son de {horario}, {horaLocal}, según la cohorte. El horario base de 19:30–21:30 hora de Chile equivale a 17:30–19:30 ET, 16:30–18:30 CT y 14:30–16:30 PT. EE.UU. y Chile cambian la hora en fechas distintas, por eso la ficha muestra la hora exacta de cada cohorte.",
     },
     {
       q: "¿Cuánto cuesta un curso de Power BI en español en EE.UU.?",

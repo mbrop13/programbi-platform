@@ -1112,11 +1112,11 @@ body.footer-revealed [class*="z-[9998]"] {
 }
 
 /* Ficha de curso en móvil: la barra fija ya trae WhatsApp, así que la burbuja
-   flotante se esconde mientras la barra está visible. */
+   flotante no se muestra en las páginas que tienen esa barra. La barra viene
+   en el HTML del servidor, por eso la burbuja no alcanza a parpadear. */
 @media (max-width: 1023px) {
-  body.cta-fija-visible [class*="z-[9998]"] {
-    opacity: 0;
-    pointer-events: none;
+  body:has([data-testid="ficha-barra-fija"]) .wa-flotante {
+    display: none;
   }
 }
 

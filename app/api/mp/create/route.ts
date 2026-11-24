@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { randomUUID } from "crypto";
 import { getPricingVariantForUser } from "@/lib/experiments/user-variant";
-import { getPais, normalizarPais } from "@/config/paises";
+import { COBRO_CLP_FALLBACK, getPais, normalizarPais, type SlugCurso } from "@/config/paises";
+import { resolverCobro as resolverCobroPais } from "@/lib/paises/cobro";
 import { bloqueoPorMercado } from "@/lib/paises/arbitraje";
 import { resolveOrCreateGuestUser } from "@/lib/pago/guest-user";
 
@@ -160,7 +161,14 @@ export async function POST(req: NextRequest) {
              ? aplicarPorcentajeDescuento(basePrice, maxDiscountPercent, 0)
              : basePrice;
        }
-       
+
+       // Precio local bajado a propósito (p. ej. Perú): sin cuenta local de
+       // Mercado Pago se cobra su equivalente fijo en CLP, no el precio chileno.
+       const cargoFijoClp = COBRO_CLP_FALLBACK[pais]?.[masterCourse.slug as SlugCurso];
+       if (cargoFijoClp && resolverCobroPais(pais).modo === "fallback-cl") {
+         finalPriceClp = cargoFijoClp;
+       }
+
        const itemTotal = finalPriceClp * (item.quantity || 1);
        grandTotalClp += itemTotal;
 

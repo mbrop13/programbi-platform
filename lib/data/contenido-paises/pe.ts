@@ -253,7 +253,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
 const INTRO_FICHA_PE: Record<string, string[]> = {
   "power-bi": [
     "Este es un curso de Power BI en Perú, en vivo por Zoom, pensado para analistas, control de gestión, finanzas y operaciones que hoy consolidan reportes en Excel y necesitan construir tableros que se actualicen solos.",
-    "El programa abierto de nivel básico-intermedio dura 20 horas en horario de Lima (America/Lima, UTC-5), con grabaciones en el campus virtual: parte desde cero con Power Query (lenguaje M), sigue con el modelo estrella y profundiza en medidas DAX. El nivel avanzado suma otras 20 horas con inteligencia de tiempo, seguridad a nivel de fila (RLS) e integración de IA en Power BI.",
+    "El programa abierto de nivel básico-intermedio dura 20 horas en horario de Lima, con grabaciones en el campus virtual: parte desde cero con Power Query (lenguaje M), sigue con el modelo estrella y profundiza en medidas DAX. El nivel avanzado suma otras 20 horas con inteligencia de tiempo, seguridad a nivel de fila (RLS) e integración de IA en Power BI.",
     "Los precios para Perú se publican en soles (PEN) en el PDF de temario y precios de esta ficha, con pago por Mercado Pago Perú, Yape o Plin y 3 cuotas sin interés. Si prefieres reforzar fórmulas y tablas dinámicas antes, puedes revisar el curso de Excel en /pe/cursos/excel; para capacitar a un equipo con factura corporativa, cotiza en /pe/cursos/power-bi?para=empresas.",
   ],
 };

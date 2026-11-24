@@ -244,11 +244,10 @@ export type Pais = {
   voseo: boolean;
   /**
    * ¿La versión por país puede indexarse?
-   * Solo se indexan los 6 mercados principales con contenido local y tabla de
-   * precios propia (cl, ar, mx, pe, co, uy). Los demás quedan en `false`
-   * (noindex, follow; fuera del sitemap y hreflang) para evitar ~300+ URLs
-   * casi duplicadas que diluyen la calidad del sitio; se pueden reactivar por
-   * mercado cuando tengan pasarela local y copy único.
+   * Desde el 17 nov 2026 todos los países son indexables. Las variantes se
+   * diferencian con hreflang regional y con contenido propio de cada país en
+   * `lib/data/contenido-paises` (home, rutas informativas y fichas). Con
+   * `false` el país queda noindex, follow y fuera del sitemap y del hreflang.
    */
   indexable: boolean;
   /** Zona horaria IANA. Sirve para convertir el horario de las clases. */
@@ -276,6 +275,18 @@ export type Pais = {
  * Actualízala cuando el dólar se mueva.
  */
 export const TIPO_CAMBIO_USD = 900;
+
+/**
+ * Cargo fijo en CLP por curso cuando un país con precio local (`pago: "mp"`)
+ * todavía cobra con la cuenta de Chile (`fallback-cl` en `lib/paises/cobro.ts`).
+ * Sin esta tabla ese cargo es el precio chileno, que no coincide con un precio
+ * local bajado a propósito. Con cuenta local de Mercado Pago no se usa: se
+ * cobra el precio local en su moneda.
+ * - Perú (24 nov 2026): Análisis de datos S/ 887 ≈ $262.000.
+ */
+export const COBRO_CLP_FALLBACK: Readonly<Record<string, Partial<Record<SlugCurso, number>>>> = {
+  pe: { "analisis-de-datos": 262000, "analitica-mineria": 262000 },
+};
 
 
 const EMAIL = "contacto@programbi.cl";
@@ -441,7 +452,7 @@ export const PAISES: Pais[] = [
   },
   {
     // Estados Unidos: hispanohablantes que viven y trabajan allá (Miami primero).
-    // Precio sin descuento (249/498) y cobro en CLP fallback: noindex hasta tener pasarela y copy propio.
+    // Precio sin descuento (249/498). El cobro todavía cae en el equivalente en CLP (ver `pago`).
     iso: "us",
     nombre: "Estados Unidos",
     idioma: "es-US",
@@ -617,7 +628,7 @@ export const PAISES: Pais[] = [
     locale: "es-PE",
     decimales: 0,
     pago: "mp",
-    precios: preciosLatAm(618, 1236, 904),
+    precios: preciosLatAm(618, 887, 904),
     listas: listasSoloMercadoFinanciero(1332),
     sinDescuento: true,
     dispositivo: "computadora",

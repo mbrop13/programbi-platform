@@ -13,14 +13,13 @@
  * - Prohibido canonical cruzado entre países: se usa noindex o 301, nunca un
  *   canonical que apunte a otro país.
  *
- * Solo aplica a los países secundarios de WS9. Chile (raíz) y los países
- * prioritarios (ar, mx, pe, co) no entran en esta lista; los países no
- * indexables (hn, ni, pa, py) ya quedan fuera por `config/paises.ts`.
+ * Solo aplica a los países secundarios. Chile (raíz) y los países
+ * prioritarios (ar, mx, pe, co) no entran en esta lista.
  */
 
 import { esIndexable, esIsoPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 
-/** Países secundarios del frente WS9 (los que hoy sí se indexan). */
+/** Países secundarios (todos indexables desde el 17 nov 2026). */
 export const PAISES_SECUNDARIOS = [
   "ec",
   "uy",
@@ -30,23 +29,20 @@ export const PAISES_SECUNDARIOS = [
   "ve",
   "bo",
   "sv",
+  "hn",
+  "ni",
+  "pa",
+  "py",
 ] as const;
 
 export type PaisSecundario = (typeof PAISES_SECUNDARIOS)[number];
 
 /**
- * Países secundarios sin contenido editorial propio en rutas informativas:
- * comparten copia raíz de Chile y solo cambian moneda/horario.
+ * Países secundarios sin contenido editorial propio en rutas informativas.
+ * Vacío desde el 24 nov 2026: los 11 países que compartían la copia de Chile
+ * tienen archivo propio en `lib/data/contenido-paises`.
  */
-export const PAISES_SIN_CONTENIDO_LOCAL: readonly PaisSecundario[] = [
-  "bo",
-  "cr",
-  "do",
-  "ec",
-  "gt",
-  "sv",
-  "ve",
-];
+export const PAISES_SIN_CONTENIDO_LOCAL: readonly PaisSecundario[] = [];
 
 /**
  * Rutas (sin prefijo de país) que se consolidan como noindex en cada país.

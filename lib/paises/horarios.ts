@@ -169,36 +169,27 @@ export function paisDesdeZonaHoraria(tz?: string | null): string | null {
 }
 
 /**
- * Etiqueta de la hora local del país con su abreviatura y offset real.
- * México se identifica como "centro de México (CDMX)" para no confundirlo
- * con los husos del norte o de la península.
+ * Etiqueta legible de la hora local del país, sin abreviaturas ni offsets
+ * UTC: se lee en heros, fichas y FAQ, donde «(ART, UTC-3)» se ve técnico.
+ * México se identifica como "centro de México" para no confundirlo con los
+ * husos del norte o de la península. El parámetro `_referencia` se mantiene
+ * por compatibilidad con las llamadas existentes.
  */
 export function etiquetaHoraLocal(
   iso: string | null | undefined,
-  referencia: Date = new Date()
+  _referencia: Date = new Date()
 ): string {
   const pais = getPais(normalizarPais(iso));
-  const offset = etiquetaUtc(referencia, pais.zonaHoraria);
   switch (pais.iso) {
-    case ISO_CHILE:
-      return `hora de Chile (${offset})`;
-    case "ar":
-      return `hora de Argentina (ART, ${offset})`;
     case "mx":
-      return `hora del centro de México (CDMX, ${offset})`;
-    case "pe":
-      return `hora de Perú (PET, ${offset})`;
-    case "co":
-      return `hora de Colombia (COT, ${offset})`;
-    case "uy":
-      return `hora de Uruguay (UYT, ${offset})`;
+      return "hora del centro de México";
     case "us":
       // EE.UU. tiene cuatro husos: la referencia publicada es la del Este.
-      return `hora del Este de EE.UU. (ET, Miami y Nueva York, ${offset}; 1 h menos en CT y 3 h menos en PT)`;
+      return "hora del Este de EE. UU.";
     case "es":
-      return `hora peninsular de España (${offset})`;
+      return "hora peninsular de España";
     default:
-      return `hora de ${pais.nombre} (${offset})`;
+      return `hora de ${pais.nombre}`;
   }
 }
 

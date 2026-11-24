@@ -95,7 +95,7 @@ export default async function MiamiPage({
     },
     {
       q: "¿A qué hora son las clases en Miami?",
-      a: `La sesión de 2 horas es de ${horario.inicio} a ${horario.fin}, ${horaLocal}. El horario base de 19:30–21:30 Chile (America/Santiago) equivale a 17:30–19:30 ET (EST), 16:30–18:30 CT (CST) y 14:30–16:30 PT (PST). Estados Unidos y Chile cambian la hora en fechas distintas, así que la ficha de cada cohorte muestra la hora exacta.`,
+      a: `La sesión de 2 horas es de ${horario.inicio} a ${horario.fin}, ${horaLocal}. El horario base de 19:30–21:30 hora de Chile equivale a 17:30–19:30 ET, 16:30–18:30 CT y 14:30–16:30 PT. Estados Unidos y Chile cambian la hora en fechas distintas, así que la ficha de cada cohorte muestra la hora exacta.`,
     },
     {
       q: "¿Cuánto cuesta un curso de Power BI o Excel en español en Miami?",

@@ -6,6 +6,17 @@ import co from "./co";
 import uy from "./uy";
 import us, { bloqueLocal as bloqueUs } from "./us";
 import es, { bloqueLocal as bloqueEs } from "./es";
+import bo from "./bo";
+import cr from "./cr";
+import ec from "./ec";
+import sv from "./sv";
+import gt from "./gt";
+import hn from "./hn";
+import ni from "./ni";
+import pa from "./pa";
+import py from "./py";
+import dominicana from "./do";
+import ve from "./ve";
 import {
   construirBloque,
   type DatosBloqueLocal,
@@ -15,10 +26,29 @@ import {
 import type { SeoPagina } from "./tipos";
 
 /**
- * Países con contenido propio. Chile (raíz) mantiene su home actual y los
- * países sin entrada reciben la versión común, sin bloque local.
+ * Países con contenido propio. Chile (raíz) mantiene su home actual; desde el
+ * 24 nov 2026 los 18 países con carpeta tienen entrada propia.
  */
-const POR_ISO: Record<string, ContenidoPais> = { ar, mx, pe, co, uy, us, es };
+const POR_ISO: Record<string, ContenidoPais> = {
+  ar,
+  mx,
+  pe,
+  co,
+  uy,
+  us,
+  es,
+  bo,
+  cr,
+  ec,
+  sv,
+  gt,
+  hn,
+  ni,
+  pa,
+  py,
+  do: dominicana,
+  ve,
+};
 
 export function getContenidoPais(iso: string | null | undefined): ContenidoPais | null {
   if (!iso) return null;

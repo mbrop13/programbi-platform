@@ -247,17 +247,13 @@ export default function CursosPageClient({
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-mute sm:text-base">
             {pais === "pe" ? (
               <>
-                Catálogo completo de cursos de datos en vivo por Zoom para Perú, en horario de Lima
-                (17:30 a 19:30 PET, UTC-5) y con precios en soles (PEN). Incluye programas de
-                análisis de datos, SQL Server, Python, Power BI, Excel e IA con clase gratis, 3
-                cuotas sin interés y certificado digital.
+                Cursos de datos e IA en vivo por Zoom, en horario de Lima y con precios en soles.
+                Clase gratis, 3 cuotas sin interés y certificado digital.
               </>
             ) : pais === "co" ? (
               <>
-                Catálogo completo de cursos de datos en vivo por Zoom para Colombia, en horario de
-                Bogotá (17:30 a 19:30 COT, UTC-5) y con precios en pesos colombianos (COP). Incluye
-                programas de análisis de datos, SQL Server, Python, Power BI, Excel e IA con clase
-                gratis, 3 cuotas sin interés y certificado digital.
+                Cursos de datos e IA en vivo por Zoom, en horario de Bogotá y con precios en pesos
+                colombianos. Clase gratis, 3 cuotas sin interés y certificado digital.
               </>
             ) : (
               <>

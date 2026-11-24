@@ -44,7 +44,7 @@ const contenido: ContenidoPais = {
   hero: {
     h1: "Cursos de Power BI, análisis de datos e IA online para España",
     parrafo:
-      "Formación práctica en Power BI, Excel, SQL Server, Python e IA con profesorado en activo desde Chile. Las cohortes abiertas incluyen sesiones en directo por Zoom y grabaciones en HD disponibles al instante en el campus virtual para seguirlo a tu ritmo; para empresas en España ofrecemos programas in-company en horario laboral peninsular (CET/CEST).",
+      "Power BI, Excel, SQL Server, Python e IA en directo por Zoom, con grabaciones en el campus para seguirlo a tu ritmo. Para empresas, también en horario peninsular.",
     nota: "Clases en directo + grabaciones · Precio directo en USD · Certificado digital",
   },
   intro: {
