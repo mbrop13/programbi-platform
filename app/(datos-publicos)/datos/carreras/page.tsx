@@ -289,7 +289,7 @@ export default function CarrerasHubPage() {
                   <Link
                     key={c.slug}
                     href={`/datos/carreras/${c.slug}`}
-                    className="inline-flex min-h-10 items-center rounded-full border border-line-strong bg-white px-3.5 text-sm font-medium text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-white"
+                    className="inline-flex min-h-10 items-center rounded-full border border-line-strong bg-white px-3.5 text-sm font-medium text-foreground transition-colors hover:border-[#1890ff] hover:bg-[#e6f4ff] hover:text-[#0958d9]"
                   >
                     {c.label}
                   </Link>

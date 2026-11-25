@@ -47,6 +47,11 @@ export const PROFESION_POR_SLUG: Record<string, string> = {
   "tecnico-en-administracion-de-empresas": "técnico en administración",
 };
 
+/** Nombre de la profesión («ingeniero/a civil informático») o `null`. */
+export function profesionDeCarrera(slug: string): string | null {
+  return PROFESION_POR_SLUG[slug] ?? null;
+}
+
 export function tituloH1Ficha(slug: string, nombre: string): string {
   const { titulo, subtitulo } = partesTituloFicha(slug, nombre);
   return subtitulo ? `${titulo} ${subtitulo}` : titulo;

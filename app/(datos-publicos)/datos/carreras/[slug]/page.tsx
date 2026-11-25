@@ -16,6 +16,9 @@ import {
 } from "@/components/datos/FichaCarreraClient";
 import { FuenteLinea } from "@/components/datos/FuenteLinea";
 import { FotosInstitucionesCarrera } from "@/components/datos/FotosInstitucionesCarrera";
+import { BarraCarreraFicha } from "@/components/datos/BarraCarreraFicha";
+import { EsParaTi, NavegacionFicha, SobreLaCarrera } from "@/components/datos/PerfilCarreraSecciones";
+import { getPerfilCarrera, preguntasPerfilCarrera } from "@/lib/datos/perfiles-carreras";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import {
   esFichaIndexable,
@@ -85,7 +88,12 @@ export default async function FichaCarreraPage({
   const programas = getProgramasCarrera(slug);
   const resumen = resumenFichaCarrera(carrera, ctx);
   const narrativa = narrativaUnicaFicha(carrera, ctx);
-  const faqs = faqsFichaCarrera(carrera, ctx);
+  const perfil = getPerfilCarrera(carrera.slug);
+  // Preguntas de decisión («¿Debería estudiar…?») primero; luego las de datos.
+  const faqs = [
+    ...(perfil ? preguntasPerfilCarrera(carrera, ctx, perfil) : []),
+    ...faqsFichaCarrera(carrera, ctx),
+  ];
   const { similares, menosAnos } = carrerasParecidas(carrera, ctx.tipo);
 
   const migas = [
@@ -117,6 +125,8 @@ export default async function FichaCarreraPage({
 
       <div className="space-y-4">
         <MigasDatos migas={migas} />
+
+        <BarraCarreraFicha slugActual={carrera.slug} />
 
         <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0 flex-1 space-y-4">
@@ -152,7 +162,7 @@ export default async function FichaCarreraPage({
               {similares[0] ? (
                 <Link
                   href={`/datos/carreras/comparar?c=${encodeURIComponent(`${carrera.slug},${similares[0].slug}`)}`}
-                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-carreras px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-[#91caff] bg-[#e6f4ff] px-4 text-sm font-semibold text-[#0958d9] transition-colors hover:bg-[#bae0ff]"
                 >
                   <GitCompare className="size-4" aria-hidden="true" />
                   Comparar con {similares[0].nombre}
@@ -177,9 +187,12 @@ export default async function FichaCarreraPage({
             total={instituciones.filter((i) => i.tipo === ctx.tipo).length}
           />
         </header>
+
+        <NavegacionFicha conPerfil={perfil !== null} />
       </div>
 
       {/* Panel interactivo unificado (incluye los 4 KPIs SSR + selector U/IP/CFT + ajuste IPC) */}
+      <div id="cifras" className="scroll-mt-24">
       <FichaCarreraClient
         carrera={carrera}
         tipoInicial={ctx.tipo}
@@ -194,6 +207,15 @@ export default async function FichaCarreraPage({
           />
         }
       />
+      </div>
+
+      {/* Perfil de la carrera: qué hace, para quién es y «¿Deberías estudiarla?» */}
+      {perfil ? (
+        <>
+          <SobreLaCarrera carrera={carrera} perfil={perfil} />
+          <EsParaTi carrera={carrera} ctx={ctx} perfil={perfil} slugComparar={similares[0]?.slug} />
+        </>
+      ) : null}
 
       {/* Bloque "En resumen" citable */}
       <EnResumen
@@ -217,6 +239,7 @@ export default async function FichaCarreraPage({
       </Card>
 
       {/* Carreras parecidas + Mismo sueldo menos años + Ranking + Cursos */}
+      <div id="parecidas" className="scroll-mt-24">
       <CarrerasParecidas
         slugActual={carrera.slug}
         nombreActual={carrera.nombre}
@@ -227,11 +250,15 @@ export default async function FichaCarreraPage({
         siguienteEnRanking={ctx.siguienteEnRanking}
       />
 
+      </div>
+
       {/* Preguntas frecuentes */}
+      <div id="preguntas" className="scroll-mt-24">
       <FaqDatos
         faqs={faqs}
         titulo={`Preguntas frecuentes sobre ${carrera.nombre}`}
       />
+      </div>
 
       {/* CTA ProgramBI */}
       <CtaDatos

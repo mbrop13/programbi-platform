@@ -21,6 +21,14 @@ interface BuscadorCarrerasProps {
   onSelect?: (entry: BuscadorEntry) => void;
   placeholder?: string;
   className?: string;
+  /** Escucha «/» y Ctrl K. Solo un buscador por página debería tenerlo. */
+  atajos?: boolean;
+  /** «campo» (barra ancha) o «boton» (disparador compacto con su propio contenido). */
+  variante?: "campo" | "boton";
+  /** Contenido del disparador cuando `variante="boton"`. */
+  children?: React.ReactNode;
+  /** Clases del disparador cuando `variante="boton"`. */
+  botonClassName?: string;
 }
 
 export function BuscadorCarreras({
@@ -28,6 +36,10 @@ export function BuscadorCarreras({
   onSelect,
   placeholder = "Busca una carrera por nombre o apodo (ej. medicina, informática, tens, comercial)...",
   className,
+  atajos = true,
+  variante = "campo",
+  children,
+  botonClassName,
 }: BuscadorCarrerasProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
@@ -67,6 +79,7 @@ export function BuscadorCarreras({
   );
 
   React.useEffect(() => {
+    if (!atajos) return;
     const onKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       const isTyping =
@@ -87,7 +100,7 @@ export function BuscadorCarreras({
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [cambiarApertura, open]);
+  }, [atajos, cambiarApertura, open]);
 
   const { exactos, sugeridos } = React.useMemo(() => {
     return buscarCarreras(query, items, 12);
@@ -116,7 +129,19 @@ export function BuscadorCarreras({
   };
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn(variante === "campo" && "w-full", className)}>
+      {variante === "boton" ? (
+        <button
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          onClick={() => cambiarApertura(true)}
+          onFocus={() => void ensureLoaded()}
+          className={botonClassName}
+        >
+          {children}
+        </button>
+      ) : (
       <button
         type="button"
         aria-haspopup="dialog"
@@ -142,6 +167,7 @@ export function BuscadorCarreras({
           </kbd>
         </span>
       </button>
+      )}
 
       {usado ? (
         <DialogoBuscador
