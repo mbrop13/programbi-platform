@@ -1,13 +1,28 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import {
+  ArrowRight,
+  Bot,
+  Check,
+  Database,
+  FileSpreadsheet,
+  GraduationCap,
+  LineChart,
+  MessageCircle,
+  Receipt,
+  Sparkles,
+  Target,
+  Video,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import AnalyticsPageEvent from "@/components/shared/AnalyticsPageEvent";
 import CourseImage from "@/components/shared/CourseImage";
 import { courses } from "@/lib/data/courses";
-import { EmpresasHeroGlyph } from "./empresas-hero-glyph";
 import { whatsappHref } from "@/lib/whatsapp";
 import { EmpresasContactForm } from "./empresas-contact-form";
 import { EmpresasFaq } from "./empresas-faq";
+import { ArmaPrograma } from "./ArmaPrograma";
 import { rutaLocal } from "@/lib/paises/rutas";
 import {
   FAQS_EMPRESAS_US,
@@ -54,6 +69,9 @@ const INCLUDES = [
   },
 ];
 
+/** Íconos de «Qué ofrecemos», por posición (sirven para los textos de cada mercado). */
+const ICONOS_INCLUDES: LucideIcon[] = [Video, Database, Receipt, Target];
+
 const STEPS = [
   {
     n: "01",
@@ -69,6 +87,67 @@ const STEPS = [
     n: "03",
     title: "Capacitamos en vivo",
     text: "El equipo practica con sus datos. Quedan grabaciones y material.",
+  },
+];
+
+/** Del problema del área al curso que lo resuelve. */
+const NECESIDADES: {
+  icono: LucideIcon;
+  problema: string;
+  resultado: string;
+  cursos: { slug: string; label: string }[];
+}[] = [
+  {
+    icono: FileSpreadsheet,
+    problema: "Los reportes se arman a mano en Excel cada semana",
+    resultado: "Tableros que se actualizan solos y una sola versión de los números.",
+    cursos: [
+      { slug: "excel", label: "Excel" },
+      { slug: "power-bi", label: "Power BI" },
+    ],
+  },
+  {
+    icono: Database,
+    problema: "Los datos están en el ERP o en bases SQL y casi nadie los consulta",
+    resultado: "El equipo saca sus propias consultas sin esperar a TI.",
+    cursos: [
+      { slug: "sql-server", label: "SQL Server" },
+      { slug: "power-bi", label: "Power BI" },
+    ],
+  },
+  {
+    icono: Bot,
+    problema: "Quieren usar IA en el trabajo, pero con criterio y cuidando los datos",
+    resultado: "Uso diario de IA en correos, documentos, planillas y análisis.",
+    cursos: [
+      { slug: "ia-productividad", label: "IA en Productividad" },
+      { slug: "copilot", label: "Copilot" },
+      { slug: "chatgpt", label: "ChatGPT" },
+    ],
+  },
+  {
+    icono: Workflow,
+    problema: "Tareas repetitivas se comen horas del equipo",
+    resultado: "Flujos automáticos para aprobaciones, correos, archivos y cargas de datos.",
+    cursos: [
+      { slug: "power-automate", label: "Power Automate" },
+      { slug: "python", label: "Python" },
+    ],
+  },
+  {
+    icono: LineChart,
+    problema: "Necesitan análisis más profundo: tendencias, segmentos y proyecciones",
+    resultado: "Análisis reproducibles en Python y modelos que el área entiende.",
+    cursos: [
+      { slug: "python", label: "Python" },
+      { slug: "machine-learning", label: "Machine Learning" },
+    ],
+  },
+  {
+    icono: GraduationCap,
+    problema: "Formar a un área completa en datos, desde cero",
+    resultado: "Una ruta con SQL, Power BI y Python para el mismo grupo.",
+    cursos: [{ slug: "analisis-de-datos", label: "Análisis de Datos" }],
   },
 ];
 
@@ -121,20 +200,44 @@ const VERTICALS = [
 
 const EMPRESA_COURSES = [...courses].sort((a, b) => a.sortOrder - b.sortOrder);
 
+/** Encabezado de sección común: eyebrow, título y bajada. */
+function Encabezado({
+  eyebrow,
+  titulo,
+  bajada,
+  centrado = false,
+}: {
+  eyebrow: string;
+  titulo: string;
+  bajada?: string;
+  centrado?: boolean;
+}) {
+  return (
+    <div className={centrado ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0958d9]">{eyebrow}</p>
+      <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{titulo}</h2>
+      {bajada ? <p className="mt-4 text-base leading-relaxed text-mute">{bajada}</p> : null}
+    </div>
+  );
+}
+
 export function EmpresasLanding({ paisNombre = "Chile", iso }: EmpresasLandingProps) {
   const esUs = iso === ISO_EMPRESAS_US;
   const esEs = iso === ISO_EMPRESAS_ES;
+  // Estados Unidos y España conservan sus rutas locales; el resto enlaza como siempre.
+  const href = (destino: string) => ((esUs || esEs) && iso ? rutaLocal(iso, destino) : destino);
   return (
     <div className="bg-canvas text-ink">
       <AnalyticsPageEvent event="view_empresas" />
-      <Hero paisNombre={paisNombre} esUs={esUs} esEs={esEs} iso={iso} />
+      <Hero paisNombre={paisNombre} esUs={esUs} esEs={esEs} href={href} />
       <LogoSlider className="border-0 bg-transparent" />
+      <Necesidades href={href} />
       <Includes esUs={esUs} esEs={esEs} />
       <How />
       {!esUs && <Verticals esEs={esEs} />}
-      <Topics iso={iso} />
-      <Faq esUs={esUs} esEs={esEs} />
+      <Topics esUs={esUs} esEs={esEs} href={href} />
       <Tools />
+      <Faq esUs={esUs} esEs={esEs} />
       <Contact />
     </div>
   );
@@ -144,33 +247,49 @@ function Hero({
   paisNombre,
   esUs,
   esEs,
-  iso,
+  href,
 }: {
   paisNombre: string;
   esUs: boolean;
   esEs: boolean;
-  iso?: string;
+  href: (destino: string) => string;
 }) {
-  const href = (destino: string) =>
-    (esUs || esEs) && iso ? rutaLocal(iso, destino) : destino;
   const hero = esUs ? HERO_EMPRESAS_US : esEs ? HERO_EMPRESAS_ES : null;
+  const garantias = [
+    "En vivo con mentor",
+    "Con los datos de la empresa",
+    "Factura y orden de compra",
+    "Certificado por participante",
+  ];
   return (
-    <section className="relative overflow-hidden border-b border-line lg:min-h-[calc(100dvh-72px)]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(23,23,22,0.04),transparent_55%)]" />
+    <section className="relative overflow-hidden border-b border-line">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_20%,rgba(24,144,255,0.10),transparent_55%),radial-gradient(ellipse_at_10%_90%,rgba(23,23,22,0.04),transparent_50%)]" />
 
-      <div className="relative mx-auto grid h-full min-h-0 max-w-[1400px] lg:min-h-[calc(100dvh-72px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
-        <div className="flex flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10">
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-            {hero ? hero.kicker : `Cursos para empresas · ${paisNombre}`}
+      <div className="relative mx-auto grid max-w-[1400px] gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14 lg:px-8 lg:py-20">
+        <div className="min-w-0">
+          <p className="inline-flex items-center gap-2 rounded-full border border-line bg-paper px-3 py-1 text-[12px] font-semibold text-mute">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#1890ff]" />
+            {hero ? hero.kicker : `Capacitación in-company · ${paisNombre}`}
           </p>
-          <h1 className="mt-5 max-w-[20ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]">
-            {hero ? hero.titulo : `Capacitación Power BI para empresas en ${paisNombre}`}
+          <h1 className="mt-5 max-w-[22ch] text-[2.15rem] font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.3rem]">
+            {hero ? hero.titulo : `Capacitación en Power BI, Excel e IA para empresas en ${paisNombre}`}
           </h1>
-          <p className="mt-5 max-w-md text-base leading-relaxed text-mute sm:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-mute sm:text-lg">
             {hero
               ? hero.descripcion
-              : "Cursos cerrados para tu empresa: Power BI, Excel, SQL, Python, automatización e IA. En vivo, con tus datos y factura corporativa."}
+              : "Programas cerrados para tu equipo: Power BI, Excel, SQL, Python, automatización e IA generativa. En vivo, con los datos de la empresa y factura corporativa."}
           </p>
+
+          <ul className="mt-6 grid max-w-xl grid-cols-1 gap-2 sm:grid-cols-2">
+            {garantias.map((g) => (
+              <li key={g} className="flex items-center gap-2 text-sm font-medium text-ink">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#e6f4ff] text-[#0958d9]">
+                  <Check size={12} strokeWidth={3} aria-hidden />
+                </span>
+                {g}
+              </li>
+            ))}
+          </ul>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <a
@@ -185,59 +304,90 @@ function Hero({
               href={WA}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-12 items-center rounded-full border border-line bg-paper px-7 text-[14.5px] font-medium text-ink no-underline transition-colors hover:bg-wash active:scale-[0.98]"
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-[#15803D] px-6 text-[14.5px] font-semibold text-white no-underline transition-colors hover:bg-[#126c34] active:scale-[0.98]"
             >
-              WhatsApp
+              <MessageCircle size={16} aria-hidden /> WhatsApp
             </a>
           </div>
 
-          <p className="mt-8 text-[13px] text-faint">
+          <p className="mt-6 text-[13px] text-faint">
             No es el curso abierto. Es un programa para el equipo.
             {hero ? ` ${hero.nota}` : ""}
           </p>
-          <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-mute">
-            <Link
-              href={href("/implementacion-power-bi")}
-              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
-            >
-              Implementación Power BI
-            </Link>
-            <Link
-              href={href("/migrar-excel-a-power-bi")}
-              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
-            >
-              Migrar de Excel a Power BI
-            </Link>
-            <Link
-              href={href("/casos")}
-              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
-            >
-              Testimonios de alumnos
-            </Link>
-            <Link
-              href={href("/capacitacion-empresas")}
-              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
-            >
-              Programas in-company
-            </Link>
-            <Link
-              href={href("/curso-power-bi-vs-pack-adopcion")}
-              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
-            >
-              Curso vs. pack de adopción
-            </Link>
-            <Link
-              href={href("/por-que-fallan-proyectos-power-bi")}
-              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
-            >
-              Por qué fallan proyectos Power BI
-            </Link>
-          </p>
         </div>
 
-        <div className="relative isolate hidden min-h-[280px] border-t border-line sm:min-h-[380px] lg:block lg:min-h-full lg:border-t-0 lg:border-l lg:border-line">
-          <EmpresasHeroGlyph />
-        </div>
+        <ArmaPrograma />
+      </div>
+
+      {/* Enlaces de profundidad (antes bajo los botones del hero): siguen en el HTML. */}
+      <nav
+        aria-label="Más sobre programas para empresas"
+        className="relative border-t border-line bg-paper/60"
+      >
+        <ul className="mx-auto flex max-w-[1400px] gap-x-5 gap-y-1 overflow-x-auto px-4 py-3 text-[13px] [scrollbar-width:none] sm:flex-wrap sm:px-6 lg:px-8">
+          {[
+            { href: "/implementacion-power-bi", label: "Implementación Power BI" },
+            { href: "/migrar-excel-a-power-bi", label: "Migrar de Excel a Power BI" },
+            { href: "/casos", label: "Testimonios de alumnos" },
+            { href: "/capacitacion-empresas", label: "Programas in-company" },
+            { href: "/curso-power-bi-vs-pack-adopcion", label: "Curso vs. pack de adopción" },
+            { href: "/por-que-fallan-proyectos-power-bi", label: "Por qué fallan proyectos Power BI" },
+          ].map((e) => (
+            <li key={e.href} className="shrink-0">
+              <Link
+                href={href(e.href)}
+                className="inline-flex items-center gap-1 font-semibold text-ink no-underline underline-offset-4 hover:underline"
+              >
+                {e.label} <ArrowRight size={12} aria-hidden className="text-faint" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </section>
+  );
+}
+
+function Necesidades({ href }: { href: (destino: string) => string }) {
+  return (
+    <section className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+      <Encabezado
+        eyebrow="Por dónde empezar"
+        titulo="¿Qué problema quiere resolver tu equipo?"
+        bajada="Elige el caso que más se parece al tuyo. Cada uno lleva al programa que lo resuelve; en la propuesta lo ajustamos al área y al nivel del grupo."
+      />
+      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {NECESIDADES.map((n) => {
+          const Icono = n.icono;
+          return (
+            <article
+              key={n.problema}
+              className="group flex flex-col rounded-[24px] border border-line bg-paper p-6 transition-shadow hover:shadow-[0_20px_50px_-25px_rgba(23,23,22,0.25)]"
+            >
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e6f4ff] text-[#0958d9]">
+                <Icono size={20} aria-hidden />
+              </span>
+              <h3 className="mt-4 text-[17px] font-semibold leading-snug tracking-tight text-ink">
+                {n.problema}
+              </h3>
+              <p className="mt-2 flex items-start gap-2 text-sm leading-relaxed text-mute">
+                <Sparkles size={14} className="mt-0.5 shrink-0 text-[#1890ff]" aria-hidden />
+                {n.resultado}
+              </p>
+              <div className="mt-auto flex flex-wrap gap-2 pt-5">
+                {n.cursos.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={href(`/cursos/${c.slug}?para=empresas`)}
+                    className="inline-flex items-center gap-1 rounded-full border border-line bg-canvas px-3 py-1.5 text-[13px] font-semibold text-ink no-underline transition-colors hover:border-[#1890ff] hover:text-[#0958d9]"
+                  >
+                    {c.label} <ArrowRight size={12} aria-hidden />
+                  </Link>
+                ))}
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
@@ -246,24 +396,27 @@ function Hero({
 function Includes({ esUs, esEs }: { esUs: boolean; esEs: boolean }) {
   const items = esUs ? INCLUDES_EMPRESAS_US : esEs ? INCLUDES_EMPRESAS_ES : INCLUDES;
   return (
-    <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-        Qué ofrecemos
-      </p>
-      <h2 className="mt-3 max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-        Capacitación in-company. Claro y directo.
-      </h2>
-      <p className="mt-4 max-w-xl text-mute">
-        Formamos al equipo para que arme y mantenga sus propios reportes. Si
-        también hay que construir un tablero, lo conversamos aparte.
-      </p>
-      <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
-        {items.map((item) => (
-          <div key={item.title} className="bg-paper p-6">
-            <h3 className="text-base font-semibold tracking-tight">{item.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-mute">{item.text}</p>
-          </div>
-        ))}
+    <section className="border-y border-line bg-paper">
+      <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <Encabezado
+          eyebrow="Qué ofrecemos"
+          titulo="Capacitación in-company. Claro y directo."
+          bajada="Formamos al equipo para que arme y mantenga sus propios reportes. Si también hay que construir un tablero, lo conversamos aparte."
+        />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((item, i) => {
+            const Icono = ICONOS_INCLUDES[i % ICONOS_INCLUDES.length];
+            return (
+              <div key={item.title} className="rounded-[22px] border border-line bg-canvas p-6">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink text-canvas">
+                  <Icono size={18} aria-hidden />
+                </span>
+                <h3 className="mt-4 text-base font-semibold tracking-tight">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-mute">{item.text}</p>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -271,20 +424,56 @@ function Includes({ esUs, esEs }: { esUs: boolean; esEs: boolean }) {
 
 function How() {
   return (
-    <section className="border-y border-line bg-paper">
-      <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8">
-        <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-          Cómo funciona
-        </p>
-        <h2 className="mt-3 max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-          Tres pasos. Conversación, propuesta, clases.
-        </h2>
-        <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-3">
-          {STEPS.map((step) => (
-            <div key={step.n} className="bg-canvas p-6">
-              <p className="text-[11px] font-semibold tracking-wide text-faint">{step.n}</p>
-              <h3 className="mt-4 text-base font-semibold tracking-tight">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-mute">{step.text}</p>
+    <section className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+      <Encabezado eyebrow="Cómo funciona" titulo="Tres pasos. Conversación, propuesta, clases." />
+      <ol className="relative mt-10 grid gap-4 lg:grid-cols-3 lg:gap-6">
+        <span
+          aria-hidden
+          className="absolute left-0 right-0 top-[27px] hidden h-px bg-gradient-to-r from-[#1890ff]/50 via-line to-transparent lg:block"
+        />
+        {STEPS.map((step) => (
+          <li key={step.n} className="relative rounded-[22px] border border-line bg-paper p-6 lg:border-0 lg:bg-transparent lg:p-0">
+            <span className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1890ff] text-lg font-bold text-white shadow-[0_10px_24px_-10px_rgba(24,144,255,0.8)]">
+              {step.n}
+            </span>
+            <h3 className="mt-5 text-lg font-semibold tracking-tight">{step.title}</h3>
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-mute">{step.text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function Verticals({ esEs }: { esEs: boolean }) {
+  const verticals = esEs ? VERTICALS_EMPRESAS_ES : VERTICALS;
+  return (
+    <section className="border-y border-line bg-ink text-canvas">
+      <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="max-w-2xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#69b1ff]">
+            Aplicado a tu industria
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            Qué construyen los equipos según industria
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-white/70">
+            Entregables concretos que tu equipo arma durante la capacitación sobre sus propias fuentes y reglas de negocio.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+          {verticals.map((v) => (
+            <div key={v.sector} className="rounded-[22px] border border-white/10 bg-white/[0.04] p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#69b1ff]">{v.sector}</p>
+              <h3 className="mt-3 text-lg font-semibold tracking-tight">{v.title}</h3>
+              <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-white/75">
+                {v.deliverables.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <Check className="mt-0.5 size-4 shrink-0 text-[#69b1ff]" strokeWidth={2.4} />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
@@ -293,103 +482,64 @@ function How() {
   );
 }
 
-function Verticals({ esEs }: { esEs: boolean }) {
-  const verticals = esEs ? VERTICALS_EMPRESAS_ES : VERTICALS;
-  return (
-    <section className="mx-auto max-w-[1400px] border-b border-line px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-        Aplicado a tu industria
-      </p>
-      <h2 className="mt-3 max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-        Qué construyen los equipos según industria
-      </h2>
-      <p className="mt-4 max-w-xl text-mute">
-        Entregables concretos que tu equipo arma durante la capacitación sobre sus propias fuentes y reglas de negocio.
-      </p>
-      <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-3">
-        {verticals.map((v) => (
-          <div key={v.sector} className="bg-paper p-6">
-            <p className="text-[11px] font-semibold tracking-[0.14em] text-faint uppercase">
-              {v.sector}
-            </p>
-            <h3 className="mt-3 text-base font-semibold tracking-tight">{v.title}</h3>
-            <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-mute">
-              {v.deliverables.map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <Check className="mt-0.5 size-4 shrink-0 text-ink" strokeWidth={2.2} />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Topics({ iso }: { iso?: string }) {
-  const esUs = iso === ISO_EMPRESAS_US;
-  const esEs = iso === ISO_EMPRESAS_ES;
+function Topics({
+  esUs,
+  esEs,
+  href,
+}: {
+  esUs: boolean;
+  esEs: boolean;
+  href: (destino: string) => string;
+}) {
   // «Análisis para minería» no se ofrece en Estados Unidos ni en España.
   const list =
     esUs || esEs
       ? EMPRESA_COURSES.filter((course) => course.slug !== "analitica-mineria")
       : EMPRESA_COURSES;
-  // Estados Unidos y España conservan sus rutas locales; el resto enlaza como siempre.
-  const href = (destino: string) =>
-    (esUs || esEs) && iso ? rutaLocal(iso, destino) : destino;
   return (
-    <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-        Cursos para empresas
-      </p>
-      <h2 className="mt-3 max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-        Los mismos cursos, en formato equipo.
-      </h2>
-      <p className="mt-4 max-w-xl text-mute">
-        En vivo, con los datos de la empresa y factura a la empresa. Toca un
-        curso para verlo como empresa.
-      </p>
-      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <section className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <Encabezado
+          eyebrow="Cursos para empresas"
+          titulo="Los mismos cursos, en formato equipo."
+          bajada="En vivo, con los datos de la empresa y factura a la empresa. Toca un curso para verlo como empresa."
+        />
+        <Link
+          href={href("/cursos")}
+          className="text-sm font-semibold text-ink no-underline underline-offset-4 hover:underline"
+        >
+          Si alguien quiere un cupo en un curso abierto, está en /cursos →
+        </Link>
+      </div>
+      <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((course) => (
           <Link
             key={course.slug}
             href={href(`/cursos/${course.slug}?para=empresas`)}
-            className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
+            className="group flex items-center gap-4 rounded-[20px] border border-line bg-paper p-3 pr-4 no-underline transition-colors hover:border-[#1890ff]/50"
           >
-            <div className="relative aspect-[16/10] bg-wash">
+            <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-2xl bg-wash">
               <CourseImage
                 src={course.imageUrl}
                 alt={course.title}
                 fill
                 loading="lazy"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                sizes="112px"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
               />
             </div>
-            <div className="px-6 py-5">
-              <p className="inline-flex rounded-full bg-wash px-2.5 py-1 text-[11px] font-semibold text-mute">
-                Para empresas
-              </p>
-              <h3 className="mt-2 font-semibold tracking-tight text-ink">{course.title}</h3>
-              <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-mute">
-                {course.shortDescription}
-              </p>
-              <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-ink">
-                Ver como empresa <ArrowRight size={14} />
-              </span>
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-[15px] font-semibold tracking-tight text-ink">{course.title}</h3>
+              <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-mute">{course.shortDescription}</p>
             </div>
+            <ArrowRight
+              size={16}
+              aria-hidden
+              className="shrink-0 text-faint transition-transform group-hover:translate-x-0.5 group-hover:text-[#0958d9]"
+            />
           </Link>
         ))}
       </div>
-      <p className="mt-8 text-sm text-mute">
-        Si alguien del equipo quiere un cupo en un curso abierto, está en{" "}
-        <Link href={href("/cursos")} className="font-semibold text-ink underline-offset-4 hover:underline">
-          /cursos
-        </Link>
-        .
-      </p>
     </section>
   );
 }
@@ -398,13 +548,16 @@ function Faq({ esUs, esEs }: { esUs: boolean; esEs: boolean }) {
   const faqs = esUs ? FAQS_EMPRESAS_US : esEs ? FAQS_EMPRESAS_ES : undefined;
   return (
     <section className="border-y border-line bg-paper">
-      <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-        <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-          Preguntas
-        </p>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-          Preguntas sobre la capacitación in-company
-        </h2>
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:px-8 lg:py-20">
+        <div>
+          <Encabezado eyebrow="Preguntas" titulo="Preguntas sobre la capacitación in-company" />
+          <a
+            href="#contacto"
+            className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#0958d9] no-underline underline-offset-4 hover:underline"
+          >
+            ¿Otra duda? Escríbenos <ArrowRight size={14} aria-hidden />
+          </a>
+        </div>
         <EmpresasFaq faqs={faqs} />
       </div>
     </section>
@@ -415,41 +568,29 @@ function Tools() {
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-            Autoservicio
-          </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            Herramientas gratis para tu equipo
-          </h2>
-        </div>
+        <Encabezado eyebrow="Autoservicio" titulo="Herramientas gratis para tu equipo" />
         <p className="max-w-sm text-sm leading-relaxed text-mute">
           Sin costo. Sirven para llegar a la conversación con números concretos,
           no con intuiciones.
         </p>
       </div>
-      <div className="mt-10 grid gap-5 sm:grid-cols-2">
+      <div className="mt-10 grid gap-4 sm:grid-cols-2">
         {TOOLS.map((tool) => (
           <Link
             key={tool.href}
             href={tool.href}
-            className="group flex flex-col justify-between rounded-[26px] border border-line bg-paper p-6 no-underline transition-colors hover:border-ink/20"
+            className="group flex flex-col justify-between rounded-[24px] border border-line bg-gradient-to-br from-[#e6f4ff]/70 via-paper to-paper p-6 no-underline transition-colors hover:border-[#1890ff]/50"
           >
             <div>
-              <p className="inline-flex rounded-full bg-wash px-2.5 py-1 text-[11px] font-semibold text-mute">
+              <p className="inline-flex rounded-full bg-paper px-2.5 py-1 text-[11px] font-semibold text-[#0958d9] ring-1 ring-[#bae0ff]">
                 {tool.eyebrow}
               </p>
-              <h3 className="mt-3 text-lg font-semibold tracking-tight text-ink">
-                {tool.title}
-              </h3>
+              <h3 className="mt-3 text-lg font-semibold tracking-tight text-ink">{tool.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-mute">{tool.text}</p>
             </div>
             <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-ink">
               {tool.cta}{" "}
-              <ArrowRight
-                size={14}
-                className="transition-transform group-hover:translate-x-0.5"
-              />
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
             </span>
           </Link>
         ))}
@@ -460,12 +601,10 @@ function Tools() {
 
 function Contact() {
   return (
-    <section id="contacto" className="scroll-mt-24">
-      <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-start lg:px-8">
-        <div>
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-            Contacto
-          </p>
+    <section id="contacto" className="scroll-mt-24 border-t border-line bg-paper">
+      <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-start lg:px-8 lg:py-20">
+        <div className="lg:sticky lg:top-28">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0958d9]">Contacto</p>
           <h2 className="mt-3 max-w-[16ch] text-3xl font-bold tracking-tight sm:text-4xl">
             Cuéntanos del equipo. Te armamos una propuesta.
           </h2>
@@ -479,13 +618,17 @@ function Contact() {
               "WhatsApp +56 9 3540 9699",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <Check className="mt-0.5 size-4 shrink-0 text-mute" strokeWidth={2.2} />
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#e6f4ff] text-[#0958d9]">
+                  <Check size={12} strokeWidth={3} aria-hidden />
+                </span>
                 {item}
               </li>
             ))}
           </ul>
         </div>
-        <EmpresasContactForm />
+        <div className="rounded-2xl shadow-[0_30px_80px_-40px_rgba(23,23,22,0.3)]">
+          <EmpresasContactForm />
+        </div>
       </div>
     </section>
   );

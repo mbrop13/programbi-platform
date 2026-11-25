@@ -29,9 +29,9 @@ export const PAGE_SEO = {
       "Cursos en vivo en Chile de Power BI, SQL, Python y análisis de datos por Zoom. Clases prácticas con certificado y cuotas sin interés en ProgramBI.",
   },
   empresas: {
-    title: "Power BI para empresas en Chile: curso en vivo | ProgramBI",
+    title: "Capacitación Power BI, Excel e IA para empresas en Chile | ProgramBI",
     description:
-      "Capacitación Power BI in-company para empresas en Chile: en vivo, con los datos de tu equipo y factura corporativa. Pide una propuesta.",
+      "Capacitación in-company para empresas en Chile: Power BI, Excel, SQL, Python e IA. En vivo, con los datos de tu equipo y factura corporativa.",
   },
   cursos: {
     title: "Cursos de datos en vivo en Chile: Power BI, SQL, Python y Excel",

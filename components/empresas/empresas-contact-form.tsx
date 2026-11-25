@@ -14,14 +14,17 @@ import { captureAndReadAttribution } from "@/lib/utm";
 
 type Status = "idle" | "error" | "success";
 
-const TOPICS = [
+export const TOPICS = [
   "Power BI",
+  "Excel",
   "SQL Server",
   "Python",
-  "Excel",
   "Power Automate",
   "IA en Productividad",
+  "ChatGPT",
+  "Copilot",
   "Claude",
+  "Gemini",
 ] as const;
 
 const TOPIC_SLUG_MAP: Record<string, string> = {
@@ -31,8 +34,18 @@ const TOPIC_SLUG_MAP: Record<string, string> = {
   Excel: "excel",
   "Power Automate": "power-automate",
   "IA en Productividad": "ia-productividad",
+  ChatGPT: "chatgpt",
+  Copilot: "copilot",
   Claude: "claude",
+  Gemini: "gemini",
 };
+
+/**
+ * Evento que dispara el configurador del hero («Arma el programa») para
+ * precargar temas y mensaje en este formulario sin recargar la página.
+ */
+export const EVENTO_PRESELECCION = "empresas:preseleccion";
+export type DetallePreseleccion = { temas: string[]; mensaje?: string };
 
 function topicToSlug(topic?: string): string | undefined {
   if (!topic) return undefined;
@@ -99,6 +112,22 @@ export function EmpresasContactForm({
       }
     }
   }, [curso, nivel]);
+
+  // Configurador del hero: suma los temas elegidos y deja el resumen como
+  // mensaje (solo si la persona todavía no escribió el suyo).
+  useEffect(() => {
+    const alPreseleccionar = (e: Event) => {
+      const detalle = (e as CustomEvent<DetallePreseleccion>).detail;
+      if (!detalle) return;
+      setSelected((prev) => Array.from(new Set([...prev, ...detalle.temas])));
+      if (detalle.mensaje) {
+        const mensaje = detalle.mensaje;
+        setMessage((prev) => (prev.trim() ? prev : mensaje));
+      }
+    };
+    window.addEventListener(EVENTO_PRESELECCION, alPreseleccionar);
+    return () => window.removeEventListener(EVENTO_PRESELECCION, alPreseleccionar);
+  }, []);
 
   const toggleTopic = (topic: string) => {
     setSelected((prev) =>
