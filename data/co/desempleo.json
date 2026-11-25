@@ -1,0 +1,2308 @@
+{
+  "meta": {
+    "fuente": "DANE, Gran Encuesta Integrada de Hogares (GEIH), anex-GEIH-sep2026.xlsx (actualizado 30-oct-2026).",
+    "fuente_url": "https://www.dane.gov.co/index.php/estadisticas-por-tema/mercado-laboral/empleo-y-desempleo",
+    "periodo_nacional_actual": "2026-09",
+    "tasa_nacional_actual_pct": 8,
+    "periodo_ciudades": "jul-sep 2026",
+    "cobertura_ciudades": "23 ciudades y áreas metropolitanas, trimestre móvil",
+    "nota_metodologica": "No mezclar la serie nacional mensual (8,0 % en septiembre 2026) con el agregado trimestral móvil de 23 ciudades (8,9 % en jul–sep 2026)."
+  },
+  "nacional": [
+    {
+      "anio": 2001,
+      "mes": 1,
+      "periodo": "2001-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 16.6
+    },
+    {
+      "anio": 2001,
+      "mes": 2,
+      "periodo": "2001-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 17.4
+    },
+    {
+      "anio": 2001,
+      "mes": 3,
+      "periodo": "2001-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 15.8
+    },
+    {
+      "anio": 2001,
+      "mes": 4,
+      "periodo": "2001-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 14.5
+    },
+    {
+      "anio": 2001,
+      "mes": 5,
+      "periodo": "2001-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 14
+    },
+    {
+      "anio": 2001,
+      "mes": 6,
+      "periodo": "2001-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 15.3
+    },
+    {
+      "anio": 2001,
+      "mes": 7,
+      "periodo": "2001-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 15.2
+    },
+    {
+      "anio": 2001,
+      "mes": 8,
+      "periodo": "2001-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 14.9
+    },
+    {
+      "anio": 2001,
+      "mes": 9,
+      "periodo": "2001-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 14.1
+    },
+    {
+      "anio": 2001,
+      "mes": 10,
+      "periodo": "2001-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 14.5
+    },
+    {
+      "anio": 2001,
+      "mes": 11,
+      "periodo": "2001-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 13.7
+    },
+    {
+      "anio": 2001,
+      "mes": 12,
+      "periodo": "2001-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 13.6
+    },
+    {
+      "anio": 2002,
+      "mes": 1,
+      "periodo": "2002-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 17.9
+    },
+    {
+      "anio": 2002,
+      "mes": 2,
+      "periodo": "2002-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 16.2
+    },
+    {
+      "anio": 2002,
+      "mes": 3,
+      "periodo": "2002-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 15.1
+    },
+    {
+      "anio": 2002,
+      "mes": 4,
+      "periodo": "2002-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 16.1
+    },
+    {
+      "anio": 2002,
+      "mes": 5,
+      "periodo": "2002-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 15
+    },
+    {
+      "anio": 2002,
+      "mes": 6,
+      "periodo": "2002-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 15.9
+    },
+    {
+      "anio": 2002,
+      "mes": 7,
+      "periodo": "2002-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 15.4
+    },
+    {
+      "anio": 2002,
+      "mes": 8,
+      "periodo": "2002-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 16
+    },
+    {
+      "anio": 2002,
+      "mes": 9,
+      "periodo": "2002-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 14.5
+    },
+    {
+      "anio": 2002,
+      "mes": 10,
+      "periodo": "2002-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 15
+    },
+    {
+      "anio": 2002,
+      "mes": 11,
+      "periodo": "2002-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 15.2
+    },
+    {
+      "anio": 2002,
+      "mes": 12,
+      "periodo": "2002-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 15.4
+    },
+    {
+      "anio": 2003,
+      "mes": 1,
+      "periodo": "2003-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 16.3
+    },
+    {
+      "anio": 2003,
+      "mes": 2,
+      "periodo": "2003-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 15.8
+    },
+    {
+      "anio": 2003,
+      "mes": 3,
+      "periodo": "2003-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 13.1
+    },
+    {
+      "anio": 2003,
+      "mes": 4,
+      "periodo": "2003-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 15
+    },
+    {
+      "anio": 2003,
+      "mes": 5,
+      "periodo": "2003-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 12.8
+    },
+    {
+      "anio": 2003,
+      "mes": 6,
+      "periodo": "2003-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 14.1
+    },
+    {
+      "anio": 2003,
+      "mes": 7,
+      "periodo": "2003-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 14.5
+    },
+    {
+      "anio": 2003,
+      "mes": 8,
+      "periodo": "2003-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 14.4
+    },
+    {
+      "anio": 2003,
+      "mes": 9,
+      "periodo": "2003-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 14.2
+    },
+    {
+      "anio": 2003,
+      "mes": 10,
+      "periodo": "2003-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 13.5
+    },
+    {
+      "anio": 2003,
+      "mes": 11,
+      "periodo": "2003-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 12.6
+    },
+    {
+      "anio": 2003,
+      "mes": 12,
+      "periodo": "2003-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 12.6
+    },
+    {
+      "anio": 2004,
+      "mes": 1,
+      "periodo": "2004-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 17.3
+    },
+    {
+      "anio": 2004,
+      "mes": 2,
+      "periodo": "2004-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 15.8
+    },
+    {
+      "anio": 2004,
+      "mes": 3,
+      "periodo": "2004-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 13.5
+    },
+    {
+      "anio": 2004,
+      "mes": 4,
+      "periodo": "2004-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 14.7
+    },
+    {
+      "anio": 2004,
+      "mes": 5,
+      "periodo": "2004-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 13.8
+    },
+    {
+      "anio": 2004,
+      "mes": 6,
+      "periodo": "2004-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 14.1
+    },
+    {
+      "anio": 2004,
+      "mes": 7,
+      "periodo": "2004-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 12.9
+    },
+    {
+      "anio": 2004,
+      "mes": 8,
+      "periodo": "2004-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 13.1
+    },
+    {
+      "anio": 2004,
+      "mes": 9,
+      "periodo": "2004-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 12.3
+    },
+    {
+      "anio": 2004,
+      "mes": 10,
+      "periodo": "2004-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 12.3
+    },
+    {
+      "anio": 2004,
+      "mes": 11,
+      "periodo": "2004-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 11.8
+    },
+    {
+      "anio": 2004,
+      "mes": 12,
+      "periodo": "2004-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2005,
+      "mes": 1,
+      "periodo": "2005-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 13.3
+    },
+    {
+      "anio": 2005,
+      "mes": 2,
+      "periodo": "2005-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 14.1
+    },
+    {
+      "anio": 2005,
+      "mes": 3,
+      "periodo": "2005-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 13
+    },
+    {
+      "anio": 2005,
+      "mes": 4,
+      "periodo": "2005-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2005,
+      "mes": 5,
+      "periodo": "2005-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 12.5
+    },
+    {
+      "anio": 2005,
+      "mes": 6,
+      "periodo": "2005-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 11.5
+    },
+    {
+      "anio": 2005,
+      "mes": 7,
+      "periodo": "2005-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2005,
+      "mes": 8,
+      "periodo": "2005-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 11.7
+    },
+    {
+      "anio": 2005,
+      "mes": 9,
+      "periodo": "2005-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 11.3
+    },
+    {
+      "anio": 2005,
+      "mes": 10,
+      "periodo": "2005-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 9.9
+    },
+    {
+      "anio": 2005,
+      "mes": 11,
+      "periodo": "2005-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 10.3
+    },
+    {
+      "anio": 2005,
+      "mes": 12,
+      "periodo": "2005-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 10.3
+    },
+    {
+      "anio": 2006,
+      "mes": 1,
+      "periodo": "2006-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 13.4
+    },
+    {
+      "anio": 2006,
+      "mes": 2,
+      "periodo": "2006-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 13.1
+    },
+    {
+      "anio": 2006,
+      "mes": 3,
+      "periodo": "2006-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 11.4
+    },
+    {
+      "anio": 2006,
+      "mes": 4,
+      "periodo": "2006-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 12.1
+    },
+    {
+      "anio": 2006,
+      "mes": 5,
+      "periodo": "2006-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 11.9
+    },
+    {
+      "anio": 2006,
+      "mes": 6,
+      "periodo": "2006-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 10.5
+    },
+    {
+      "anio": 2006,
+      "mes": 7,
+      "periodo": "2006-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 12.3
+    },
+    {
+      "anio": 2006,
+      "mes": 8,
+      "periodo": "2006-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 13
+    },
+    {
+      "anio": 2006,
+      "mes": 9,
+      "periodo": "2006-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 12.9
+    },
+    {
+      "anio": 2006,
+      "mes": 10,
+      "periodo": "2006-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 11.4
+    },
+    {
+      "anio": 2006,
+      "mes": 11,
+      "periodo": "2006-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 11
+    },
+    {
+      "anio": 2006,
+      "mes": 12,
+      "periodo": "2006-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 11.8
+    },
+    {
+      "anio": 2007,
+      "mes": 1,
+      "periodo": "2007-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 14.3
+    },
+    {
+      "anio": 2007,
+      "mes": 2,
+      "periodo": "2007-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12.9
+    },
+    {
+      "anio": 2007,
+      "mes": 3,
+      "periodo": "2007-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2007,
+      "mes": 4,
+      "periodo": "2007-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 10.8
+    },
+    {
+      "anio": 2007,
+      "mes": 5,
+      "periodo": "2007-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 11.7
+    },
+    {
+      "anio": 2007,
+      "mes": 6,
+      "periodo": "2007-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 11.2
+    },
+    {
+      "anio": 2007,
+      "mes": 7,
+      "periodo": "2007-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 11.4
+    },
+    {
+      "anio": 2007,
+      "mes": 8,
+      "periodo": "2007-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 10.9
+    },
+    {
+      "anio": 2007,
+      "mes": 9,
+      "periodo": "2007-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 10.9
+    },
+    {
+      "anio": 2007,
+      "mes": 10,
+      "periodo": "2007-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 10.2
+    },
+    {
+      "anio": 2007,
+      "mes": 11,
+      "periodo": "2007-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 9.5
+    },
+    {
+      "anio": 2007,
+      "mes": 12,
+      "periodo": "2007-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 9.9
+    },
+    {
+      "anio": 2008,
+      "mes": 1,
+      "periodo": "2008-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 13.3
+    },
+    {
+      "anio": 2008,
+      "mes": 2,
+      "periodo": "2008-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12.2
+    },
+    {
+      "anio": 2008,
+      "mes": 3,
+      "periodo": "2008-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 11.3
+    },
+    {
+      "anio": 2008,
+      "mes": 4,
+      "periodo": "2008-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 11.1
+    },
+    {
+      "anio": 2008,
+      "mes": 5,
+      "periodo": "2008-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 10.8
+    },
+    {
+      "anio": 2008,
+      "mes": 6,
+      "periodo": "2008-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 11.4
+    },
+    {
+      "anio": 2008,
+      "mes": 7,
+      "periodo": "2008-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 12.2
+    },
+    {
+      "anio": 2008,
+      "mes": 8,
+      "periodo": "2008-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 11.4
+    },
+    {
+      "anio": 2008,
+      "mes": 9,
+      "periodo": "2008-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 11
+    },
+    {
+      "anio": 2008,
+      "mes": 10,
+      "periodo": "2008-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 10.2
+    },
+    {
+      "anio": 2008,
+      "mes": 11,
+      "periodo": "2008-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 10.9
+    },
+    {
+      "anio": 2008,
+      "mes": 12,
+      "periodo": "2008-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 10.8
+    },
+    {
+      "anio": 2009,
+      "mes": 1,
+      "periodo": "2009-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 14.5
+    },
+    {
+      "anio": 2009,
+      "mes": 2,
+      "periodo": "2009-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12.8
+    },
+    {
+      "anio": 2009,
+      "mes": 3,
+      "periodo": "2009-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 12.2
+    },
+    {
+      "anio": 2009,
+      "mes": 4,
+      "periodo": "2009-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 12.1
+    },
+    {
+      "anio": 2009,
+      "mes": 5,
+      "periodo": "2009-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 11.8
+    },
+    {
+      "anio": 2009,
+      "mes": 6,
+      "periodo": "2009-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 11.6
+    },
+    {
+      "anio": 2009,
+      "mes": 7,
+      "periodo": "2009-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 12.8
+    },
+    {
+      "anio": 2009,
+      "mes": 8,
+      "periodo": "2009-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 11.9
+    },
+    {
+      "anio": 2009,
+      "mes": 9,
+      "periodo": "2009-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 12.4
+    },
+    {
+      "anio": 2009,
+      "mes": 10,
+      "periodo": "2009-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 11.8
+    },
+    {
+      "anio": 2009,
+      "mes": 11,
+      "periodo": "2009-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 11.4
+    },
+    {
+      "anio": 2009,
+      "mes": 12,
+      "periodo": "2009-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 11.3
+    },
+    {
+      "anio": 2010,
+      "mes": 1,
+      "periodo": "2010-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 14.9
+    },
+    {
+      "anio": 2010,
+      "mes": 2,
+      "periodo": "2010-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12.7
+    },
+    {
+      "anio": 2010,
+      "mes": 3,
+      "periodo": "2010-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2010,
+      "mes": 4,
+      "periodo": "2010-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 12.4
+    },
+    {
+      "anio": 2010,
+      "mes": 5,
+      "periodo": "2010-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 12.3
+    },
+    {
+      "anio": 2010,
+      "mes": 6,
+      "periodo": "2010-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2010,
+      "mes": 7,
+      "periodo": "2010-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 12.9
+    },
+    {
+      "anio": 2010,
+      "mes": 8,
+      "periodo": "2010-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 11.4
+    },
+    {
+      "anio": 2010,
+      "mes": 9,
+      "periodo": "2010-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 10.9
+    },
+    {
+      "anio": 2010,
+      "mes": 10,
+      "periodo": "2010-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 10.5
+    },
+    {
+      "anio": 2010,
+      "mes": 11,
+      "periodo": "2010-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 10.9
+    },
+    {
+      "anio": 2010,
+      "mes": 12,
+      "periodo": "2010-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 11.2
+    },
+    {
+      "anio": 2011,
+      "mes": 1,
+      "periodo": "2011-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 13.9
+    },
+    {
+      "anio": 2011,
+      "mes": 2,
+      "periodo": "2011-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 13.1
+    },
+    {
+      "anio": 2011,
+      "mes": 3,
+      "periodo": "2011-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 10.9
+    },
+    {
+      "anio": 2011,
+      "mes": 4,
+      "periodo": "2011-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 11.3
+    },
+    {
+      "anio": 2011,
+      "mes": 5,
+      "periodo": "2011-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 11.6
+    },
+    {
+      "anio": 2011,
+      "mes": 6,
+      "periodo": "2011-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 11
+    },
+    {
+      "anio": 2011,
+      "mes": 7,
+      "periodo": "2011-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 11.7
+    },
+    {
+      "anio": 2011,
+      "mes": 8,
+      "periodo": "2011-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 10.4
+    },
+    {
+      "anio": 2011,
+      "mes": 9,
+      "periodo": "2011-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 9.9
+    },
+    {
+      "anio": 2011,
+      "mes": 10,
+      "periodo": "2011-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 9.4
+    },
+    {
+      "anio": 2011,
+      "mes": 11,
+      "periodo": "2011-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 9.5
+    },
+    {
+      "anio": 2011,
+      "mes": 12,
+      "periodo": "2011-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 10.1
+    },
+    {
+      "anio": 2012,
+      "mes": 1,
+      "periodo": "2012-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 12.8
+    },
+    {
+      "anio": 2012,
+      "mes": 2,
+      "periodo": "2012-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12.1
+    },
+    {
+      "anio": 2012,
+      "mes": 3,
+      "periodo": "2012-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 10.5
+    },
+    {
+      "anio": 2012,
+      "mes": 4,
+      "periodo": "2012-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 11.1
+    },
+    {
+      "anio": 2012,
+      "mes": 5,
+      "periodo": "2012-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 11
+    },
+    {
+      "anio": 2012,
+      "mes": 6,
+      "periodo": "2012-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 10.2
+    },
+    {
+      "anio": 2012,
+      "mes": 7,
+      "periodo": "2012-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 11.2
+    },
+    {
+      "anio": 2012,
+      "mes": 8,
+      "periodo": "2012-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 10
+    },
+    {
+      "anio": 2012,
+      "mes": 9,
+      "periodo": "2012-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 10.1
+    },
+    {
+      "anio": 2012,
+      "mes": 10,
+      "periodo": "2012-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2012,
+      "mes": 11,
+      "periodo": "2012-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 9.5
+    },
+    {
+      "anio": 2012,
+      "mes": 12,
+      "periodo": "2012-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 9.9
+    },
+    {
+      "anio": 2013,
+      "mes": 1,
+      "periodo": "2013-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 12.3
+    },
+    {
+      "anio": 2013,
+      "mes": 2,
+      "periodo": "2013-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2013,
+      "mes": 3,
+      "periodo": "2013-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 10.4
+    },
+    {
+      "anio": 2013,
+      "mes": 4,
+      "periodo": "2013-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 10.5
+    },
+    {
+      "anio": 2013,
+      "mes": 5,
+      "periodo": "2013-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 9.8
+    },
+    {
+      "anio": 2013,
+      "mes": 6,
+      "periodo": "2013-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 9.5
+    },
+    {
+      "anio": 2013,
+      "mes": 7,
+      "periodo": "2013-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 10.2
+    },
+    {
+      "anio": 2013,
+      "mes": 8,
+      "periodo": "2013-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.7
+    },
+    {
+      "anio": 2013,
+      "mes": 9,
+      "periodo": "2013-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2013,
+      "mes": 10,
+      "periodo": "2013-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 8.1
+    },
+    {
+      "anio": 2013,
+      "mes": 11,
+      "periodo": "2013-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 8.6
+    },
+    {
+      "anio": 2013,
+      "mes": 12,
+      "periodo": "2013-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 8.6
+    },
+    {
+      "anio": 2014,
+      "mes": 1,
+      "periodo": "2014-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 11.5
+    },
+    {
+      "anio": 2014,
+      "mes": 2,
+      "periodo": "2014-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 11.1
+    },
+    {
+      "anio": 2014,
+      "mes": 3,
+      "periodo": "2014-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 9.8
+    },
+    {
+      "anio": 2014,
+      "mes": 4,
+      "periodo": "2014-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 9.3
+    },
+    {
+      "anio": 2014,
+      "mes": 5,
+      "periodo": "2014-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 9.1
+    },
+    {
+      "anio": 2014,
+      "mes": 6,
+      "periodo": "2014-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 9.4
+    },
+    {
+      "anio": 2014,
+      "mes": 7,
+      "periodo": "2014-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 9.7
+    },
+    {
+      "anio": 2014,
+      "mes": 8,
+      "periodo": "2014-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2014,
+      "mes": 9,
+      "periodo": "2014-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 8.6
+    },
+    {
+      "anio": 2014,
+      "mes": 10,
+      "periodo": "2014-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 8.1
+    },
+    {
+      "anio": 2014,
+      "mes": 11,
+      "periodo": "2014-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 8.1
+    },
+    {
+      "anio": 2014,
+      "mes": 12,
+      "periodo": "2014-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 9
+    },
+    {
+      "anio": 2015,
+      "mes": 1,
+      "periodo": "2015-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 11.2
+    },
+    {
+      "anio": 2015,
+      "mes": 2,
+      "periodo": "2015-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 10.2
+    },
+    {
+      "anio": 2015,
+      "mes": 3,
+      "periodo": "2015-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 9.1
+    },
+    {
+      "anio": 2015,
+      "mes": 4,
+      "periodo": "2015-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 9.7
+    },
+    {
+      "anio": 2015,
+      "mes": 5,
+      "periodo": "2015-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2015,
+      "mes": 6,
+      "periodo": "2015-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 8.5
+    },
+    {
+      "anio": 2015,
+      "mes": 7,
+      "periodo": "2015-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2015,
+      "mes": 8,
+      "periodo": "2015-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.3
+    },
+    {
+      "anio": 2015,
+      "mes": 9,
+      "periodo": "2015-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 9.1
+    },
+    {
+      "anio": 2015,
+      "mes": 10,
+      "periodo": "2015-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 8.4
+    },
+    {
+      "anio": 2015,
+      "mes": 11,
+      "periodo": "2015-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 7.6
+    },
+    {
+      "anio": 2015,
+      "mes": 12,
+      "periodo": "2015-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 8.8
+    },
+    {
+      "anio": 2016,
+      "mes": 1,
+      "periodo": "2016-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 12.2
+    },
+    {
+      "anio": 2016,
+      "mes": 2,
+      "periodo": "2016-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 10.4
+    },
+    {
+      "anio": 2016,
+      "mes": 3,
+      "periodo": "2016-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 10.5
+    },
+    {
+      "anio": 2016,
+      "mes": 4,
+      "periodo": "2016-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 9.3
+    },
+    {
+      "anio": 2016,
+      "mes": 5,
+      "periodo": "2016-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2016,
+      "mes": 6,
+      "periodo": "2016-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2016,
+      "mes": 7,
+      "periodo": "2016-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 10.2
+    },
+    {
+      "anio": 2016,
+      "mes": 8,
+      "periodo": "2016-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2016,
+      "mes": 9,
+      "periodo": "2016-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 8.9
+    },
+    {
+      "anio": 2016,
+      "mes": 10,
+      "periodo": "2016-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 8.6
+    },
+    {
+      "anio": 2016,
+      "mes": 11,
+      "periodo": "2016-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 7.8
+    },
+    {
+      "anio": 2016,
+      "mes": 12,
+      "periodo": "2016-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 9.1
+    },
+    {
+      "anio": 2017,
+      "mes": 1,
+      "periodo": "2017-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2017,
+      "mes": 2,
+      "periodo": "2017-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 10.9
+    },
+    {
+      "anio": 2017,
+      "mes": 3,
+      "periodo": "2017-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 9.9
+    },
+    {
+      "anio": 2017,
+      "mes": 4,
+      "periodo": "2017-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 9.1
+    },
+    {
+      "anio": 2017,
+      "mes": 5,
+      "periodo": "2017-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 9.8
+    },
+    {
+      "anio": 2017,
+      "mes": 6,
+      "periodo": "2017-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 9
+    },
+    {
+      "anio": 2017,
+      "mes": 7,
+      "periodo": "2017-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 9.9
+    },
+    {
+      "anio": 2017,
+      "mes": 8,
+      "periodo": "2017-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.5
+    },
+    {
+      "anio": 2017,
+      "mes": 9,
+      "periodo": "2017-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 9.5
+    },
+    {
+      "anio": 2017,
+      "mes": 10,
+      "periodo": "2017-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 8.7
+    },
+    {
+      "anio": 2017,
+      "mes": 11,
+      "periodo": "2017-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 8.8
+    },
+    {
+      "anio": 2017,
+      "mes": 12,
+      "periodo": "2017-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 8.9
+    },
+    {
+      "anio": 2018,
+      "mes": 1,
+      "periodo": "2018-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 12.1
+    },
+    {
+      "anio": 2018,
+      "mes": 2,
+      "periodo": "2018-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 11.2
+    },
+    {
+      "anio": 2018,
+      "mes": 3,
+      "periodo": "2018-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 9.8
+    },
+    {
+      "anio": 2018,
+      "mes": 4,
+      "periodo": "2018-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 9.7
+    },
+    {
+      "anio": 2018,
+      "mes": 5,
+      "periodo": "2018-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 10
+    },
+    {
+      "anio": 2018,
+      "mes": 6,
+      "periodo": "2018-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 9.3
+    },
+    {
+      "anio": 2018,
+      "mes": 7,
+      "periodo": "2018-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 10
+    },
+    {
+      "anio": 2018,
+      "mes": 8,
+      "periodo": "2018-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.4
+    },
+    {
+      "anio": 2018,
+      "mes": 9,
+      "periodo": "2018-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 9.7
+    },
+    {
+      "anio": 2018,
+      "mes": 10,
+      "periodo": "2018-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 9.4
+    },
+    {
+      "anio": 2018,
+      "mes": 11,
+      "periodo": "2018-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 9
+    },
+    {
+      "anio": 2018,
+      "mes": 12,
+      "periodo": "2018-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 10
+    },
+    {
+      "anio": 2019,
+      "mes": 1,
+      "periodo": "2019-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 13.1
+    },
+    {
+      "anio": 2019,
+      "mes": 2,
+      "periodo": "2019-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12.1
+    },
+    {
+      "anio": 2019,
+      "mes": 3,
+      "periodo": "2019-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 11.2
+    },
+    {
+      "anio": 2019,
+      "mes": 4,
+      "periodo": "2019-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 10.7
+    },
+    {
+      "anio": 2019,
+      "mes": 5,
+      "periodo": "2019-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 11
+    },
+    {
+      "anio": 2019,
+      "mes": 6,
+      "periodo": "2019-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 9.7
+    },
+    {
+      "anio": 2019,
+      "mes": 7,
+      "periodo": "2019-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 11.3
+    },
+    {
+      "anio": 2019,
+      "mes": 8,
+      "periodo": "2019-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 11.2
+    },
+    {
+      "anio": 2019,
+      "mes": 9,
+      "periodo": "2019-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 10.8
+    },
+    {
+      "anio": 2019,
+      "mes": 10,
+      "periodo": "2019-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 10.1
+    },
+    {
+      "anio": 2019,
+      "mes": 11,
+      "periodo": "2019-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 9.6
+    },
+    {
+      "anio": 2019,
+      "mes": 12,
+      "periodo": "2019-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 9.9
+    },
+    {
+      "anio": 2020,
+      "mes": 0,
+      "periodo": "2020-00",
+      "mes_nombre": "Mar*",
+      "tasa_desocupacion_pct": 13.2
+    },
+    {
+      "anio": 2020,
+      "mes": 0,
+      "periodo": "2020-00",
+      "mes_nombre": "Abr*",
+      "tasa_desocupacion_pct": 20.5
+    },
+    {
+      "anio": 2020,
+      "mes": 0,
+      "periodo": "2020-00",
+      "mes_nombre": "May*",
+      "tasa_desocupacion_pct": 22
+    },
+    {
+      "anio": 2020,
+      "mes": 0,
+      "periodo": "2020-00",
+      "mes_nombre": "Jun*",
+      "tasa_desocupacion_pct": 20.4
+    },
+    {
+      "anio": 2020,
+      "mes": 0,
+      "periodo": "2020-00",
+      "mes_nombre": "Jul*",
+      "tasa_desocupacion_pct": 20.9
+    },
+    {
+      "anio": 2020,
+      "mes": 1,
+      "periodo": "2020-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 13.5
+    },
+    {
+      "anio": 2020,
+      "mes": 2,
+      "periodo": "2020-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12.8
+    },
+    {
+      "anio": 2020,
+      "mes": 8,
+      "periodo": "2020-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 17.4
+    },
+    {
+      "anio": 2020,
+      "mes": 9,
+      "periodo": "2020-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 16.3
+    },
+    {
+      "anio": 2020,
+      "mes": 10,
+      "periodo": "2020-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 15.3
+    },
+    {
+      "anio": 2020,
+      "mes": 11,
+      "periodo": "2020-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 13.9
+    },
+    {
+      "anio": 2020,
+      "mes": 12,
+      "periodo": "2020-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 13.9
+    },
+    {
+      "anio": 2021,
+      "mes": 1,
+      "periodo": "2021-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 17.6
+    },
+    {
+      "anio": 2021,
+      "mes": 2,
+      "periodo": "2021-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 15.6
+    },
+    {
+      "anio": 2021,
+      "mes": 3,
+      "periodo": "2021-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 14.7
+    },
+    {
+      "anio": 2021,
+      "mes": 4,
+      "periodo": "2021-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 15.5
+    },
+    {
+      "anio": 2021,
+      "mes": 5,
+      "periodo": "2021-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 15.2
+    },
+    {
+      "anio": 2021,
+      "mes": 6,
+      "periodo": "2021-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 14.6
+    },
+    {
+      "anio": 2021,
+      "mes": 7,
+      "periodo": "2021-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 13.1
+    },
+    {
+      "anio": 2021,
+      "mes": 8,
+      "periodo": "2021-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 12.9
+    },
+    {
+      "anio": 2021,
+      "mes": 9,
+      "periodo": "2021-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2021,
+      "mes": 10,
+      "periodo": "2021-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 12
+    },
+    {
+      "anio": 2021,
+      "mes": 11,
+      "periodo": "2021-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 11.5
+    },
+    {
+      "anio": 2021,
+      "mes": 12,
+      "periodo": "2021-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 11.1
+    },
+    {
+      "anio": 2022,
+      "mes": 1,
+      "periodo": "2022-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 14.6
+    },
+    {
+      "anio": 2022,
+      "mes": 2,
+      "periodo": "2022-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 12.9
+    },
+    {
+      "anio": 2022,
+      "mes": 3,
+      "periodo": "2022-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 12.1
+    },
+    {
+      "anio": 2022,
+      "mes": 4,
+      "periodo": "2022-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 11.2
+    },
+    {
+      "anio": 2022,
+      "mes": 5,
+      "periodo": "2022-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 10.6
+    },
+    {
+      "anio": 2022,
+      "mes": 6,
+      "periodo": "2022-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 11.3
+    },
+    {
+      "anio": 2022,
+      "mes": 7,
+      "periodo": "2022-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 11
+    },
+    {
+      "anio": 2022,
+      "mes": 8,
+      "periodo": "2022-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 10.6
+    },
+    {
+      "anio": 2022,
+      "mes": 9,
+      "periodo": "2022-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 10.7
+    },
+    {
+      "anio": 2022,
+      "mes": 10,
+      "periodo": "2022-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 9.7
+    },
+    {
+      "anio": 2022,
+      "mes": 11,
+      "periodo": "2022-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 9.5
+    },
+    {
+      "anio": 2022,
+      "mes": 12,
+      "periodo": "2022-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 10.3
+    },
+    {
+      "anio": 2023,
+      "mes": 1,
+      "periodo": "2023-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 13.7
+    },
+    {
+      "anio": 2023,
+      "mes": 2,
+      "periodo": "2023-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 11.4
+    },
+    {
+      "anio": 2023,
+      "mes": 3,
+      "periodo": "2023-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 10
+    },
+    {
+      "anio": 2023,
+      "mes": 4,
+      "periodo": "2023-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 10.7
+    },
+    {
+      "anio": 2023,
+      "mes": 5,
+      "periodo": "2023-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 10.5
+    },
+    {
+      "anio": 2023,
+      "mes": 6,
+      "periodo": "2023-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 9.3
+    },
+    {
+      "anio": 2023,
+      "mes": 7,
+      "periodo": "2023-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 9.6
+    },
+    {
+      "anio": 2023,
+      "mes": 8,
+      "periodo": "2023-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.3
+    },
+    {
+      "anio": 2023,
+      "mes": 9,
+      "periodo": "2023-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 9.3
+    },
+    {
+      "anio": 2023,
+      "mes": 10,
+      "periodo": "2023-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2023,
+      "mes": 11,
+      "periodo": "2023-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 9
+    },
+    {
+      "anio": 2023,
+      "mes": 12,
+      "periodo": "2023-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 10
+    },
+    {
+      "anio": 2024,
+      "mes": 1,
+      "periodo": "2024-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 12.7
+    },
+    {
+      "anio": 2024,
+      "mes": 2,
+      "periodo": "2024-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 11.7
+    },
+    {
+      "anio": 2024,
+      "mes": 3,
+      "periodo": "2024-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 11.3
+    },
+    {
+      "anio": 2024,
+      "mes": 4,
+      "periodo": "2024-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 10.6
+    },
+    {
+      "anio": 2024,
+      "mes": 5,
+      "periodo": "2024-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 10.3
+    },
+    {
+      "anio": 2024,
+      "mes": 6,
+      "periodo": "2024-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 10.3
+    },
+    {
+      "anio": 2024,
+      "mes": 7,
+      "periodo": "2024-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 9.9
+    },
+    {
+      "anio": 2024,
+      "mes": 8,
+      "periodo": "2024-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.7
+    },
+    {
+      "anio": 2024,
+      "mes": 9,
+      "periodo": "2024-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 9.1
+    },
+    {
+      "anio": 2024,
+      "mes": 10,
+      "periodo": "2024-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 9.1
+    },
+    {
+      "anio": 2024,
+      "mes": 11,
+      "periodo": "2024-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 8.2
+    },
+    {
+      "anio": 2024,
+      "mes": 12,
+      "periodo": "2024-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 9.1
+    },
+    {
+      "anio": 2025,
+      "mes": 1,
+      "periodo": "2025-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 11.6
+    },
+    {
+      "anio": 2025,
+      "mes": 2,
+      "periodo": "2025-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 10.3
+    },
+    {
+      "anio": 2025,
+      "mes": 3,
+      "periodo": "2025-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 9.6
+    },
+    {
+      "anio": 2025,
+      "mes": 4,
+      "periodo": "2025-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 8.8
+    },
+    {
+      "anio": 2025,
+      "mes": 5,
+      "periodo": "2025-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 9
+    },
+    {
+      "anio": 2025,
+      "mes": 6,
+      "periodo": "2025-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 8.6
+    },
+    {
+      "anio": 2025,
+      "mes": 7,
+      "periodo": "2025-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 8.8
+    },
+    {
+      "anio": 2025,
+      "mes": 8,
+      "periodo": "2025-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 8.6
+    },
+    {
+      "anio": 2025,
+      "mes": 9,
+      "periodo": "2025-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 8.2
+    },
+    {
+      "anio": 2025,
+      "mes": 10,
+      "periodo": "2025-10",
+      "mes_nombre": "Oct",
+      "tasa_desocupacion_pct": 8.2
+    },
+    {
+      "anio": 2025,
+      "mes": 11,
+      "periodo": "2025-11",
+      "mes_nombre": "Nov",
+      "tasa_desocupacion_pct": 7
+    },
+    {
+      "anio": 2025,
+      "mes": 12,
+      "periodo": "2025-12",
+      "mes_nombre": "Dic",
+      "tasa_desocupacion_pct": 8
+    },
+    {
+      "anio": 2026,
+      "mes": 1,
+      "periodo": "2026-01",
+      "mes_nombre": "Ene",
+      "tasa_desocupacion_pct": 10.9
+    },
+    {
+      "anio": 2026,
+      "mes": 2,
+      "periodo": "2026-02",
+      "mes_nombre": "Feb",
+      "tasa_desocupacion_pct": 9.2
+    },
+    {
+      "anio": 2026,
+      "mes": 3,
+      "periodo": "2026-03",
+      "mes_nombre": "Mar",
+      "tasa_desocupacion_pct": 8.8
+    },
+    {
+      "anio": 2026,
+      "mes": 4,
+      "periodo": "2026-04",
+      "mes_nombre": "Abr",
+      "tasa_desocupacion_pct": 8.8
+    },
+    {
+      "anio": 2026,
+      "mes": 5,
+      "periodo": "2026-05",
+      "mes_nombre": "May",
+      "tasa_desocupacion_pct": 8
+    },
+    {
+      "anio": 2026,
+      "mes": 6,
+      "periodo": "2026-06",
+      "mes_nombre": "Jun",
+      "tasa_desocupacion_pct": 8
+    },
+    {
+      "anio": 2026,
+      "mes": 7,
+      "periodo": "2026-07",
+      "mes_nombre": "Jul",
+      "tasa_desocupacion_pct": 8.1
+    },
+    {
+      "anio": 2026,
+      "mes": 8,
+      "periodo": "2026-08",
+      "mes_nombre": "Ago",
+      "tasa_desocupacion_pct": 9.4
+    },
+    {
+      "anio": 2026,
+      "mes": 9,
+      "periodo": "2026-09",
+      "mes_nombre": "Sep",
+      "tasa_desocupacion_pct": 8
+    }
+  ],
+  "ciudades": [
+    {
+      "ciudad": "Quibdó",
+      "tasa_desocupacion_pct": 23.4,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Cartagena",
+      "tasa_desocupacion_pct": 13.7,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Tunja",
+      "tasa_desocupacion_pct": 13.2,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Sincelejo",
+      "tasa_desocupacion_pct": 12.7,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Montería",
+      "tasa_desocupacion_pct": 11.3,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Ibagué",
+      "tasa_desocupacion_pct": 11.1,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Riohacha",
+      "tasa_desocupacion_pct": 10.8,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Neiva",
+      "tasa_desocupacion_pct": 10.5,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Armenia",
+      "tasa_desocupacion_pct": 10.5,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Cúcuta A.M.",
+      "tasa_desocupacion_pct": 10.4,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Barranquilla A.M.",
+      "tasa_desocupacion_pct": 10.2,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Valledupar",
+      "tasa_desocupacion_pct": 10,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Pereira A.M.",
+      "tasa_desocupacion_pct": 9.7,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Cali A.M.",
+      "tasa_desocupacion_pct": 9.6,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Pasto",
+      "tasa_desocupacion_pct": 9.2,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Popayán",
+      "tasa_desocupacion_pct": 9.2,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Santa Marta",
+      "tasa_desocupacion_pct": 8.8,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Manizales A.M.",
+      "tasa_desocupacion_pct": 8.6,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Bucaramanga A.M.",
+      "tasa_desocupacion_pct": 8.5,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Florencia",
+      "tasa_desocupacion_pct": 8.2,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Medellín A.M.",
+      "tasa_desocupacion_pct": 7.8,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Villavicencio",
+      "tasa_desocupacion_pct": 7.7,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Bogotá D.C.",
+      "tasa_desocupacion_pct": 7.6,
+      "tipo": "ciudad"
+    },
+    {
+      "ciudad": "Total 10 ciudades",
+      "tasa_desocupacion_pct": 10.7,
+      "tipo": "agregado"
+    },
+    {
+      "ciudad": "Total 23 ciudades y área metropolitanas",
+      "tasa_desocupacion_pct": 8.9,
+      "tipo": "agregado"
+    },
+    {
+      "ciudad": "Total 13 ciudades y áreas metropolitanas",
+      "tasa_desocupacion_pct": 8.7,
+      "tipo": "agregado"
+    }
+  ]
+}

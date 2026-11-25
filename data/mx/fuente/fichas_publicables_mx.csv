@@ -1,0 +1,76 @@
+CVE_CARRERA,CARRERA,slug,INGRESO,INGRESO_Q50,TASA_DESOCUPACION,TASA_INFORMALIDAD,TASA_OCUPACION
+111,Diseño curricular y pedagogía,diseno-curricular-y-pedagogia,15934.20571,13776.66453,0.0429,0.2857,0.9570515569913276
+112,Planeación evaluación e investigación educativa,planeacion-evaluacion-e-investigacion-educativa,25490.32599,20720.68363,0.0856,0.1988,0.9143724076496952
+113,Orientación e intervención educativa,orientacion-e-intervencion-educativa,16239.83579,17029.81186,0.0428,0.345,0.957212222013574
+115,Ciencias de la educación,ciencias-de-la-educacion,21013.36328,18130.59817,0.0167,0.1526,0.9833153904087752
+120,Planes multidisciplinarios o generales del campo de formación docente,planes-multidisciplinarios-o-generales-del-campo-de-formacion-docente,19443.7715,18130.59817,0.0168,0.2736,0.9873354142001219
+121,Formación docente en educación básica nivel preescolar,formacion-docente-en-educacion-basica-nivel-preescolar,17620.35134,15540.51272,0.0125,0.1887,0.9874791225297329
+122,Formación docente en educación básica nivel primaria,formacion-docente-en-educacion-basica-nivel-primaria,18192.76022,18454.35886,0.0088,0.1463,0.9911966671455251
+123,Formación docente en educación básica nivel secundaria,formacion-docente-en-educacion-basica-nivel-secundaria,19478.73765,18454.35886,0.0109,0.1172,0.9891441998697011
+125,Formación docente en educación superior,formacion-docente-en-educacion-superior,20197.48637,20720.68363,NA,0.2032,1
+126,Formación docente en la enseñanza de asignaturas específicas,formacion-docente-en-la-ensenanza-de-asignaturas-especificas,18512.63578,15844.84776,0.0154,0.2697,0.9846362645154896
+127,Formación docente en otros servicios educativos,formacion-docente-en-otros-servicios-educativos,18067.14108,16835.55545,0.0301,0.21,0.9698997278860849
+215,Diseño y comunicación gráfica y editorial,diseno-y-comunicacion-grafica-y-editorial,23897.42344,18583.86313,0.0414,0.3217,0.9586369493105245
+216,Diseño industrial de moda e interiores,diseno-industrial-de-moda-e-interiores,25503.27642,22274.7349,0.0496,0.3429,0.9504365916549461
+222,Adquisición de idiomas extranjeros,adquisicion-de-idiomas-extranjeros,19240.44979,16404.30622,0.027,0.3296,0.9730371966288575
+223,Literatura,literatura,17972.60296,16835.55545,0.0381,0.3915,0.9711976237430916
+225,Historia y arqueología,historia-y-arqueologia,19621.19235,19425.6409,0.0396,0.2996,0.9604340692124105
+310,Planes multidisciplinarios o generales del campo de ciencias sociales y estudios del comportamiento,planes-multidisciplinarios-o-generales-del-campo-de-ciencias-sociales-y-estudios-del-comportamiento,17055.71271,15540.51272,0.0027,0.2865,0.9972903462845596
+311,Psicología,psicologia,18813.08569,15844.84776,0.0332,0.3269,0.9668225800830936
+312,Sociología y antropología,sociologia-y-antropologia,17137.3004,14245.46999,0.0196,0.3122,0.9804490327295983
+313,Ciencias políticas,ciencias-politicas,26095.11094,22404.23917,0.0447,0.1897,0.9553087732898259
+314,Economía,economia,24433.57112,22015.72635,0.0722,0.2413,0.9277494236996242
+315,Trabajo y atención social,trabajo-y-atencion-social,16265.73665,15071.70725,0.0286,0.3146,0.9714264727486411
+321,Comunicación y periodismo,comunicacion-y-periodismo,24898.49146,20742.69935,0.0553,0.3017,0.944701424885521
+331,Derecho,derecho,24178.44771,19425.6409,0.0309,0.2843,0.9691429533740754
+332,Criminología y criminalística,criminologia-y-criminalistica,18993.09663,16276.09699,0.0604,0.3838,0.9396094064434521
+411,Negocios y comercio,negocios-y-comercio,22628.28156,18130.59817,0.0368,0.213,0.9632454195355351
+412,Mercadotecnia y publicidad,mercadotecnia-y-publicidad,24667.97386,20088.70278,0.0486,0.275,0.9514397229314348
+413,Finanzas banca y seguros,finanzas-banca-y-seguros,27290.43538,20753.0597,0.0377,0.1138,0.9622804990757856
+414,Contabilidad y fiscalización,contabilidad-y-fiscalizacion,22191.85216,18192.76022,0.0195,0.2236,0.9804848120928897
+420,Planes multidisciplinarios o generales del campo de administración y gestión,planes-multidisciplinarios-o-generales-del-campo-de-administracion-y-gestion,23771.80429,18512.63578,0.027,0.1987,0.9730262074745932
+421,Administración de empresas,administracion-de-empresas,23576.25284,18713.3674,0.0367,0.2237,0.9632727890591664
+422,Administración turística y de restaurantes,administracion-turistica-y-de-restaurantes,20552.32807,16861.4563,0.039,0.2924,0.9610068547027756
+423,Administración pública,administracion-publica,18337.80501,16835.55545,0.0128,0.1968,0.9872069464544139
+424,Administración en el ámbito de la ingeniería y la construcción,administracion-en-el-ambito-de-la-ingenieria-y-la-construccion,20000.63987,16120.69186,0.0529,0.2488,0.947081346272486
+511,Biología,biologia,20149.56978,17402.78416,0.075,0.322,0.924981398538144
+512,Bioquímica y biofísica,bioquimica-y-biofisica,22756.49079,19101.88022,0.0358,0.2214,0.9641620780186334
+522,Química,quimica,24939.93283,23310.76908,0.0398,0.1712,0.9601671368273698
+531,Matemáticas,matematicas,29886.99605,25900.85453,0.0134,0.2273,0.9866442996322343
+611,Ciencias computacionales,ciencias-computacionales,24982.66924,20073.16226,0.0521,0.2321,0.9478680180381301
+613,Desarrollo de software,desarrollo-de-software,24926.9824,19652.27338,0.0316,0.1809,0.9684325406915112
+622,Informática,informatica,23590.49831,18648.61526,0.0514,0.2108,0.9485903956867011
+711,Mecánica y profesiones afines al trabajo metálico,mecanica-y-profesiones-afines-al-trabajo-metalico,24449.11164,19781.77765,0.0249,0.226,0.9750964901524574
+712,Electricidad y generación de energía,electricidad-y-generacion-de-energia,23836.55643,20442.24944,0.0282,0.2212,0.9717879580804123
+713,Electrónica automatización y aplicaciones de la mecánica-eléctrica,electronica-automatizacion-y-aplicaciones-de-la-mecanica-electrica,25952.65624,20743.9944,0.0327,0.1939,0.9672838584831798
+714,Ingeniería de procesos químicos,ingenieria-de-procesos-quimicos,22633.46173,19296.13663,0.045,0.2066,0.9549529266081681
+715,Vehículos barcos y aeronaves motorizadas,vehiculos-barcos-y-aeronaves-motorizadas,20699.96294,17418.32467,0.049,0.3372,0.9509844868735083
+716,Tecnología para la protección del medio ambiente,tecnologia-para-la-proteccion-del-medio-ambiente,19495.57321,18519.11099,0.0892,0.273,0.9108564535585042
+717,Ingeniería industrial,ingenieria-industrial,24868.70548,19764.94209,0.0428,0.1698,0.9571610880854017
+721,Industria de la alimentación,industria-de-la-alimentacion,19894.44637,19937.18278,0.0227,0.242,0.9773465030291457
+724,Industria de la minería extracción y metalurgia,industria-de-la-mineria-extraccion-y-metalurgia,24111.10549,20650.75132,0.0882,0.2471,0.9118238391574917
+731,Arquitectura y urbanismo,arquitectura-y-urbanismo,26821.62991,22468.99131,0.0358,0.2726,0.9642415761562555
+732,Construcción e ingeniería civil,construccion-e-ingenieria-civil,25602.99471,21383.7455,0.0404,0.2865,0.9596127525652822
+811,Producción y explotación agrícola y ganadera,produccion-y-explotacion-agricola-y-ganadera,19129.07612,15605.26486,0.0232,0.3617,0.9767721775360222
+821,Veterinaria,veterinaria,19584.93116,16447.04263,0.0333,0.421,0.9666559923144664
+911,Medicina general,medicina-general,27822.69794,24541.05967,0.0161,0.2184,0.983892627839205
+921,Enfermería general y obstetricia,enfermeria-general-y-obstetricia,19969.55885,18793.66005,0.0218,0.2399,0.9782275904242439
+931,Estomatología y odontología general,estomatologia-y-odontologia-general,22241.06379,18115.05766,0.0203,0.3606,0.9797046938575763
+941,Terapia y rehabilitación,terapia-y-rehabilitacion,17141.18553,13274.18795,0.0264,0.5249,0.9735678522660771
+942,Nutrición,nutricion,17773.16638,14869.68059,0.0373,0.3705,0.962660962385632
+1011,Deportes,deportes,19139.43646,17651.43236,0.0435,0.3095,0.956503511162352
+1015,Gastronomía y servicios de alimentos,gastronomia-y-servicios-de-alimentos,17532.28843,14395.69495,0.0491,0.4088,0.9509258836795484
+1016,Hospitalidad y turismo,hospitalidad-y-turismo,19412.69047,15961.40161,0.054,0.2831,0.9460397684545566
+121,TSU. Formación docente en educación básica nivel preescolar,tsu-formacion-docente-en-educacion-basica-nivel-preescolar,12609.83103,10791.59104,0.0346,0.55,0.9653941651148356
+315,TSU. Trabajo y atención social,tsu-trabajo-y-atencion-social,13590.17837,12432.41018,0.0349,0.5257,0.9822522446924562
+414,TSU. Contabilidad y fiscalización,tsu-contabilidad-y-fiscalizacion,14154.817,12626.66659,0.012,0.4378,0.9880202685795313
+613,TSU. Desarrollo de software,tsu-desarrollo-de-software,15603.96981,13678.24128,0.0238,0.3418,0.9762160613224443
+620,TSU. Planes multidisciplinarios o generales del campo de implementación de las tecnologías de la información y la comunicación,tsu-planes-multidisciplinarios-o-generales-del-campo-de-implementacion-de-las-tecnologias-de-la-informacion-y-la-comunicacion,14284.32128,13617.37427,0.0298,0.3502,0.9774900721290218
+622,TSU. Informática,tsu-informatica,16786.34382,15439.49939,0.0377,0.3893,0.9623404088666092
+711,TSU. Mecánica y profesiones afines al trabajo metálico,tsu-mecanica-y-profesiones-afines-al-trabajo-metalico,19070.79919,17467.5363,0.0142,0.2565,0.9858350844325173
+712,TSU. Electricidad y generación de energía,tsu-electricidad-y-generacion-de-energia,18308.01903,16414.66656,0.0083,0.3693,0.9958292557901114
+713,TSU. Electrónica automatización y aplicaciones de la mecánica-eléctrica,tsu-electronica-automatizacion-y-aplicaciones-de-la-mecanica-electrica,19316.85731,17094.56399,0.023,0.2987,0.9769730456208467
+715,TSU. Vehículos barcos y aeronaves motorizadas,tsu-vehiculos-barcos-y-aeronaves-motorizadas,16041.69426,15175.31067,0.024,0.3819,0.9760173086090772
+921,TSU. Enfermería general y obstetricia,tsu-enfermeria-general-y-obstetricia,16848.50587,15313.88024,0.0187,0.3911,0.9812964990594907
+1013,TSU. Servicios de cuidado personal y belleza,tsu-servicios-de-cuidado-personal-y-belleza,12204.48266,10748.85463,0.0204,0.7367,0.9846300944185491
+1014,TSU. Servicios de apoyo y asistencia administrativa,tsu-servicios-de-apoyo-y-asistencia-administrativa,13846.59683,12115.12471,0.0152,0.502,0.9848417558137599

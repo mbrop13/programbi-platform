@@ -13,13 +13,16 @@ export default function GuiaPasoAPasoCursoCard({
   sticky = false,
   ctaPosition = "guia_paso_a_paso_lateral",
 }: {
-  guia: Pick<GuiaPasoAPaso, "slug" | "h1" | "curso"> & { herramienta?: string };
+  guia: Pick<GuiaPasoAPaso, "slug" | "h1" | "curso" | "pais"> & { herramienta?: string };
   curso: DatosCursoGuia;
   cursoSecundario?: { slug: string; nombre: string } | null;
   cursosSecundarios?: Array<{ slug: string; nombre: string }>;
   sticky?: boolean;
   ctaPosition?: string;
 }) {
+  const pais = guia.pais ?? "cl";
+  const prefijo = pais === "cl" ? "" : `/${pais}`;
+  const guiaPath = `${prefijo}/guias/${guia.slug}`;
   const waText = OFERTA_CLASE_GRATIS_WHATSAPP
     ? `Hola, vengo de la guía ${guia.h1} y quiero la clase gratis del curso de ${curso.nombre} [${guia.slug}]`
     : `Hola, vengo de la guía ${guia.h1} y quiero información del curso de ${curso.nombre} [${guia.slug}]`;
@@ -42,7 +45,7 @@ export default function GuiaPasoAPasoCursoCard({
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         {OFERTA_CLASE_GRATIS_WHATSAPP ? (
           <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
-            Clase gratis disponible
+            {pais === "pe" ? "Clase gratis coordinada por WhatsApp" : "Clase gratis disponible"}
           </p>
         ) : (
           <span />
@@ -105,11 +108,11 @@ export default function GuiaPasoAPasoCursoCard({
 
       <div className="mt-4 flex flex-col gap-2">
         <WhatsAppCta
-          page={`/guias/${guia.slug}`}
+          page={guiaPath}
           intent="curso"
           course={curso.nombre}
           courseSlug={guia.curso}
-          country="cl"
+          country={pais}
           ctaPosition={ctaPosition}
           customText={waText}
           className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[var(--g-ink)] px-4 text-center text-xs font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
@@ -121,14 +124,14 @@ export default function GuiaPasoAPasoCursoCard({
 
         <div className="grid grid-cols-2 gap-2">
           <Link
-            href={`/cursos/${guia.curso}`}
+            href={`${prefijo}/cursos/${guia.curso}`}
             className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-3 text-center text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
           >
-            Ver temario
+            {pais === "cl" ? "Ver temario" : "Temario y precios"}
           </Link>
 
           <Link
-            href={`/registro?from=/guias/${guia.slug}`}
+            href={`/registro?from=${guiaPath}`}
             className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)] px-3 text-center text-xs font-semibold text-[var(--g-accent)] no-underline transition-colors hover:border-[var(--g-border-strong)] hover:text-[var(--g-ink)]"
           >
             Inscribirme
@@ -137,7 +140,7 @@ export default function GuiaPasoAPasoCursoCard({
 
         {secundarios.length === 1 ? (
           <Link
-            href={`/cursos/${secundarios[0].slug}`}
+            href={`${prefijo}/cursos/${secundarios[0].slug}`}
             className="mt-0.5 inline-flex min-h-[44px] items-center justify-center text-center text-xs font-medium text-[var(--g-muted)] underline decoration-[var(--g-border-strong)] underline-offset-4 transition-colors hover:text-[var(--g-ink)] sm:min-h-[36px]"
           >
             También te sirve: Curso de {secundarios[0].nombre}
@@ -151,7 +154,7 @@ export default function GuiaPasoAPasoCursoCard({
               {secundarios.map((sec) => (
                 <Link
                   key={sec.slug}
-                  href={`/cursos/${sec.slug}`}
+                  href={`${prefijo}/cursos/${sec.slug}`}
                   className="inline-flex min-h-[36px] items-center rounded-lg border border-[var(--g-border)] bg-[var(--g-bg)] px-2.5 text-xs font-medium text-[var(--g-muted)] no-underline transition-colors hover:border-[var(--g-border-strong)] hover:text-[var(--g-ink)]"
                 >
                   {sec.nombre}

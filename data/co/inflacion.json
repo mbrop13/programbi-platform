@@ -1,0 +1,2309 @@
+{
+  "meta": {
+    "base": "dic-2018=100",
+    "periodo_actual": "2026-10",
+    "indice_actual": 161.32,
+    "var_12m_actual_pct": 6.3,
+    "fuente_ipc": "DANE, Índice de Precios al Consumidor (IPC), anex-IPC-Indices-oct2026.xlsx (actualizado 9-nov-2026).",
+    "fuente_ipc_url": "https://www.dane.gov.co/index.php/estadisticas-por-tema/precios-y-costos/indice-de-precios-al-consumidor-ipc",
+    "tasa_intervencion_pct": 12.25,
+    "tasa_intervencion_fecha": "2026-11-24",
+    "tasa_intervencion_fuente": "Banco de la República, API SDMX, 24-nov-2026.",
+    "tasa_intervencion_url": "https://www.banrep.gov.co/es/estadisticas/tasas-interes-politica-monetaria",
+    "trm_cop_usd": 3592.03,
+    "trm_fecha": "2026-11-25",
+    "trm_fuente": "datos.gov.co 32sa-8pi3 (Superfinanciera), CC BY-SA 4.0; también BanRep API SDMX.",
+    "trm_url": "https://www.datos.gov.co/Econom-a-y-Finanzas/Tasa-de-Cambio-Representativa-del-Mercado-TRM-/32sa-8pi3",
+    "trm_licencia": "CC BY-SA 4.0"
+  },
+  "serie": [
+    {
+      "anio": 2003,
+      "mes": 1,
+      "periodo": "2003-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 50.42,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 2,
+      "periodo": "2003-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 50.98,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 3,
+      "periodo": "2003-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 51.51,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 4,
+      "periodo": "2003-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 52.1,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 5,
+      "periodo": "2003-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 52.36,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 6,
+      "periodo": "2003-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 52.33,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 7,
+      "periodo": "2003-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 52.26,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 8,
+      "periodo": "2003-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 52.42,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 9,
+      "periodo": "2003-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 52.53,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 10,
+      "periodo": "2003-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 52.56,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 11,
+      "periodo": "2003-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 52.75,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2003,
+      "mes": 12,
+      "periodo": "2003-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 53.07,
+      "var_12m_pct": null
+    },
+    {
+      "anio": 2004,
+      "mes": 1,
+      "periodo": "2004-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 53.54,
+      "var_12m_pct": 6.19
+    },
+    {
+      "anio": 2004,
+      "mes": 2,
+      "periodo": "2004-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 54.18,
+      "var_12m_pct": 6.28
+    },
+    {
+      "anio": 2004,
+      "mes": 3,
+      "periodo": "2004-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 54.71,
+      "var_12m_pct": 6.21
+    },
+    {
+      "anio": 2004,
+      "mes": 4,
+      "periodo": "2004-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 54.96,
+      "var_12m_pct": 5.49
+    },
+    {
+      "anio": 2004,
+      "mes": 5,
+      "periodo": "2004-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 55.17,
+      "var_12m_pct": 5.37
+    },
+    {
+      "anio": 2004,
+      "mes": 6,
+      "periodo": "2004-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 55.51,
+      "var_12m_pct": 6.08
+    },
+    {
+      "anio": 2004,
+      "mes": 7,
+      "periodo": "2004-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 55.49,
+      "var_12m_pct": 6.18
+    },
+    {
+      "anio": 2004,
+      "mes": 8,
+      "periodo": "2004-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 55.51,
+      "var_12m_pct": 5.89
+    },
+    {
+      "anio": 2004,
+      "mes": 9,
+      "periodo": "2004-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 55.67,
+      "var_12m_pct": 5.98
+    },
+    {
+      "anio": 2004,
+      "mes": 10,
+      "periodo": "2004-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 55.66,
+      "var_12m_pct": 5.9
+    },
+    {
+      "anio": 2004,
+      "mes": 11,
+      "periodo": "2004-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 55.82,
+      "var_12m_pct": 5.82
+    },
+    {
+      "anio": 2004,
+      "mes": 12,
+      "periodo": "2004-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 55.99,
+      "var_12m_pct": 5.5
+    },
+    {
+      "anio": 2005,
+      "mes": 1,
+      "periodo": "2005-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 56.45,
+      "var_12m_pct": 5.44
+    },
+    {
+      "anio": 2005,
+      "mes": 2,
+      "periodo": "2005-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 57.02,
+      "var_12m_pct": 5.24
+    },
+    {
+      "anio": 2005,
+      "mes": 3,
+      "periodo": "2005-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 57.46,
+      "var_12m_pct": 5.03
+    },
+    {
+      "anio": 2005,
+      "mes": 4,
+      "periodo": "2005-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 57.72,
+      "var_12m_pct": 5.02
+    },
+    {
+      "anio": 2005,
+      "mes": 5,
+      "periodo": "2005-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 57.95,
+      "var_12m_pct": 5.04
+    },
+    {
+      "anio": 2005,
+      "mes": 6,
+      "periodo": "2005-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 58.18,
+      "var_12m_pct": 4.81
+    },
+    {
+      "anio": 2005,
+      "mes": 7,
+      "periodo": "2005-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 58.21,
+      "var_12m_pct": 4.9
+    },
+    {
+      "anio": 2005,
+      "mes": 8,
+      "periodo": "2005-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 58.21,
+      "var_12m_pct": 4.86
+    },
+    {
+      "anio": 2005,
+      "mes": 9,
+      "periodo": "2005-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 58.46,
+      "var_12m_pct": 5.01
+    },
+    {
+      "anio": 2005,
+      "mes": 10,
+      "periodo": "2005-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 58.6,
+      "var_12m_pct": 5.28
+    },
+    {
+      "anio": 2005,
+      "mes": 11,
+      "periodo": "2005-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 58.66,
+      "var_12m_pct": 5.09
+    },
+    {
+      "anio": 2005,
+      "mes": 12,
+      "periodo": "2005-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 58.7,
+      "var_12m_pct": 4.84
+    },
+    {
+      "anio": 2006,
+      "mes": 1,
+      "periodo": "2006-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 59.02,
+      "var_12m_pct": 4.55
+    },
+    {
+      "anio": 2006,
+      "mes": 2,
+      "periodo": "2006-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 59.41,
+      "var_12m_pct": 4.19
+    },
+    {
+      "anio": 2006,
+      "mes": 3,
+      "periodo": "2006-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 59.83,
+      "var_12m_pct": 4.12
+    },
+    {
+      "anio": 2006,
+      "mes": 4,
+      "periodo": "2006-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 60.09,
+      "var_12m_pct": 4.11
+    },
+    {
+      "anio": 2006,
+      "mes": 5,
+      "periodo": "2006-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 60.29,
+      "var_12m_pct": 4.04
+    },
+    {
+      "anio": 2006,
+      "mes": 6,
+      "periodo": "2006-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 60.48,
+      "var_12m_pct": 3.95
+    },
+    {
+      "anio": 2006,
+      "mes": 7,
+      "periodo": "2006-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 60.73,
+      "var_12m_pct": 4.33
+    },
+    {
+      "anio": 2006,
+      "mes": 8,
+      "periodo": "2006-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 60.96,
+      "var_12m_pct": 4.72
+    },
+    {
+      "anio": 2006,
+      "mes": 9,
+      "periodo": "2006-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 61.14,
+      "var_12m_pct": 4.58
+    },
+    {
+      "anio": 2006,
+      "mes": 10,
+      "periodo": "2006-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 61.05,
+      "var_12m_pct": 4.18
+    },
+    {
+      "anio": 2006,
+      "mes": 11,
+      "periodo": "2006-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 61.19,
+      "var_12m_pct": 4.31
+    },
+    {
+      "anio": 2006,
+      "mes": 12,
+      "periodo": "2006-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 61.33,
+      "var_12m_pct": 4.48
+    },
+    {
+      "anio": 2007,
+      "mes": 1,
+      "periodo": "2007-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 61.8,
+      "var_12m_pct": 4.71
+    },
+    {
+      "anio": 2007,
+      "mes": 2,
+      "periodo": "2007-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 62.53,
+      "var_12m_pct": 5.25
+    },
+    {
+      "anio": 2007,
+      "mes": 3,
+      "periodo": "2007-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 63.29,
+      "var_12m_pct": 5.78
+    },
+    {
+      "anio": 2007,
+      "mes": 4,
+      "periodo": "2007-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 63.85,
+      "var_12m_pct": 6.26
+    },
+    {
+      "anio": 2007,
+      "mes": 5,
+      "periodo": "2007-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 64.05,
+      "var_12m_pct": 6.24
+    },
+    {
+      "anio": 2007,
+      "mes": 6,
+      "periodo": "2007-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 64.12,
+      "var_12m_pct": 6.02
+    },
+    {
+      "anio": 2007,
+      "mes": 7,
+      "periodo": "2007-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 64.23,
+      "var_12m_pct": 5.76
+    },
+    {
+      "anio": 2007,
+      "mes": 8,
+      "periodo": "2007-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 64.14,
+      "var_12m_pct": 5.22
+    },
+    {
+      "anio": 2007,
+      "mes": 9,
+      "periodo": "2007-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 64.2,
+      "var_12m_pct": 5
+    },
+    {
+      "anio": 2007,
+      "mes": 10,
+      "periodo": "2007-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 64.2,
+      "var_12m_pct": 5.16
+    },
+    {
+      "anio": 2007,
+      "mes": 11,
+      "periodo": "2007-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 64.51,
+      "var_12m_pct": 5.43
+    },
+    {
+      "anio": 2007,
+      "mes": 12,
+      "periodo": "2007-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 64.82,
+      "var_12m_pct": 5.69
+    },
+    {
+      "anio": 2008,
+      "mes": 1,
+      "periodo": "2008-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 65.51,
+      "var_12m_pct": 6
+    },
+    {
+      "anio": 2008,
+      "mes": 2,
+      "periodo": "2008-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 66.5,
+      "var_12m_pct": 6.35
+    },
+    {
+      "anio": 2008,
+      "mes": 3,
+      "periodo": "2008-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 67.04,
+      "var_12m_pct": 5.93
+    },
+    {
+      "anio": 2008,
+      "mes": 4,
+      "periodo": "2008-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 67.51,
+      "var_12m_pct": 5.73
+    },
+    {
+      "anio": 2008,
+      "mes": 5,
+      "periodo": "2008-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 68.14,
+      "var_12m_pct": 6.39
+    },
+    {
+      "anio": 2008,
+      "mes": 6,
+      "periodo": "2008-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 68.73,
+      "var_12m_pct": 7.19
+    },
+    {
+      "anio": 2008,
+      "mes": 7,
+      "periodo": "2008-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 69.06,
+      "var_12m_pct": 7.52
+    },
+    {
+      "anio": 2008,
+      "mes": 8,
+      "periodo": "2008-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 69.19,
+      "var_12m_pct": 7.87
+    },
+    {
+      "anio": 2008,
+      "mes": 9,
+      "periodo": "2008-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 69.06,
+      "var_12m_pct": 7.57
+    },
+    {
+      "anio": 2008,
+      "mes": 10,
+      "periodo": "2008-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 69.3,
+      "var_12m_pct": 7.94
+    },
+    {
+      "anio": 2008,
+      "mes": 11,
+      "periodo": "2008-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 69.49,
+      "var_12m_pct": 7.72
+    },
+    {
+      "anio": 2008,
+      "mes": 12,
+      "periodo": "2008-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 69.8,
+      "var_12m_pct": 7.68
+    },
+    {
+      "anio": 2009,
+      "mes": 1,
+      "periodo": "2009-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 70.21,
+      "var_12m_pct": 7.17
+    },
+    {
+      "anio": 2009,
+      "mes": 2,
+      "periodo": "2009-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 70.8,
+      "var_12m_pct": 6.47
+    },
+    {
+      "anio": 2009,
+      "mes": 3,
+      "periodo": "2009-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 71.15,
+      "var_12m_pct": 6.13
+    },
+    {
+      "anio": 2009,
+      "mes": 4,
+      "periodo": "2009-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 71.38,
+      "var_12m_pct": 5.73
+    },
+    {
+      "anio": 2009,
+      "mes": 5,
+      "periodo": "2009-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 71.39,
+      "var_12m_pct": 4.77
+    },
+    {
+      "anio": 2009,
+      "mes": 6,
+      "periodo": "2009-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 71.35,
+      "var_12m_pct": 3.81
+    },
+    {
+      "anio": 2009,
+      "mes": 7,
+      "periodo": "2009-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 71.32,
+      "var_12m_pct": 3.27
+    },
+    {
+      "anio": 2009,
+      "mes": 8,
+      "periodo": "2009-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 71.35,
+      "var_12m_pct": 3.12
+    },
+    {
+      "anio": 2009,
+      "mes": 9,
+      "periodo": "2009-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 71.28,
+      "var_12m_pct": 3.21
+    },
+    {
+      "anio": 2009,
+      "mes": 10,
+      "periodo": "2009-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 71.19,
+      "var_12m_pct": 2.73
+    },
+    {
+      "anio": 2009,
+      "mes": 11,
+      "periodo": "2009-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 71.14,
+      "var_12m_pct": 2.37
+    },
+    {
+      "anio": 2009,
+      "mes": 12,
+      "periodo": "2009-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 71.2,
+      "var_12m_pct": 2.01
+    },
+    {
+      "anio": 2010,
+      "mes": 1,
+      "periodo": "2010-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 71.69,
+      "var_12m_pct": 2.11
+    },
+    {
+      "anio": 2010,
+      "mes": 2,
+      "periodo": "2010-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 72.28,
+      "var_12m_pct": 2.09
+    },
+    {
+      "anio": 2010,
+      "mes": 3,
+      "periodo": "2010-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 72.46,
+      "var_12m_pct": 1.84
+    },
+    {
+      "anio": 2010,
+      "mes": 4,
+      "periodo": "2010-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 72.79,
+      "var_12m_pct": 1.98
+    },
+    {
+      "anio": 2010,
+      "mes": 5,
+      "periodo": "2010-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 72.87,
+      "var_12m_pct": 2.07
+    },
+    {
+      "anio": 2010,
+      "mes": 6,
+      "periodo": "2010-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 72.95,
+      "var_12m_pct": 2.24
+    },
+    {
+      "anio": 2010,
+      "mes": 7,
+      "periodo": "2010-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 72.92,
+      "var_12m_pct": 2.24
+    },
+    {
+      "anio": 2010,
+      "mes": 8,
+      "periodo": "2010-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 73,
+      "var_12m_pct": 2.31
+    },
+    {
+      "anio": 2010,
+      "mes": 9,
+      "periodo": "2010-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 72.9,
+      "var_12m_pct": 2.27
+    },
+    {
+      "anio": 2010,
+      "mes": 10,
+      "periodo": "2010-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 72.84,
+      "var_12m_pct": 2.32
+    },
+    {
+      "anio": 2010,
+      "mes": 11,
+      "periodo": "2010-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 72.98,
+      "var_12m_pct": 2.59
+    },
+    {
+      "anio": 2010,
+      "mes": 12,
+      "periodo": "2010-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 73.45,
+      "var_12m_pct": 3.16
+    },
+    {
+      "anio": 2011,
+      "mes": 1,
+      "periodo": "2011-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 74.12,
+      "var_12m_pct": 3.39
+    },
+    {
+      "anio": 2011,
+      "mes": 2,
+      "periodo": "2011-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 74.57,
+      "var_12m_pct": 3.17
+    },
+    {
+      "anio": 2011,
+      "mes": 3,
+      "periodo": "2011-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 74.77,
+      "var_12m_pct": 3.19
+    },
+    {
+      "anio": 2011,
+      "mes": 4,
+      "periodo": "2011-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 74.86,
+      "var_12m_pct": 2.84
+    },
+    {
+      "anio": 2011,
+      "mes": 5,
+      "periodo": "2011-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 75.07,
+      "var_12m_pct": 3.02
+    },
+    {
+      "anio": 2011,
+      "mes": 6,
+      "periodo": "2011-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 75.31,
+      "var_12m_pct": 3.24
+    },
+    {
+      "anio": 2011,
+      "mes": 7,
+      "periodo": "2011-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 75.42,
+      "var_12m_pct": 3.43
+    },
+    {
+      "anio": 2011,
+      "mes": 8,
+      "periodo": "2011-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 75.39,
+      "var_12m_pct": 3.27
+    },
+    {
+      "anio": 2011,
+      "mes": 9,
+      "periodo": "2011-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 75.62,
+      "var_12m_pct": 3.73
+    },
+    {
+      "anio": 2011,
+      "mes": 10,
+      "periodo": "2011-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 75.77,
+      "var_12m_pct": 4.02
+    },
+    {
+      "anio": 2011,
+      "mes": 11,
+      "periodo": "2011-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 75.87,
+      "var_12m_pct": 3.96
+    },
+    {
+      "anio": 2011,
+      "mes": 12,
+      "periodo": "2011-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 76.19,
+      "var_12m_pct": 3.73
+    },
+    {
+      "anio": 2012,
+      "mes": 1,
+      "periodo": "2012-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 76.75,
+      "var_12m_pct": 3.55
+    },
+    {
+      "anio": 2012,
+      "mes": 2,
+      "periodo": "2012-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 77.22,
+      "var_12m_pct": 3.55
+    },
+    {
+      "anio": 2012,
+      "mes": 3,
+      "periodo": "2012-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 77.31,
+      "var_12m_pct": 3.4
+    },
+    {
+      "anio": 2012,
+      "mes": 4,
+      "periodo": "2012-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 77.42,
+      "var_12m_pct": 3.42
+    },
+    {
+      "anio": 2012,
+      "mes": 5,
+      "periodo": "2012-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 77.66,
+      "var_12m_pct": 3.45
+    },
+    {
+      "anio": 2012,
+      "mes": 6,
+      "periodo": "2012-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 77.72,
+      "var_12m_pct": 3.2
+    },
+    {
+      "anio": 2012,
+      "mes": 7,
+      "periodo": "2012-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 77.7,
+      "var_12m_pct": 3.02
+    },
+    {
+      "anio": 2012,
+      "mes": 8,
+      "periodo": "2012-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 77.73,
+      "var_12m_pct": 3.1
+    },
+    {
+      "anio": 2012,
+      "mes": 9,
+      "periodo": "2012-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 77.96,
+      "var_12m_pct": 3.09
+    },
+    {
+      "anio": 2012,
+      "mes": 10,
+      "periodo": "2012-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 78.08,
+      "var_12m_pct": 3.05
+    },
+    {
+      "anio": 2012,
+      "mes": 11,
+      "periodo": "2012-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 77.98,
+      "var_12m_pct": 2.78
+    },
+    {
+      "anio": 2012,
+      "mes": 12,
+      "periodo": "2012-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 78.05,
+      "var_12m_pct": 2.44
+    },
+    {
+      "anio": 2013,
+      "mes": 1,
+      "periodo": "2013-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 78.28,
+      "var_12m_pct": 1.99
+    },
+    {
+      "anio": 2013,
+      "mes": 2,
+      "periodo": "2013-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 78.63,
+      "var_12m_pct": 1.83
+    },
+    {
+      "anio": 2013,
+      "mes": 3,
+      "periodo": "2013-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 78.79,
+      "var_12m_pct": 1.91
+    },
+    {
+      "anio": 2013,
+      "mes": 4,
+      "periodo": "2013-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 78.99,
+      "var_12m_pct": 2.03
+    },
+    {
+      "anio": 2013,
+      "mes": 5,
+      "periodo": "2013-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 79.21,
+      "var_12m_pct": 2
+    },
+    {
+      "anio": 2013,
+      "mes": 6,
+      "periodo": "2013-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 79.39,
+      "var_12m_pct": 2.15
+    },
+    {
+      "anio": 2013,
+      "mes": 7,
+      "periodo": "2013-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 79.43,
+      "var_12m_pct": 2.23
+    },
+    {
+      "anio": 2013,
+      "mes": 8,
+      "periodo": "2013-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 79.5,
+      "var_12m_pct": 2.28
+    },
+    {
+      "anio": 2013,
+      "mes": 9,
+      "periodo": "2013-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 79.73,
+      "var_12m_pct": 2.27
+    },
+    {
+      "anio": 2013,
+      "mes": 10,
+      "periodo": "2013-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 79.52,
+      "var_12m_pct": 1.84
+    },
+    {
+      "anio": 2013,
+      "mes": 11,
+      "periodo": "2013-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 79.35,
+      "var_12m_pct": 1.76
+    },
+    {
+      "anio": 2013,
+      "mes": 12,
+      "periodo": "2013-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 79.56,
+      "var_12m_pct": 1.93
+    },
+    {
+      "anio": 2014,
+      "mes": 1,
+      "periodo": "2014-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 79.95,
+      "var_12m_pct": 2.13
+    },
+    {
+      "anio": 2014,
+      "mes": 2,
+      "periodo": "2014-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 80.45,
+      "var_12m_pct": 2.31
+    },
+    {
+      "anio": 2014,
+      "mes": 3,
+      "periodo": "2014-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 80.77,
+      "var_12m_pct": 2.51
+    },
+    {
+      "anio": 2014,
+      "mes": 4,
+      "periodo": "2014-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 81.14,
+      "var_12m_pct": 2.72
+    },
+    {
+      "anio": 2014,
+      "mes": 5,
+      "periodo": "2014-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 81.53,
+      "var_12m_pct": 2.93
+    },
+    {
+      "anio": 2014,
+      "mes": 6,
+      "periodo": "2014-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 81.61,
+      "var_12m_pct": 2.8
+    },
+    {
+      "anio": 2014,
+      "mes": 7,
+      "periodo": "2014-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 81.73,
+      "var_12m_pct": 2.9
+    },
+    {
+      "anio": 2014,
+      "mes": 8,
+      "periodo": "2014-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 81.9,
+      "var_12m_pct": 3.02
+    },
+    {
+      "anio": 2014,
+      "mes": 9,
+      "periodo": "2014-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 82.01,
+      "var_12m_pct": 2.86
+    },
+    {
+      "anio": 2014,
+      "mes": 10,
+      "periodo": "2014-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 82.14,
+      "var_12m_pct": 3.29
+    },
+    {
+      "anio": 2014,
+      "mes": 11,
+      "periodo": "2014-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 82.25,
+      "var_12m_pct": 3.65
+    },
+    {
+      "anio": 2014,
+      "mes": 12,
+      "periodo": "2014-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 82.47,
+      "var_12m_pct": 3.66
+    },
+    {
+      "anio": 2015,
+      "mes": 1,
+      "periodo": "2015-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 83,
+      "var_12m_pct": 3.81
+    },
+    {
+      "anio": 2015,
+      "mes": 2,
+      "periodo": "2015-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 83.96,
+      "var_12m_pct": 4.36
+    },
+    {
+      "anio": 2015,
+      "mes": 3,
+      "periodo": "2015-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 84.45,
+      "var_12m_pct": 4.56
+    },
+    {
+      "anio": 2015,
+      "mes": 4,
+      "periodo": "2015-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 84.9,
+      "var_12m_pct": 4.63
+    },
+    {
+      "anio": 2015,
+      "mes": 5,
+      "periodo": "2015-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 85.12,
+      "var_12m_pct": 4.4
+    },
+    {
+      "anio": 2015,
+      "mes": 6,
+      "periodo": "2015-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 85.21,
+      "var_12m_pct": 4.41
+    },
+    {
+      "anio": 2015,
+      "mes": 7,
+      "periodo": "2015-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 85.37,
+      "var_12m_pct": 4.45
+    },
+    {
+      "anio": 2015,
+      "mes": 8,
+      "periodo": "2015-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 85.78,
+      "var_12m_pct": 4.74
+    },
+    {
+      "anio": 2015,
+      "mes": 9,
+      "periodo": "2015-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 86.39,
+      "var_12m_pct": 5.34
+    },
+    {
+      "anio": 2015,
+      "mes": 10,
+      "periodo": "2015-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 86.98,
+      "var_12m_pct": 5.89
+    },
+    {
+      "anio": 2015,
+      "mes": 11,
+      "periodo": "2015-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 87.51,
+      "var_12m_pct": 6.4
+    },
+    {
+      "anio": 2015,
+      "mes": 12,
+      "periodo": "2015-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 88.05,
+      "var_12m_pct": 6.77
+    },
+    {
+      "anio": 2016,
+      "mes": 1,
+      "periodo": "2016-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 89.19,
+      "var_12m_pct": 7.46
+    },
+    {
+      "anio": 2016,
+      "mes": 2,
+      "periodo": "2016-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 90.33,
+      "var_12m_pct": 7.59
+    },
+    {
+      "anio": 2016,
+      "mes": 3,
+      "periodo": "2016-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 91.18,
+      "var_12m_pct": 7.97
+    },
+    {
+      "anio": 2016,
+      "mes": 4,
+      "periodo": "2016-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 91.63,
+      "var_12m_pct": 7.93
+    },
+    {
+      "anio": 2016,
+      "mes": 5,
+      "periodo": "2016-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 92.1,
+      "var_12m_pct": 8.2
+    },
+    {
+      "anio": 2016,
+      "mes": 6,
+      "periodo": "2016-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 92.54,
+      "var_12m_pct": 8.6
+    },
+    {
+      "anio": 2016,
+      "mes": 7,
+      "periodo": "2016-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 93.02,
+      "var_12m_pct": 8.96
+    },
+    {
+      "anio": 2016,
+      "mes": 8,
+      "periodo": "2016-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 92.73,
+      "var_12m_pct": 8.1
+    },
+    {
+      "anio": 2016,
+      "mes": 9,
+      "periodo": "2016-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 92.68,
+      "var_12m_pct": 7.28
+    },
+    {
+      "anio": 2016,
+      "mes": 10,
+      "periodo": "2016-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 92.62,
+      "var_12m_pct": 6.48
+    },
+    {
+      "anio": 2016,
+      "mes": 11,
+      "periodo": "2016-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 92.73,
+      "var_12m_pct": 5.97
+    },
+    {
+      "anio": 2016,
+      "mes": 12,
+      "periodo": "2016-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 93.11,
+      "var_12m_pct": 5.75
+    },
+    {
+      "anio": 2017,
+      "mes": 1,
+      "periodo": "2017-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 94.07,
+      "var_12m_pct": 5.47
+    },
+    {
+      "anio": 2017,
+      "mes": 2,
+      "periodo": "2017-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 95.01,
+      "var_12m_pct": 5.18
+    },
+    {
+      "anio": 2017,
+      "mes": 3,
+      "periodo": "2017-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 95.46,
+      "var_12m_pct": 4.69
+    },
+    {
+      "anio": 2017,
+      "mes": 4,
+      "periodo": "2017-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 95.91,
+      "var_12m_pct": 4.67
+    },
+    {
+      "anio": 2017,
+      "mes": 5,
+      "periodo": "2017-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 96.12,
+      "var_12m_pct": 4.36
+    },
+    {
+      "anio": 2017,
+      "mes": 6,
+      "periodo": "2017-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 96.23,
+      "var_12m_pct": 3.99
+    },
+    {
+      "anio": 2017,
+      "mes": 7,
+      "periodo": "2017-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 96.18,
+      "var_12m_pct": 3.4
+    },
+    {
+      "anio": 2017,
+      "mes": 8,
+      "periodo": "2017-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 96.32,
+      "var_12m_pct": 3.87
+    },
+    {
+      "anio": 2017,
+      "mes": 9,
+      "periodo": "2017-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 96.36,
+      "var_12m_pct": 3.97
+    },
+    {
+      "anio": 2017,
+      "mes": 10,
+      "periodo": "2017-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 96.37,
+      "var_12m_pct": 4.05
+    },
+    {
+      "anio": 2017,
+      "mes": 11,
+      "periodo": "2017-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 96.55,
+      "var_12m_pct": 4.12
+    },
+    {
+      "anio": 2017,
+      "mes": 12,
+      "periodo": "2017-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 96.92,
+      "var_12m_pct": 4.09
+    },
+    {
+      "anio": 2018,
+      "mes": 1,
+      "periodo": "2018-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 97.53,
+      "var_12m_pct": 3.68
+    },
+    {
+      "anio": 2018,
+      "mes": 2,
+      "periodo": "2018-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 98.22,
+      "var_12m_pct": 3.38
+    },
+    {
+      "anio": 2018,
+      "mes": 3,
+      "periodo": "2018-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 98.45,
+      "var_12m_pct": 3.13
+    },
+    {
+      "anio": 2018,
+      "mes": 4,
+      "periodo": "2018-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 98.91,
+      "var_12m_pct": 3.13
+    },
+    {
+      "anio": 2018,
+      "mes": 5,
+      "periodo": "2018-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 99.16,
+      "var_12m_pct": 3.16
+    },
+    {
+      "anio": 2018,
+      "mes": 6,
+      "periodo": "2018-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 99.31,
+      "var_12m_pct": 3.2
+    },
+    {
+      "anio": 2018,
+      "mes": 7,
+      "periodo": "2018-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 99.18,
+      "var_12m_pct": 3.12
+    },
+    {
+      "anio": 2018,
+      "mes": 8,
+      "periodo": "2018-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 99.3,
+      "var_12m_pct": 3.09
+    },
+    {
+      "anio": 2018,
+      "mes": 9,
+      "periodo": "2018-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 99.47,
+      "var_12m_pct": 3.23
+    },
+    {
+      "anio": 2018,
+      "mes": 10,
+      "periodo": "2018-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 99.59,
+      "var_12m_pct": 3.34
+    },
+    {
+      "anio": 2018,
+      "mes": 11,
+      "periodo": "2018-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 99.7,
+      "var_12m_pct": 3.26
+    },
+    {
+      "anio": 2018,
+      "mes": 12,
+      "periodo": "2018-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 100,
+      "var_12m_pct": 3.18
+    },
+    {
+      "anio": 2019,
+      "mes": 1,
+      "periodo": "2019-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 100.6,
+      "var_12m_pct": 3.15
+    },
+    {
+      "anio": 2019,
+      "mes": 2,
+      "periodo": "2019-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 101.18,
+      "var_12m_pct": 3.01
+    },
+    {
+      "anio": 2019,
+      "mes": 3,
+      "periodo": "2019-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 101.62,
+      "var_12m_pct": 3.22
+    },
+    {
+      "anio": 2019,
+      "mes": 4,
+      "periodo": "2019-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 102.12,
+      "var_12m_pct": 3.25
+    },
+    {
+      "anio": 2019,
+      "mes": 5,
+      "periodo": "2019-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 102.44,
+      "var_12m_pct": 3.31
+    },
+    {
+      "anio": 2019,
+      "mes": 6,
+      "periodo": "2019-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 102.71,
+      "var_12m_pct": 3.42
+    },
+    {
+      "anio": 2019,
+      "mes": 7,
+      "periodo": "2019-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 102.94,
+      "var_12m_pct": 3.79
+    },
+    {
+      "anio": 2019,
+      "mes": 8,
+      "periodo": "2019-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 103.03,
+      "var_12m_pct": 3.76
+    },
+    {
+      "anio": 2019,
+      "mes": 9,
+      "periodo": "2019-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 103.26,
+      "var_12m_pct": 3.81
+    },
+    {
+      "anio": 2019,
+      "mes": 10,
+      "periodo": "2019-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 103.43,
+      "var_12m_pct": 3.86
+    },
+    {
+      "anio": 2019,
+      "mes": 11,
+      "periodo": "2019-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 103.54,
+      "var_12m_pct": 3.85
+    },
+    {
+      "anio": 2019,
+      "mes": 12,
+      "periodo": "2019-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 103.8,
+      "var_12m_pct": 3.8
+    },
+    {
+      "anio": 2020,
+      "mes": 1,
+      "periodo": "2020-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 104.24,
+      "var_12m_pct": 3.62
+    },
+    {
+      "anio": 2020,
+      "mes": 2,
+      "periodo": "2020-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 104.94,
+      "var_12m_pct": 3.72
+    },
+    {
+      "anio": 2020,
+      "mes": 3,
+      "periodo": "2020-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 105.53,
+      "var_12m_pct": 3.85
+    },
+    {
+      "anio": 2020,
+      "mes": 4,
+      "periodo": "2020-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 105.7,
+      "var_12m_pct": 3.51
+    },
+    {
+      "anio": 2020,
+      "mes": 5,
+      "periodo": "2020-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 105.36,
+      "var_12m_pct": 2.85
+    },
+    {
+      "anio": 2020,
+      "mes": 6,
+      "periodo": "2020-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 104.97,
+      "var_12m_pct": 2.2
+    },
+    {
+      "anio": 2020,
+      "mes": 7,
+      "periodo": "2020-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 104.97,
+      "var_12m_pct": 1.97
+    },
+    {
+      "anio": 2020,
+      "mes": 8,
+      "periodo": "2020-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 104.96,
+      "var_12m_pct": 1.87
+    },
+    {
+      "anio": 2020,
+      "mes": 9,
+      "periodo": "2020-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 105.29,
+      "var_12m_pct": 1.97
+    },
+    {
+      "anio": 2020,
+      "mes": 10,
+      "periodo": "2020-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 105.23,
+      "var_12m_pct": 1.74
+    },
+    {
+      "anio": 2020,
+      "mes": 11,
+      "periodo": "2020-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 105.08,
+      "var_12m_pct": 1.49
+    },
+    {
+      "anio": 2020,
+      "mes": 12,
+      "periodo": "2020-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 105.48,
+      "var_12m_pct": 1.62
+    },
+    {
+      "anio": 2021,
+      "mes": 1,
+      "periodo": "2021-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 105.91,
+      "var_12m_pct": 1.6
+    },
+    {
+      "anio": 2021,
+      "mes": 2,
+      "periodo": "2021-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 106.58,
+      "var_12m_pct": 1.56
+    },
+    {
+      "anio": 2021,
+      "mes": 3,
+      "periodo": "2021-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 107.12,
+      "var_12m_pct": 1.51
+    },
+    {
+      "anio": 2021,
+      "mes": 4,
+      "periodo": "2021-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 107.76,
+      "var_12m_pct": 1.95
+    },
+    {
+      "anio": 2021,
+      "mes": 5,
+      "periodo": "2021-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 108.84,
+      "var_12m_pct": 3.3
+    },
+    {
+      "anio": 2021,
+      "mes": 6,
+      "periodo": "2021-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 108.78,
+      "var_12m_pct": 3.63
+    },
+    {
+      "anio": 2021,
+      "mes": 7,
+      "periodo": "2021-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 109.14,
+      "var_12m_pct": 3.97
+    },
+    {
+      "anio": 2021,
+      "mes": 8,
+      "periodo": "2021-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 109.62,
+      "var_12m_pct": 4.44
+    },
+    {
+      "anio": 2021,
+      "mes": 9,
+      "periodo": "2021-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 110.04,
+      "var_12m_pct": 4.51
+    },
+    {
+      "anio": 2021,
+      "mes": 10,
+      "periodo": "2021-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 110.06,
+      "var_12m_pct": 4.59
+    },
+    {
+      "anio": 2021,
+      "mes": 11,
+      "periodo": "2021-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 110.6,
+      "var_12m_pct": 5.25
+    },
+    {
+      "anio": 2021,
+      "mes": 12,
+      "periodo": "2021-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 111.41,
+      "var_12m_pct": 5.62
+    },
+    {
+      "anio": 2022,
+      "mes": 1,
+      "periodo": "2022-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 113.26,
+      "var_12m_pct": 6.94
+    },
+    {
+      "anio": 2022,
+      "mes": 2,
+      "periodo": "2022-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 115.11,
+      "var_12m_pct": 8
+    },
+    {
+      "anio": 2022,
+      "mes": 3,
+      "periodo": "2022-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 116.26,
+      "var_12m_pct": 8.53
+    },
+    {
+      "anio": 2022,
+      "mes": 4,
+      "periodo": "2022-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 117.71,
+      "var_12m_pct": 9.23
+    },
+    {
+      "anio": 2022,
+      "mes": 5,
+      "periodo": "2022-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 118.7,
+      "var_12m_pct": 9.06
+    },
+    {
+      "anio": 2022,
+      "mes": 6,
+      "periodo": "2022-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 119.31,
+      "var_12m_pct": 9.68
+    },
+    {
+      "anio": 2022,
+      "mes": 7,
+      "periodo": "2022-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 120.27,
+      "var_12m_pct": 10.2
+    },
+    {
+      "anio": 2022,
+      "mes": 8,
+      "periodo": "2022-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 121.5,
+      "var_12m_pct": 10.84
+    },
+    {
+      "anio": 2022,
+      "mes": 9,
+      "periodo": "2022-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 122.63,
+      "var_12m_pct": 11.44
+    },
+    {
+      "anio": 2022,
+      "mes": 10,
+      "periodo": "2022-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 123.51,
+      "var_12m_pct": 12.22
+    },
+    {
+      "anio": 2022,
+      "mes": 11,
+      "periodo": "2022-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 124.46,
+      "var_12m_pct": 12.53
+    },
+    {
+      "anio": 2022,
+      "mes": 12,
+      "periodo": "2022-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 126.03,
+      "var_12m_pct": 13.12
+    },
+    {
+      "anio": 2023,
+      "mes": 1,
+      "periodo": "2023-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 128.27,
+      "var_12m_pct": 13.25
+    },
+    {
+      "anio": 2023,
+      "mes": 2,
+      "periodo": "2023-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 130.4,
+      "var_12m_pct": 13.28
+    },
+    {
+      "anio": 2023,
+      "mes": 3,
+      "periodo": "2023-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 131.77,
+      "var_12m_pct": 13.34
+    },
+    {
+      "anio": 2023,
+      "mes": 4,
+      "periodo": "2023-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 132.8,
+      "var_12m_pct": 12.82
+    },
+    {
+      "anio": 2023,
+      "mes": 5,
+      "periodo": "2023-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 133.38,
+      "var_12m_pct": 12.37
+    },
+    {
+      "anio": 2023,
+      "mes": 6,
+      "periodo": "2023-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 133.78,
+      "var_12m_pct": 12.13
+    },
+    {
+      "anio": 2023,
+      "mes": 7,
+      "periodo": "2023-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 134.45,
+      "var_12m_pct": 11.79
+    },
+    {
+      "anio": 2023,
+      "mes": 8,
+      "periodo": "2023-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 135.39,
+      "var_12m_pct": 11.43
+    },
+    {
+      "anio": 2023,
+      "mes": 9,
+      "periodo": "2023-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 136.11,
+      "var_12m_pct": 10.99
+    },
+    {
+      "anio": 2023,
+      "mes": 10,
+      "periodo": "2023-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 136.45,
+      "var_12m_pct": 10.48
+    },
+    {
+      "anio": 2023,
+      "mes": 11,
+      "periodo": "2023-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 137.09,
+      "var_12m_pct": 10.15
+    },
+    {
+      "anio": 2023,
+      "mes": 12,
+      "periodo": "2023-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 137.72,
+      "var_12m_pct": 9.28
+    },
+    {
+      "anio": 2024,
+      "mes": 1,
+      "periodo": "2024-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 138.98,
+      "var_12m_pct": 8.35
+    },
+    {
+      "anio": 2024,
+      "mes": 2,
+      "periodo": "2024-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 140.49,
+      "var_12m_pct": 7.74
+    },
+    {
+      "anio": 2024,
+      "mes": 3,
+      "periodo": "2024-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 141.48,
+      "var_12m_pct": 7.37
+    },
+    {
+      "anio": 2024,
+      "mes": 4,
+      "periodo": "2024-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 142.32,
+      "var_12m_pct": 7.17
+    },
+    {
+      "anio": 2024,
+      "mes": 5,
+      "periodo": "2024-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 142.92,
+      "var_12m_pct": 7.15
+    },
+    {
+      "anio": 2024,
+      "mes": 6,
+      "periodo": "2024-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 143.38,
+      "var_12m_pct": 7.18
+    },
+    {
+      "anio": 2024,
+      "mes": 7,
+      "periodo": "2024-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 143.67,
+      "var_12m_pct": 6.86
+    },
+    {
+      "anio": 2024,
+      "mes": 8,
+      "periodo": "2024-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 143.67,
+      "var_12m_pct": 6.12
+    },
+    {
+      "anio": 2024,
+      "mes": 9,
+      "periodo": "2024-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 144.02,
+      "var_12m_pct": 5.81
+    },
+    {
+      "anio": 2024,
+      "mes": 10,
+      "periodo": "2024-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 143.83,
+      "var_12m_pct": 5.41
+    },
+    {
+      "anio": 2024,
+      "mes": 11,
+      "periodo": "2024-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 144.22,
+      "var_12m_pct": 5.2
+    },
+    {
+      "anio": 2024,
+      "mes": 12,
+      "periodo": "2024-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 144.88,
+      "var_12m_pct": 5.2
+    },
+    {
+      "anio": 2025,
+      "mes": 1,
+      "periodo": "2025-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 146.24,
+      "var_12m_pct": 5.22
+    },
+    {
+      "anio": 2025,
+      "mes": 2,
+      "periodo": "2025-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 147.9,
+      "var_12m_pct": 5.27
+    },
+    {
+      "anio": 2025,
+      "mes": 3,
+      "periodo": "2025-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 148.68,
+      "var_12m_pct": 5.09
+    },
+    {
+      "anio": 2025,
+      "mes": 4,
+      "periodo": "2025-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 149.66,
+      "var_12m_pct": 5.16
+    },
+    {
+      "anio": 2025,
+      "mes": 5,
+      "periodo": "2025-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 150.14,
+      "var_12m_pct": 5.05
+    },
+    {
+      "anio": 2025,
+      "mes": 6,
+      "periodo": "2025-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 150.3,
+      "var_12m_pct": 4.83
+    },
+    {
+      "anio": 2025,
+      "mes": 7,
+      "periodo": "2025-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 150.71,
+      "var_12m_pct": 4.9
+    },
+    {
+      "anio": 2025,
+      "mes": 8,
+      "periodo": "2025-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 150.99,
+      "var_12m_pct": 5.1
+    },
+    {
+      "anio": 2025,
+      "mes": 9,
+      "periodo": "2025-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 151.48,
+      "var_12m_pct": 5.18
+    },
+    {
+      "anio": 2025,
+      "mes": 10,
+      "periodo": "2025-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 151.76,
+      "var_12m_pct": 5.51
+    },
+    {
+      "anio": 2025,
+      "mes": 11,
+      "periodo": "2025-11",
+      "mes_nombre": "Noviembre",
+      "indice_base_dic2018": 151.87,
+      "var_12m_pct": 5.3
+    },
+    {
+      "anio": 2025,
+      "mes": 12,
+      "periodo": "2025-12",
+      "mes_nombre": "Diciembre",
+      "indice_base_dic2018": 152.27,
+      "var_12m_pct": 5.1
+    },
+    {
+      "anio": 2026,
+      "mes": 1,
+      "periodo": "2026-01",
+      "mes_nombre": "Enero",
+      "indice_base_dic2018": 154.07,
+      "var_12m_pct": 5.35
+    },
+    {
+      "anio": 2026,
+      "mes": 2,
+      "periodo": "2026-02",
+      "mes_nombre": "Febrero",
+      "indice_base_dic2018": 155.73,
+      "var_12m_pct": 5.29
+    },
+    {
+      "anio": 2026,
+      "mes": 3,
+      "periodo": "2026-03",
+      "mes_nombre": "Marzo",
+      "indice_base_dic2018": 156.94,
+      "var_12m_pct": 5.56
+    },
+    {
+      "anio": 2026,
+      "mes": 4,
+      "periodo": "2026-04",
+      "mes_nombre": "Abril",
+      "indice_base_dic2018": 158.17,
+      "var_12m_pct": 5.69
+    },
+    {
+      "anio": 2026,
+      "mes": 5,
+      "periodo": "2026-05",
+      "mes_nombre": "Mayo",
+      "indice_base_dic2018": 158.91,
+      "var_12m_pct": 5.84
+    },
+    {
+      "anio": 2026,
+      "mes": 6,
+      "periodo": "2026-06",
+      "mes_nombre": "Junio",
+      "indice_base_dic2018": 159.53,
+      "var_12m_pct": 6.14
+    },
+    {
+      "anio": 2026,
+      "mes": 7,
+      "periodo": "2026-07",
+      "mes_nombre": "Julio",
+      "indice_base_dic2018": 159.79,
+      "var_12m_pct": 6.02
+    },
+    {
+      "anio": 2026,
+      "mes": 8,
+      "periodo": "2026-08",
+      "mes_nombre": "Agosto",
+      "indice_base_dic2018": 160.42,
+      "var_12m_pct": 6.25
+    },
+    {
+      "anio": 2026,
+      "mes": 9,
+      "periodo": "2026-09",
+      "mes_nombre": "Septiembre",
+      "indice_base_dic2018": 161,
+      "var_12m_pct": 6.28
+    },
+    {
+      "anio": 2026,
+      "mes": 10,
+      "periodo": "2026-10",
+      "mes_nombre": "Octubre",
+      "indice_base_dic2018": 161.32,
+      "var_12m_pct": 6.3
+    }
+  ]
+}

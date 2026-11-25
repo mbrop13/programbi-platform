@@ -783,6 +783,22 @@ const nextConfig: NextConfig = {
         source: "/datos/:path(.*\\.(?:csv|xlsx))",
         headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
+      {
+        source: "/pe/:path(.*\\.(?:csv|xlsx))",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
+        source: "/co/:path(.*\\.(?:csv|xlsx))",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
+        source: "/mx/:path(.*\\.(?:csv|xlsx))",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
+        source: "/ar/:path(.*\\.(?:csv|xlsx))",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
     ];
   },
 };

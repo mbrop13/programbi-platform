@@ -1,0 +1,179 @@
+{
+  "anio": 2026,
+  "pais": "MX",
+  "moneda": "MXN",
+  "uma": {
+    "diaria": 117.31,
+    "mensual": 3566.22,
+    "anual": 42794.64,
+    "vigenciaInicio": "2026-02-01",
+    "vigenciaFin": "2027-01-31",
+    "fuente": "INEGI (DOF enero 2026)"
+  },
+  "salarioMinimo": {
+    "generalDiario": 315.04,
+    "zlfnDiario": 440.87,
+    "vigenciaInicio": "2026-01-01",
+    "fuente": "CONASAMI (DOF 9 de diciembre de 2025)"
+  },
+  "prestacionesLft": {
+    "aguinaldoDiasMinimo": 15,
+    "aguinaldoExentoUmas": 30,
+    "aguinaldoExentoPesos": 3519.3,
+    "ptuPorcentajeUtilidades": 10,
+    "ptuExentaUmas": 15,
+    "ptuExentaPesos": 1759.65,
+    "primaVacacionalPorcentajeMinimo": 25,
+    "primaVacacionalExentaUmas": 15,
+    "primaVacacionalExentaPesos": 1759.65,
+    "vacacionesDiasPrimerAnio": 12,
+    "indemnizacionConstitucionalDias": 90,
+    "primaAntiguedadDiasPorAnio": 12,
+    "primaAntiguedadTopeSalariosMinimos": 2,
+    "fuente": "Ley Federal del Trabajo y art. 93 LISR"
+  },
+  "isrArt96Mensual": {
+    "vigencia": "2026",
+    "fuente": "Anexo 8 de la RMF para 2026 (DOF 28 de diciembre de 2025), apartado B, fracción V",
+    "tramos": [
+      {
+        "limiteInferior": 0.01,
+        "limiteSuperior": 844.59,
+        "cuotaFija": 0,
+        "porcentajeExcedente": 1.92
+      },
+      {
+        "limiteInferior": 844.6,
+        "limiteSuperior": 7168.51,
+        "cuotaFija": 16.22,
+        "porcentajeExcedente": 6.4
+      },
+      {
+        "limiteInferior": 7168.52,
+        "limiteSuperior": 12598.02,
+        "cuotaFija": 420.95,
+        "porcentajeExcedente": 10.88
+      },
+      {
+        "limiteInferior": 12598.03,
+        "limiteSuperior": 14644.64,
+        "cuotaFija": 1011.68,
+        "porcentajeExcedente": 16
+      },
+      {
+        "limiteInferior": 14644.65,
+        "limiteSuperior": 17533.64,
+        "cuotaFija": 1339.14,
+        "porcentajeExcedente": 17.92
+      },
+      {
+        "limiteInferior": 17533.65,
+        "limiteSuperior": 35362.83,
+        "cuotaFija": 1856.84,
+        "porcentajeExcedente": 21.36
+      },
+      {
+        "limiteInferior": 35362.84,
+        "limiteSuperior": 55736.68,
+        "cuotaFija": 5665.16,
+        "porcentajeExcedente": 23.52
+      },
+      {
+        "limiteInferior": 55736.69,
+        "limiteSuperior": 106410.5,
+        "cuotaFija": 10457.09,
+        "porcentajeExcedente": 30
+      },
+      {
+        "limiteInferior": 106410.51,
+        "limiteSuperior": 141880.66,
+        "cuotaFija": 25659.23,
+        "porcentajeExcedente": 32
+      },
+      {
+        "limiteInferior": 141880.67,
+        "limiteSuperior": 425641.99,
+        "cuotaFija": 37009.69,
+        "porcentajeExcedente": 34
+      },
+      {
+        "limiteInferior": 425642,
+        "limiteSuperior": null,
+        "cuotaFija": 133488.54,
+        "porcentajeExcedente": 35
+      }
+    ]
+  },
+  "isrArt96Quincenal": {
+    "vigencia": "2026",
+    "fuente": "Anexo 8 de la RMF para 2026 (DOF 28 de diciembre de 2025), apartado B, fracción IV",
+    "tramos": [
+      {
+        "limiteInferior": 0.01,
+        "limiteSuperior": 416.7,
+        "cuotaFija": 0,
+        "porcentajeExcedente": 1.92
+      },
+      {
+        "limiteInferior": 416.71,
+        "limiteSuperior": 3537.15,
+        "cuotaFija": 7.95,
+        "porcentajeExcedente": 6.4
+      },
+      {
+        "limiteInferior": 3537.16,
+        "limiteSuperior": 6216.15,
+        "cuotaFija": 207.75,
+        "porcentajeExcedente": 10.88
+      },
+      {
+        "limiteInferior": 6216.16,
+        "limiteSuperior": 7225.95,
+        "cuotaFija": 499.2,
+        "porcentajeExcedente": 16
+      },
+      {
+        "limiteInferior": 7225.96,
+        "limiteSuperior": 8651.4,
+        "cuotaFija": 660.75,
+        "porcentajeExcedente": 17.92
+      },
+      {
+        "limiteInferior": 8651.41,
+        "limiteSuperior": 17448.75,
+        "cuotaFija": 916.2,
+        "porcentajeExcedente": 21.36
+      },
+      {
+        "limiteInferior": 17448.76,
+        "limiteSuperior": 27501.6,
+        "cuotaFija": 2795.25,
+        "porcentajeExcedente": 23.52
+      },
+      {
+        "limiteInferior": 27501.61,
+        "limiteSuperior": 52505.25,
+        "cuotaFija": 5159.7,
+        "porcentajeExcedente": 30
+      },
+      {
+        "limiteInferior": 52505.26,
+        "limiteSuperior": 70006.95,
+        "cuotaFija": 12660.75,
+        "porcentajeExcedente": 32
+      },
+      {
+        "limiteInferior": 70006.96,
+        "limiteSuperior": 210020.7,
+        "cuotaFija": 18261.3,
+        "porcentajeExcedente": 34
+      },
+      {
+        "limiteInferior": 210020.71,
+        "limiteSuperior": null,
+        "cuotaFija": 65866.05,
+        "porcentajeExcedente": 35
+      }
+    ]
+  }
+}

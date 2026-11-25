@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ORG_ID, SITE_URL } from "@/lib/seo";
+import { hreflangDatosDe } from "@/lib/seo/datos-hreflang";
 import {
   getMetaCarreras,
   TIPO_ETIQUETAS,
@@ -83,10 +84,14 @@ export function metadataHubCarreras(): Metadata {
   const url = `${SITE_URL}${path}`;
   const ogImg = ogUrlDe(path, meta.edicion);
   const finalTitle = ajustarTitulo(title, false);
+  const languages = hreflangDatosDe(path);
   return {
     title: { absolute: finalTitle },
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      ...(languages ? { languages } : {}),
+    },
     robots: { index: true, follow: true },
     openGraph: {
       type: "website",
@@ -190,10 +195,14 @@ export function metadataFichaCarrera(carrera: CarreraRecord, indexable: boolean)
   const description = construirDescripcionFicha(carrera);
 
   const ogImg = ogUrlDe(path, meta.edicion);
+  const languages = indexable ? hreflangDatosDe(path) : undefined;
   return {
     title: { absolute: title },
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      ...(languages ? { languages } : {}),
+    },
     robots: indexable ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
       type: "article",
@@ -216,10 +225,14 @@ export function metadataPreset(preset: PresetSlug): Metadata {
   const title = ajustarTitulo(def.titleSeo, false);
   const description = ajustarDescripcion([def.descriptionSeo], def.descriptionSeo);
   const ogImg = ogUrlDe(path, meta.edicion);
+  const languages = hreflangDatosDe(path);
   return {
     title: { absolute: title },
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      ...(languages ? { languages } : {}),
+    },
     robots: { index: true, follow: true },
     openGraph: {
       type: "website",
@@ -248,10 +261,14 @@ export function metadataSimpleDatos({
   const finalTitle = ajustarTitulo(title, false);
   const finalDesc = ajustarDescripcion([description], description);
   const ogImg = ogUrlDe(path, meta.edicion);
+  const languages = hreflangDatosDe(path);
   return {
     title: { absolute: finalTitle },
     description: finalDesc,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      ...(languages ? { languages } : {}),
+    },
     robots: { index: true, follow: true },
     openGraph: {
       type: "website",

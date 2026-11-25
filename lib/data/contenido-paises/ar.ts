@@ -13,9 +13,9 @@ const contenido: ContenidoPais = {
   },
   seoPaginas: {
     cursos: {
-      title: "Cursos Power BI, SQL y datos en Argentina | ProgramBI",
+      title: "Cursos en vivo de datos, Excel e IA en Argentina | ProgramBI",
       description:
-        "Catálogo en vivo para Argentina: Power BI, SQL, Python y análisis de datos. Horario de Buenos Aires, precios en ARS y proyecto final.",
+        "Catálogo en vivo para Argentina: SQL, Python, Excel, IA y análisis de datos. Horario de Buenos Aires, precios en ARS y proyecto final.",
     },
     faq: {
       title: "Preguntas frecuentes de cursos en Argentina | ProgramBI",

@@ -287,6 +287,7 @@ export default function CourseDetailClient({
   resumen,
   testimonios,
   comparativa,
+  h1Override,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
@@ -308,6 +309,8 @@ export default function CourseDetailClient({
   testimonios?: ReactNode;
   /** Tabla comparativa de cursos de IA (Server Component), para ChatGPT y Gemini. */
   comparativa?: ReactNode;
+  /** H1 específico de mercado para evitar canibalización en vistas públicas. */
+  h1Override?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -531,14 +534,17 @@ export default function CourseDetailClient({
   const isCroTemplate = isCourseCroSlug(course.slug) && view === "publico";
   const seo = COURSE_SEO[course.slug];
   const h1Base = (pais === ISO_CHILE && seo?.h1Cl) || seo?.h1 || course.title;
-  const heading = localizarMercado(
-    view === "empresas"
-      ? empresaHeading(course)
-      : view === "avanzado"
-        ? advancedHeading(h1Base)
-        : h1Base,
-    pais
-  );
+  const heading =
+    view === "publico" && h1Override
+      ? h1Override
+      : localizarMercado(
+          view === "empresas"
+            ? empresaHeading(course)
+            : view === "avanzado"
+              ? advancedHeading(h1Base)
+              : h1Base,
+          pais
+        );
   const introLocalAr = view === "publico" && pais === "ar" ? getIntroFichaAr(course.slug) : null;
   const introLocalPe = view === "publico" && pais === "pe" ? getIntroFichaPe(course.slug) : null;
   const introParagraphs =
@@ -748,6 +754,7 @@ export default function CourseDetailClient({
           </div>
 
           <aside id="inscripcion" className="order-3 min-w-0 scroll-mt-24 lg:order-none lg:col-span-5 lg:row-span-2">
+            <span id="precios" className="scroll-mt-24" aria-hidden="true" />
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:max-h-[calc(100vh_-_var(--sticky-below-nav,6rem)_-_1.5rem)] lg:overflow-y-auto lg:overscroll-contain [scrollbar-width:thin] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
               <div className="mb-4 flex justify-start">
                 {isEmpresa ? (

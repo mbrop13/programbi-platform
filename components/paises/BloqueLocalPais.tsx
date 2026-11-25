@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import type { DatosBloqueLocal } from "@/lib/data/contenido-paises";
 import { jsonLdString } from "@/lib/seo";
 import { rutaLocal } from "@/lib/paises/rutas";
+import type { WhatsAppIntent } from "@/lib/whatsapp";
 
 /** Página que monta el bloque. Cambia el H2 y algunos enlaces. */
 export type ContextoBloqueLocal = "hub" | "cursos" | "ficha" | "empresas" | "precios";
@@ -44,6 +46,16 @@ export default function BloqueLocalPais({
       ? `${bloque.curso.title} en ${bloque.nombre}: precio, horario y pagos`
       : bloque.titulo;
   const kicker = contexto === "ficha" ? `Ficha local · ${bloque.nombre}` : `Datos de ${bloque.nombre}`;
+  const pagePath =
+    contexto === "hub"
+      ? rutaLocal(iso, "/")
+      : contexto === "ficha" && bloque.curso
+        ? rutaLocal(iso, `/cursos/${bloque.curso.slug}`)
+        : contexto === "empresas"
+          ? rutaLocal(iso, "/empresas")
+          : contexto === "precios"
+            ? rutaLocal(iso, "/precios")
+            : rutaLocal(iso, "/cursos");
 
   const faqJsonLd = conFaq
     ? {
@@ -101,6 +113,21 @@ export default function BloqueLocalPais({
                 {hecho.valor}
               </dd>
               <dd className="mt-2 text-xs leading-relaxed text-mute">{hecho.detalle}</dd>
+              {hecho.clave === "clase-gratis" && hecho.valor === "Coordinada por WhatsApp" ? (
+                <dd className="mt-3">
+                  <WhatsAppCta
+                    page={pagePath}
+                    intent={"clase-gratis" as WhatsAppIntent}
+                    country={iso}
+                    ctaPosition="bloque_local_clase_gratis"
+                    customText={`Hola, quiero coordinar la clase gratis por Zoom desde ${bloque.nombre}.`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink underline underline-offset-4 hover:text-mute"
+                  >
+                    Coordinar clase gratis por WhatsApp
+                    <ArrowRight size={12} aria-hidden />
+                  </WhatsAppCta>
+                </dd>
+              ) : null}
             </div>
           ))}
         </dl>

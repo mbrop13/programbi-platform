@@ -780,6 +780,22 @@
     {
       "source": "/datos/(.*\\.(?:csv|xlsx))",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/pe/(.*\\.(?:csv|xlsx))",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/co/(.*\\.(?:csv|xlsx))",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/mx/(.*\\.(?:csv|xlsx))",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/ar/(.*\\.(?:csv|xlsx))",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
   ],
   "crons": [

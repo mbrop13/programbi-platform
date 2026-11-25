@@ -15,7 +15,9 @@ export type SeoLocal = {
   description: string;
 };
 
-const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
+export type RutaSeo = RutaBloqueLocal | "curso:excel" | "curso:sql-server";
+
+const SEO: Record<string, Partial<Record<RutaSeo, SeoLocal>>> = {
   ar: {
     hub: {
       title: "Cursos de datos en vivo en Argentina | ProgramBI",
@@ -23,17 +25,17 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
         "Cursos en vivo de análisis de datos, Power BI y SQL para profesionales de Argentina: horario de Buenos Aires, precios en ARS y {cuotas}.",
     },
     cursos: {
-      title: "Cursos Power BI y datos en Argentina | ProgramBI",
+      title: "Cursos en vivo de datos, Excel e IA en Argentina | ProgramBI",
       description:
         "Catálogo en vivo para Argentina: Power BI, SQL, Python y análisis de datos. Horario de Buenos Aires, precios en ARS y proyecto final con certificado.",
     },
     "curso:power-bi": {
-      title: "Curso Power BI en vivo en Argentina | ProgramBI",
+      title: "Curso de Power BI en Argentina: en vivo y con certificado",
       description:
-        `Curso Power BI en vivo para Argentina: Power Query, modelo estrella y DAX en ${courseDurationHours("power-bi")} horas. Horario de Buenos Aires, valor en ARS y {cuotas}.`,
+        "Aprende Power Query, modelo estrella y DAX en vivo por Zoom en horario de Buenos Aires. {cuotas}, clase gratis y certificado digital.",
     },
     "curso:analisis-de-datos": {
-      title: "Curso de análisis de datos en Argentina | ProgramBI",
+      title: "Curso de análisis de datos (Data Analyst) en Argentina",
       description:
         `Análisis de datos en vivo para Argentina: SQL Server, Power BI y Python (${courseDurationHours("analisis-de-datos")} h por nivel). Horario de Buenos Aires, valor en ARS y {cuotas}.`,
     },
@@ -60,7 +62,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
         "Formación en vivo en Power BI, análisis de datos y Python para profesionales de Colombia: horario de Bogotá, precios en COP y {cuotas}.",
     },
     cursos: {
-      title: "Cursos de datos en Colombia: Power BI, SQL y Python",
+      title: "Catálogo de cursos de datos en Colombia | ProgramBI",
       description:
         "Cursos de datos en vivo en Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP, clase gratis y certificado.",
     },
@@ -69,10 +71,20 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
       description:
         `Curso Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en ${courseDurationHours("power-bi")} horas. Horario de Bogotá, valor en COP y {cuotas}.`,
     },
+    "curso:excel": {
+      title: "Curso de Excel en vivo en Colombia | ProgramBI",
+      description:
+        `Curso de Excel en vivo para Colombia (${courseDurationHours("excel")} h): tablas dinámicas, Power Query y fórmulas. Horario de Bogotá, valor en COP y {cuotas}.`,
+    },
     "curso:analisis-de-datos": {
       title: "Curso de análisis de datos en Colombia | ProgramBI",
       description:
         `Análisis de datos en vivo para Colombia: SQL Server, Power BI y Python en dos niveles de ${courseDurationHours("analisis-de-datos")} horas. Horario de Bogotá, valor en COP y certificado.`,
+    },
+    "curso:sql-server": {
+      title: "Curso SQL Server en vivo en Colombia | ProgramBI",
+      description:
+        `Curso SQL Server en vivo para Colombia (${courseDurationHours("sql-server")} h): consultas, JOINs, CTEs y funciones de ventana. Horario de Bogotá, valor en COP y {cuotas}.`,
     },
     "curso:python": {
       title: "Curso de Python para datos en Colombia | ProgramBI",
@@ -94,7 +106,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
 
 export function getSeoLocal(
   iso: string | null | undefined,
-  ruta: RutaBloqueLocal
+  ruta: RutaSeo
 ): SeoLocal | null {
   if (!iso) return null;
   const seo = SEO[iso]?.[ruta];
@@ -114,7 +126,7 @@ export function getSeoLocal(
 export function aplicarSeoLocal(
   metadata: Metadata,
   iso: string | null | undefined,
-  ruta: RutaBloqueLocal
+  ruta: RutaSeo
 ): Metadata {
   const seo = getSeoLocal(iso, ruta);
   if (!seo) return metadata;

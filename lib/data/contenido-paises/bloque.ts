@@ -184,7 +184,7 @@ export function construirBloque(
     cuotas: textoCuotas(iso),
     medios: pais.mediosPago.join("; "),
     notaPago: NOTA_PAGO,
-    claseGratis: fechaGratis ?? "sin fecha confirmada",
+    claseGratis: fechaGratis ?? "coordinada por WhatsApp",
     resumenPrecios,
   };
 
@@ -245,7 +245,7 @@ export function construirBloque(
     {
       clave: "clase-gratis",
       etiqueta: "Clase gratis",
-      valor: fechaGratis ? `Próxima: ${fechaGratis}` : "Sin fecha confirmada",
+      valor: fechaGratis ? `Próxima: ${fechaGratis}` : "Coordinada por WhatsApp",
       detalle: nota(
         "clase-gratis",
         "Clase abierta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada."

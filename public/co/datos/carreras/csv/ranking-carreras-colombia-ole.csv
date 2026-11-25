@@ -1,0 +1,336 @@
+slug,programa,nivel_formacion,area_conocimiento,graduados_cotizantes,n_ies,pct_4plus_smmlv,mediana_smmlv,mediana_cop_2026,graduados_snies_2025
+medicina,MEDICINA,Universitario,Ciencias de la salud,11995,48,49.9,3.99,6993734,8540
+ingenieria-de-sistemas-y-computacion,INGENIERIA DE SISTEMAS Y COMPUTACION,Universitario,"Ingeniería, arquitectura, urbanismo y afines",1550,13,49.8,3.99,6985168,1234
+ingenieria-informatica,INGENIERIA INFORMATICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",1132,15,47.5,3.87,6779419,941
+ingenieria-de-software,INGENIERIA DE SOFTWARE,Universitario,"Ingeniería, arquitectura, urbanismo y afines",1175,14,43.5,3.65,6385416,1184
+quimica-farmaceutica,QUIMICA FARMACEUTICA,Universitario,Matemáticas y ciencias naturales,893,7,30.7,3.47,6071425,601
+ingenieria-de-petroleos,INGENIERIA DE PETROLEOS,Universitario,"Ingeniería, arquitectura, urbanismo y afines",638,5,35,3.25,5697245,157
+farmacia,FARMACIA,Universitario,Matemáticas y ciencias naturales,557,2,23.3,3.25,5690441,264
+ingenieria-de-sistemas,INGENIERIA DE SISTEMAS,Universitario,"Ingeniería, arquitectura, urbanismo y afines",14422,103,32.3,3.08,5389009,9077
+jurisprudencia,JURISPRUDENCIA,Universitario,Ciencias sociales y humanas,560,1,28.4,3.06,5357044,290
+ingenieria-de-telecomunicaciones,INGENIERIA DE TELECOMUNICACIONES,Universitario,"Ingeniería, arquitectura, urbanismo y afines",1342,14,27.6,3.01,5273787,483
+tecnologia-en-manejo-de-fuentes-abiertas-de-uso-diagnostico-y-terapeutico,TECNOLOGIA EN MANEJO DE FUENTES ABIERTAS DE USO DIAGNOSTICO Y TERAPEUTICO,Tecnológico,Ciencias de la salud,101,1,9.9,2.92,5104201,
+ingenieria-en-telecomunicaciones,INGENIERIA EN TELECOMUNICACIONES,Universitario,"Ingeniería, arquitectura, urbanismo y afines",542,6,25.1,2.91,5097393,222
+enfermeria,ENFERMERIA,Universitario,Ciencias de la salud,8906,54,15.1,2.85,4983945,4388
+tecnologia-en-sistematizacion-de-datos,TECNOLOGIA EN SISTEMATIZACION DE DATOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",299,2,22.7,2.75,4819455,144
+ingenieria-electronica,INGENIERIA ELECTRONICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",5353,59,24.8,2.69,4703217,2670
+ingenieria-electrica,INGENIERIA ELECTRICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",2647,19,18.1,2.68,4695982,1149
+bacteriologia-y-laboratorio-clinico,BACTERIOLOGIA Y LABORATORIO CLINICO,Universitario,Ciencias de la salud,793,6,7.8,2.67,4679502,522
+relaciones-internacionales,RELACIONES INTERNACIONALES,Universitario,Ciencias sociales y humanas,665,5,12.2,2.63,4601697,364
+ingenieria-financiera,INGENIERIA FINANCIERA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",835,6,17.1,2.62,4584375,332
+ingenieria-electromecanica,INGENIERIA ELECTROMECANICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",1353,7,23.1,2.61,4567724,450
+optometria,OPTOMETRIA,Universitario,Ciencias de la salud,632,7,17.6,2.61,4578380,268
+tecnologia-en-electricidad,TECNOLOGIA EN ELECTRICIDAD,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",250,3,17.6,2.59,4529958,4
+economia,ECONOMIA,Universitario,"Economía, administración, contaduría y afines",5237,60,19.1,2.47,4318381,3053
+ingenieria-de-produccion,INGENIERIA DE PRODUCCION,Universitario,"Ingeniería, arquitectura, urbanismo y afines",811,6,16.3,2.46,4300702,335
+lenguas-modernas,LENGUAS MODERNAS,Universitario,Ciencias sociales y humanas,767,2,11,2.4,4205370,387
+instrumentacion-quirurgica,INSTRUMENTACION QUIRURGICA,Universitario,Ciencias de la salud,1507,13,4.5,2.38,4162706,674
+finanzas-y-comercio-internacional,FINANZAS Y COMERCIO INTERNACIONAL,Universitario,"Economía, administración, contaduría y afines",665,5,15,2.36,4137711,282
+ingenieria-quimica,INGENIERIA QUIMICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",3052,16,14.2,2.34,4098207,1221
+tecnologia-en-imagenes-diagnosticas,TECNOLOGIA EN IMAGENES DIAGNOSTICAS,Tecnológico,Ciencias de la salud,324,1,5.2,2.33,4076734,
+ingenieria-mecatronica,INGENIERIA MECATRONICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",2433,25,14,2.27,3975226,1358
+nutricion-y-dietetica,NUTRICION Y DIETETICA,Universitario,Ciencias de la salud,1101,14,4.2,2.26,3949763,975
+ciencia-politica,CIENCIA POLITICA,Universitario,Ciencias sociales y humanas,671,14,13.4,2.23,3901139,785
+profesional-en-lenguas-modernas,PROFESIONAL EN LENGUAS MODERNAS,Universitario,Ciencias sociales y humanas,712,1,7,2.22,3894013,458
+ingenieria-industrial,INGENIERIA INDUSTRIAL,Universitario,"Ingeniería, arquitectura, urbanismo y afines",27339,98,14.3,2.21,3870552,12397
+administracion-y-direccion-de-empresas,ADMINISTRACION Y DIRECCION DE EMPRESAS,Universitario,"Economía, administración, contaduría y afines",954,1,14.9,2.21,3869321,442
+mercadeo,MERCADEO,Universitario,"Economía, administración, contaduría y afines",1876,21,13.5,2.2,3857763,1108
+tecnologia-en-sistemas-de-informacion,TECNOLOGIA EN SISTEMAS DE INFORMACION,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",792,8,15.5,2.19,3836860,85
+ingenieria-mecanica,INGENIERIA MECANICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",5705,36,11.7,2.18,3825385,2654
+licenciatura-en-ingles,LICENCIATURA EN INGLES,Universitario,Ciencias de la educación,685,6,5,2.18,3822489,160
+derecho,DERECHO,Universitario,Ciencias sociales y humanas,21667,101,19.8,2.17,3799808,20374
+negocios-internacionales,NEGOCIOS INTERNACIONALES,Universitario,"Economía, administración, contaduría y afines",6684,41,11.3,2.16,3773815,3569
+tecnologia-en-desarrollo-informatico,TECNOLOGIA EN DESARROLLO INFORMATICO,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",238,1,19.3,2.16,3774801,199
+quimica,QUIMICA,Universitario,Matemáticas y ciencias naturales,953,19,10.5,2.15,3761300,554
+tecnologia-en-sistemas-mecatronicos,TECNOLOGIA EN SISTEMAS MECATRONICOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",119,1,11.8,2.15,3769309,39
+profesional-en-gestion-de-la-seguridad-y-la-salud-laboral,PROFESIONAL EN GESTION DE LA SEGURIDAD Y LA SALUD LABORAL,Universitario,Ciencias sociales y humanas,1786,1,8,2.13,3737861,753
+administracion-de-negocios,ADMINISTRACION DE NEGOCIOS,Universitario,"Economía, administración, contaduría y afines",1449,4,13.6,2.12,3712392,466
+administracion-logistica,ADMINISTRACION LOGISTICA,Universitario,"Economía, administración, contaduría y afines",607,8,8.9,2.11,3686116,356
+licenciatura-en-etnoeducacion,LICENCIATURA EN ETNOEDUCACION,Universitario,Ciencias de la educación,878,5,0.9,2.1,3677815,544
+administracion-publica,ADMINISTRACION PUBLICA,Universitario,"Economía, administración, contaduría y afines",741,7,11.6,2.1,3684369,692
+ingenieria-biomedica,INGENIERIA BIOMEDICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",1537,13,9.4,2.09,3650727,941
+profesional-en-contaduria-publica,PROFESIONAL EN CONTADURIA PUBLICA,Universitario,"Economía, administración, contaduría y afines",598,1,5.9,2.08,3637836,187
+tecnologia-en-montajes-industriales,TECNOLOGIA EN MONTAJES INDUSTRIALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",154,1,4.5,2.08,3633128,70
+tecnologia-en-gestion-de-procesos-logisticos,TECNOLOGIA EN GESTION DE PROCESOS LOGISTICOS,Tecnológico,"Economía, administración, contaduría y afines",141,3,10.6,2.08,3642508,35
+ingenieria-agronomica,INGENIERIA AGRONOMICA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",1614,16,3.2,2.06,3612499,982
+tecnologia-en-radiologia-e-imagenes-diagnosticas,TECNOLOGIA EN RADIOLOGIA E IMAGENES DIAGNOSTICAS,Tecnológico,Ciencias de la salud,749,5,5.9,2.06,3607843,665
+licenciatura-en-lenguas-modernas,LICENCIATURA EN LENGUAS MODERNAS,Universitario,Ciencias de la educación,567,3,5.6,2.04,3577742,85
+tecnologia-en-electromecanica,TECNOLOGIA EN ELECTROMECANICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",207,6,9.2,2.04,3580376,18
+tecnologia-en-gestion-de-procesos-administrativos,TECNOLOGIA EN GESTION DE PROCESOS ADMINISTRATIVOS,Tecnológico,"Economía, administración, contaduría y afines",173,1,7.5,2.04,3580376,2
+publicidad,PUBLICIDAD,Universitario,Bellas artes,1294,15,8.7,2.02,3538905,387
+tecnologia-en-gestion-de-mercadeo,TECNOLOGIA EN GESTION DE MERCADEO,Tecnológico,"Economía, administración, contaduría y afines",429,4,11.7,1.98,3469144,195
+mercadeo-y-publicidad,MERCADEO Y PUBLICIDAD,Universitario,"Economía, administración, contaduría y afines",1375,9,10.3,1.97,3443321,734
+ingenieria-de-alimentos,INGENIERIA DE ALIMENTOS,Universitario,"Ingeniería, arquitectura, urbanismo y afines",1213,18,6.6,1.97,3449355,813
+ingenieria-en-seguridad-y-salud-para-el-trabajo,INGENIERIA EN SEGURIDAD Y SALUD PARA EL TRABAJO,Universitario,"Ingeniería, arquitectura, urbanismo y afines",538,1,3.3,1.97,3442569,255
+tecnologia-en-sistemas,TECNOLOGIA EN SISTEMAS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",226,19,13.3,1.97,3450313,77
+comunicacion-social-y-periodismo,COMUNICACION SOCIAL Y PERIODISMO,Universitario,Ciencias sociales y humanas,1286,13,8.8,1.95,3409214,708
+tecnologia-en-desarrollo-de-software,TECNOLOGIA EN DESARROLLO DE SOFTWARE,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",988,35,9.9,1.94,3388325,1997
+tecnologia-en-gestion-de-redes-de-telecomunicaciones,TECNOLOGIA EN GESTION DE REDES DE TELECOMUNICACIONES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",163,5,4.3,1.94,3392378,108
+administracion-de-empresas,ADMINISTRACION DE EMPRESAS,Universitario,"Economía, administración, contaduría y afines",53627,139,9.9,1.93,3372321,29374
+finanzas-y-negocios-internacionales,FINANZAS Y NEGOCIOS INTERNACIONALES,Universitario,"Economía, administración, contaduría y afines",857,9,6.2,1.93,3384171,897
+administracion-de-negocios-internacionales,ADMINISTRACION DE NEGOCIOS INTERNACIONALES,Universitario,"Economía, administración, contaduría y afines",3410,24,12.2,1.91,3335935,1696
+tecnologia-en-informatica,TECNOLOGIA EN INFORMATICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",286,2,11.9,1.91,3345150,66
+tecnologia-textil,TECNOLOGIA TEXTIL,Tecnológico,Bellas artes,147,1,2.7,1.91,3349557,40
+tecnologia-en-gestion-comercial-y-de-negocios,TECNOLOGIA EN GESTION COMERCIAL Y DE NEGOCIOS,Tecnológico,"Economía, administración, contaduría y afines",158,1,10.8,1.89,3304127,78
+tecnologia-en-logistica,TECNOLOGIA EN LOGISTICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",687,8,7.3,1.86,3249276,644
+licenciatura-en-ciencias-sociales,LICENCIATURA EN CIENCIAS SOCIALES,Universitario,Ciencias de la educación,1838,22,2.4,1.84,3228688,1457
+licenciatura-en-matematicas,LICENCIATURA EN MATEMATICAS,Universitario,Ciencias de la educación,1266,24,2.2,1.83,3201282,1102
+tecnologia-en-produccion,TECNOLOGIA EN PRODUCCION,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",315,1,3.8,1.83,3212005,13
+administracion-financiera,ADMINISTRACION FINANCIERA,Universitario,"Economía, administración, contaduría y afines",4683,25,6.6,1.82,3188000,2160
+tecnica-profesional-en-soporte-de-sistemas-e-informatica,TECNICA PROFESIONAL EN SOPORTE DE SISTEMAS E INFORMATICA,Formación técnica profesional,"Ingeniería, arquitectura, urbanismo y afines",241,1,8.7,1.82,3185381,292
+tecnologia-en-supervision-de-la-fabricacion-de-productos-metalicos-soldados,TECNOLOGIA EN SUPERVISION DE LA FABRICACION DE PRODUCTOS METALICOS SOLDADOS,Tecnológico,"Economía, administración, contaduría y afines",189,1,13.2,1.82,3184836,75
+profesional-en-administracion-de-empresas,PROFESIONAL EN ADMINISTRACION DE EMPRESAS,Universitario,"Economía, administración, contaduría y afines",1040,2,6.5,1.81,3161874,466
+licenciatura-en-educacion-basica-con-enfasis-en-humanidades-lengua-castellana,"LICENCIATURA EN EDUCACION BASICA CON ENFASIS EN HUMANIDADES, LENGUA CASTELLANA",Universitario,Ciencias de la educación,525,4,1,1.81,3169908,6
+tecnologia-en-gestion-de-sistemas-electromecanicos,TECNOLOGIA EN GESTION DE SISTEMAS ELECTROMECANICOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",193,2,3.6,1.81,3170846,97
+tecnologia-en-gestion-comercial-y-publicitaria,TECNOLOGIA EN GESTION COMERCIAL Y PUBLICITARIA,Tecnológico,"Economía, administración, contaduría y afines",162,1,11.1,1.81,3173515,99
+tecnologia-en-gestion-de-bases-de-datos,TECNOLOGIA EN GESTION DE BASES DE DATOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",145,1,9,1.81,3173515,6
+ingenieria-civil,INGENIERIA CIVIL,Universitario,"Ingeniería, arquitectura, urbanismo y afines",13989,52,4.5,1.8,3150430,6364
+comercio-internacional,COMERCIO INTERNACIONAL,Universitario,"Economía, administración, contaduría y afines",1460,10,4.9,1.8,3151977,592
+tecnologia-electrica,TECNOLOGIA ELECTRICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",247,2,8.1,1.79,3133722,84
+comunicacion-social,COMUNICACION SOCIAL,Universitario,Ciencias sociales y humanas,3544,31,8.3,1.78,3111567,2365
+tecnologia-en-gestion-de-recursos-humanos,TECNOLOGIA EN GESTION DE RECURSOS HUMANOS,Tecnológico,"Economía, administración, contaduría y afines",264,1,7.2,1.78,3112720,112
+tecnologia-en-gestion-empresarial-y-financiera,TECNOLOGIA EN GESTION EMPRESARIAL Y FINANCIERA,Tecnológico,"Economía, administración, contaduría y afines",101,1,1,1.78,3118800,18
+odontologia,ODONTOLOGIA,Universitario,Ciencias de la salud,1887,21,4.1,1.77,3102733,1617
+tecnologia-en-criminalistica,TECNOLOGIA EN CRIMINALISTICA,Tecnológico,Ciencias sociales y humanas,103,2,28.2,1.77,3107856,76
+tecnologia-en-analisis-de-costos-y-presupuestos,TECNOLOGIA EN ANALISIS DE COSTOS Y PRESUPUESTOS,Tecnológico,"Economía, administración, contaduría y afines",609,1,4.3,1.76,3076489,213
+tecnologia-en-instrumentacion-industrial,TECNOLOGIA EN INSTRUMENTACION INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",123,3,6.5,1.76,3083980,26
+diseno-industrial,DISEÑO INDUSTRIAL,Universitario,Bellas artes,1658,22,9,1.74,3051973,761
+tecnico-profesional-en-procesos-administrativos,TECNICO PROFESIONAL EN PROCESOS ADMINISTRATIVOS,Formación técnica profesional,"Economía, administración, contaduría y afines",228,6,10.1,1.74,3050819,298
+tecnologia-en-costos-y-auditoria,TECNOLOGIA EN COSTOS Y AUDITORIA,Tecnológico,"Economía, administración, contaduría y afines",221,2,1.8,1.74,3043629,19
+diseno-grafico,DISEÑO GRAFICO,Universitario,Bellas artes,2398,31,4.1,1.73,3027403,1430
+fisioterapia,FISIOTERAPIA,Universitario,Ciencias de la salud,2798,25,2.4,1.72,3015808,2493
+fonoaudiologia,FONOAUDIOLOGIA,Universitario,Ciencias de la salud,715,14,0.7,1.72,3014093,538
+tecnologia-en-gestion-integral-del-riesgo-en-seguros,TECNOLOGIA EN GESTION INTEGRAL DEL RIESGO EN SEGUROS,Tecnológico,"Economía, administración, contaduría y afines",458,1,1.7,1.72,3010902,64
+comunicacion-socialy-periodismo,COMUNICACION SOCIALY PERIODISMO,Universitario,Ciencias sociales y humanas,565,1,5.5,1.71,3001551,76
+tecnologia-en-gestion-de-procesos-industriales,TECNOLOGIA EN GESTION DE PROCESOS INDUSTRIALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",839,5,2.7,1.7,2980050,299
+tecnologia-en-mecanica-industrial,TECNOLOGIA EN MECANICA INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",464,4,6.5,1.7,2981116,192
+tecnologia-en-gestion-de-negocios-fiduciarios,TECNOLOGIA EN GESTION DE NEGOCIOS FIDUCIARIOS,Tecnológico,"Economía, administración, contaduría y afines",167,1,1.2,1.7,2970285,36
+tecnologia-en-diseno-industrial,TECNOLOGIA EN DISEÑO INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",140,1,0.7,1.69,2958426,39
+tecnologia-en-gestion-financiera-y-de-recursos-de-la-salud,TECNOLOGIA EN GESTION FINANCIERA Y DE RECURSOS DE LA SALUD,Tecnológico,"Economía, administración, contaduría y afines",112,1,2.7,1.69,2950599,41
+tecnologia-en-mantenimiento-electromecanico-industrial,TECNOLOGIA EN MANTENIMIENTO ELECTROMECANICO INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",2428,2,7.4,1.68,2946798,1142
+administracion-de-empresas-turisticas-y-hoteleras,ADMINISTRACION DE EMPRESAS TURISTICAS Y HOTELERAS,Universitario,"Economía, administración, contaduría y afines",684,7,6.3,1.67,2926722,347
+tecnologia-en-calidad,TECNOLOGIA EN CALIDAD,Tecnológico,"Economía, administración, contaduría y afines",148,1,0.7,1.67,2932071,14
+contaduria-publica,CONTADURIA PUBLICA,Universitario,"Economía, administración, contaduría y afines",39145,130,4,1.66,2911199,18303
+tecnologia-en-automatizacion-y-robotica-industrial,TECNOLOGIA EN AUTOMATIZACION Y ROBOTICA INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",220,1,5.5,1.66,2909592,161
+tecnologia-en-gestion-industrial,TECNOLOGIA EN GESTION INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",203,4,2.5,1.66,2899936,48
+comunicacion-social-periodismo,COMUNICACION SOCIAL- PERIODISMO,Universitario,Ciencias sociales y humanas,3003,13,4.3,1.65,2887472,1309
+tecnologia-en-electronica-industrial,TECNOLOGIA EN ELECTRONICA INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",267,9,6,1.65,2888993,243
+tecnologia-de-gestion-administrativa,TECNOLOGIA DE GESTION ADMINISTRATIVA,Tecnológico,"Economía, administración, contaduría y afines",369,1,5.4,1.64,2873623,282
+ingenieria-agroindustrial,INGENIERIA AGROINDUSTRIAL,Universitario,"Ingeniería, arquitectura, urbanismo y afines",868,20,2.3,1.63,2849299,631
+tecnica-profesional-en-operaciones-administrativas-y-financieras-de-la-salud,TECNICA PROFESIONAL EN OPERACIONES ADMINISTRATIVAS Y FINANCIERAS DE LA SALUD,Formación técnica profesional,"Economía, administración, contaduría y afines",100,1,1,1.63,2862056,26
+tecnologia-en-gestion-de-seguridad-y-salud-en-el-trabajo,TECNOLOGIA EN GESTION DE SEGURIDAD Y SALUD EN EL TRABAJO,Tecnológico,"Economía, administración, contaduría y afines",266,6,10.2,1.59,2779562,621
+tecnologia-en-gestion-de-comercio-exterior,TECNOLOGIA EN GESTION DE COMERCIO EXTERIOR,Tecnológico,"Economía, administración, contaduría y afines",244,2,2.5,1.59,2787360,158
+psicologia,PSICOLOGIA,Universitario,Ciencias sociales y humanas,23820,80,4.1,1.58,2761959,15816
+ingenieria-ambiental,INGENIERIA AMBIENTAL,Universitario,"Ingeniería, arquitectura, urbanismo y afines",6651,56,4.8,1.58,2773874,3019
+administracion-publica-territorial,ADMINISTRACION PUBLICA TERRITORIAL,Universitario,"Economía, administración, contaduría y afines",2039,1,4.7,1.58,2773217,2283
+tecnologia-en-gestion-de-mercadeo-internacional,TECNOLOGIA EN GESTION DE MERCADEO INTERNACIONAL,Tecnológico,"Economía, administración, contaduría y afines",220,2,2.3,1.58,2758146,174
+tecnologia-en-comercio-exterior-y-negocios-internacionales,TECNOLOGIA EN COMERCIO EXTERIOR Y NEGOCIOS INTERNACIONALES,Tecnológico,"Economía, administración, contaduría y afines",208,2,1.9,1.58,2767235,34
+tecnologia-en-mecanica-automotriz,TECNOLOGIA EN MECANICA AUTOMOTRIZ,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",657,4,2.4,1.57,2743321,354
+tecnologia-en-operacion-de-plantas-y-procesos-industriales,TECNOLOGIA EN OPERACION DE PLANTAS Y PROCESOS INDUSTRIALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",115,1,7.8,1.57,2741549,40
+seguridad-y-salud-en-el-trabajo,SEGURIDAD Y SALUD EN EL TRABAJO,Universitario,Ciencias de la salud,1828,9,2.4,1.56,2732168,1212
+administracion-turistica-y-hotelera,ADMINISTRACION TURISTICA Y HOTELERA,Universitario,"Economía, administración, contaduría y afines",741,11,4.6,1.56,2723259,279
+arquitectura,ARQUITECTURA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",5989,38,2.5,1.54,2701396,4112
+biologia,BIOLOGIA,Universitario,Matemáticas y ciencias naturales,1199,31,3.8,1.54,2692754,1343
+tecnologia-quimica,TECNOLOGIA QUIMICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",136,4,5.9,1.54,2704176,75
+tecnologia-en-analisis-y-desarrollo-de-sistemas-de-informacion,TECNOLOGIA EN ANALISIS Y DESARROLLO DE SISTEMAS DE INFORMACION,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",8003,2,6.4,1.53,2675418,568
+administracion-integral-de-riesgos-de-seguridad-y-salud-en-el-trabajo,ADMINISTRACION INTEGRAL DE RIESGOS DE SEGURIDAD Y SALUD EN EL TRABAJO,Universitario,"Economía, administración, contaduría y afines",654,1,1.8,1.53,2673497,259
+sociologia,SOCIOLOGIA,Universitario,Ciencias sociales y humanas,649,16,4.8,1.52,2658782,756
+tecnologia-en-atencion-prehospitalaria,TECNOLOGIA EN ATENCION PREHOSPITALARIA,Tecnológico,Ciencias de la salud,523,9,1.1,1.52,2661067,384
+tecnologia-en-electronica,TECNOLOGIA EN ELECTRONICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",409,11,5.4,1.52,2660555,71
+tecnologia-en-quimica-aplicada-a-la-industria,TECNOLOGIA EN QUIMICA APLICADA A LA INDUSTRIA,Tecnológico,Matemáticas y ciencias naturales,886,1,1.9,1.51,2650408,308
+tecnologia-en-analisis-de-operaciones-aduaneras-y-financieras,TECNOLOGIA EN ANALISIS DE OPERACIONES ADUANERAS Y FINANCIERAS,Tecnológico,"Economía, administración, contaduría y afines",121,1,2.5,1.51,2652106,74
+zootecnia,ZOOTECNIA,Universitario,"Agronomía, veterinaria y afines",872,17,3.4,1.5,2633251,781
+tecnologia-en-gestion-financiera,TECNOLOGIA EN GESTION FINANCIERA,Tecnológico,"Economía, administración, contaduría y afines",619,12,4.4,1.5,2617775,329
+tecnologia-en-supervision-de-labores-mineras,TECNOLOGIA EN SUPERVISION DE LABORES MINERAS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",173,1,4,1.5,2619297,
+medicina-veterinaria,MEDICINA VETERINARIA,Universitario,"Agronomía, veterinaria y afines",1382,14,2.7,1.49,2614126,1206
+tecnologia-en-mantenimiento-mecanico-industrial,TECNOLOGIA EN MANTENIMIENTO MECANICO INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1196,1,3.1,1.49,2616984,190
+administracion-en-seguridad-y-salud-en-el-trabajo,ADMINISTRACION EN SEGURIDAD Y SALUD EN EL TRABAJO,Universitario,Ciencias de la salud,513,1,1,1.49,2615359,2525
+tecnologia-en-operacion-y-mantenimiento-electromecanico,TECNOLOGIA EN OPERACION Y MANTENIMIENTO ELECTROMECANICO,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",414,1,7,1.49,2604874,235
+tecnologia-en-comercio-exterior,TECNOLOGIA EN COMERCIO EXTERIOR,Tecnológico,"Economía, administración, contaduría y afines",242,1,1.7,1.49,2601345,2
+tecnologia-en-delineantes-de-arquitectura-e-ingenieria,TECNOLOGIA EN DELINEANTES DE ARQUITECTURA E INGENIERIA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",149,2,1.3,1.49,2605839,93
+tecnologia-en-fabricacion-de-productos-plasticos-por-inyeccion-y-soplado,TECNOLOGIA EN FABRICACION DE PRODUCTOS PLASTICOS POR INYECCION Y SOPLADO,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",114,1,2.6,1.49,2607326,18
+administracion-en-salud-ocupacional,ADMINISTRACION EN SALUD OCUPACIONAL,Universitario,"Economía, administración, contaduría y afines",7896,1,2.6,1.48,2594820,112
+tecnologia-en-electricidad-industrial,TECNOLOGIA EN ELECTRICIDAD INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",3453,3,3.3,1.48,2583741,1305
+administracion-de-servicios-de-salud,ADMINISTRACION DE SERVICIOS DE SALUD,Universitario,"Economía, administración, contaduría y afines",901,7,1.4,1.48,2593300,633
+tecnologia-en-produccion-industrial,TECNOLOGIA EN PRODUCCION INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1276,8,2.4,1.47,2568229,624
+tecnologia-en-automatizacion-industrial,TECNOLOGIA EN AUTOMATIZACION INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1111,7,4.1,1.47,2580010,380
+tecnologia-en-supervision-de-redes-de-distribucion-de-energia-electrica,TECNOLOGIA EN SUPERVISION DE REDES DE DISTRIBUCION DE ENERGIA ELECTRICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",504,1,3.4,1.47,2570478,159
+tecnica-profesional-de-procesos-administrativos,TECNICA PROFESIONAL DE PROCESOS ADMINISTRATIVOS,Formación técnica profesional,"Economía, administración, contaduría y afines",427,1,3.5,1.47,2569155,201
+tecnologia-en-instalaciones-hidraulicas-sanitarias-y-de-gas,"TECNOLOGIA EN INSTALACIONES HIDRAULICAS, SANITARIAS Y DE GAS",Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",165,1,1.8,1.47,2578481,2
+tecnologia-en-mantenimiento-electronico-e-instrumental-industrial,TECNOLOGIA EN MANTENIMIENTO ELECTRONICO E INSTRUMENTAL INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",901,1,4.2,1.46,2560822,193
+salud-ocupacional,SALUD OCUPACIONAL,Universitario,Ciencias de la salud,756,4,1.7,1.46,2562839,294
+tecnica-profesional-en-mantenimiento-electromecanico,TECNICA PROFESIONAL EN MANTENIMIENTO ELECTROMECANICO,Formación técnica profesional,"Ingeniería, arquitectura, urbanismo y afines",384,3,3.4,1.46,2561727,154
+tecnologia-en-gestion-administrativa-y-financiera,TECNOLOGIA EN GESTION ADMINISTRATIVA Y FINANCIERA,Tecnológico,"Economía, administración, contaduría y afines",185,4,2.2,1.46,2556575,40
+tecnologia-en-procesos-de-la-industria-quimica,TECNOLOGIA EN PROCESOS DE LA INDUSTRIA QUIMICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",178,1,3.4,1.46,2562919,
+tecnologia-en-logistica-empresarial,TECNOLOGIA EN LOGISTICA EMPRESARIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",159,3,0.6,1.46,2562817,42
+tecnologia-en-negocios-y-mercadeo,TECNOLOGIA EN NEGOCIOS Y MERCADEO,Tecnológico,"Economía, administración, contaduría y afines",105,1,1.9,1.46,2563825,7
+tecnologia-en-gestion-logistica,TECNOLOGIA EN GESTION LOGISTICA,Tecnológico,"Economía, administración, contaduría y afines",7049,7,1.9,1.45,2533050,821
+tecnologia-en-procesos-industriales,TECNOLOGIA EN PROCESOS INDUSTRIALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",297,6,3.7,1.45,2544506,216
+tecnica-profesional-en-procesos-empresariales,TECNICA PROFESIONAL EN PROCESOS EMPRESARIALES,Formación técnica profesional,"Economía, administración, contaduría y afines",287,6,5.6,1.45,2544506,303
+tecnologia-en-delineante-de-arquitectura-e-ingenieria,TECNOLOGIA EN DELINEANTE DE ARQUITECTURA E INGENIERIA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",258,2,0,1.45,2532863,132
+tecnologia-en-saneamiento-ambiental,TECNOLOGIA EN SANEAMIENTO AMBIENTAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",140,4,5.7,1.45,2545297,147
+tecnologia-en-electromedicina,TECNOLOGIA EN ELECTROMEDICINA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",139,3,2.2,1.45,2544748,23
+tecnologia-en-gestion-administrativa-de-empresas-de-salud,TECNOLOGIA EN GESTION ADMINISTRATIVA DE EMPRESAS DE SALUD,Tecnológico,"Economía, administración, contaduría y afines",110,1,0.9,1.45,2530854,98
+tecnologia-en-mantenimiento-mecatronico-de-automotores,TECNOLOGIA EN MANTENIMIENTO MECATRONICO DE AUTOMOTORES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",2778,1,2,1.44,2525884,987
+medicina-veterinaria-y-zootecnia,MEDICINA VETERINARIA Y ZOOTECNIA,Universitario,"Agronomía, veterinaria y afines",1582,16,3.9,1.44,2524497,1318
+licenciatura-en-educacion-para-la-primera-infancia,LICENCIATURA EN EDUCACION PARA LA PRIMERA INFANCIA,Universitario,Ciencias de la educación,542,5,1.5,1.44,2521167,163
+tecnica-profesional-en-procesos-comerciales-y-financieros,TECNICA PROFESIONAL EN PROCESOS COMERCIALES Y FINANCIEROS,Formación técnica profesional,"Economía, administración, contaduría y afines",249,1,2.4,1.44,2529515,185
+tecnologia-empresarial,TECNOLOGIA EMPRESARIAL,Tecnológico,"Economía, administración, contaduría y afines",145,1,3.4,1.44,2520053,57
+tecnologia-en-procesos-agroindustriales,TECNOLOGIA EN PROCESOS AGROINDUSTRIALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",107,2,0.9,1.44,2514780,29
+ingenieria-ambiental-y-sanitaria,INGENIERIA AMBIENTAL Y SANITARIA,Universitario,"Ingeniería, arquitectura, urbanismo y afines",764,4,2.2,1.43,2510572,394
+tecnologia-en-gestion-contable,TECNOLOGIA EN GESTION CONTABLE,Tecnológico,"Economía, administración, contaduría y afines",679,8,1.5,1.43,2496612,663
+tecnologia-en-mercadeo-y-comercializacion,TECNOLOGIA EN MERCADEO Y COMERCIALIZACION,Tecnológico,"Economía, administración, contaduría y afines",182,1,4.4,1.43,2509630,1
+tecnologia-comercial-y-financiera,TECNOLOGIA COMERCIAL Y FINANCIERA,Tecnológico,"Economía, administración, contaduría y afines",102,2,0,1.43,2506197,34
+trabajo-social,TRABAJO SOCIAL,Universitario,Ciencias sociales y humanas,5347,39,1.7,1.42,2492783,5520
+tecnologia-en-gestion-de-la-produccion-industrial,TECNOLOGIA EN GESTION DE LA PRODUCCION INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",2465,4,1.5,1.42,2477929,863
+tecnologia-en-diseno-e-integracion-de-automatismos-mecatronicos,TECNOLOGIA EN DISEÑO E INTEGRACION DE AUTOMATISMOS MECATRONICOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1153,1,1.6,1.42,2482715,435
+tecnologia-en-diseno-de-elementos-mecanicos-para-su-fabricacion-con-maquinas-herramientas-cnc,TECNOLOGIA EN DISEÑO DE ELEMENTOS MECANICOS PARA SU FABRICACION CON MAQUINAS HERRAMIENTAS CNC,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",551,1,1.6,1.42,2487250,93
+tecnologia-produccion-de-multimedia,TECNOLOGIA PRODUCCION DE MULTIMEDIA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",458,1,2.4,1.42,2479708,97
+tecnologia-en-negociacion-internacional,TECNOLOGIA EN NEGOCIACION INTERNACIONAL,Tecnológico,"Economía, administración, contaduría y afines",2871,1,2.1,1.41,2465498,431
+administracion-en-salud,ADMINISTRACION EN SALUD,Universitario,"Economía, administración, contaduría y afines",1006,4,2.5,1.41,2462443,812
+tecnologia-industrial,TECNOLOGIA INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",403,6,2,1.41,2466469,72
+tecnologia-en-gestion-de-recursos-en-plantas-de-produccion,TECNOLOGIA EN GESTION DE RECURSOS EN PLANTAS DE PRODUCCION,Tecnológico,"Economía, administración, contaduría y afines",323,1,0.6,1.41,2467438,85
+tecnologia-en-gestion-comercial-y-financiera,TECNOLOGIA EN GESTION COMERCIAL Y FINANCIERA,Tecnológico,"Economía, administración, contaduría y afines",261,3,1.9,1.41,2470027,197
+tecnologia-en-gestion-turistica-y-hotelera,TECNOLOGIA EN GESTION TURISTICA Y HOTELERA,Tecnológico,"Economía, administración, contaduría y afines",253,11,2,1.41,2460831,108
+tecnologia-en-operacion-de-plantas-petroquimicas,TECNOLOGIA EN OPERACION DE PLANTAS PETROQUIMICAS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",138,2,2.2,1.41,2461178,56
+tecnologia-en-mantenimiento-mecanico-insustrial,TECNOLOGIA EN MANTENIMIENTO MECANICO INSUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",104,1,1.9,1.41,2468776,
+tecnologia-en-regencia-de-farmacia,TECNOLOGIA EN REGENCIA DE FARMACIA,Tecnológico,Matemáticas y ciencias naturales,4709,19,0.7,1.4,2455226,3413
+tecnologia-en-mantenimiento-de-equipo-biomedico,TECNOLOGIA EN MANTENIMIENTO DE EQUIPO BIOMEDICO,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",285,2,0,1.4,2442899,146
+tecnologia-en-desarrollo-de-sistemas-informaticos,TECNOLOGIA EN DESARROLLO DE SISTEMAS INFORMATICOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",218,5,3.2,1.4,2456915,254
+tecnologia-en-distribucion-fisica-internacional,TECNOLOGIA EN DISTRIBUCION FISICA INTERNACIONAL,Tecnológico,"Economía, administración, contaduría y afines",149,1,2.7,1.4,2450199,101
+tecnologia-en-gestion-logistica-internacional,TECNOLOGIA EN GESTION LOGISTICA INTERNACIONAL,Tecnológico,"Economía, administración, contaduría y afines",136,2,1.5,1.4,2445709,157
+tecnologia-en-construccion-de-acabados-arquitectonicos,TECNOLOGIA EN CONSTRUCCION DE ACABADOS ARQUITECTONICOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",117,1,1.7,1.4,2446117,45
+tecnologia-en-gestion-de-redes-de-datos,TECNOLOGIA EN GESTION DE REDES DE DATOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1926,1,1.8,1.39,2428372,733
+tecnologia-en-logistica-de-transporte,TECNOLOGIA EN LOGISTICA DE TRANSPORTE,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",725,1,1.4,1.39,2427736,
+tecnologia-en-asistencia-gerencial,TECNOLOGIA EN ASISTENCIA GERENCIAL,Tecnológico,"Economía, administración, contaduría y afines",251,1,1.2,1.39,2433758,33
+tecnologia-en-mercadeo-y-diseno-publicitario,TECNOLOGIA EN MERCADEO Y DISEÑO PUBLICITARIO,Tecnológico,"Economía, administración, contaduría y afines",215,1,2.8,1.39,2437444,122
+tecnologia-en-gestion-comercial,TECNOLOGIA EN GESTION COMERCIAL,Tecnológico,"Economía, administración, contaduría y afines",166,4,3,1.39,2434478,110
+tecnologia-mecanica,TECNOLOGIA MECANICA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",133,2,1.5,1.39,2434023,4
+tecnologia-en-gestion-del-diseno-grafico,TECNOLOGIA EN GESTION DEL DISEÑO GRAFICO,Tecnológico,Bellas artes,117,1,0,1.39,2427391,56
+tecnologia-en-gestion-de-mercados,TECNOLOGIA EN GESTION DE MERCADOS,Tecnológico,"Economía, administración, contaduría y afines",6487,2,2.7,1.38,2421343,891
+tecnica-profesional-en-logistica-de-comercio-exterior,TECNICA PROFESIONAL EN LOGISTICA DE COMERCIO EXTERIOR,Formación técnica profesional,"Economía, administración, contaduría y afines",254,1,2,1.38,2420369,111
+tecnologia-agroindustrial-por-ciclos,TECNOLOGIA AGROINDUSTRIAL (POR CICLOS),Tecnológico,"Agronomía, veterinaria y afines",140,1,1.4,1.38,2407494,94
+tecnologia-en-gestion-publica,TECNOLOGIA EN GESTION PUBLICA,Tecnológico,"Economía, administración, contaduría y afines",131,4,2.3,1.38,2421615,309
+tecnologia-en-mercadeo-y-ventas,TECNOLOGIA EN MERCADEO Y VENTAS,Tecnológico,"Economía, administración, contaduría y afines",111,6,5.4,1.38,2411786,5
+tecnologia-en-gestion-bancaria-y-de-entidades-financieras,TECNOLOGIA EN GESTION BANCARIA Y DE ENTIDADES FINANCIERAS,Tecnológico,"Economía, administración, contaduría y afines",3889,1,1.4,1.37,2403868,1079
+tecnologia-en-seguridad-y-salud-en-el-trabajo,TECNOLOGIA EN SEGURIDAD Y SALUD EN EL TRABAJO,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1028,7,2.1,1.37,2407059,569
+licenciatura-en-ciencias-naturales-y-educacion-ambiental,LICENCIATURA EN CIENCIAS NATURALES Y EDUCACION AMBIENTAL,Universitario,Ciencias de la educación,524,11,0.6,1.37,2400655,775
+tecnologia-en-agua-y-saneamiento,TECNOLOGIA EN AGUA Y SANEAMIENTO,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",176,1,1.1,1.37,2394310,1
+tecnica-profesional-en-servicios-administrativos-de-salud,TECNICA PROFESIONAL EN SERVICIOS ADMINISTRATIVOS DE SALUD,Formación técnica profesional,"Economía, administración, contaduría y afines",141,1,0.7,1.37,2393984,86
+tecnologia-en-gestion-contable-y-tributaria,TECNOLOGIA EN GESTION CONTABLE Y TRIBUTARIA,Tecnológico,"Economía, administración, contaduría y afines",125,5,0.8,1.37,2400655,186
+tecnologia-en-seguridad-e-higiene-ocupacional,TECNOLOGIA EN SEGURIDAD E HIGIENE OCUPACIONAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",576,3,1.2,1.36,2381746,226
+licenciatura-en-educacion-fisica-recreacion-y-deportes,"LICENCIATURA EN EDUCACION FISICA, RECREACION Y DEPORTES",Universitario,Ciencias de la educación,539,8,2.4,1.36,2374936,1244
+tecnologia-en-construcciones-civiles,TECNOLOGIA EN CONSTRUCCIONES CIVILES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",443,5,1.4,1.36,2374767,226
+tecnologia-en-aseguramiento-metrologico-industrial,TECNOLOGIA EN ASEGURAMIENTO METROLOGICO INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",295,1,0.3,1.36,2385753,75
+tecnologia-en-gestion-turistica,TECNOLOGIA EN GESTION TURISTICA,Tecnológico,"Economía, administración, contaduría y afines",278,7,2.5,1.36,2375354,127
+tecnologia-en-topografia,TECNOLOGIA EN TOPOGRAFIA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1272,5,1,1.35,2362629,22
+tecnologia-en-diseno-implementacion-y-mantenimiento-de-sistemas-de-telecomunicaciones,"TECNOLOGIA EN DISEÑO, IMPLEMENTACION Y MANTENIMIENTO DE SISTEMAS DE TELECOMUNICACIONES",Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1239,1,1,1.35,2370615,
+licenciatura-en-educacion-fisica-recreacion-y-deporte,"LICENCIATURA EN EDUCACION FISICA, RECREACION Y DEPORTE",Universitario,Ciencias de la educación,799,7,1.9,1.35,2369068,473
+tecnica-profesional-en-procesos-contables,TECNICA PROFESIONAL EN PROCESOS CONTABLES,Formación técnica profesional,"Economía, administración, contaduría y afines",581,9,0.5,1.35,2364580,1016
+tecnologia-en-gestion-portuaria,TECNOLOGIA EN GESTION PORTUARIA,Tecnológico,"Economía, administración, contaduría y afines",473,4,0.8,1.35,2355940,228
+tecnica-profesional-en-gestion-empresarial,TECNICA PROFESIONAL EN GESTION EMPRESARIAL,Formación técnica profesional,"Economía, administración, contaduría y afines",314,3,2.5,1.35,2364728,46
+tecnologia-en-formulacion-de-proyectos,TECNOLOGIA EN FORMULACION DE PROYECTOS,Tecnológico,"Economía, administración, contaduría y afines",299,1,1,1.35,2361898,
+tecnologia-en-gestion-administrativa-de-servicios-de-salud,TECNOLOGIA EN GESTION ADMINISTRATIVA DE SERVICIOS DE SALUD,Tecnológico,"Economía, administración, contaduría y afines",158,1,0.6,1.35,2363722,111
+licenciatura-en-educacion-basica-con-enfasis-en-educacion-fisica-recreacion-y-deportes,"LICENCIATURA EN EDUCACION BASICA CON ENFASIS EN EDUCACION FISICA, RECREACION Y DEPORTES",Universitario,Ciencias de la educación,1033,7,1.2,1.34,2345209,87
+tecnologia-en-confeccion-industrial,TECNOLOGIA EN CONFECCION INDUSTRIAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",431,1,0,1.34,2348726,10
+tecnologia-en-diseno-de-productos-industriales,TECNOLOGIA EN DISEÑO DE PRODUCTOS INDUSTRIALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",402,1,0.5,1.34,2337548,
+tecnologia-en-gestion-financiera-y-de-tesoreria,TECNOLOGIA EN GESTION FINANCIERA Y DE TESORERIA,Tecnológico,"Economía, administración, contaduría y afines",302,1,0.7,1.34,2346416,
+tecnologia-en-manejo-de-petroleo-y-gas-en-superficie,TECNOLOGIA EN MANEJO DE PETROLEO Y GAS EN SUPERFICIE,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",138,1,7.2,1.34,2345348,11
+licenciatura-en-educacion-infantil,LICENCIATURA EN EDUCACION INFANTIL,Universitario,Ciencias de la educación,1915,30,0.6,1.33,2333123,4674
+licenciatura-en-educacion-preescolar,LICENCIATURA EN EDUCACION PREESCOLAR,Universitario,Ciencias de la educación,968,13,0.4,1.33,2322661,14
+tecnologia-en-mercadeo-y-gestion-comercial,TECNOLOGIA EN MERCADEO Y GESTION COMERCIAL,Tecnológico,"Economía, administración, contaduría y afines",355,2,4.5,1.33,2333706,309
+tecnologia-en-gestion-de-negocios-internacionales,TECNOLOGIA EN GESTION DE NEGOCIOS INTERNACIONALES,Tecnológico,"Economía, administración, contaduría y afines",251,5,0,1.33,2325659,232
+tecnologia-en-banca-y-finanzas,TECNOLOGIA EN BANCA Y FINANZAS ,Tecnológico,"Economía, administración, contaduría y afines",169,2,1.8,1.33,2336029,14
+tecnologia-en-mecanizacion-agricola,TECNOLOGIA EN MECANIZACION AGRICOLA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",167,1,0,1.33,2332541,134
+tecnologia-en-gestion-logistica-y-portuaria,TECNOLOGIA EN GESTION LOGISTICA Y PORTUARIA,Tecnológico,"Economía, administración, contaduría y afines",107,2,1.9,1.33,2332148,130
+tecnologia-en-gobierno-local,TECNOLOGIA EN GOBIERNO LOCAL,Tecnológico,"Economía, administración, contaduría y afines",107,1,2.8,1.33,2331887,2
+tecnologia-en-procesos-biotecnologicos-aplicados-a-la-industria,TECNOLOGIA EN PROCESOS BIOTECNOLOGICOS APLICADOS A LA INDUSTRIA,Tecnológico,"Economía, administración, contaduría y afines",101,1,1,1.33,2323316,45
+tecnologia-en-gestion-de-negocios,TECNOLOGIA EN GESTION DE NEGOCIOS,Tecnológico,"Economía, administración, contaduría y afines",1643,2,1.6,1.32,2305457,78
+tecnica-profesional-en-procesos-administrativos,TECNICA PROFESIONAL EN PROCESOS ADMINISTRATIVOS,Formación técnica profesional,"Economía, administración, contaduría y afines",980,13,1.9,1.32,2314455,1707
+tecnologia-en-comunicacion-grafica,TECNOLOGIA EN COMUNICACION GRAFICA,Tecnológico,Bellas artes,212,1,0.5,1.32,2308011,126
+tecnologia-en-gastronomia,TECNOLOGIA EN GASTRONOMIA,Tecnológico,"Economía, administración, contaduría y afines",186,4,2.7,1.32,2313038,114
+tecnologia-en-turismo-e-idiomas,TECNOLOGIA EN TURISMO E IDIOMAS,Tecnológico,"Economía, administración, contaduría y afines",149,1,0,1.32,2311934,131
+licenciatura-en-pedagogia-infantil,LICENCIATURA EN PEDAGOGIA INFANTIL,Universitario,Ciencias de la educación,7698,25,0.8,1.31,2292860,1564
+tecnologia-en-mantenimiento-de-equipos-de-computo-diseno-e-instalacion-de-cableado-estructurado,TECNOLOGIA EN MANTENIMIENTO DE EQUIPOS DE COMPUTO DISEÑO E INSTALACION DE CABLEADO ESTRUCTURADO,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",2446,1,0.8,1.31,2296360,
+tecnologia-en-obras-civiles,TECNOLOGIA EN OBRAS CIVILES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1612,7,1.6,1.31,2298205,315
+tecnologia-en-direccion-de-ventas,TECNOLOGIA EN DIRECCION DE VENTAS,Tecnológico,"Economía, administración, contaduría y afines",1227,1,1.9,1.31,2297724,565
+tecnologia-en-gestion-ambiental,TECNOLOGIA EN GESTION AMBIENTAL,Tecnológico,"Economía, administración, contaduría y afines",344,12,3.2,1.31,2296775,189
+tecnologia-en-animacion-3d,TECNOLOGIA EN ANIMACION 3D,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",281,1,0.7,1.31,2300531,332
+tecnologia-en-gestion-integral-en-fondos-de-pensiones-y-cesantias,TECNOLOGIA EN GESTION INTEGRAL EN FONDOS DE PENSIONES Y CESANTIAS,Tecnológico,"Economía, administración, contaduría y afines",276,1,0.7,1.31,2295889,4
+tecnologia-en-desarrollo-ambiental,TECNOLOGIA EN DESARROLLO AMBIENTAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",236,1,0.4,1.31,2291835,4
+tecnica-profesional-en-operacion-de-procesos-industriales,TECNICA PROFESIONAL EN OPERACION DE PROCESOS INDUSTRIALES,Formación técnica profesional,"Ingeniería, arquitectura, urbanismo y afines",235,2,0,1.31,2294155,177
+tecnica-profesional-en-procesos-administrativos-de-salud,TECNICA PROFESIONAL EN PROCESOS ADMINISTRATIVOS DE SALUD,Formación técnica profesional,"Economía, administración, contaduría y afines",165,1,0,1.31,2294747,137
+tecnica-profesional-en-hoteleria,TECNICA PROFESIONAL EN HOTELERIA,Formación técnica profesional,"Economía, administración, contaduría y afines",156,1,2.6,1.31,2292303,6
+tecnico-profesional-en-contabilidad-y-finanzas,TECNICO PROFESIONAL EN CONTABILIDAD Y FINANZAS,Formación técnica profesional,"Economía, administración, contaduría y afines",126,2,0.8,1.31,2301752,51
+tecnologia-en-contabilidad-y-finanzas,TECNOLOGIA EN CONTABILIDAD Y FINANZAS,Tecnológico,"Economía, administración, contaduría y afines",5754,2,0.3,1.3,2271365,3
+tecnologia-en-gestion-de-procesos-administrativos-de-salud,TECNOLOGIA EN GESTION DE PROCESOS ADMINISTRATIVOS DE SALUD,Tecnológico,"Economía, administración, contaduría y afines",2247,1,0,1.3,2269265,
+tecnologia-en-salud-ocupacional,TECNOLOGIA EN SALUD OCUPACIONAL,Tecnológico,Ciencias de la salud,1803,3,0.4,1.3,2270359,23
+tecnologia-en-desarrollo-grafico-de-proyectos-de-arquitectura-e-ingenieria,TECNOLOGIA EN DESARROLLO GRAFICO DE PROYECTOS DE ARQUITECTURA E INGENIERIA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1266,1,0.3,1.3,2272784,1
+tecnologia-en-produccion-agricola,TECNOLOGIA EN PRODUCCION AGRICOLA,Tecnológico,"Agronomía, veterinaria y afines",813,3,0.6,1.3,2277963,292
+tecnologia-en-contabilidad-sistematizada,TECNOLOGIA EN CONTABILIDAD SISTEMATIZADA,Tecnológico,"Economía, administración, contaduría y afines",361,4,0.3,1.3,2283377,189
+tecnologia-en-comunicacion-comercial,TECNOLOGIA EN COMUNICACION COMERCIAL,Tecnológico,"Economía, administración, contaduría y afines",224,1,0.4,1.3,2269692,115
+tecnologia-negociacion-internacional,TECNOLOGIA NEGOCIACION INTERNACIONAL,Tecnológico,"Economía, administración, contaduría y afines",147,1,0.7,1.3,2277285,16
+tecnologia-en-diseno-para-la-comunicacion-grafica,TECNOLOGIA EN DISEÑO PARA LA COMUNICACION GRAFICA,Tecnológico,Bellas artes,126,1,1.6,1.3,2283275,
+tecnologia-en-comunicacion-social-periodismo,TECNOLOGIA EN COMUNICACION SOCIAL - PERIODISMO,Tecnológico,Ciencias sociales y humanas,118,1,0.8,1.3,2279480,31
+tecnologia-en-criminalistica-y-ciencias-forenses,TECNOLOGIA EN CRIMINALISTICA Y CIENCIAS FORENSES,Tecnológico,Ciencias sociales y humanas,114,1,0.9,1.3,2273352,
+tecnologia-en-gestion-administrativa,TECNOLOGIA EN GESTION ADMINISTRATIVA,Tecnológico,"Economía, administración, contaduría y afines",14730,13,0.9,1.29,2266137,7185
+tecnologia-en-gestion-empresarial,TECNOLOGIA EN GESTION EMPRESARIAL,Tecnológico,"Economía, administración, contaduría y afines",13229,35,1,1.29,2263310,6138
+tecnologia-en-gestion-de-la-seguridad-y-salud-en-el-trabajo,TECNOLOGIA EN GESTION DE LA SEGURIDAD Y SALUD EN EL TRABAJO,Tecnológico,"Economía, administración, contaduría y afines",4958,7,0.7,1.29,2257472,2538
+tecnologia-en-gestion-contable-y-financiera,TECNOLOGIA EN GESTION CONTABLE Y FINANCIERA,Tecnológico,"Economía, administración, contaduría y afines",4171,10,0.3,1.29,2251282,1448
+tecnologia-en-gestion-hotelera,TECNOLOGIA EN GESTION HOTELERA,Tecnológico,"Economía, administración, contaduría y afines",587,2,1,1.29,2263783,
+tecnologia-en-guianza-turistica,TECNOLOGIA EN GUIANZA TURISTICA,Tecnológico,"Economía, administración, contaduría y afines",572,1,2.6,1.29,2258546,463
+tecnologia-en-gestion-de-la-propiedad-horizontal,TECNOLOGIA EN GESTION DE LA PROPIEDAD HORIZONTAL,Tecnológico,"Economía, administración, contaduría y afines",416,1,0.5,1.29,2255072,117
+tecnologia-en-gestion-de-destinos-turisticos,TECNOLOGIA EN GESTION DE DESTINOS TURISTICOS,Tecnológico,"Economía, administración, contaduría y afines",346,1,0.3,1.29,2261586,94
+tecnico-profesional-en-operaciones-gastronomicas,TECNICO PROFESIONAL EN OPERACIONES GASTRONOMICAS,Formación técnica profesional,"Economía, administración, contaduría y afines",298,1,1.7,1.29,2264288,16
+tecnologia-en-gestion-hotelera-y-turistica,TECNOLOGIA EN GESTION HOTELERA Y TURISTICA,Tecnológico,"Economía, administración, contaduría y afines",177,2,1.7,1.29,2253295,133
+tecnologia-en-gestion-naviera-y-portuaria,TECNOLOGIA EN GESTION NAVIERA Y PORTUARIA,Tecnológico,"Economía, administración, contaduría y afines",144,2,1.4,1.29,2256448,110
+tecnica-profesional-en-seguridad-e-higiene-industrial,TECNICA PROFESIONAL EN SEGURIDAD E HIGIENE INDUSTRIAL,Formación técnica profesional,"Ingeniería, arquitectura, urbanismo y afines",127,1,0.8,1.29,2264758,
+tecnologia-en-construccion,TECNOLOGIA EN CONSTRUCCION,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",959,2,0.7,1.28,2240354,1
+tecnologia-en-contabilidad-financiera,TECNOLOGIA EN CONTABILIDAD FINANCIERA,Tecnológico,"Economía, administración, contaduría y afines",944,2,0.4,1.28,2248983,272
+tecnologia-en-gestion-bibliotecaria,TECNOLOGIA EN GESTION BIBLIOTECARIA,Tecnológico,"Economía, administración, contaduría y afines",216,1,0,1.28,2237999,51
+tecnica-profesional-en-manejo-de-la-prevencion-de-riesgos-laborales,TECNICA PROFESIONAL EN MANEJO DE LA PREVENCION DE RIESGOS LABORALES,Formación técnica profesional,"Ingeniería, arquitectura, urbanismo y afines",195,1,0.5,1.28,2249626,96
+tecnologia-en-produccion-multimedia,TECNOLOGIA EN PRODUCCION MULTIMEDIA,Tecnológico,Bellas artes,125,1,0,1.28,2237953,180
+tecnico-profesional-en-diseno-grafico,TECNICO PROFESIONAL EN DISEÑO GRAFICO,Formación técnica profesional,Bellas artes,110,1,0.9,1.28,2233913,128
+tecnologia-en-produccion-de-multimedia,TECNOLOGIA EN PRODUCCION DE MULTIMEDIA,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1206,1,0.6,1.27,2228989,843
+tecnologia-en-control-de-calidad-de-alimentos,TECNOLOGIA EN CONTROL DE CALIDAD DE ALIMENTOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1038,1,0.3,1.27,2225364,288
+tecnologia-en-gestion-para-establecimientos-de-alimentos-y-bebidas,TECNOLOGIA EN GESTION PARA ESTABLECIMIENTOS DE ALIMENTOS Y BEBIDAS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",859,1,0.1,1.27,2229235,117
+tecnologia-en-produccion-de-medios-audiovisuales-digitales,TECNOLOGIA EN PRODUCCION DE MEDIOS AUDIOVISUALES DIGITALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",361,1,0.3,1.27,2220817,274
+tecnonologia-en-gestion-integrada-de-la-calidad-medio-ambiente-seguridad-y-salud-ocupacional,TECNONOLOGIA EN GESTION INTEGRADA DE LA CALIDAD MEDIO AMBIENTE SEGURIDAD Y SALUD OCUPACIONAL,Tecnológico,"Economía, administración, contaduría y afines",283,1,2.5,1.27,2220466,79
+tecnologia-en-gestion-de-servicios-gastronomicos,TECNOLOGIA EN GESTION DE SERVICIOS GASTRONOMICOS,Tecnológico,Bellas artes,224,1,1.3,1.27,2229093,54
+tecnico-profesional-en-procesos-de-seguridad-y-salud-en-el-trabajo,TECNICO PROFESIONAL EN PROCESOS DE SEGURIDAD Y SALUD EN EL TRABAJO,Formación técnica profesional,"Economía, administración, contaduría y afines",206,2,2.9,1.27,2232010,19
+tecnologia-en-gestion-gastronomica,TECNOLOGIA EN GESTION GASTRONOMICA,Tecnológico,"Economía, administración, contaduría y afines",197,6,0.5,1.27,2219082,225
+tecnologia-en-decoracion-de-espacios-interiores,TECNOLOGIA EN DECORACION DE ESPACIOS INTERIORES,Tecnológico,Bellas artes,166,1,0,1.27,2231336,120
+tecnologia-agropecuaria,TECNOLOGIA AGROPECUARIA,Tecnológico,"Agronomía, veterinaria y afines",107,7,0.9,1.27,2221667,52
+tecnologia-en-gestion-para-el-suministro-de-gases-combustibles-y-no-combustibles,TECNOLOGIA EN GESTION PARA EL SUMINISTRO DE GASES COMBUSTIBLES Y NO COMBUSTIBLES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",106,1,1.9,1.27,2227028,
+tecnologia-en-gestion-del-talento-humano,TECNOLOGIA EN GESTION DEL TALENTO HUMANO,Tecnológico,"Economía, administración, contaduría y afines",8664,7,0.3,1.26,2206759,3326
+tecnologia-en-gestion-integrada-de-la-calidad-medio-ambiente-seguridad-y-salud-ocupacional,"TECNOLOGIA EN GESTION INTEGRADA DE LA CALIDAD, MEDIO AMBIENTE, SEGURIDAD Y SALUD OCUPACIONAL",Tecnológico,"Economía, administración, contaduría y afines",6195,1,0.3,1.26,2205816,2602
+tecnologia-en-gestion-contable-y-de-informacion-financiera,TECNOLOGIA EN GESTION CONTABLE Y DE INFORMACION FINANCIERA,Tecnológico,Sin información,437,1,0,1.26,2209812,3618
+tecnologia-en-gestion-de-la-produccion-grafica,TECNOLOGIA EN GESTION DE LA PRODUCCION GRAFICA,Tecnológico,Bellas artes,195,1,0,1.26,2205730,
+tecnologia-agroambiental,TECNOLOGIA AGROAMBIENTAL,Tecnológico,"Agronomía, veterinaria y afines",152,3,0,1.26,2197945,74
+tecnologia-en-camara-y-fotografia-para-cine,TECNOLOGIA EN CAMARA Y FOTOGRAFIA PARA CINE,Tecnológico,Bellas artes,112,1,0,1.26,2204264,
+tecnologia-en-gestion-documental,TECNOLOGIA EN GESTION DOCUMENTAL,Tecnológico,Ciencias sociales y humanas,3839,1,0.2,1.25,2184444,1374
+tecnologia-en-control-ambiental,TECNOLOGIA EN CONTROL AMBIENTAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1556,1,0.5,1.25,2187171,2
+tecnologia-en-gestion-de-empresas-agropecuarias,TECNOLOGIA EN GESTION DE EMPRESAS AGROPECUARIAS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1463,2,0.4,1.25,2191275,482
+tecnologia-en-procesamiento-de-alimentos,TECNOLOGIA EN PROCESAMIENTO DE ALIMENTOS,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1021,2,0.4,1.25,2188631,575
+tecnologia-en-produccion-agropecuaria-ecologica,TECNOLOGIA EN PRODUCCION AGROPECUARIA ECOLOGICA,Tecnológico,"Agronomía, veterinaria y afines",581,1,0.5,1.25,2180240,500
+tecnologia-en-organizacion-de-eventos,TECNOLOGIA EN ORGANIZACION DE EVENTOS,Tecnológico,"Economía, administración, contaduría y afines",389,2,0.3,1.25,2190411,187
+tecnologia-en-manejo-de-recursos-ambientales,TECNOLOGIA EN MANEJO DE RECURSOS AMBIENTALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",374,1,0.8,1.25,2180600,158
+tecnologia-en-gestion-comunitaria,TECNOLOGIA EN GESTION COMUNITARIA,Tecnológico,Ciencias sociales y humanas,201,2,0,1.25,2184502,262
+tecnologia-gestion-logistica,TECNOLOGIA GESTION LOGISTICA,Tecnológico,"Economía, administración, contaduría y afines",107,1,0,1.25,2188631,1
+tecnologia-en-sistemas-de-gestion-ambiental,TECNOLOGIA EN SISTEMAS DE GESTION AMBIENTAL,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",1318,1,0.9,1.24,2175806,
+tecnologia-en-diseno-para-la-industria-de-la-moda,TECNOLOGIA EN DISEÑO PARA LA INDUSTRIA DE LA MODA,Tecnológico,Bellas artes,287,1,0.7,1.24,2166327,1
+tecnico-profesional-en-procesos-administrativos-de-seguridad-y-salud-en-el-trabajo,TECNICO PROFESIONAL EN PROCESOS ADMINISTRATIVOS DE SEGURIDAD Y SALUD EN EL TRABAJO,Formación técnica profesional,"Economía, administración, contaduría y afines",260,1,0,1.24,2170713,156
+tecnologia-en-animacion-digital,TECNOLOGIA EN ANIMACION DIGITAL,Tecnológico,Bellas artes,185,4,0.5,1.24,2169391,239
+tecnologia-en-actividad-fisica,TECNOLOGIA EN ACTIVIDAD FISICA,Tecnológico,Ciencias de la salud,900,1,0.8,1.23,2159888,511
+tecnologia-en-gestion-de-la-seguridad-y-salud-en-eltrabajo,TECNOLOGIA EN GESTION DE LA SEGURIDAD Y SALUD EN ELTRABAJO,Tecnológico,"Economía, administración, contaduría y afines",142,1,0,1.23,2152583,115
+tecnologia-en-promocion-social,TECNOLOGIA EN PROMOCION SOCIAL,Tecnológico,Ciencias sociales y humanas,133,2,0.8,1.23,2154523,130
+tecnico-profesional-en-contabilidad-y-costos,TECNICO PROFESIONAL EN CONTABILIDAD Y COSTOS,Formación técnica profesional,"Economía, administración, contaduría y afines",105,1,1.9,1.23,2149432,147
+tecnologia-en-entrenamiento-deportivo,TECNOLOGIA EN ENTRENAMIENTO DEPORTIVO,Tecnológico,Ciencias sociales y humanas,1677,5,0.4,1.22,2131556,1346
+tecnologia-en-gestion-de-recursos-naturales,TECNOLOGIA EN GESTION DE RECURSOS NATURALES,Tecnológico,"Ingeniería, arquitectura, urbanismo y afines",871,1,0.3,1.22,2143130,468
+tecnolgia-en-gestion-integrada-de-la-calidad-medio-ambiente-seguridad-y-salud-ocupacional,"TECNOLGIA EN GESTION INTEGRADA DE LA CALIDAD, MEDIO AMBIENTE, SEGURIDAD Y SALUD OCUPACIONAL",Tecnológico,"Economía, administración, contaduría y afines",298,1,0,1.22,2134793,121
+tecnologia-en-produccion-de-especies-menores,TECNOLOGIA EN PRODUCCION DE ESPECIES MENORES,Tecnológico,"Agronomía, veterinaria y afines",105,1,0,1.21,2125090,112
+tecnica-profesional-en-operaciones-del-comercio-exterior,TECNICA PROFESIONAL EN OPERACIONES DEL COMERCIO EXTERIOR,Formación técnica profesional,"Economía, administración, contaduría y afines",188,1,0,1.2,2108233,205
+tecnico-profesional-en-salud-oral,TECNICO PROFESIONAL EN SALUD ORAL,Formación técnica profesional,Ciencias de la salud,163,1,0,1.2,2100380,10
+tecnologia-en-produccion-ganadera,TECNOLOGIA EN PRODUCCION GANADERA,Tecnológico,"Agronomía, veterinaria y afines",409,1,0.2,1.18,2063006,301
+tecnica-profesional-en-procesos-de-salud-ocupacional-y-desarrollo-sostenible,TECNICA PROFESIONAL EN PROCESOS DE SALUD OCUPACIONAL Y DESARROLLO SOSTENIBLE,Formación técnica profesional,"Ingeniería, arquitectura, urbanismo y afines",135,1,0,1.18,2073728,3
+tecnologia-en-gestion-de-empresas-turisticas,TECNOLOGIA EN GESTION DE EMPRESAS TURISTICAS,Tecnológico,"Economía, administración, contaduría y afines",144,1,0,1.15,2014596,70

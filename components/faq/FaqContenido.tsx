@@ -117,6 +117,21 @@ export default function FaqContenido({ contenido }: { contenido: Contenido }) {
               >
                 Catálogo de cursos
               </Link>
+              {contenido.iso === "pe" ? (
+                <Link
+                  href="/pe/cursos/power-bi"
+                  className="font-medium text-ink underline underline-offset-4"
+                >
+                  Curso de Power BI en Perú
+                </Link>
+              ) : contenido.iso === "co" ? (
+                <Link
+                  href="/co/cursos/power-bi"
+                  className="font-medium text-ink underline underline-offset-4"
+                >
+                  Curso de Power BI en Colombia
+                </Link>
+              ) : null}
               <Link
                 href={`${contenido.inicioHref === "/" ? "" : contenido.inicioHref}/precios`}
                 className="font-medium text-ink underline underline-offset-4"
@@ -200,14 +215,24 @@ function SeccionFaq({
             </summary>
             <div className="max-w-[62ch] pb-5">
               <p className="leading-relaxed text-mute">{item.respuesta}</p>
-              {item.enlace ? (
-                <Link
-                  href={item.enlace.href}
-                  className="mt-2 inline-block text-sm font-medium text-ink underline underline-offset-4"
-                >
-                  {item.enlace.texto}
-                </Link>
-              ) : null}
+              {(() => {
+                const enlace =
+                  item.enlace ??
+                  (contenido.iso === "ar" && item.id === "cuanto-cuestan"
+                    ? {
+                        href: "/ar/cursos/power-bi#precios",
+                        texto: "ver temario y precios del curso de Power BI",
+                      }
+                    : undefined);
+                return enlace ? (
+                  <Link
+                    href={enlace.href}
+                    className="mt-2 inline-block text-sm font-medium text-ink underline underline-offset-4"
+                  >
+                    {enlace.texto}
+                  </Link>
+                ) : null;
+              })()}
             </div>
           </details>
         ))}

@@ -2,7 +2,7 @@ import type { ContenidoPais } from "./tipos";
 import ar from "./ar";
 import mx, { bloqueLocal as bloqueMx } from "./mx";
 import pe, { bloqueLocal as bloquePe } from "./pe";
-import co from "./co";
+import co, { bloqueLocal as bloqueCo } from "./co";
 import uy from "./uy";
 import us, { bloqueLocal as bloqueUs } from "./us";
 import es, { bloqueLocal as bloqueEs } from "./es";
@@ -64,6 +64,7 @@ export const CONTENIDO_PAISES = POR_ISO;
  */
 const BLOQUES: Record<string, DefinicionBloqueLocal> = {
   pe: bloquePe,
+  co: bloqueCo,
   mx: bloqueMx,
   us: bloqueUs,
   es: bloqueEs,

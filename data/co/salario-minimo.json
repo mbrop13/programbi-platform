@@ -1,0 +1,17 @@
+{
+  "anio": 2026,
+  "smmlv_cop": 1750905,
+  "auxilio_transporte_cop": 249095,
+  "total_smmlv_mas_auxilio_cop": 2000000,
+  "tope_auxilio_transporte_smmlv": 2,
+  "tope_auxilio_transporte_cop": 3501810,
+  "salud_empleado_pct": 4,
+  "pension_empleado_pct": 4,
+  "fsp_desde_smmlv": 4,
+  "intereses_cesantias_pct_anual": 12,
+  "fuentes": {
+    "smmlv": "Decreto 1469 de 2025, mantenido por Decreto transitorio 0159/2026 (MinTrabajo). El 1469 se confirmó con fuentes secundarias; citar como referencia normativa.",
+    "auxilio_transporte": "Decreto 1470 de 2025 (MinTrabajo). Texto verificado.",
+    "mintrabajo_url": "https://www.mintrabajo.gov.co"
+  }
+}

@@ -21,6 +21,10 @@ import { SITE_ACTUALIZADO, lastmodDe } from "@/lib/seo/lastmod";
 import { PAISES_CARPETA, esIndexable, esIsoPais } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
 import { GUIAS_PASO_A_PASO } from "@/content/guias/paso-a-paso";
+import { GUIAS_PASO_A_PASO_PE } from "@/lib/guias/paso-a-paso-pe";
+import { GUIAS_PASO_A_PASO_CO } from "@/lib/guias/paso-a-paso-co";
+import { GUIAS_PASO_A_PASO_MX } from "@/lib/guias/paso-a-paso-mx";
+import { GUIAS_PASO_A_PASO_AR } from "@/lib/guias/paso-a-paso-ar";
 import { PLANTILLAS } from "@/lib/data/plantillas";
 import { alternatesDeGuia } from "@/lib/guias";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
@@ -28,9 +32,17 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { METADATOS, rutasObservatorio } from "@/lib/datos/desempleo";
 import { datosJovenes, EDAD, fechaIsoDesglose } from "@/lib/datos/desempleo-desgloses";
 import { esFichaIndexable, getCarreras, getMetaCarreras } from "@/lib/datos/carreras";
+import { getCarrerasPe, getMetaCarrerasPe } from "@/lib/datos-pe/carreras";
+import { getFichasCarrerasCo } from "@/lib/datos-co/carreras";
+import { getInflacionCo } from "@/lib/datos-co/macro";
+import { getCarrerasPublicablesMx, getMetaCarrerasMx } from "@/lib/datos-mx/carreras";
+import { getCarrerasAr } from "@/lib/datos-ar/carreras";
+import inflacionArJson from "@/data/ar/inflacion.json";
+import desempleoArJson from "@/data/ar/desempleo.json";
 import { getTarjetasInstituciones } from "@/lib/datos/instituciones-paginas";
 import { PRESET_SLUGS } from "@/lib/datos/presets";
 import { ogUrlDe } from "@/lib/datos/seo-carreras";
+import { alternatesSitemapDatosDe } from "@/lib/seo/datos-hreflang";
 
 /**
  * Sitemap único del sitio.
@@ -105,7 +117,12 @@ function entrada(
 
   const languages = hreflangDe(path);
   const entry: EntradaSitemap = { url, lastModified, changeFrequency, priority };
-  if (Object.keys(languages).length > 0) entry.alternates = { languages };
+  if (Object.keys(languages).length > 0) {
+    entry.alternates = { languages };
+  } else {
+    const alternatesDatos = alternatesSitemapDatosDe(path);
+    if (alternatesDatos) entry.alternates = alternatesDatos;
+  }
   if (images && images.length > 0) entry.images = images;
   return entry;
 }
@@ -191,11 +208,15 @@ function prioridadPais(base: number, iso: string): number {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: EntradaPosible[] = [
     entrada("/", 1, "weekly"),
-    ...rutasObservatorio().map((path) => ({
-      url: `${SITE_URL}${path}`,
-      lastModified: METADATOS.fetched_at,
-      changeFrequency: "monthly" as const,
-    })),
+    ...rutasObservatorio().map((path) => {
+      const alternates = alternatesSitemapDatosDe(path);
+      return {
+        url: `${SITE_URL}${path}`,
+        lastModified: METADATOS.fetched_at,
+        changeFrequency: "monthly" as const,
+        ...(alternates ? { alternates } : {}),
+      };
+    }),
     ...(datosJovenes() ? [{
       url: `${SITE_URL}/datos/desempleo/jovenes`,
       lastModified: fechaIsoDesglose(EDAD.fuente.fecha_actualizacion),
@@ -402,6 +423,79 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ),
   ];
 
+  const metaCarrerasPe = getMetaCarrerasPe();
+  const carrerasPeLastmod = metaCarrerasPe.fechaCorte;
+  const datosPePages: EntradaPosible[] = [
+    entrada("/pe/datos", 0.8, "monthly", carrerasPeLastmod),
+    entrada("/pe/datos/carreras", 0.8, "weekly", carrerasPeLastmod),
+    entrada("/pe/datos/carreras/mejor-pagadas", 0.8, "weekly", carrerasPeLastmod),
+    entrada("/pe/datos/carreras/tecnicas-mejor-pagadas", 0.7, "weekly", carrerasPeLastmod),
+    ...getCarrerasPe().map((c) =>
+      entrada(`/pe/datos/carreras/${c.slug}`, 0.7, "monthly", carrerasPeLastmod)
+    ),
+    ...GUIAS_PASO_A_PASO_PE.map((g) =>
+      entrada(`/pe/guias/${g.slug}`, 0.7, "monthly", g.updated)
+    ),
+  ];
+
+  const inflacionCo = getInflacionCo();
+  const coDatosLastmod = inflacionCo.meta.trm_fecha;
+  const coDesempleoLastmod = "2026-10-30";
+  const datosColombiaPages: EntradaPosible[] = [
+    entrada("/co/datos", 0.8, "monthly", coDatosLastmod),
+    entrada("/co/datos/desempleo", 0.8, "monthly", coDesempleoLastmod),
+    entrada("/co/datos/inflacion", 0.8, "monthly", coDatosLastmod),
+    entrada("/co/datos/salario-minimo", 0.8, "monthly", coDatosLastmod),
+    entrada("/co/datos/carreras", 0.8, "weekly", coDatosLastmod),
+    entrada("/co/datos/carreras/mejor-pagadas", 0.8, "weekly", coDatosLastmod),
+    entrada("/co/datos/carreras/tecnologicas-mejor-pagadas", 0.8, "monthly", coDatosLastmod),
+    entrada("/co/datos/carreras/cuanto-gana-un-analista-de-datos", 0.8, "monthly", coDatosLastmod),
+    entrada("/co/datos/carreras/comparar", 0.7, "monthly", coDatosLastmod),
+    entrada("/co/datos/carreras/metodologia", 0.7, "monthly", coDatosLastmod),
+    ...getFichasCarrerasCo().map((c) =>
+      entrada(`/co/datos/carreras/${c.slug}`, 0.7, "monthly", coDatosLastmod)
+    ),
+    ...GUIAS_PASO_A_PASO_CO.map((g) =>
+      entrada(`/co/guias/${g.slug}`, 0.7, "monthly", g.updated)
+    ),
+  ];
+
+  const metaMx = getMetaCarrerasMx();
+  const mxDatosLastmod =
+    (metaMx as { fechaPublicacion?: string }).fechaPublicacion ?? "2026-11-25";
+  const datosMxPages: EntradaPosible[] = [
+    entrada("/mx/datos", 0.8, "monthly", mxDatosLastmod),
+    entrada("/mx/datos/carreras", 0.8, "weekly", mxDatosLastmod),
+    entrada("/mx/datos/carreras-mejor-pagadas", 0.8, "weekly", mxDatosLastmod),
+    ...getCarrerasPublicablesMx().map((c) =>
+      entrada(`/mx/datos/carreras/${c.slug}`, 0.7, "monthly", mxDatosLastmod)
+    ),
+    ...GUIAS_PASO_A_PASO_MX.map((g) =>
+      entrada(`/mx/guias/${g.slug}`, 0.7, "monthly", g.updated)
+    ),
+  ];
+
+  const fechaCorteAr = (v: string) => (v.length === 7 ? `${v}-01` : v);
+  const carrerasAr = getCarrerasAr();
+  const carrerasArLastmod = fechaCorteAr(carrerasAr.actualizado);
+  const inflacionArLastmod = fechaCorteAr(inflacionArJson.actualizado);
+  const desempleoArLastmod = fechaCorteAr(desempleoArJson.actualizado);
+  const hubArLastmod =
+    [carrerasArLastmod, inflacionArLastmod, desempleoArLastmod].sort().at(-1) ??
+    carrerasArLastmod;
+  const datosArPages: EntradaPosible[] = [
+    entrada("/ar/datos", 0.8, "monthly", hubArLastmod),
+    ...GUIAS_PASO_A_PASO_AR.map((g) =>
+      entrada(`/ar/guias/${g.slug}`, 0.7, "monthly", g.updated)
+    ),
+    entrada("/ar/datos/carreras", 0.8, "monthly", carrerasArLastmod),
+    entrada("/ar/datos/carreras/mejor-pagadas", 0.8, "monthly", carrerasArLastmod),
+    entrada("/ar/datos/carreras/salida-laboral", 0.8, "monthly", carrerasArLastmod),
+    entrada("/ar/datos/carreras/mas-demandadas", 0.7, "monthly", carrerasArLastmod),
+    entrada("/ar/datos/inflacion", 0.8, "monthly", inflacionArLastmod),
+    entrada("/ar/datos/desempleo", 0.8, "monthly", desempleoArLastmod),
+  ];
+
   const pasoAPasoPages: EntradaPosible[] = GUIAS_PASO_A_PASO.map((g) =>
     entrada(`/guias/${g.slug}`, 0.75, "monthly", g.updated)
   );
@@ -419,5 +513,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...pasoAPasoPages,
     ...guideIndexPages,
     ...datosCarrerasPages,
+    ...datosPePages,
+    ...datosColombiaPages,
+    ...datosMxPages,
+    ...datosArPages,
   ]);
 }

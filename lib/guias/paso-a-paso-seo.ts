@@ -83,21 +83,38 @@ export function contarPalabrasGuiaPasoAPaso(guia: GuiaPasoAPaso): number {
   return total;
 }
 
+import type { PaisGuiaPasoAPaso } from "./paso-a-paso-tipos";
+
+const LOCALE_POR_PAIS: Record<PaisGuiaPasoAPaso, { og: string; lang: string; tag: string }> = {
+  cl: { og: "es_CL", lang: "es-CL", tag: "Chile" },
+  pe: { og: "es_PE", lang: "es-PE", tag: "Perú" },
+  co: { og: "es_CO", lang: "es-CO", tag: "Colombia" },
+  mx: { og: "es_MX", lang: "es-MX", tag: "México" },
+  ar: { og: "es_AR", lang: "es-AR", tag: "Argentina" },
+};
+
+export function rutaGuiaPasoAPaso(guia: Pick<GuiaPasoAPaso, "slug" | "pais">): string {
+  const pais = guia.pais ?? "cl";
+  return pais === "cl" ? `/guias/${guia.slug}` : `/${pais}/guias/${guia.slug}`;
+}
+
 export function tiempoLecturaPasoAPaso(guia: GuiaPasoAPaso): number {
   const palabras = contarPalabrasGuiaPasoAPaso(guia);
   return Math.max(3, Math.round(palabras / 200));
 }
 
 export function metadataDeGuiaPasoAPaso(guia: GuiaPasoAPaso): Metadata {
-  const path = `/guias/${guia.slug}`;
+  const pais = guia.pais ?? "cl";
+  const localeInfo = LOCALE_POR_PAIS[pais];
+  const path = rutaGuiaPasoAPaso(guia);
   const canonical = absoluteUrl(path);
-  const curso = datosCursoParaGuia(guia.curso);
+  const curso = datosCursoParaGuia(guia.curso, pais);
   const share = pageOg({
     title: guia.title,
     description: guia.meta,
     path,
     kicker: `Guía paso a paso · ${guia.herramienta}`,
-    tags: [guia.herramienta, guia.nivel, "Chile"],
+    tags: [guia.herramienta, guia.nivel, localeInfo.tag],
     accent: curso.accentColor,
   });
 
@@ -110,7 +127,7 @@ export function metadataDeGuiaPasoAPaso(guia: GuiaPasoAPaso): Metadata {
       description: guia.meta,
       url: canonical,
       type: "article",
-      locale: "es_CL",
+      locale: localeInfo.og,
       siteName: "ProgramBI",
       publishedTime: guia.published,
       modifiedTime: guia.updated,
@@ -121,9 +138,11 @@ export function metadataDeGuiaPasoAPaso(guia: GuiaPasoAPaso): Metadata {
 }
 
 export function jsonLdDeGuiaPasoAPaso(guia: GuiaPasoAPaso) {
-  const path = `/guias/${guia.slug}`;
+  const pais = guia.pais ?? "cl";
+  const localeInfo = LOCALE_POR_PAIS[pais];
+  const path = rutaGuiaPasoAPaso(guia);
   const canonical = absoluteUrl(path);
-  const curso = datosCursoParaGuia(guia.curso);
+  const curso = datosCursoParaGuia(guia.curso, pais);
   const wordCount = contarPalabrasGuiaPasoAPaso(guia);
   const mins = Math.max(3, Math.round(wordCount / 200));
 
@@ -131,7 +150,7 @@ export function jsonLdDeGuiaPasoAPaso(guia: GuiaPasoAPaso) {
     kicker: `Guía paso a paso · ${guia.herramienta}`,
     title: guia.title,
     description: guia.meta,
-    tags: [guia.herramienta, guia.nivel, "Chile"],
+    tags: [guia.herramienta, guia.nivel, localeInfo.tag],
     accent: curso.accentColor,
     path: path.replace(/^\//, ""),
   });
@@ -156,7 +175,7 @@ export function jsonLdDeGuiaPasoAPaso(guia: GuiaPasoAPaso) {
     description: guia.meta,
     datePublished: guia.published,
     dateModified: guia.updated,
-    inLanguage: "es-CL",
+    inLanguage: localeInfo.lang,
     wordCount,
     timeRequired: `PT${mins}M`,
     author: org,
@@ -213,6 +232,9 @@ export function jsonLdDeGuiaPasoAPaso(guia: GuiaPasoAPaso) {
     })),
   };
 
+  const homePath = pais === "cl" ? SITE_URL : absoluteUrl(`/${pais}`);
+  const guiasPath = absoluteUrl(pais === "cl" ? "/guias" : `/${pais}/guias`);
+
   const breadcrumbList = {
     "@type": "BreadcrumbList",
     itemListElement: [
@@ -220,13 +242,13 @@ export function jsonLdDeGuiaPasoAPaso(guia: GuiaPasoAPaso) {
         "@type": "ListItem",
         position: 1,
         name: "Inicio",
-        item: SITE_URL,
+        item: homePath,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Guías",
-        item: absoluteUrl("/guias"),
+        item: guiasPath,
       },
       {
         "@type": "ListItem",

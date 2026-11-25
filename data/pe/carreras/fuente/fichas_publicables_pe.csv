@@ -1,0 +1,39 @@
+tipo,codigo_inei_3dig,carrera_familia,slug,enaho_n_con_ingreso,enaho_ingreso_mediano_25_40,enaho_publicable
+universitaria,711,Medicina,medicina,175,5244.0,si
+universitaria,527,"Ingeniería Minera, Metalurgia y Petróleo",ingenieria-minera-metalurgia-y-petroleo,116,4081.0,si
+universitaria,521,Ingeniería Industrial,ingenieria-industrial,330,2939.0,si
+universitaria,526,Ingeniería Mecánica,ingenieria-mecanica,121,2882.0,si
+universitaria,511,Ingeniería de Sistemas y Cómputo,ingenieria-de-sistemas,391,2881.0,si
+universitaria,531,Ingeniería Civil,ingenieria-civil,506,2833.0,si
+universitaria,714,Enfermería,enfermeria,367,2753.0,si
+universitaria,533,Arquitectura y Urbanismo,arquitectura-y-urbanismo,211,2718.0,si
+universitaria,351,Derecho,derecho,731,2654.0,si
+universitaria,112,Educación Primaria,educacion-primaria,235,2619.0,si
+universitaria,341,Economía,economia,222,2528.0,si
+universitaria,121,Educación Secundaria,educacion-secundaria,266,2447.0,si
+universitaria,335,Negocios Internacionales,negocios-internacionales,145,2387.0,si
+universitaria,594,Ecología y Medio Ambiente,ecologia-y-medio-ambiente,168,2306.0,si
+universitaria,342,Contabilidad y Finanzas,contabilidad,851,2163.0,si
+universitaria,331,Administración de Empresas,administracion-de-empresas,1052,2155.0,si
+universitaria,611,Agropecuaria,agropecuaria,216,2151.0,si
+universitaria,717,Obstetricia,obstetricia,122,2115.0,si
+universitaria,321,Ciencias de la Comunicación,ciencias-de-la-comunicacion,198,1826.0,si
+universitaria,111,Educación Inicial,educacion-inicial,245,1770.0,si
+universitaria,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",administracion-de-servicios-turisticos,168,1699.0,si
+universitaria,313,Psicología,psicologia,291,1632.0,si
+tecnica,112,Educación Primaria,educacion-primaria-tecnica,132,2247.0,si
+tecnica,524,Ingeniería Eléctrica,ingenieria-electrica,279,2039.0,si
+tecnica,526,Ingeniería Mecánica,ingenieria-mecanica-tecnica,986,1990.0,si
+tecnica,121,Educación Secundaria,educacion-secundaria-tecnica,129,1910.0,si
+tecnica,531,Ingeniería Civil,ingenieria-civil-tecnica,115,1856.0,si
+tecnica,222,Diseño,diseno,120,1744.0,si
+tecnica,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",administracion-de-servicios-turisticos-tecnica,262,1737.0,si
+tecnica,331,Administración de Empresas,administracion-de-empresas-tecnica,671,1599.0,si
+tecnica,441,Ciencias de la Computación,ciencias-de-la-computacion,711,1504.0,si
+tecnica,342,Contabilidad y Finanzas,contabilidad-tecnica,491,1487.0,si
+tecnica,337,Secretariado,secretariado,222,1447.0,si
+tecnica,611,Agropecuaria,agropecuaria-tecnica,293,1432.0,si
+tecnica,714,Enfermería,enfermeria-tecnica,771,1401.0,si
+tecnica,715,Tecnología Médica,tecnologia-medica,141,1357.0,si
+tecnica,716,Farmacia y Bioquímica,farmacia-y-bioquimica,228,1356.0,si
+tecnica,111,Educación Inicial,educacion-inicial-tecnica,138,1223.0,si

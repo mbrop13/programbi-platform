@@ -49,6 +49,8 @@ function courseHeadingLabel(course: CourseCatalogItem, pais: string): string {
   if (course.slug === "power-bi") {
     if (pais === "pe") return "Curso de Power BI en Perú";
     if (pais === "cl") return "Curso de Power BI en Chile";
+    if (pais === "ar") return "Curso de Power BI en Argentina";
+    if (pais === "co") return "Curso Power BI en vivo en Colombia";
     return "Curso de Power BI";
   }
   if (course.slug === "power-automate") {
@@ -59,8 +61,10 @@ function courseHeadingLabel(course: CourseCatalogItem, pais: string): string {
 
 function courseDetailAnchor(course: CourseCatalogItem, pais: string): string {
   if (course.slug === "power-bi") {
-    if (pais === "pe") return "Ver curso de Power BI en Perú →";
+    if (pais === "pe") return "Curso de Power BI en Perú →";
     if (pais === "cl") return "Ver curso de Power BI en Chile →";
+    if (pais === "ar") return "Curso de Power BI en Argentina →";
+    if (pais === "co") return "Curso de Power BI en Colombia →";
     return "Ver curso de Power BI →";
   }
   return `Ver curso de ${course.title} →`;
@@ -242,7 +246,13 @@ export default function CursosPageClient({
       <section className="px-4 pt-2 pb-2 sm:px-6 sm:pt-8 lg:px-8 lg:pt-10">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-center text-[1.7rem] font-bold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-[2.65rem]">
-            Cursos de Power BI, SQL y análisis de datos en {paisNombre}
+            {pais === "pe"
+              ? "Cursos en vivo de análisis de datos, Excel e IA en Perú"
+              : pais === "co"
+                ? "Catálogo de cursos en vivo de datos, Excel e IA en Colombia"
+                : pais === "ar"
+                  ? "Cursos en vivo de análisis de datos, Excel e IA en Argentina"
+                  : `Cursos de Power BI, SQL y análisis de datos en ${paisNombre}`}
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-mute sm:text-base">
             {pais === "pe" ? (

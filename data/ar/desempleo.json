@@ -1,0 +1,48 @@
+{
+  "actualizado": "2026-04-01",
+  "serieIdDatosGobAr": "45.2_ECTDT_0_T_33",
+  "fuente": {
+    "organismo": "INDEC",
+    "nombre": "Encuesta Permanente de Hogares (EPH continua) — Tasa de desocupación",
+    "url": "https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-58",
+    "licenciaEstado": "Verificar"
+  },
+  "actual": {
+    "fecha": "2026-04-01",
+    "trimestre": "2.º trim. 2026",
+    "tasaPct": 7.9,
+    "tasaProporcion": 0.079
+  },
+  "serie": [
+    {
+      "fecha": "2025-04-01",
+      "trimestre": "2.º trim. 2025",
+      "tasaPct": 7.6,
+      "tasaProporcion": 0.075762
+    },
+    {
+      "fecha": "2025-07-01",
+      "trimestre": "3.º trim. 2025",
+      "tasaPct": 6.6,
+      "tasaProporcion": 0.066
+    },
+    {
+      "fecha": "2025-10-01",
+      "trimestre": "4.º trim. 2025",
+      "tasaPct": 7.5,
+      "tasaProporcion": 0.075
+    },
+    {
+      "fecha": "2026-01-01",
+      "trimestre": "1.º trim. 2026",
+      "tasaPct": 7.8,
+      "tasaProporcion": 0.078
+    },
+    {
+      "fecha": "2026-04-01",
+      "trimestre": "2.º trim. 2026",
+      "tasaPct": 7.9,
+      "tasaProporcion": 0.079
+    }
+  ]
+}

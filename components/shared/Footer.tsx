@@ -81,6 +81,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
     return esRutaIndexablePais(pais, base) ? hrefLocal(href) : href;
   };
   const topCourses = NAV_COURSE_GROUPS.flatMap((g) => g.items).slice(0, 6);
+  const contactoMx = pais === "mx" ? getPais("mx").contacto : null;
 
   // El brochure se muestra como visor de documento a pantalla completa: sin footer.
   const isBrochure = pathname?.endsWith("/brochure") ?? false;
@@ -119,6 +120,22 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
           {pais === ISO_CHILE ? (
             <Link href="/datos" className="no-underline transition-colors hover:text-text-secondary">
               Datos de Chile
+            </Link>
+          ) : pais === "pe" ? (
+            <Link href="/pe/datos" className="no-underline transition-colors hover:text-text-secondary">
+              Datos de Perú
+            </Link>
+          ) : pais === "co" ? (
+            <Link href="/co/datos" className="no-underline transition-colors hover:text-text-secondary">
+              Datos de Colombia
+            </Link>
+          ) : pais === "mx" ? (
+            <Link href="/mx/datos" className="no-underline transition-colors hover:text-text-secondary">
+              Datos de México
+            </Link>
+          ) : pais === "ar" ? (
+            <Link href="/ar/datos" className="no-underline transition-colors hover:text-text-secondary">
+              Datos de Argentina
             </Link>
           ) : null}
           {GUIAS_POR_PAIS.has(pais) && esRutaIndexablePais(pais, "/guias") ? (
@@ -165,16 +182,52 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               {social.name}
             </a>
           ))}
-          <a href="mailto:contacto@programbi.cl" className="transition-colors hover:text-text-primary">contacto@programbi.cl</a>
-          <WhatsAppCta
-            page={pathname || "/"}
-            country={pais}
-            intent="general"
-            ctaPosition="footer"
-            className="transition-colors hover:text-text-primary"
-          >
-            WhatsApp
-          </WhatsAppCta>
+          {pais === "mx" && contactoMx ? (
+            <>
+              <WhatsAppCta
+                page={pathname || "/"}
+                country="mx"
+                intent="general"
+                ctaPosition="footer"
+                className="font-medium text-text-primary transition-colors hover:text-text-secondary"
+              >
+                Escríbenos por WhatsApp
+              </WhatsAppCta>
+              {contactoMx.whatsapp ? (
+                <span className="text-xs text-text-muted">{contactoMx.whatsapp}</span>
+              ) : null}
+              {contactoMx.email ? (
+                contactoMx.email.endsWith(".cl") ? (
+                  <a
+                    href={`mailto:${contactoMx.email}`}
+                    className="text-xs text-text-muted transition-colors hover:text-text-primary"
+                  >
+                    Correo: {contactoMx.email}
+                  </a>
+                ) : (
+                  <a
+                    href={`mailto:${contactoMx.email}`}
+                    className="transition-colors hover:text-text-primary"
+                  >
+                    {contactoMx.email}
+                  </a>
+                )
+              ) : null}
+            </>
+          ) : (
+            <>
+              <a href="mailto:contacto@programbi.cl" className="transition-colors hover:text-text-primary">contacto@programbi.cl</a>
+              <WhatsAppCta
+                page={pathname || "/"}
+                country={pais}
+                intent="general"
+                ctaPosition="footer"
+                className="transition-colors hover:text-text-primary"
+              >
+                WhatsApp
+              </WhatsAppCta>
+            </>
+          )}
           <Link href="/privacidad" className="no-underline transition-colors hover:text-text-primary">
             Privacidad
           </Link>

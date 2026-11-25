@@ -1,0 +1,27 @@
+{
+  "smmlv_2026_cop": 1750905,
+  "auxilio_transporte_2026_cop": 249095,
+  "smmlv_fuente": "Decreto 1469 de 2025, mantenido por Decreto transitorio 0159/2026 (MinTrabajo). El 1469 se confirmó con fuentes secundarias; citar como referencia normativa.",
+  "auxilio_fuente": "Decreto 1470 de 2025 (MinTrabajo). Texto verificado.",
+  "trm_2026_11_25": 3592.03,
+  "trm_fuente": "datos.gov.co 32sa-8pi3 (Superfinanciera), CC BY-SA 4.0; también BanRep API SDMX.",
+  "tasa_intervencion_pct_2026_11_24": 12.25,
+  "tasa_intervencion_fuente": "Banco de la República, API SDMX, 24-nov-2026.",
+  "desempleo_nacional_sep_2026_pct": 8.0,
+  "ipc_indice_oct_2026": 161.32,
+  "ipc_var_12m_oct_2026_pct": 6.3,
+  "ipc_base": "dic-2018=100",
+  "licencias": {
+    "trm_datos_gov_co": "CC BY-SA 4.0",
+    "dane_geih": "no verificada (citar DANE)",
+    "dane_ipc": "no verificada (citar DANE)",
+    "ole": "no verificada (citar MEN / OLE)",
+    "snies": "no verificada (citar MEN / SNIES)"
+  },
+  "notas": [
+    "El OLE publica ingresos en 7 rangos de SMMLV, solo de egresados que cotizan a seguridad social (empleo formal). Corte de seguimiento 2023, años de grado 2001-2022; el CSV de carreras usa la cohorte 2020-2022.",
+    "Los tableros BI del OLE con la tasa de cotizantes dieron HTTP 500 el 25-nov-2026: no se publica una tasa de «empleabilidad».",
+    "La mediana en SMMLV es una interpolación sobre los tramos agrupados; el tramo abierto «Más de 9 SMMLV» se cierra en 12 solo para interpolar. No es un salario puntual oficial.",
+    "No usar las palabras «empleabilidad» ni «campo laboral» en las páginas de Colombia."
+  ]
+}

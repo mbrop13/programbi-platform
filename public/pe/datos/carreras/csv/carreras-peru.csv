@@ -1,0 +1,44 @@
+﻿slug,tipo,codigo_inei_3dig,carrera_familia,rank_nivel,rank_general,slug_hermana,enaho_n_muestra,enaho_n_con_ingreso,enaho_ingreso_mediano_25_40_soles,enaho_p25_soles,enaho_p75_soles,enaho_ic90_bajo_soles,enaho_ic90_alto_soles,enaho_cv_mediana_pct,enaho_pct_ocupados,enaho_pct_afiliado_pension,enaho_pct_ocup_nivel_prof_tec,mtpe_sueldo_nacional_nov22_oct23,mtpe_p10_nacional,mtpe_p90_nacional,mtpe_rank_nacional,mtpe_sueldo_lima_nov22_oct23,mtpe_sueldo_2022_pub_priv,edo2026_familia,edo2026_puestos,sunedu_universidades_licenciadas
+medicina,universitaria,711,Medicina,1,1,,241,175,5244,3241,6896,4680,5643,5.2,72.6,82.9,86.4,6408,3000,8686,1,4364,6745,,,31
+ingenieria-minera-metalurgia-y-petroleo,universitaria,527,"Ingeniería Minera, Metalurgia y Petróleo",2,2,,146,116,4081,2431,5591,3003,4537,11.3,84.7,83.7,45,4100,1600,7396,4,3941,3993,,,28
+ingenieria-industrial,universitaria,521,Ingeniería Industrial,3,3,,404,330,2939,1944,4229,2637,3198,7.2,84.4,82.2,23.9,3730,1500,6600,16,4108,3697,Industria y Productos Transformados,2403,40
+ingenieria-mecanica,universitaria,526,Ingeniería Mecánica,4,4,ingenieria-mecanica-tecnica,145,121,2882,1920,4640,2389,3542,10.8,87.9,85.7,36.1,3912,1500,6947,10,4053,3847,Mecánica y Metalúrgica,1467,15
+ingenieria-de-sistemas,universitaria,511,Ingeniería de Sistemas y Cómputo,5,5,,454,391,2881,1811,4874,2675,3162,6,85.2,86.9,50.4,4302,1600,7550,2,4727,4170,Sistemas y Cómputo,4105,66
+ingenieria-civil,universitaria,531,Ingeniería Civil,6,6,ingenieria-civil-tecnica,619,506,2833,1654,4355,2578,3095,5.9,84.1,65.6,41.3,3829,1500,6602,14,4048,3794,Construcción e Ingeniería Civil,3163,60
+enfermeria,universitaria,714,Enfermería,7,7,enfermeria-tecnica,437,367,2753,1818,3814,2523,2984,5.3,85.5,80.5,74.4,3422,1700,5626,23,2548,4034,,,54
+arquitectura-y-urbanismo,universitaria,533,Arquitectura y Urbanismo,8,8,,262,211,2718,1378,4078,2309,3014,7.6,78,55.6,66.6,2932,1200,5000,38,3132,2934,,,38
+derecho,universitaria,351,Derecho,9,9,,887,731,2654,1500,4367,2440,2985,5.6,84,70.3,59.6,3903,1643,6953,11,3577,3809,,,60
+educacion-primaria,universitaria,112,Educación Primaria,10,10,educacion-primaria-tecnica,284,235,2619,1493,3248,2227,2838,6.7,84.7,86,78.9,2017,1025,3200,66,1967,1892,,,40
+economia,universitaria,341,Economía,11,11,,266,222,2528,1506,4068,2277,2883,7.5,84.6,74.1,26.6,3892,1399,7263,12,4376,3917,,,44
+educacion-secundaria,universitaria,121,Educación Secundaria,12,12,educacion-secundaria-tecnica,313,266,2447,1657,2909,2239,2575,4.9,85.2,81.3,69.7,2108,1025,3119,65,2032,2048,,,23
+negocios-internacionales,universitaria,335,Negocios Internacionales,13,13,,171,145,2387,1526,3767,2088,3046,14.3,81.5,80.9,17.9,2945,1243,5150,35,3153,2962,,,37
+ecologia-y-medio-ambiente,universitaria,594,Ecología y Medio Ambiente,14,14,,239,168,2306,1492,3219,2023,2556,8.8,74.7,63.3,38.6,2940,1333,5000,37,2932,2873,,,56
+contabilidad,universitaria,342,Contabilidad y Finanzas,15,16,contabilidad-tecnica,1031,851,2163,1372,3208,2086,2325,3.3,85.1,79.6,39,2472,1143,4102,54,2748,2477,Contabilidad e Impuestos,3415,67
+administracion-de-empresas,universitaria,331,Administración de Empresas,16,17,administracion-de-empresas-tecnica,1300,1052,2155,1344,3457,2028,2316,3.9,84.2,78.8,14.4,3114,1200,5802,29,3720,3107,Gestión y Administración,3889,71
+agropecuaria,universitaria,611,Agropecuaria,17,18,agropecuaria-tecnica,262,216,2151,1048,3225,1862,2633,10.7,82.4,63.8,29.6,2864,1300,4720,41,3192,2853,,,35
+obstetricia,universitaria,717,Obstetricia,18,19,,154,122,2115,1134,3264,1956,2715,12.2,83.1,73.9,56.2,3594,1764,6012,20,2101,3724,,,27
+ciencias-de-la-comunicacion,universitaria,321,Ciencias de la Comunicación,19,24,,229,198,1826,1224,3042,1640,2126,7.8,85.7,63.1,38.7,2979,1300,5136,34,3125,2967,,,48
+educacion-inicial,universitaria,111,Educación Inicial,20,25,educacion-inicial-tecnica,297,245,1770,1162,2788,1553,2034,9.8,86.1,77.3,69.3,2007,1025,3190,67,1977,1936,,,41
+administracion-de-servicios-turisticos,universitaria,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",21,28,administracion-de-servicios-turisticos-tecnica,220,168,1699,1126,2520,1504,1988,8,76,75.4,10.3,2322,1127,3765,62,2553,,,,46
+psicologia,universitaria,313,Psicología,22,29,,385,291,1632,1048,2998,1482,2029,11.2,76.4,63.1,67,2702,1200,4662,47,2697,2741,,,51
+educacion-primaria-tecnica,tecnica,112,Educación Primaria,1,15,educacion-primaria,165,132,2247,1486,3054,2112,2569,7.7,82.6,74.6,54.9,2344,1100,3590,20,2191,,,,
+ingenieria-electrica,tecnica,524,Ingeniería Eléctrica,2,20,,301,279,2039,1430,2947,1804,2249,6.8,95.4,68.4,57,3672,1693,5856,3,3093,,Electricidad y Energía,2405,
+ingenieria-mecanica-tecnica,tecnica,526,Ingeniería Mecánica,3,21,ingenieria-mecanica,1084,986,1990,1364,3044,1891,2125,3.9,93.6,64.8,33.6,2701,1800,3726,10,2768,,Mecánica y Metalúrgica,7338,
+educacion-secundaria-tecnica,tecnica,121,Educación Secundaria,4,22,educacion-secundaria,161,129,1910,1107,2762,1729,2057,7.9,83.6,74.1,61.1,2618,1200,4065,14,2715,,,,
+ingenieria-civil-tecnica,tecnica,531,Ingeniería Civil,5,23,ingenieria-civil,135,115,1856,1234,2873,1661,2178,9.5,87.5,57.4,34.3,2474,1600,3852,16,3010,,Construcción e Ingeniería Civil,653,
+diseno,tecnica,222,Diseño,6,26,,149,120,1744,1124,2843,1393,1949,9.6,79.4,67.7,55.1,2618,1200,4500,13,2664,,,,
+administracion-de-servicios-turisticos-tecnica,tecnica,332,"Administración de Servicios Turísticos, Hotelería y Gastronomía",7,27,administracion-de-servicios-turisticos,343,262,1737,1124,2513,1539,1885,6.4,83,52.3,18.9,2151,1199,3224,24,2347,,"Hotelería, Restaurantes y Gastronomía",593,
+administracion-de-empresas-tecnica,tecnica,331,Administración de Empresas,8,30,administracion-de-empresas,843,671,1599,1164,2449,1524,1684,2.9,81.3,63.4,15.9,2314,1200,3700,21,2359,,Gestión y Administración,5943,
+ciencias-de-la-computacion,tecnica,441,Ciencias de la Computación,9,31,,924,711,1504,1021,2286,1414,1603,4.3,81.1,60.7,27,2999,1200,5602,8,3655,,Sistemas y Cómputo,1878,
+contabilidad-tecnica,tecnica,342,Contabilidad y Finanzas,10,32,contabilidad,646,491,1487,1009,2057,1391,1584,4.7,79.9,61.8,21,2193,1149,3679,23,2089,,Contabilidad e Impuestos,2449,
+secretariado,tecnica,337,Secretariado,11,33,,332,222,1447,1038,1954,1311,1560,5,65.2,63.5,9.9,3207,1764,4126,6,1694,,,,
+agropecuaria-tecnica,tecnica,611,Agropecuaria,12,34,agropecuaria,363,293,1432,672,2263,1277,1665,8.4,87.4,50.6,16.5,2275,1302,3602,22,2353,,,,
+enfermeria-tecnica,tecnica,714,Enfermería,13,35,enfermeria,1031,771,1401,900,1993,1309,1514,4.6,76.9,53.3,42,2063,1140,3305,27,1544,,Enfermería,713,
+tecnologia-medica,tecnica,715,Tecnología Médica,14,36,,183,141,1357,591,1999,1089,1617,11.1,81.2,61.5,57.1,1891,1125,3029,29,1823,,,,
+farmacia-y-bioquimica,tecnica,716,Farmacia y Bioquímica,15,37,,325,228,1356,1001,1863,1252,1459,4.6,69.4,58.5,54.8,1634,1093,2167,31,1654,,,,
+educacion-inicial-tecnica,tecnica,111,Educación Inicial,16,38,educacion-inicial,184,138,1223,1015,2189,1119,1515,10.7,82.1,56.9,51.5,1769,1025,3090,30,1433,,,,
+
+"# ProgramBI Perú — Datos de Carreras (edición 2026, corte 2026-11-25)"
+"# Fuente ENAHO: INEI ENAHO 2022-2024 (mód. 300 y 500, códigos 784/906/966), egresados completos 25-40 años, S/ de 2024 deflactados con IPC Lima BCRP (PN01271PM)."
+"# Fuente MTPE: MTPE-DISEL Planilla Electrónica nov-2022 a oct-2023 (gob.pe pub. 5207826) y 2022 pub+priv (pub. 4882782), jóvenes 18-29 años."
+"# Fuente EDO y SUNEDU: MTPE EDO 2026 (informe Perú 26-01-2026, Gráf. 27-28); SUNEDU Programas Académicos (corte 28-08-2024)."

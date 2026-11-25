@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import CapturaPendiente from "@/components/guias/CapturaPendiente";
 import {
@@ -33,6 +34,7 @@ import { jsonLdString } from "@/lib/seo";
 
 export interface RelacionadaResumen {
   slug: string;
+  path?: string;
   h1: string;
   subtitle?: string;
   herramienta?: string;
@@ -156,15 +158,18 @@ export default function GuiaPasoAPasoLayout({
   guia: GuiaPasoAPaso;
   relacionadasMap: Record<string, RelacionadaResumen>;
 }) {
-  const curso = datosCursoParaGuia(guia.curso);
+  const pais = guia.pais ?? "cl";
+  const prefijo = pais === "cl" ? "" : `/${pais}`;
+  const rutaGuia = `${prefijo}/guias/${guia.slug}`;
+  const curso = datosCursoParaGuia(guia.curso, pais);
   const cursoSecundarioData = guia.cursoSecundario
-    ? datosCursoParaGuia(guia.cursoSecundario)
+    ? datosCursoParaGuia(guia.cursoSecundario, pais)
     : null;
   const cursoSecundario = cursoSecundarioData
     ? { slug: cursoSecundarioData.slug, nombre: cursoSecundarioData.nombre }
     : null;
   const cursosSecundarios = (guia.cursosSecundarios ?? []).map((slug) => {
-    const data = datosCursoParaGuia(slug);
+    const data = datosCursoParaGuia(slug, pais);
     return { slug: data.slug, nombre: data.nombre };
   });
   const lecturaMin = tiempoLecturaPasoAPaso(guia);
@@ -191,9 +196,9 @@ export default function GuiaPasoAPasoLayout({
               <header className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-6 shadow-[var(--g-card-shadow)] sm:p-8 lg:p-9">
                 <GuiaBreadcrumbs
                   items={[
-                    { label: "Inicio", href: "/" },
-                    { label: "Guías", href: "/guias" },
-                    { label: curso.nombre, href: `/cursos/${guia.curso}` },
+                    { label: "Inicio", href: prefijo || "/" },
+                    { label: "Guías", href: `${prefijo}/guias` },
+                    { label: curso.nombre, href: `${prefijo}/cursos/${guia.curso}` },
                     { label: guia.h1 },
                   ]}
                 />
@@ -514,7 +519,6 @@ export default function GuiaPasoAPasoLayout({
               ) : null}
 
               {/* Plantilla descargable */}
-              {/* TODO: Enlazar a URL real de descarga cuando el archivo de práctica esté publicado */}
               <section
                 id="descarga-plantilla"
                 aria-labelledby="descarga-plantilla-titulo"
@@ -525,7 +529,9 @@ export default function GuiaPasoAPasoLayout({
                     <span className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
                       Plantilla descargable
                     </span>
-                    <GuiaVisualBadge tone="neutral">Próximamente</GuiaVisualBadge>
+                    <GuiaVisualBadge tone={guia.plantillaArchivo ? "accent" : "neutral"}>
+                      {guia.plantillaArchivo ? "Excel (.xlsx)" : "Próximamente"}
+                    </GuiaVisualBadge>
                   </div>
                   <h2
                     id="descarga-plantilla-titulo"
@@ -536,6 +542,68 @@ export default function GuiaPasoAPasoLayout({
                   <p className="mt-1.5 text-sm leading-relaxed text-[var(--g-muted)]">
                     {guia.plantilla.descripcion}
                   </p>
+
+                  {guia.plantillaArchivo ? (
+                    <div className="mt-4 space-y-4">
+                      <PlantillaDescarga
+                        pais={pais}
+                        country={pais}
+                        location={`guia:${guia.slug}`}
+                        page={rutaGuia}
+                        label="Descargar plantilla Excel (.xlsx)"
+                        recurso={guia.plantillaArchivo.recurso}
+                        archivoUrl={guia.plantillaArchivo.archivoUrl}
+                        nombreArchivo={guia.plantillaArchivo.nombreArchivo}
+                        course={curso.nombre}
+                        courseSlug={guia.curso}
+                        mostrarWhatsappAlternativo
+                        className="inline-flex h-12 items-center justify-center rounded-full bg-[var(--g-ink)] px-6 text-sm font-semibold text-[var(--g-surface)] transition-opacity hover:opacity-90 disabled:opacity-60"
+                      />
+
+                      <div className="rounded-xl border border-[var(--g-border)] bg-[var(--g-wash)]/70 p-4">
+                        <p className="text-sm font-bold text-[var(--g-ink)]">
+                          {pais === "mx"
+                            ? "¿Quieres dominar Excel de verdad? Curso de Excel en vivo para México"
+                            : pais === "ar"
+                              ? "¿Querés armar este análisis vos? Aprendé Excel y Power BI en vivo"
+                              : "¿Quieres armar este análisis tú? Aprende Excel y Power BI en vivo"}
+                        </p>
+                        <p className="mt-1 text-xs leading-relaxed text-[var(--g-muted)]">
+                          Domina fórmulas, tablas dinámicas, Power Query y tableros con clases en
+                          vivo, {curso.textoCuotas || "3 cuotas sin interés"} y clase gratis
+                          coordinada por WhatsApp.
+                        </p>
+                        <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                          <Link
+                            href={`${prefijo}/cursos/excel`}
+                            className="inline-flex min-h-[40px] items-center justify-center rounded-xl bg-[var(--g-ink)] px-4 text-xs font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
+                          >
+                            Temario y precios de Excel
+                          </Link>
+                          {pais !== "mx" ? (
+                            <Link
+                              href={`${prefijo}/cursos/power-bi`}
+                              className="inline-flex min-h-[40px] items-center justify-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
+                            >
+                              Ver curso de Power BI
+                            </Link>
+                          ) : null}
+                          <WhatsAppCta
+                            page={rutaGuia}
+                            intent="curso"
+                            course={curso.nombre}
+                            courseSlug={guia.curso}
+                            country={pais}
+                            ctaPosition="guia_paso_a_paso_cta_local"
+                            customText={`Hola, descargué la plantilla de ${guia.h1} y quiero coordinar la clase gratis en vivo [${guia.slug}]`}
+                            className="inline-flex min-h-[40px] items-center justify-center px-2 text-xs font-semibold text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 hover:text-[var(--g-ink)]"
+                          >
+                            Coordinar clase gratis por WhatsApp
+                          </WhatsAppCta>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </section>
 
@@ -617,7 +685,7 @@ export default function GuiaPasoAPasoLayout({
                     return (
                       <li key={relSlug} className="min-w-0">
                         <Link
-                          href={`/guias/${relSlug}`}
+                          href={rel?.path ?? `${prefijo}/guias/${relSlug}`}
                           className="group flex h-full min-h-[44px] flex-col justify-between rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 no-underline shadow-[var(--g-card-shadow)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--g-accent)] hover:shadow-[var(--g-card-shadow-hover)]"
                         >
                           <div>
@@ -678,7 +746,7 @@ export default function GuiaPasoAPasoLayout({
               <div className="mt-10 hidden rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-6 shadow-[var(--g-card-shadow)] lg:flex lg:items-center lg:justify-between lg:gap-6">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-accent)]">
-                    Clase gratis disponible
+                    {pais === "pe" ? "Clase gratis coordinada por WhatsApp" : "Clase gratis disponible"}
                   </p>
                   <p className="mt-1.5 text-lg font-bold tracking-[-0.015em] text-[var(--g-ink)]">
                     Domina {curso.nombre} con clases prácticas en vivo
@@ -691,11 +759,11 @@ export default function GuiaPasoAPasoLayout({
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center gap-2.5">
                   <WhatsAppCta
-                    page={`/guias/${guia.slug}`}
+                    page={rutaGuia}
                     intent="curso"
                     course={curso.nombre}
                     courseSlug={guia.curso}
-                    country="cl"
+                    country={pais}
                     ctaPosition="guia_paso_a_paso_final_desktop"
                     customText={`Hola, vengo de la guía ${guia.h1} y quiero la clase gratis del curso de ${curso.nombre} [${guia.slug}]`}
                     className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[var(--g-ink)] px-5 text-xs font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
@@ -703,13 +771,13 @@ export default function GuiaPasoAPasoLayout({
                     Solicitar clase gratis
                   </WhatsAppCta>
                   <Link
-                    href={`/cursos/${guia.curso}`}
+                    href={`${prefijo}/cursos/${guia.curso}`}
                     className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
                   >
-                    Ver temario del curso
+                    {pais === "cl" ? "Ver temario del curso" : "Temario y precios"}
                   </Link>
                   <Link
-                    href={`/registro?from=/guias/${guia.slug}`}
+                    href={`/registro?from=${rutaGuia}`}
                     className="inline-flex min-h-[44px] items-center justify-center px-2 text-xs font-semibold text-[var(--g-accent)] underline decoration-[var(--g-border-strong)] underline-offset-4 hover:text-[var(--g-ink)]"
                   >
                     Inscribirme
@@ -743,6 +811,7 @@ export default function GuiaPasoAPasoLayout({
         h1={guia.h1}
         cursoSlug={guia.curso}
         cursoNombre={curso.nombre}
+        pais={pais}
       />
     </GuiaScope>
   );

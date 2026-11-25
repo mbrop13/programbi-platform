@@ -73,7 +73,13 @@ export default function IndicePais({ pais }: { pais: string }) {
                           href={rutaLocal(pais, `/cursos/${curso.slug}`)}
                           className="text-sm leading-snug text-ink no-underline underline-offset-4 hover:text-mute hover:underline"
                         >
-                          {curso.title}
+                          {pais === "ar" && curso.slug === "power-bi"
+                            ? "curso de Power BI"
+                            : pais === "pe" && curso.slug === "power-bi"
+                              ? "curso de Power BI en Perú"
+                              : pais === "co" && curso.slug === "power-bi"
+                                ? "curso de Power BI en Colombia"
+                                : curso.title}
                         </Link>
                       </li>
                     ))}
@@ -122,6 +128,106 @@ export default function IndicePais({ pais }: { pais: string }) {
             )}
           </div>
         </div>
+
+        {pais === "pe" ? (
+          <p className="mt-10 border-t border-line pt-6 text-sm leading-relaxed text-mute">
+            Destacados en Perú:{" "}
+            <Link href="/pe/cursos/power-bi" className="font-semibold text-ink underline underline-offset-4">
+              curso de Power BI en Perú
+            </Link>
+            {" · "}
+            <Link href="/pe/datos" className="font-semibold text-ink underline underline-offset-4">
+              Datos de Perú: sueldos por carrera y Excel
+            </Link>
+            {" · "}
+            <Link href="/pe/datos/carreras" className="font-semibold text-ink underline underline-offset-4">
+              Carreras mejor pagadas en Perú
+            </Link>
+            .
+          </p>
+        ) : null}
+
+        {pais === "co" ? (
+          <div className="mt-10 border-t border-line pt-6 text-sm leading-relaxed text-mute">
+            <p className="font-semibold text-ink">Recursos y datos de Colombia</p>
+            <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
+              <li>
+                <Link href="/co/cursos/power-bi" className="font-semibold text-ink underline underline-offset-4">
+                  curso de Power BI en Colombia
+                </Link>
+              </li>
+              <li>
+                <Link href="/co/datos" className="font-semibold text-ink underline underline-offset-4">
+                  Datos de Colombia
+                </Link>
+              </li>
+              <li>
+                <Link href="/co/datos/carreras" className="font-semibold text-ink underline underline-offset-4">
+                  Carreras de datos en Colombia
+                </Link>
+              </li>
+              <li>
+                <Link href="/co/guias/prima-de-servicios-excel" className="font-semibold text-ink underline underline-offset-4">
+                  Prima de servicios en Excel
+                </Link>
+              </li>
+              <li>
+                <Link href="/co/guias/intereses-de-cesantias-excel" className="font-semibold text-ink underline underline-offset-4">
+                  Intereses de cesantías en Excel
+                </Link>
+              </li>
+              <li>
+                <Link href="/co/guias/cesantias-2026" className="font-semibold text-ink underline underline-offset-4">
+                  Cesantías 2026 en Colombia
+                </Link>
+              </li>
+            </ul>
+          </div>
+        ) : null}
+
+        {pais === "mx" ? (
+          <div className="mt-10 border-t border-line pt-6">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-mute">
+              Datos y herramientas de México
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <li>
+                <Link href="/mx/datos" className="font-semibold text-ink underline underline-offset-4 hover:text-mute">
+                  Datos laborales de México
+                </Link>
+              </li>
+              <li>
+                <Link href="/mx/datos/carreras" className="font-semibold text-ink underline underline-offset-4 hover:text-mute">
+                  Carreras y sueldos en México
+                </Link>
+              </li>
+              <li>
+                <Link href="/mx/datos/carreras-mejor-pagadas" className="font-semibold text-ink underline underline-offset-4 hover:text-mute">
+                  Carreras mejor pagadas en México
+                </Link>
+              </li>
+              <li>
+                <Link href="/mx/guias/plantilla-aguinaldo-excel" className="font-semibold text-ink underline underline-offset-4 hover:text-mute">
+                  Plantilla de aguinaldo en Excel
+                </Link>
+              </li>
+            </ul>
+          </div>
+        ) : null}
+
+        {pais === "ar" ? (
+          <p className="mt-10 border-t border-line pt-6 text-sm leading-relaxed text-mute">
+            Recursos de Argentina:{" "}
+            <Link href="/ar/datos" className="font-semibold text-ink underline underline-offset-4">
+              Datos de Argentina
+            </Link>
+            {" · "}
+            <Link href="/ar/guias/calcular-aguinaldo-excel" className="font-semibold text-ink underline underline-offset-4">
+              Cómo calcular el aguinaldo en Excel
+            </Link>
+            .
+          </p>
+        ) : null}
 
         {pais === "us" ? (
           <p className="mt-10 border-t border-line pt-6 text-sm leading-relaxed text-mute">

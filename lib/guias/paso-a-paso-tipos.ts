@@ -125,8 +125,12 @@ export interface PasoRutaVisual {
   icono: IconoPaso;
 }
 
+export type PaisGuiaPasoAPaso = "cl" | "pe" | "co" | "mx" | "ar";
+
 export interface GuiaPasoAPaso {
   slug: string;
+  /** País de destino de la guía (`cl` por defecto en la raíz `/guias`). */
+  pais?: PaisGuiaPasoAPaso;
   /** ≤ 60 caracteres exactos. */
   title: string;
   /** 140 a 155 caracteres exactos. */
@@ -171,10 +175,16 @@ export interface GuiaPasoAPaso {
   secciones: SeccionGuia[];
   /** 3 a 6 errores reales y soluciones concretas. */
   erroresComunes: ErrorComunGuia[];
-  /** Bloque placeholder desactivado «Próximamente». */
+  /** Bloque placeholder desactivado «Próximamente» o descriptor de plantilla. */
   plantilla: {
     titulo: string;
     descripcion: string;
+  };
+  /** Archivo descargable real asociado a la guía (lead magnet). */
+  plantillaArchivo?: {
+    recurso: string;
+    archivoUrl: string;
+    nombreArchivo: string;
   };
   /** 4 a 6 preguntas reales; mismas en acordeón UI y `FAQPage`. */
   faqs: { q: string; a: string }[];

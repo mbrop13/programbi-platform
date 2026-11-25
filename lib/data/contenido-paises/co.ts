@@ -1,4 +1,5 @@
 import type { ContenidoPais } from "./tipos";
+import type { DefinicionBloqueLocal } from "./bloque";
 import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const contenido: ContenidoPais = {
@@ -10,7 +11,7 @@ const contenido: ContenidoPais = {
   },
   seoPaginas: {
     cursos: {
-      title: "Cursos de datos en Colombia: Power BI, SQL y Python",
+      title: "Catálogo de cursos de datos en Colombia | ProgramBI",
       description:
         "Cursos de datos en vivo en Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP, clase gratis y certificado.",
     },
@@ -155,3 +156,96 @@ const contenido: ContenidoPais = {
 };
 
 export default contenido;
+
+/**
+ * Bloque local de Colombia: datos duros, FAQ y metadata de las siete rutas.
+ * Los montos y el horario los resuelve `bloque.ts` desde la fuente única.
+ */
+export const bloqueLocal: DefinicionBloqueLocal = {
+  iso: "co",
+  titulo: "Estudiar datos en vivo desde Colombia",
+  parrafos: [
+    "Colombia combina sectores muy intensivos en datos: retail y consumo masivo, fintech y banca, energía y servicios públicos, y agro. En esas operaciones el reporte suele quedar repartido entre el POS, la facturación electrónica y planillas de área. Tanto en el curso de Power BI en Colombia como en los programas de SQL Server, Python y análisis de datos, los ejercicios trabajan ventas por sede y canal, cartera, recaudo y márgenes con una definición común.",
+    "Las clases son en vivo por Zoom en horario de Bogotá (America/Bogota, UTC-5 todo el año), con cobertura para profesionales en Bogotá, Medellín, Cali y Barranquilla y grabaciones en el campus virtual. El catálogo se publica en pesos colombianos (COP) y cada ficha incluye su PDF de Temario y precios, clase gratis y 3 cuotas sin interés.",
+    "El pago se procesa con Mercado Pago Colombia mediante PSE, Nequi, tarjeta o transferencia bancaria en pesos; si la cuenta local no está disponible, el checkout muestra el equivalente en CLP antes de confirmar. Cada cohorte cierra con un proyecto práctico y certificado digital de ProgramBI con código de verificación.",
+  ],
+  empresas:
+    "Para equipos en Colombia (Bogotá, Medellín, Cali, Barranquilla y otras ciudades), la capacitación in-company se arma con los datos de la empresa: POS, facturación electrónica, cartera o reportes operativos. Se dicta en vivo por Zoom en horario de Bogotá, con grabaciones en el campus, factura corporativa y certificado con código de verificación para cada participante.",
+  notas: {
+    precio:
+      "El catálogo de Colombia se publica en pesos colombianos (COP). El monto vigente y los descuentos están en el PDF de Temario y precios de cada curso; el checkout muestra el total antes de pagar.",
+    horario:
+      "Colombia se mantiene en UTC-5 todo el año (America/Bogota), sin horario de verano. En Chile la clase es de {horarioChile}; cuando Chile cambia de hora, la diferencia con Bogotá se mueve una hora. La ficha de la cohorte muestra la equivalencia exacta.",
+    pago:
+      "Mercado Pago Colombia procesa PSE, Nequi y tarjeta; la transferencia en pesos colombianos se coordina con admisiones. Si pagas con tarjeta emitida fuera de Colombia, el cargo final lo define tu banco.",
+    cuotas:
+      "Aplican a todos los cursos en Colombia: 3 cuotas sin interés sin recargo por financiamiento. La pasarela confirma la disponibilidad al pagar.",
+    "clase-gratis":
+      "La clase gratis es una sesión abierta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; si aún no hay fecha, puedes pedir que te avisen.",
+    certificado:
+      "El certificado digital de ProgramBI lleva código de verificación y se suma al campus virtual con las clases y el material usado durante el curso. Es un certificado de ProgramBI, distinto de la certificación PL-300 de Microsoft.",
+  },
+  preguntas: [
+    {
+      q: "¿A qué hora son las clases en Colombia y qué días?",
+      a: "Las clases en vivo por Zoom son de {horario}, {horaLocal} (horario de Bogotá, UTC-5 todo el año), lunes y miércoles o martes y jueves según la cohorte. En Chile son de {horarioChile}. Aplica igual si te conectas desde Bogotá, Medellín, Cali o Barranquilla.",
+    },
+    {
+      q: "¿Cuánto cuesta un curso en Colombia y en qué moneda se paga?",
+      a: "{resumenPrecios}",
+    },
+    {
+      q: "¿Puedo pagar desde Colombia con PSE, Nequi, tarjeta o transferencia?",
+      a: "Sí. Mercado Pago Colombia acepta PSE, Nequi y tarjeta de crédito o débito; la transferencia en pesos se coordina con admisiones. {notaPago}",
+    },
+    {
+      q: "¿Hay 3 cuotas sin interés para Colombia?",
+      a: "Sí: {cuotas} en todos los cursos, sin recargo por financiamiento. La pasarela confirma la disponibilidad con tu medio de pago en el checkout.",
+    },
+    {
+      q: "¿Hay clase gratis antes de inscribirme?",
+      a: "Sí. Hay una clase gratis abierta por Zoom para conocer cómo se trabaja en vivo, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; mientras tanto puedes pedir que te avisen.",
+    },
+    {
+      q: "¿Qué certificado recibo al terminar?",
+      a: "Un certificado digital de ProgramBI con código de verificación y acceso al campus virtual con las clases grabadas y el material de práctica. La certificación PL-300 de Microsoft se rinde y se paga aparte.",
+    },
+  ],
+  seo: {
+    hub: {
+      title: "Cursos de datos en vivo en Colombia | ProgramBI",
+      description:
+        "Formación en vivo en Power BI, análisis de datos y Python para profesionales de Colombia: horario de Bogotá, precios en COP y 3 cuotas sin interés.",
+    },
+    cursos: {
+      title: "Catálogo de cursos de datos en Colombia | ProgramBI",
+      description:
+        "Cursos de datos en vivo en Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP, clase gratis y certificado.",
+    },
+    "power-bi": {
+      title: "Curso Power BI en vivo en Colombia | ProgramBI",
+      description:
+        "Curso Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en 20 horas. Horario de Bogotá, valor en COP y 3 cuotas sin interés.",
+    },
+    "analisis-de-datos": {
+      title: "Curso de análisis de datos en Colombia | ProgramBI",
+      description:
+        "Análisis de datos en vivo para Colombia: SQL Server, Power BI y Python en dos niveles de 60 horas. Horario de Bogotá, valor en COP y certificado.",
+    },
+    python: {
+      title: "Curso de Python para datos en Colombia | ProgramBI",
+      description:
+        "Python para datos en vivo para Colombia (20 h): Pandas, visualización y automatización. Horario de Bogotá, valor en COP y 3 cuotas sin interés.",
+    },
+    empresas: {
+      title: "Capacitación in-company en Colombia | ProgramBI",
+      description:
+        "Capacitación in-company para empresas de Colombia: Power BI, SQL, Python e IA con los datos del equipo, en vivo y con factura corporativa.",
+    },
+    precios: {
+      title: "Precios de cursos en Colombia | ProgramBI",
+      description:
+        "Precios de los cursos en vivo para Colombia: valores en COP, Temario y precios de cada curso, medios de pago como PSE o Nequi y 3 cuotas sin interés.",
+    },
+  },
+};

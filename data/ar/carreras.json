@@ -1,0 +1,1603 @@
+{
+  "actualizado": "2026-10",
+  "anioBase": "2019-2021",
+  "mesAjusteIpc": "2026-10",
+  "ipcPromedioBase": 351.2825,
+  "ipcMesAjuste": 12785.9321,
+  "factorAjusteIpc": 36.397858,
+  "diccionarioDisponible": false,
+  "fichasPublicadas": 0,
+  "totalDisciplinasPublicables": 36,
+  "disciplinasExcluidasPorUmbral": [
+    {
+      "disciplinaId": 36,
+      "nConSalarioSipa": 83
+    },
+    {
+      "disciplinaId": 38,
+      "nConSalarioSipa": 49
+    }
+  ],
+  "fuenteAraucano": {
+    "organismo": "CEP XXI — Ministerio de Economía / Producción",
+    "nombre": "Graduados universitarios del Sistema Araucano (cohortes 2016–2018, salarios SIPA 2019–2021)",
+    "datasetUrl": "https://datos.produccion.gob.ar/dataset/graduados-universitarios-del-sistema-araucano-2016-2018",
+    "baseCsvUrl": "https://cdn.produccion.gob.ar/cdn-cep/araucano/base_araucano.csv",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseNombre": "CC BY 4.0"
+  },
+  "disciplinas": [
+    {
+      "disciplinaId": 1,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 146490,
+      "nConSalarioSipa": 89546,
+      "porcentajeSipa": 0.6113,
+      "porcentajeSipaPct": 61.1,
+      "medianaNominal": 86378.79,
+      "p25Nominal": 53519.27,
+      "p75Nominal": 142772.8,
+      "medianaAjustadaOct2026": 3144003,
+      "p25AjustadoOct2026": 1947987,
+      "p75AjustadoOct2026": 5196624,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 2,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 44349,
+      "nConSalarioSipa": 29500,
+      "porcentajeSipa": 0.6652,
+      "porcentajeSipaPct": 66.5,
+      "medianaNominal": 94670.55,
+      "p25Nominal": 58219.04,
+      "p75Nominal": 152664.88,
+      "medianaAjustadaOct2026": 3445805,
+      "p25AjustadoOct2026": 2119048,
+      "p75AjustadoOct2026": 5556675,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 3,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 21252,
+      "nConSalarioSipa": 13390,
+      "porcentajeSipa": 0.6301,
+      "porcentajeSipaPct": 63,
+      "medianaNominal": 64035,
+      "p25Nominal": 38113.32,
+      "p75Nominal": 105204.54,
+      "medianaAjustadaOct2026": 2330737,
+      "p25AjustadoOct2026": 1387243,
+      "p75AjustadoOct2026": 3829220,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 4,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 15915,
+      "nConSalarioSipa": 8571,
+      "porcentajeSipa": 0.5385,
+      "porcentajeSipaPct": 53.8,
+      "medianaNominal": 71262.03,
+      "p25Nominal": 43649.44,
+      "p75Nominal": 115931.62,
+      "medianaAjustadaOct2026": 2593785,
+      "p25AjustadoOct2026": 1588746,
+      "p75AjustadoOct2026": 4219663,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 5,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 51795,
+      "nConSalarioSipa": 29240,
+      "porcentajeSipa": 0.5645,
+      "porcentajeSipaPct": 56.5,
+      "medianaNominal": 75061.41,
+      "p25Nominal": 46965,
+      "p75Nominal": 125059.63,
+      "medianaAjustadaOct2026": 2732075,
+      "p25AjustadoOct2026": 1709425,
+      "p75AjustadoOct2026": 4551903,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 6,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 8901,
+      "nConSalarioSipa": 5975,
+      "porcentajeSipa": 0.6713,
+      "porcentajeSipaPct": 67.1,
+      "medianaNominal": 85431.95,
+      "p25Nominal": 51379.18,
+      "p75Nominal": 136967.19,
+      "medianaAjustadaOct2026": 3109540,
+      "p25AjustadoOct2026": 1870092,
+      "p75AjustadoOct2026": 4985312,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 7,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 106017,
+      "nConSalarioSipa": 56878,
+      "porcentajeSipa": 0.5365,
+      "porcentajeSipaPct": 53.6,
+      "medianaNominal": 90650.75,
+      "p25Nominal": 54590,
+      "p75Nominal": 151108.38,
+      "medianaAjustadaOct2026": 3299493,
+      "p25AjustadoOct2026": 1986959,
+      "p75AjustadoOct2026": 5500021,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 8,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 14253,
+      "nConSalarioSipa": 6984,
+      "porcentajeSipa": 0.49,
+      "porcentajeSipaPct": 49,
+      "medianaNominal": 48136.03,
+      "p25Nominal": 25623.14,
+      "p75Nominal": 83442.47,
+      "medianaAjustadaOct2026": 1752048,
+      "p25AjustadoOct2026": 932627,
+      "p75AjustadoOct2026": 3037127,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 9,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 46149,
+      "nConSalarioSipa": 36582,
+      "porcentajeSipa": 0.7927,
+      "porcentajeSipaPct": 79.3,
+      "medianaNominal": 64406.74,
+      "p25Nominal": 38590.02,
+      "p75Nominal": 104260.28,
+      "medianaAjustadaOct2026": 2344267,
+      "p25AjustadoOct2026": 1404594,
+      "p75AjustadoOct2026": 3794851,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 10,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 23175,
+      "nConSalarioSipa": 16453,
+      "porcentajeSipa": 0.7099,
+      "porcentajeSipaPct": 71,
+      "medianaNominal": 105000,
+      "p25Nominal": 62307,
+      "p75Nominal": 176040,
+      "medianaAjustadaOct2026": 3821775,
+      "p25AjustadoOct2026": 2267841,
+      "p75AjustadoOct2026": 6407479,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 11,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 33972,
+      "nConSalarioSipa": 14059,
+      "porcentajeSipa": 0.4138,
+      "porcentajeSipaPct": 41.4,
+      "medianaNominal": 54520,
+      "p25Nominal": 32273.75,
+      "p75Nominal": 88828.87,
+      "medianaAjustadaOct2026": 1984411,
+      "p25AjustadoOct2026": 1174695,
+      "p75AjustadoOct2026": 3233181,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 12,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 4824,
+      "nConSalarioSipa": 4036,
+      "porcentajeSipa": 0.8367,
+      "porcentajeSipaPct": 83.7,
+      "medianaNominal": 55020.06,
+      "p25Nominal": 32366.43,
+      "p75Nominal": 91809.66,
+      "medianaAjustadaOct2026": 2002612,
+      "p25AjustadoOct2026": 1178069,
+      "p75AjustadoOct2026": 3341675,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 13,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 51102,
+      "nConSalarioSipa": 17777,
+      "porcentajeSipa": 0.3479,
+      "porcentajeSipaPct": 34.8,
+      "medianaNominal": 56525.88,
+      "p25Nominal": 35000,
+      "p75Nominal": 91661.71,
+      "medianaAjustadaOct2026": 2057421,
+      "p25AjustadoOct2026": 1273925,
+      "p75AjustadoOct2026": 3336290,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 14,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 12423,
+      "nConSalarioSipa": 8883,
+      "porcentajeSipa": 0.715,
+      "porcentajeSipaPct": 71.5,
+      "medianaNominal": 58930.66,
+      "p25Nominal": 34015.51,
+      "p75Nominal": 94440.44,
+      "medianaAjustadaOct2026": 2144950,
+      "p25AjustadoOct2026": 1238092,
+      "p75AjustadoOct2026": 3437430,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 15,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 198,
+      "nConSalarioSipa": 165,
+      "porcentajeSipa": 0.8333,
+      "porcentajeSipaPct": 83.3,
+      "medianaNominal": 66225.01,
+      "p25Nominal": 47150.64,
+      "p75Nominal": 98472,
+      "medianaAjustadaOct2026": 2410448,
+      "p25AjustadoOct2026": 1716182,
+      "p75AjustadoOct2026": 3584170,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 16,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 11958,
+      "nConSalarioSipa": 6144,
+      "porcentajeSipa": 0.5138,
+      "porcentajeSipaPct": 51.4,
+      "medianaNominal": 56279.69,
+      "p25Nominal": 26097,
+      "p75Nominal": 98352.5,
+      "medianaAjustadaOct2026": 2048460,
+      "p25AjustadoOct2026": 949875,
+      "p75AjustadoOct2026": 3579820,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 17,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 13722,
+      "nConSalarioSipa": 8348,
+      "porcentajeSipa": 0.6084,
+      "porcentajeSipaPct": 60.8,
+      "medianaNominal": 82820.57,
+      "p25Nominal": 50149,
+      "p75Nominal": 128537.42,
+      "medianaAjustadaOct2026": 3014491,
+      "p25AjustadoOct2026": 1825316,
+      "p75AjustadoOct2026": 4678487,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 18,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 75117,
+      "nConSalarioSipa": 45581,
+      "porcentajeSipa": 0.6068,
+      "porcentajeSipaPct": 60.7,
+      "medianaNominal": 70390.4,
+      "p25Nominal": 48295.39,
+      "p75Nominal": 106157.56,
+      "medianaAjustadaOct2026": 2562060,
+      "p25AjustadoOct2026": 1757849,
+      "p75AjustadoOct2026": 3863908,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 19,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 23901,
+      "nConSalarioSipa": 14279,
+      "porcentajeSipa": 0.5974,
+      "porcentajeSipaPct": 59.7,
+      "medianaNominal": 61601.08,
+      "p25Nominal": 37589.13,
+      "p75Nominal": 100000,
+      "medianaAjustadaOct2026": 2242147,
+      "p25AjustadoOct2026": 1368164,
+      "p75AjustadoOct2026": 3639786,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 20,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 2430,
+      "nConSalarioSipa": 1988,
+      "porcentajeSipa": 0.8181,
+      "porcentajeSipaPct": 81.8,
+      "medianaNominal": 59419.62,
+      "p25Nominal": 29496.38,
+      "p75Nominal": 105400.45,
+      "medianaAjustadaOct2026": 2162747,
+      "p25AjustadoOct2026": 1073605,
+      "p75AjustadoOct2026": 3836351,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 21,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 39561,
+      "nConSalarioSipa": 26619,
+      "porcentajeSipa": 0.6729,
+      "porcentajeSipaPct": 67.3,
+      "medianaNominal": 88417.09,
+      "p25Nominal": 55867.2,
+      "p75Nominal": 140247.06,
+      "medianaAjustadaOct2026": 3218193,
+      "p25AjustadoOct2026": 2033446,
+      "p75AjustadoOct2026": 5104693,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 22,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 9555,
+      "nConSalarioSipa": 5379,
+      "porcentajeSipa": 0.563,
+      "porcentajeSipaPct": 56.3,
+      "medianaNominal": 53786.57,
+      "p25Nominal": 34762,
+      "p75Nominal": 85913.3,
+      "medianaAjustadaOct2026": 1957716,
+      "p25AjustadoOct2026": 1265262,
+      "p75AjustadoOct2026": 3127060,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 23,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 2388,
+      "nConSalarioSipa": 1390,
+      "porcentajeSipa": 0.5821,
+      "porcentajeSipaPct": 58.2,
+      "medianaNominal": 91266.23,
+      "p25Nominal": 45000,
+      "p75Nominal": 159043.52,
+      "medianaAjustadaOct2026": 3321895,
+      "p25AjustadoOct2026": 1637904,
+      "p75AjustadoOct2026": 5788843,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 24,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 13524,
+      "nConSalarioSipa": 9173,
+      "porcentajeSipa": 0.6783,
+      "porcentajeSipaPct": 67.8,
+      "medianaNominal": 78899,
+      "p25Nominal": 50111.32,
+      "p75Nominal": 125223.46,
+      "medianaAjustadaOct2026": 2871755,
+      "p25AjustadoOct2026": 1823945,
+      "p75AjustadoOct2026": 4557866,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 25,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 1026,
+      "nConSalarioSipa": 792,
+      "porcentajeSipa": 0.7719,
+      "porcentajeSipaPct": 77.2,
+      "medianaNominal": 106074.5,
+      "p25Nominal": 66790,
+      "p75Nominal": 164207.27,
+      "medianaAjustadaOct2026": 3860885,
+      "p25AjustadoOct2026": 2431013,
+      "p75AjustadoOct2026": 5976793,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 26,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 8835,
+      "nConSalarioSipa": 2791,
+      "porcentajeSipa": 0.3159,
+      "porcentajeSipaPct": 31.6,
+      "medianaNominal": 52023.53,
+      "p25Nominal": 26097,
+      "p75Nominal": 88158.32,
+      "medianaAjustadaOct2026": 1893545,
+      "p25AjustadoOct2026": 949875,
+      "p75AjustadoOct2026": 3208774,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 27,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 6564,
+      "nConSalarioSipa": 5153,
+      "porcentajeSipa": 0.785,
+      "porcentajeSipaPct": 78.5,
+      "medianaNominal": 84323.8,
+      "p25Nominal": 58727.35,
+      "p75Nominal": 116619.01,
+      "medianaAjustadaOct2026": 3069206,
+      "p25AjustadoOct2026": 2137550,
+      "p75AjustadoOct2026": 4244682,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 28,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 1863,
+      "nConSalarioSipa": 1468,
+      "porcentajeSipa": 0.788,
+      "porcentajeSipaPct": 78.8,
+      "medianaNominal": 95253.34,
+      "p25Nominal": 58439.11,
+      "p75Nominal": 153837.84,
+      "medianaAjustadaOct2026": 3467018,
+      "p25AjustadoOct2026": 2127058,
+      "p75AjustadoOct2026": 5599368,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 29,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 12396,
+      "nConSalarioSipa": 2434,
+      "porcentajeSipa": 0.1964,
+      "porcentajeSipaPct": 19.6,
+      "medianaNominal": 50102.19,
+      "p25Nominal": 26097,
+      "p75Nominal": 87669.42,
+      "medianaAjustadaOct2026": 1823612,
+      "p25AjustadoOct2026": 949875,
+      "p75AjustadoOct2026": 3190979,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 30,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 1650,
+      "nConSalarioSipa": 1015,
+      "porcentajeSipa": 0.6152,
+      "porcentajeSipaPct": 61.5,
+      "medianaNominal": 48757.71,
+      "p25Nominal": 21063.24,
+      "p75Nominal": 113364.56,
+      "medianaAjustadaOct2026": 1774676,
+      "p25AjustadoOct2026": 766657,
+      "p75AjustadoOct2026": 4126227,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 31,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 2622,
+      "nConSalarioSipa": 1253,
+      "porcentajeSipa": 0.4779,
+      "porcentajeSipaPct": 47.8,
+      "medianaNominal": 54510.44,
+      "p25Nominal": 27905.77,
+      "p75Nominal": 103753.53,
+      "medianaAjustadaOct2026": 1984063,
+      "p25AjustadoOct2026": 1015710,
+      "p75AjustadoOct2026": 3776406,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 32,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 4995,
+      "nConSalarioSipa": 3261,
+      "porcentajeSipa": 0.6529,
+      "porcentajeSipaPct": 65.3,
+      "medianaNominal": 61005.06,
+      "p25Nominal": 27893.46,
+      "p75Nominal": 104990.02,
+      "medianaAjustadaOct2026": 2220453,
+      "p25AjustadoOct2026": 1015262,
+      "p75AjustadoOct2026": 3821412,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 33,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 528,
+      "nConSalarioSipa": 393,
+      "porcentajeSipa": 0.7443,
+      "porcentajeSipaPct": 74.4,
+      "medianaNominal": 56559.43,
+      "p25Nominal": 26689.18,
+      "p75Nominal": 94155.31,
+      "medianaAjustadaOct2026": 2058642,
+      "p25AjustadoOct2026": 971429,
+      "p75AjustadoOct2026": 3427052,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 34,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 2562,
+      "nConSalarioSipa": 2144,
+      "porcentajeSipa": 0.8368,
+      "porcentajeSipaPct": 83.7,
+      "medianaNominal": 61980.08,
+      "p25Nominal": 33066.02,
+      "p75Nominal": 101104.95,
+      "medianaAjustadaOct2026": 2255942,
+      "p25AjustadoOct2026": 1203532,
+      "p75AjustadoOct2026": 3680004,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 35,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 357,
+      "nConSalarioSipa": 302,
+      "porcentajeSipa": 0.8459,
+      "porcentajeSipaPct": 84.6,
+      "medianaNominal": 68955.86,
+      "p25Nominal": 40167.82,
+      "p75Nominal": 116334.09,
+      "medianaAjustadaOct2026": 2509846,
+      "p25AjustadoOct2026": 1462023,
+      "p75AjustadoOct2026": 4234312,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    },
+    {
+      "disciplinaId": 37,
+      "nombreOficial": null,
+      "slug": null,
+      "nFilas": 3699,
+      "nConSalarioSipa": 641,
+      "porcentajeSipa": 0.1733,
+      "porcentajeSipaPct": 17.3,
+      "medianaNominal": 36420.88,
+      "p25Nominal": 21682,
+      "p75Nominal": 59777,
+      "medianaAjustadaOct2026": 1325642,
+      "p25AjustadoOct2026": 789178,
+      "p75AjustadoOct2026": 2175755,
+      "aniosSalario": "2019-2021",
+      "aniosEgreso": "2016-2018"
+    }
+  ],
+  "anuarioDiu2024": {
+    "anio": 2024,
+    "nivel": "Pregrado y Grado",
+    "cuadro": "Cuadro 1.1.20 — Anuario Estadístico del Sistema Universitario Argentino 2024 (adelanto parcial)",
+    "fuente": {
+      "organismo": "Subsecretaría de Políticas Universitarias (DIU)",
+      "url": "https://www.argentina.gob.ar/educacion/universidades/informacion/publicaciones/anuarios",
+      "licenciaEstado": "Verificar"
+    },
+    "totalSistema": {
+      "estudiantes": 2608231,
+      "nuevosInscriptos": 705454,
+      "reinscriptos": 1902777,
+      "egresados": 145235,
+      "estatal": {
+        "estudiantes": 2066151,
+        "nuevosInscriptos": 537089,
+        "reinscriptos": 1529062,
+        "egresados": 96183
+      },
+      "privado": {
+        "estudiantes": 542080,
+        "nuevosInscriptos": 168365,
+        "reinscriptos": 373715,
+        "egresados": 49052
+      }
+    },
+    "ramas": [
+      {
+        "rama": "Ciencias Aplicadas",
+        "slug": "ciencias-aplicadas",
+        "estudiantes": 674586,
+        "nuevosInscriptos": 196450,
+        "reinscriptos": 478136,
+        "egresados": 28450,
+        "estatal": {
+          "estudiantes": 584970,
+          "nuevosInscriptos": 166526,
+          "reinscriptos": 418444,
+          "egresados": 22433
+        },
+        "privado": {
+          "estudiantes": 89616,
+          "nuevosInscriptos": 29924,
+          "reinscriptos": 59692,
+          "egresados": 6017
+        },
+        "disciplinas": [
+          {
+            "disciplina": "Arquitectura y Diseño",
+            "slug": "arquitectura-y-diseno",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 151848,
+            "nuevosInscriptos": 39310,
+            "reinscriptos": 112538,
+            "egresados": 8561,
+            "estatal": {
+              "estudiantes": 119827,
+              "nuevosInscriptos": 29498,
+              "reinscriptos": 90329,
+              "egresados": 5955
+            },
+            "privado": {
+              "estudiantes": 32021,
+              "nuevosInscriptos": 9812,
+              "reinscriptos": 22209,
+              "egresados": 2606
+            }
+          },
+          {
+            "disciplina": "Astronomía",
+            "slug": "astronomia",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 1623,
+            "nuevosInscriptos": 551,
+            "reinscriptos": 1072,
+            "egresados": 19,
+            "estatal": {
+              "estudiantes": 1623,
+              "nuevosInscriptos": 551,
+              "reinscriptos": 1072,
+              "egresados": 19
+            },
+            "privado": {
+              "estudiantes": 0,
+              "nuevosInscriptos": 0,
+              "reinscriptos": 0,
+              "egresados": 0
+            }
+          },
+          {
+            "disciplina": "Bioquímica y Farmacia",
+            "slug": "bioquimica-y-farmacia",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 35603,
+            "nuevosInscriptos": 8709,
+            "reinscriptos": 26894,
+            "egresados": 1380,
+            "estatal": {
+              "estudiantes": 32356,
+              "nuevosInscriptos": 7969,
+              "reinscriptos": 24387,
+              "egresados": 1177
+            },
+            "privado": {
+              "estudiantes": 3247,
+              "nuevosInscriptos": 740,
+              "reinscriptos": 2507,
+              "egresados": 203
+            }
+          },
+          {
+            "disciplina": "Ciencias Agropecuarias",
+            "slug": "ciencias-agropecuarias",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 41246,
+            "nuevosInscriptos": 11690,
+            "reinscriptos": 29556,
+            "egresados": 1644,
+            "estatal": {
+              "estudiantes": 39159,
+              "nuevosInscriptos": 10969,
+              "reinscriptos": 28190,
+              "egresados": 1519
+            },
+            "privado": {
+              "estudiantes": 2087,
+              "nuevosInscriptos": 721,
+              "reinscriptos": 1366,
+              "egresados": 125
+            }
+          },
+          {
+            "disciplina": "Ciencias del Suelo",
+            "slug": "ciencias-del-suelo",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 7134,
+            "nuevosInscriptos": 1482,
+            "reinscriptos": 5652,
+            "egresados": 313,
+            "estatal": {
+              "estudiantes": 7134,
+              "nuevosInscriptos": 1482,
+              "reinscriptos": 5652,
+              "egresados": 313
+            },
+            "privado": {
+              "estudiantes": 0,
+              "nuevosInscriptos": 0,
+              "reinscriptos": 0,
+              "egresados": 0
+            }
+          },
+          {
+            "disciplina": "Estadística",
+            "slug": "estadistica",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 7672,
+            "nuevosInscriptos": 3869,
+            "reinscriptos": 3803,
+            "egresados": 92,
+            "estatal": {
+              "estudiantes": 6158,
+              "nuevosInscriptos": 2815,
+              "reinscriptos": 3343,
+              "egresados": 68
+            },
+            "privado": {
+              "estudiantes": 1514,
+              "nuevosInscriptos": 1054,
+              "reinscriptos": 460,
+              "egresados": 24
+            }
+          },
+          {
+            "disciplina": "Industrias",
+            "slug": "industrias",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 90832,
+            "nuevosInscriptos": 28312,
+            "reinscriptos": 62520,
+            "egresados": 5890,
+            "estatal": {
+              "estudiantes": 71787,
+              "nuevosInscriptos": 21534,
+              "reinscriptos": 50253,
+              "egresados": 4279
+            },
+            "privado": {
+              "estudiantes": 19045,
+              "nuevosInscriptos": 6778,
+              "reinscriptos": 12267,
+              "egresados": 1611
+            }
+          },
+          {
+            "disciplina": "Informática",
+            "slug": "informatica",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 186240,
+            "nuevosInscriptos": 61837,
+            "reinscriptos": 124403,
+            "egresados": 5234,
+            "estatal": {
+              "estudiantes": 162428,
+              "nuevosInscriptos": 53821,
+              "reinscriptos": 108607,
+              "egresados": 4189
+            },
+            "privado": {
+              "estudiantes": 23812,
+              "nuevosInscriptos": 8016,
+              "reinscriptos": 15796,
+              "egresados": 1045
+            }
+          },
+          {
+            "disciplina": "Ingeniería",
+            "slug": "ingenieria",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 143090,
+            "nuevosInscriptos": 37209,
+            "reinscriptos": 105881,
+            "egresados": 4910,
+            "estatal": {
+              "estudiantes": 136214,
+              "nuevosInscriptos": 35017,
+              "reinscriptos": 101197,
+              "egresados": 4535
+            },
+            "privado": {
+              "estudiantes": 6876,
+              "nuevosInscriptos": 2192,
+              "reinscriptos": 4684,
+              "egresados": 375
+            }
+          },
+          {
+            "disciplina": "Meteorología",
+            "slug": "meteorologia",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 747,
+            "nuevosInscriptos": 253,
+            "reinscriptos": 494,
+            "egresados": 10,
+            "estatal": {
+              "estudiantes": 747,
+              "nuevosInscriptos": 253,
+              "reinscriptos": 494,
+              "egresados": 10
+            },
+            "privado": {
+              "estudiantes": 0,
+              "nuevosInscriptos": 0,
+              "reinscriptos": 0,
+              "egresados": 0
+            }
+          },
+          {
+            "disciplina": "Otras Ciencias Aplicadas",
+            "slug": "otras-ciencias-aplicadas",
+            "rama": "Ciencias Aplicadas",
+            "estudiantes": 8551,
+            "nuevosInscriptos": 3228,
+            "reinscriptos": 5323,
+            "egresados": 397,
+            "estatal": {
+              "estudiantes": 7537,
+              "nuevosInscriptos": 2617,
+              "reinscriptos": 4920,
+              "egresados": 369
+            },
+            "privado": {
+              "estudiantes": 1014,
+              "nuevosInscriptos": 611,
+              "reinscriptos": 403,
+              "egresados": 28
+            }
+          }
+        ]
+      },
+      {
+        "rama": "Ciencias Básicas",
+        "slug": "ciencias-basicas",
+        "estudiantes": 62304,
+        "nuevosInscriptos": 16642,
+        "reinscriptos": 45662,
+        "egresados": 2619,
+        "estatal": {
+          "estudiantes": 58818,
+          "nuevosInscriptos": 15308,
+          "reinscriptos": 43510,
+          "egresados": 2338
+        },
+        "privado": {
+          "estudiantes": 3486,
+          "nuevosInscriptos": 1334,
+          "reinscriptos": 2152,
+          "egresados": 281
+        },
+        "disciplinas": [
+          {
+            "disciplina": "Biología",
+            "slug": "biologia",
+            "rama": "Ciencias Básicas",
+            "estudiantes": 33765,
+            "nuevosInscriptos": 8408,
+            "reinscriptos": 25357,
+            "egresados": 1486,
+            "estatal": {
+              "estudiantes": 31578,
+              "nuevosInscriptos": 7801,
+              "reinscriptos": 23777,
+              "egresados": 1309
+            },
+            "privado": {
+              "estudiantes": 2187,
+              "nuevosInscriptos": 607,
+              "reinscriptos": 1580,
+              "egresados": 177
+            }
+          },
+          {
+            "disciplina": "Física",
+            "slug": "fisica",
+            "rama": "Ciencias Básicas",
+            "estudiantes": 6626,
+            "nuevosInscriptos": 1768,
+            "reinscriptos": 4858,
+            "egresados": 167,
+            "estatal": {
+              "estudiantes": 6621,
+              "nuevosInscriptos": 1766,
+              "reinscriptos": 4855,
+              "egresados": 166
+            },
+            "privado": {
+              "estudiantes": 5,
+              "nuevosInscriptos": 2,
+              "reinscriptos": 3,
+              "egresados": 1
+            }
+          },
+          {
+            "disciplina": "Matemática",
+            "slug": "matematica",
+            "rama": "Ciencias Básicas",
+            "estudiantes": 10196,
+            "nuevosInscriptos": 3022,
+            "reinscriptos": 7174,
+            "egresados": 218,
+            "estatal": {
+              "estudiantes": 9661,
+              "nuevosInscriptos": 2749,
+              "reinscriptos": 6912,
+              "egresados": 215
+            },
+            "privado": {
+              "estudiantes": 535,
+              "nuevosInscriptos": 273,
+              "reinscriptos": 262,
+              "egresados": 3
+            }
+          },
+          {
+            "disciplina": "Química",
+            "slug": "quimica",
+            "rama": "Ciencias Básicas",
+            "estudiantes": 11717,
+            "nuevosInscriptos": 3444,
+            "reinscriptos": 8273,
+            "egresados": 748,
+            "estatal": {
+              "estudiantes": 10958,
+              "nuevosInscriptos": 2992,
+              "reinscriptos": 7966,
+              "egresados": 648
+            },
+            "privado": {
+              "estudiantes": 759,
+              "nuevosInscriptos": 452,
+              "reinscriptos": 307,
+              "egresados": 100
+            }
+          }
+        ]
+      },
+      {
+        "rama": "Ciencias Humanas",
+        "slug": "ciencias-humanas",
+        "estudiantes": 489228,
+        "nuevosInscriptos": 135823,
+        "reinscriptos": 353405,
+        "egresados": 27554,
+        "estatal": {
+          "estudiantes": 395990,
+          "nuevosInscriptos": 105016,
+          "reinscriptos": 290974,
+          "egresados": 16608
+        },
+        "privado": {
+          "estudiantes": 93238,
+          "nuevosInscriptos": 30807,
+          "reinscriptos": 62431,
+          "egresados": 10946
+        },
+        "disciplinas": [
+          {
+            "disciplina": "Arqueología",
+            "slug": "arqueologia",
+            "rama": "Ciencias Humanas",
+            "estudiantes": 810,
+            "nuevosInscriptos": 203,
+            "reinscriptos": 607,
+            "egresados": 12,
+            "estatal": {
+              "estudiantes": 810,
+              "nuevosInscriptos": 203,
+              "reinscriptos": 607,
+              "egresados": 12
+            },
+            "privado": {
+              "estudiantes": 0,
+              "nuevosInscriptos": 0,
+              "reinscriptos": 0,
+              "egresados": 0
+            }
+          },
+          {
+            "disciplina": "Artes",
+            "slug": "artes",
+            "rama": "Ciencias Humanas",
+            "estudiantes": 92500,
+            "nuevosInscriptos": 25187,
+            "reinscriptos": 67313,
+            "egresados": 3188,
+            "estatal": {
+              "estudiantes": 85523,
+              "nuevosInscriptos": 23090,
+              "reinscriptos": 62433,
+              "egresados": 2519
+            },
+            "privado": {
+              "estudiantes": 6977,
+              "nuevosInscriptos": 2097,
+              "reinscriptos": 4880,
+              "egresados": 669
+            }
+          },
+          {
+            "disciplina": "Educación",
+            "slug": "educacion",
+            "rama": "Ciencias Humanas",
+            "estudiantes": 153967,
+            "nuevosInscriptos": 50417,
+            "reinscriptos": 103550,
+            "egresados": 13855,
+            "estatal": {
+              "estudiantes": 119945,
+              "nuevosInscriptos": 36989,
+              "reinscriptos": 82956,
+              "egresados": 7587
+            },
+            "privado": {
+              "estudiantes": 34022,
+              "nuevosInscriptos": 13428,
+              "reinscriptos": 20594,
+              "egresados": 6268
+            }
+          },
+          {
+            "disciplina": "Filosofía",
+            "slug": "filosofia",
+            "rama": "Ciencias Humanas",
+            "estudiantes": 11222,
+            "nuevosInscriptos": 3078,
+            "reinscriptos": 8144,
+            "egresados": 236,
+            "estatal": {
+              "estudiantes": 10324,
+              "nuevosInscriptos": 2761,
+              "reinscriptos": 7563,
+              "egresados": 190
+            },
+            "privado": {
+              "estudiantes": 898,
+              "nuevosInscriptos": 317,
+              "reinscriptos": 581,
+              "egresados": 46
+            }
+          },
+          {
+            "disciplina": "Historia",
+            "slug": "historia",
+            "rama": "Ciencias Humanas",
+            "estudiantes": 23593,
+            "nuevosInscriptos": 5260,
+            "reinscriptos": 18333,
+            "egresados": 595,
+            "estatal": {
+              "estudiantes": 22954,
+              "nuevosInscriptos": 5058,
+              "reinscriptos": 17896,
+              "egresados": 546
+            },
+            "privado": {
+              "estudiantes": 639,
+              "nuevosInscriptos": 202,
+              "reinscriptos": 437,
+              "egresados": 49
+            }
+          },
+          {
+            "disciplina": "Letras e Idiomas",
+            "slug": "letras-e-idiomas",
+            "rama": "Ciencias Humanas",
+            "estudiantes": 57301,
+            "nuevosInscriptos": 14409,
+            "reinscriptos": 42892,
+            "egresados": 1866,
+            "estatal": {
+              "estudiantes": 52202,
+              "nuevosInscriptos": 12814,
+              "reinscriptos": 39388,
+              "egresados": 1398
+            },
+            "privado": {
+              "estudiantes": 5099,
+              "nuevosInscriptos": 1595,
+              "reinscriptos": 3504,
+              "egresados": 468
+            }
+          },
+          {
+            "disciplina": "Psicología",
+            "slug": "psicologia",
+            "rama": "Ciencias Humanas",
+            "estudiantes": 148650,
+            "nuevosInscriptos": 36966,
+            "reinscriptos": 111684,
+            "egresados": 7698,
+            "estatal": {
+              "estudiantes": 104188,
+              "nuevosInscriptos": 24077,
+              "reinscriptos": 80111,
+              "egresados": 4355
+            },
+            "privado": {
+              "estudiantes": 44462,
+              "nuevosInscriptos": 12889,
+              "reinscriptos": 31573,
+              "egresados": 3343
+            }
+          },
+          {
+            "disciplina": "Teología",
+            "slug": "teologia",
+            "rama": "Ciencias Humanas",
+            "estudiantes": 1185,
+            "nuevosInscriptos": 303,
+            "reinscriptos": 882,
+            "egresados": 104,
+            "estatal": {
+              "estudiantes": 44,
+              "nuevosInscriptos": 24,
+              "reinscriptos": 20,
+              "egresados": 1
+            },
+            "privado": {
+              "estudiantes": 1141,
+              "nuevosInscriptos": 279,
+              "reinscriptos": 862,
+              "egresados": 103
+            }
+          }
+        ]
+      },
+      {
+        "rama": "Ciencias Sociales",
+        "slug": "ciencias-sociales",
+        "estudiantes": 885306,
+        "nuevosInscriptos": 239325,
+        "reinscriptos": 645981,
+        "egresados": 56562,
+        "estatal": {
+          "estudiantes": 629307,
+          "nuevosInscriptos": 158819,
+          "reinscriptos": 470488,
+          "egresados": 34472
+        },
+        "privado": {
+          "estudiantes": 255999,
+          "nuevosInscriptos": 80506,
+          "reinscriptos": 175493,
+          "egresados": 22090
+        },
+        "disciplinas": [
+          {
+            "disciplina": "Ciencias Políticas, Relaciones Internacionales y Diplomacia",
+            "slug": "ciencias-politicas-relaciones-internacionales-y-diplomacia",
+            "rama": "Ciencias Sociales",
+            "estudiantes": 31080,
+            "nuevosInscriptos": 10151,
+            "reinscriptos": 20929,
+            "egresados": 2548,
+            "estatal": {
+              "estudiantes": 22269,
+              "nuevosInscriptos": 7424,
+              "reinscriptos": 14845,
+              "egresados": 1834
+            },
+            "privado": {
+              "estudiantes": 8811,
+              "nuevosInscriptos": 2727,
+              "reinscriptos": 6084,
+              "egresados": 714
+            }
+          },
+          {
+            "disciplina": "Ciencias de la Información y de la Comunicación",
+            "slug": "ciencias-de-la-informacion-y-de-la-comunicacion",
+            "rama": "Ciencias Sociales",
+            "estudiantes": 72441,
+            "nuevosInscriptos": 20056,
+            "reinscriptos": 52385,
+            "egresados": 4475,
+            "estatal": {
+              "estudiantes": 56800,
+              "nuevosInscriptos": 14925,
+              "reinscriptos": 41875,
+              "egresados": 2941
+            },
+            "privado": {
+              "estudiantes": 15641,
+              "nuevosInscriptos": 5131,
+              "reinscriptos": 10510,
+              "egresados": 1534
+            }
+          },
+          {
+            "disciplina": "Demografía y Geografía",
+            "slug": "demografia-y-geografia",
+            "rama": "Ciencias Sociales",
+            "estudiantes": 36880,
+            "nuevosInscriptos": 11063,
+            "reinscriptos": 25817,
+            "egresados": 1578,
+            "estatal": {
+              "estudiantes": 30700,
+              "nuevosInscriptos": 9014,
+              "reinscriptos": 21686,
+              "egresados": 994
+            },
+            "privado": {
+              "estudiantes": 6180,
+              "nuevosInscriptos": 2049,
+              "reinscriptos": 4131,
+              "egresados": 584
+            }
+          },
+          {
+            "disciplina": "Derecho",
+            "slug": "derecho",
+            "rama": "Ciencias Sociales",
+            "estudiantes": 229197,
+            "nuevosInscriptos": 49135,
+            "reinscriptos": 180062,
+            "egresados": 18130,
+            "estatal": {
+              "estudiantes": 156023,
+              "nuevosInscriptos": 29180,
+              "reinscriptos": 126843,
+              "egresados": 10627
+            },
+            "privado": {
+              "estudiantes": 73174,
+              "nuevosInscriptos": 19955,
+              "reinscriptos": 53219,
+              "egresados": 7503
+            }
+          },
+          {
+            "disciplina": "Economía y Administración",
+            "slug": "economia-y-administracion",
+            "rama": "Ciencias Sociales",
+            "estudiantes": 395639,
+            "nuevosInscriptos": 113841,
+            "reinscriptos": 281798,
+            "egresados": 21466,
+            "estatal": {
+              "estudiantes": 271844,
+              "nuevosInscriptos": 73268,
+              "reinscriptos": 198576,
+              "egresados": 12385
+            },
+            "privado": {
+              "estudiantes": 123795,
+              "nuevosInscriptos": 40573,
+              "reinscriptos": 83222,
+              "egresados": 9081
+            }
+          },
+          {
+            "disciplina": "Otras Ciencias Sociales",
+            "slug": "otras-ciencias-sociales",
+            "rama": "Ciencias Sociales",
+            "estudiantes": 34102,
+            "nuevosInscriptos": 12382,
+            "reinscriptos": 21720,
+            "egresados": 2560,
+            "estatal": {
+              "estudiantes": 24238,
+              "nuevosInscriptos": 9029,
+              "reinscriptos": 15209,
+              "egresados": 1750
+            },
+            "privado": {
+              "estudiantes": 9864,
+              "nuevosInscriptos": 3353,
+              "reinscriptos": 6511,
+              "egresados": 810
+            }
+          },
+          {
+            "disciplina": "Relaciones Institucionales y Humanas",
+            "slug": "relaciones-institucionales-y-humanas",
+            "rama": "Ciencias Sociales",
+            "estudiantes": 32022,
+            "nuevosInscriptos": 9502,
+            "reinscriptos": 22520,
+            "egresados": 2777,
+            "estatal": {
+              "estudiantes": 16520,
+              "nuevosInscriptos": 4231,
+              "reinscriptos": 12289,
+              "egresados": 1299
+            },
+            "privado": {
+              "estudiantes": 15502,
+              "nuevosInscriptos": 5271,
+              "reinscriptos": 10231,
+              "egresados": 1478
+            }
+          },
+          {
+            "disciplina": "Sociología, Antropología y Servicio Social",
+            "slug": "sociologia-antropologia-y-servicio-social",
+            "rama": "Ciencias Sociales",
+            "estudiantes": 53945,
+            "nuevosInscriptos": 13195,
+            "reinscriptos": 40750,
+            "egresados": 3028,
+            "estatal": {
+              "estudiantes": 50913,
+              "nuevosInscriptos": 11748,
+              "reinscriptos": 39165,
+              "egresados": 2642
+            },
+            "privado": {
+              "estudiantes": 3032,
+              "nuevosInscriptos": 1447,
+              "reinscriptos": 1585,
+              "egresados": 386
+            }
+          }
+        ]
+      },
+      {
+        "rama": "Ciencias de la Salud",
+        "slug": "ciencias-de-la-salud",
+        "estudiantes": 478436,
+        "nuevosInscriptos": 113668,
+        "reinscriptos": 364768,
+        "egresados": 29779,
+        "estatal": {
+          "estudiantes": 379324,
+          "nuevosInscriptos": 88227,
+          "reinscriptos": 291097,
+          "egresados": 20090
+        },
+        "privado": {
+          "estudiantes": 99112,
+          "nuevosInscriptos": 25441,
+          "reinscriptos": 73671,
+          "egresados": 9689
+        },
+        "disciplinas": [
+          {
+            "disciplina": "Medicina",
+            "slug": "medicina",
+            "rama": "Ciencias de la Salud",
+            "estudiantes": 148011,
+            "nuevosInscriptos": 30690,
+            "reinscriptos": 117321,
+            "egresados": 7477,
+            "estatal": {
+              "estudiantes": 120652,
+              "nuevosInscriptos": 25753,
+              "reinscriptos": 94899,
+              "egresados": 5510
+            },
+            "privado": {
+              "estudiantes": 27359,
+              "nuevosInscriptos": 4937,
+              "reinscriptos": 22422,
+              "egresados": 1967
+            }
+          },
+          {
+            "disciplina": "Odontología",
+            "slug": "odontologia",
+            "rama": "Ciencias de la Salud",
+            "estudiantes": 23900,
+            "nuevosInscriptos": 6292,
+            "reinscriptos": 17608,
+            "egresados": 1811,
+            "estatal": {
+              "estudiantes": 20892,
+              "nuevosInscriptos": 5412,
+              "reinscriptos": 15480,
+              "egresados": 1538
+            },
+            "privado": {
+              "estudiantes": 3008,
+              "nuevosInscriptos": 880,
+              "reinscriptos": 2128,
+              "egresados": 273
+            }
+          },
+          {
+            "disciplina": "Paramédicas y Auxiliares de la Medicina",
+            "slug": "paramedicas-y-auxiliares-de-la-medicina",
+            "rama": "Ciencias de la Salud",
+            "estudiantes": 271727,
+            "nuevosInscriptos": 69679,
+            "reinscriptos": 202048,
+            "egresados": 19264,
+            "estatal": {
+              "estudiantes": 205731,
+              "nuevosInscriptos": 50655,
+              "reinscriptos": 155076,
+              "egresados": 11925
+            },
+            "privado": {
+              "estudiantes": 65996,
+              "nuevosInscriptos": 19024,
+              "reinscriptos": 46972,
+              "egresados": 7339
+            }
+          },
+          {
+            "disciplina": "Salud Pública",
+            "slug": "salud-publica",
+            "rama": "Ciencias de la Salud",
+            "estudiantes": 690,
+            "nuevosInscriptos": 322,
+            "reinscriptos": 368,
+            "egresados": 49,
+            "estatal": {
+              "estudiantes": 638,
+              "nuevosInscriptos": 295,
+              "reinscriptos": 343,
+              "egresados": 40
+            },
+            "privado": {
+              "estudiantes": 52,
+              "nuevosInscriptos": 27,
+              "reinscriptos": 25,
+              "egresados": 9
+            }
+          },
+          {
+            "disciplina": "Sanidad",
+            "slug": "sanidad",
+            "rama": "Ciencias de la Salud",
+            "estudiantes": 4184,
+            "nuevosInscriptos": 865,
+            "reinscriptos": 3319,
+            "egresados": 208,
+            "estatal": {
+              "estudiantes": 4134,
+              "nuevosInscriptos": 859,
+              "reinscriptos": 3275,
+              "egresados": 198
+            },
+            "privado": {
+              "estudiantes": 50,
+              "nuevosInscriptos": 6,
+              "reinscriptos": 44,
+              "egresados": 10
+            }
+          },
+          {
+            "disciplina": "Veterinaria",
+            "slug": "veterinaria",
+            "rama": "Ciencias de la Salud",
+            "estudiantes": 29924,
+            "nuevosInscriptos": 5820,
+            "reinscriptos": 24104,
+            "egresados": 970,
+            "estatal": {
+              "estudiantes": 27277,
+              "nuevosInscriptos": 5253,
+              "reinscriptos": 22024,
+              "egresados": 879
+            },
+            "privado": {
+              "estudiantes": 2647,
+              "nuevosInscriptos": 567,
+              "reinscriptos": 2080,
+              "egresados": 91
+            }
+          }
+        ]
+      },
+      {
+        "rama": "Sin Rama",
+        "slug": "sin-rama",
+        "estudiantes": 18371,
+        "nuevosInscriptos": 3546,
+        "reinscriptos": 14825,
+        "egresados": 271,
+        "estatal": {
+          "estudiantes": 17742,
+          "nuevosInscriptos": 3193,
+          "reinscriptos": 14549,
+          "egresados": 242
+        },
+        "privado": {
+          "estudiantes": 629,
+          "nuevosInscriptos": 353,
+          "reinscriptos": 276,
+          "egresados": 29
+        },
+        "disciplinas": [
+          {
+            "disciplina": "Sin Disciplina",
+            "slug": "sin-disciplina",
+            "rama": "Sin Rama",
+            "estudiantes": 18371,
+            "nuevosInscriptos": 3546,
+            "reinscriptos": 14825,
+            "egresados": 271,
+            "estatal": {
+              "estudiantes": 17742,
+              "nuevosInscriptos": 3193,
+              "reinscriptos": 14549,
+              "egresados": 242
+            },
+            "privado": {
+              "estudiantes": 629,
+              "nuevosInscriptos": 353,
+              "reinscriptos": 276,
+              "egresados": 29
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

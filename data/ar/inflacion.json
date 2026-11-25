@@ -1,0 +1,939 @@
+{
+  "actualizado": "2026-10",
+  "serieIdDatosGobAr": "148.3_INIVELNAL_DICI_M_26",
+  "base": "Diciembre 2016 = 100",
+  "fuente": {
+    "organismo": "INDEC",
+    "nombre": "Índice de Precios al Consumidor (IPC) — Nivel General Nacional",
+    "url": "https://www.indec.gob.ar/indec/web/Nivel4-Tema-3-5-31",
+    "licenciaEstado": "Verificar"
+  },
+  "actual": {
+    "mes": "2026-10",
+    "indice": 12785.9321,
+    "variacionMensual": 2.2,
+    "variacionInteranual": 33.1,
+    "variacionAcumuladaAnio": 26.3
+  },
+  "divisionesUltimoMes": [
+    {
+      "codigo": "01",
+      "nombre": "Alimentos y bebidas no alcoh�licas",
+      "indice": 13647.8315,
+      "variacionMensual": 2,
+      "variacionInteranual": 34.6
+    },
+    {
+      "codigo": "02",
+      "nombre": "Bebidas alcoh�licas y tabaco",
+      "indice": 8691.9223,
+      "variacionMensual": 0.8,
+      "variacionInteranual": 20.6
+    },
+    {
+      "codigo": "03",
+      "nombre": "Prendas de vestir y calzado",
+      "indice": 8513.0921,
+      "variacionMensual": 2.2,
+      "variacionInteranual": 10
+    },
+    {
+      "codigo": "04",
+      "nombre": "Vivienda, agua, electricidad, gas y otros combustibles",
+      "indice": 14925.3514,
+      "variacionMensual": 4.2,
+      "variacionInteranual": 51.1
+    },
+    {
+      "codigo": "05",
+      "nombre": "Equipamiento y mantenimiento del hogar",
+      "indice": 10098.6176,
+      "variacionMensual": 1.4,
+      "variacionInteranual": 23.5
+    },
+    {
+      "codigo": "06",
+      "nombre": "Salud",
+      "indice": 14434.8508,
+      "variacionMensual": 1.7,
+      "variacionInteranual": 33.1
+    },
+    {
+      "codigo": "07",
+      "nombre": "Transporte",
+      "indice": 13435.2428,
+      "variacionMensual": 2.1,
+      "variacionInteranual": 34.4
+    },
+    {
+      "codigo": "08",
+      "nombre": "Comunicaci�n",
+      "indice": 11967.9506,
+      "variacionMensual": 2,
+      "variacionInteranual": 36.9
+    },
+    {
+      "codigo": "09",
+      "nombre": "Recreaci�n y cultura",
+      "indice": 11659.8235,
+      "variacionMensual": 3.3,
+      "variacionInteranual": 34.3
+    },
+    {
+      "codigo": "10",
+      "nombre": "Educaci�n",
+      "indice": 12022.6346,
+      "variacionMensual": 1.3,
+      "variacionInteranual": 39.4
+    },
+    {
+      "codigo": "11",
+      "nombre": "Restaurantes y hoteles",
+      "indice": 15586.849,
+      "variacionMensual": 1.5,
+      "variacionInteranual": 33.6
+    },
+    {
+      "codigo": "12",
+      "nombre": "Bienes y servicios varios",
+      "indice": 12415.0875,
+      "variacionMensual": 2.3,
+      "variacionInteranual": 32.3
+    }
+  ],
+  "serie": [
+    {
+      "mes": "2016-12",
+      "indice": 100,
+      "variacionMensual": null,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": null
+    },
+    {
+      "mes": "2017-01",
+      "indice": 101.5859,
+      "variacionMensual": 1.6,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 1.6
+    },
+    {
+      "mes": "2017-02",
+      "indice": 103.6859,
+      "variacionMensual": 2.1,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 3.7
+    },
+    {
+      "mes": "2017-03",
+      "indice": 106.1476,
+      "variacionMensual": 2.4,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 6.1
+    },
+    {
+      "mes": "2017-04",
+      "indice": 108.9667,
+      "variacionMensual": 2.7,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 9
+    },
+    {
+      "mes": "2017-05",
+      "indice": 110.5301,
+      "variacionMensual": 1.4,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 10.5
+    },
+    {
+      "mes": "2017-06",
+      "indice": 111.8477,
+      "variacionMensual": 1.2,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 11.8
+    },
+    {
+      "mes": "2017-07",
+      "indice": 113.7852,
+      "variacionMensual": 1.7,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 13.8
+    },
+    {
+      "mes": "2017-08",
+      "indice": 115.3819,
+      "variacionMensual": 1.4,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 15.4
+    },
+    {
+      "mes": "2017-09",
+      "indice": 117.5719,
+      "variacionMensual": 1.9,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 17.6
+    },
+    {
+      "mes": "2017-10",
+      "indice": 119.3528,
+      "variacionMensual": 1.5,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 19.4
+    },
+    {
+      "mes": "2017-11",
+      "indice": 120.994,
+      "variacionMensual": 1.4,
+      "variacionInteranual": null,
+      "variacionAcumuladaAnio": 21
+    },
+    {
+      "mes": "2017-12",
+      "indice": 124.7956,
+      "variacionMensual": 3.1,
+      "variacionInteranual": 24.8,
+      "variacionAcumuladaAnio": 24.8
+    },
+    {
+      "mes": "2018-01",
+      "indice": 126.9887,
+      "variacionMensual": 1.8,
+      "variacionInteranual": 25,
+      "variacionAcumuladaAnio": 1.8
+    },
+    {
+      "mes": "2018-02",
+      "indice": 130.0606,
+      "variacionMensual": 2.4,
+      "variacionInteranual": 25.4,
+      "variacionAcumuladaAnio": 4.2
+    },
+    {
+      "mes": "2018-03",
+      "indice": 133.1054,
+      "variacionMensual": 2.3,
+      "variacionInteranual": 25.4,
+      "variacionAcumuladaAnio": 6.7
+    },
+    {
+      "mes": "2018-04",
+      "indice": 136.7512,
+      "variacionMensual": 2.7,
+      "variacionInteranual": 25.5,
+      "variacionAcumuladaAnio": 9.6
+    },
+    {
+      "mes": "2018-05",
+      "indice": 139.5893,
+      "variacionMensual": 2.1,
+      "variacionInteranual": 26.3,
+      "variacionAcumuladaAnio": 11.9
+    },
+    {
+      "mes": "2018-06",
+      "indice": 144.8053,
+      "variacionMensual": 3.7,
+      "variacionInteranual": 29.5,
+      "variacionAcumuladaAnio": 16
+    },
+    {
+      "mes": "2018-07",
+      "indice": 149.2966,
+      "variacionMensual": 3.1,
+      "variacionInteranual": 31.2,
+      "variacionAcumuladaAnio": 19.6
+    },
+    {
+      "mes": "2018-08",
+      "indice": 155.1034,
+      "variacionMensual": 3.9,
+      "variacionInteranual": 34.4,
+      "variacionAcumuladaAnio": 24.3
+    },
+    {
+      "mes": "2018-09",
+      "indice": 165.2383,
+      "variacionMensual": 6.5,
+      "variacionInteranual": 40.5,
+      "variacionAcumuladaAnio": 32.4
+    },
+    {
+      "mes": "2018-10",
+      "indice": 174.1473,
+      "variacionMensual": 5.4,
+      "variacionInteranual": 45.9,
+      "variacionAcumuladaAnio": 39.5
+    },
+    {
+      "mes": "2018-11",
+      "indice": 179.6388,
+      "variacionMensual": 3.2,
+      "variacionInteranual": 48.5,
+      "variacionAcumuladaAnio": 43.9
+    },
+    {
+      "mes": "2018-12",
+      "indice": 184.2552,
+      "variacionMensual": 2.6,
+      "variacionInteranual": 47.6,
+      "variacionAcumuladaAnio": 47.6
+    },
+    {
+      "mes": "2019-01",
+      "indice": 189.6101,
+      "variacionMensual": 2.9,
+      "variacionInteranual": 49.3,
+      "variacionAcumuladaAnio": 2.9
+    },
+    {
+      "mes": "2019-02",
+      "indice": 196.7501,
+      "variacionMensual": 3.8,
+      "variacionInteranual": 51.3,
+      "variacionAcumuladaAnio": 6.8
+    },
+    {
+      "mes": "2019-03",
+      "indice": 205.9571,
+      "variacionMensual": 4.7,
+      "variacionInteranual": 54.7,
+      "variacionAcumuladaAnio": 11.8
+    },
+    {
+      "mes": "2019-04",
+      "indice": 213.0517,
+      "variacionMensual": 3.4,
+      "variacionInteranual": 55.8,
+      "variacionAcumuladaAnio": 15.6
+    },
+    {
+      "mes": "2019-05",
+      "indice": 219.5691,
+      "variacionMensual": 3.1,
+      "variacionInteranual": 57.3,
+      "variacionAcumuladaAnio": 19.2
+    },
+    {
+      "mes": "2019-06",
+      "indice": 225.537,
+      "variacionMensual": 2.7,
+      "variacionInteranual": 55.8,
+      "variacionAcumuladaAnio": 22.4
+    },
+    {
+      "mes": "2019-07",
+      "indice": 230.494,
+      "variacionMensual": 2.2,
+      "variacionInteranual": 54.4,
+      "variacionAcumuladaAnio": 25.1
+    },
+    {
+      "mes": "2019-08",
+      "indice": 239.6077,
+      "variacionMensual": 4,
+      "variacionInteranual": 54.5,
+      "variacionAcumuladaAnio": 30
+    },
+    {
+      "mes": "2019-09",
+      "indice": 253.7102,
+      "variacionMensual": 5.9,
+      "variacionInteranual": 53.5,
+      "variacionAcumuladaAnio": 37.7
+    },
+    {
+      "mes": "2019-10",
+      "indice": 262.0661,
+      "variacionMensual": 3.3,
+      "variacionInteranual": 50.5,
+      "variacionAcumuladaAnio": 42.2
+    },
+    {
+      "mes": "2019-11",
+      "indice": 273.2158,
+      "variacionMensual": 4.3,
+      "variacionInteranual": 52.1,
+      "variacionAcumuladaAnio": 48.3
+    },
+    {
+      "mes": "2019-12",
+      "indice": 283.4442,
+      "variacionMensual": 3.7,
+      "variacionInteranual": 53.8,
+      "variacionAcumuladaAnio": 53.8
+    },
+    {
+      "mes": "2020-01",
+      "indice": 289.8299,
+      "variacionMensual": 2.3,
+      "variacionInteranual": 52.9,
+      "variacionAcumuladaAnio": 2.3
+    },
+    {
+      "mes": "2020-02",
+      "indice": 295.666,
+      "variacionMensual": 2,
+      "variacionInteranual": 50.3,
+      "variacionAcumuladaAnio": 4.3
+    },
+    {
+      "mes": "2020-03",
+      "indice": 305.5515,
+      "variacionMensual": 3.3,
+      "variacionInteranual": 48.4,
+      "variacionAcumuladaAnio": 7.8
+    },
+    {
+      "mes": "2020-04",
+      "indice": 310.1243,
+      "variacionMensual": 1.5,
+      "variacionInteranual": 45.6,
+      "variacionAcumuladaAnio": 9.4
+    },
+    {
+      "mes": "2020-05",
+      "indice": 314.9087,
+      "variacionMensual": 1.5,
+      "variacionInteranual": 43.4,
+      "variacionAcumuladaAnio": 11.1
+    },
+    {
+      "mes": "2020-06",
+      "indice": 321.9738,
+      "variacionMensual": 2.2,
+      "variacionInteranual": 42.8,
+      "variacionAcumuladaAnio": 13.6
+    },
+    {
+      "mes": "2020-07",
+      "indice": 328.2014,
+      "variacionMensual": 1.9,
+      "variacionInteranual": 42.4,
+      "variacionAcumuladaAnio": 15.8
+    },
+    {
+      "mes": "2020-08",
+      "indice": 337.0632,
+      "variacionMensual": 2.7,
+      "variacionInteranual": 40.7,
+      "variacionAcumuladaAnio": 18.9
+    },
+    {
+      "mes": "2020-09",
+      "indice": 346.6207,
+      "variacionMensual": 2.8,
+      "variacionInteranual": 36.6,
+      "variacionAcumuladaAnio": 22.3
+    },
+    {
+      "mes": "2020-10",
+      "indice": 359.657,
+      "variacionMensual": 3.8,
+      "variacionInteranual": 37.2,
+      "variacionAcumuladaAnio": 26.9
+    },
+    {
+      "mes": "2020-11",
+      "indice": 371.0211,
+      "variacionMensual": 3.2,
+      "variacionInteranual": 35.8,
+      "variacionAcumuladaAnio": 30.9
+    },
+    {
+      "mes": "2020-12",
+      "indice": 385.8826,
+      "variacionMensual": 4,
+      "variacionInteranual": 36.1,
+      "variacionAcumuladaAnio": 36.1
+    },
+    {
+      "mes": "2021-01",
+      "indice": 401.5071,
+      "variacionMensual": 4,
+      "variacionInteranual": 38.5,
+      "variacionAcumuladaAnio": 4
+    },
+    {
+      "mes": "2021-02",
+      "indice": 415.8595,
+      "variacionMensual": 3.6,
+      "variacionInteranual": 40.7,
+      "variacionAcumuladaAnio": 7.8
+    },
+    {
+      "mes": "2021-03",
+      "indice": 435.8657,
+      "variacionMensual": 4.8,
+      "variacionInteranual": 42.6,
+      "variacionAcumuladaAnio": 13
+    },
+    {
+      "mes": "2021-04",
+      "indice": 453.6503,
+      "variacionMensual": 4.1,
+      "variacionInteranual": 46.3,
+      "variacionAcumuladaAnio": 17.6
+    },
+    {
+      "mes": "2021-05",
+      "indice": 468.725,
+      "variacionMensual": 3.3,
+      "variacionInteranual": 48.8,
+      "variacionAcumuladaAnio": 21.5
+    },
+    {
+      "mes": "2021-06",
+      "indice": 483.6049,
+      "variacionMensual": 3.2,
+      "variacionInteranual": 50.2,
+      "variacionAcumuladaAnio": 25.3
+    },
+    {
+      "mes": "2021-07",
+      "indice": 498.0987,
+      "variacionMensual": 3,
+      "variacionInteranual": 51.8,
+      "variacionAcumuladaAnio": 29.1
+    },
+    {
+      "mes": "2021-08",
+      "indice": 510.3942,
+      "variacionMensual": 2.5,
+      "variacionInteranual": 51.4,
+      "variacionAcumuladaAnio": 32.3
+    },
+    {
+      "mes": "2021-09",
+      "indice": 528.4968,
+      "variacionMensual": 3.5,
+      "variacionInteranual": 52.5,
+      "variacionAcumuladaAnio": 37
+    },
+    {
+      "mes": "2021-10",
+      "indice": 547.0802,
+      "variacionMensual": 3.5,
+      "variacionInteranual": 52.1,
+      "variacionAcumuladaAnio": 41.8
+    },
+    {
+      "mes": "2021-11",
+      "indice": 560.9184,
+      "variacionMensual": 2.5,
+      "variacionInteranual": 51.2,
+      "variacionAcumuladaAnio": 45.4
+    },
+    {
+      "mes": "2021-12",
+      "indice": 582.4575,
+      "variacionMensual": 3.8,
+      "variacionInteranual": 50.9,
+      "variacionAcumuladaAnio": 50.9
+    },
+    {
+      "mes": "2022-01",
+      "indice": 605.0317,
+      "variacionMensual": 3.9,
+      "variacionInteranual": 50.7,
+      "variacionAcumuladaAnio": 3.9
+    },
+    {
+      "mes": "2022-02",
+      "indice": 633.4341,
+      "variacionMensual": 4.7,
+      "variacionInteranual": 52.3,
+      "variacionAcumuladaAnio": 8.8
+    },
+    {
+      "mes": "2022-03",
+      "indice": 676.0566,
+      "variacionMensual": 6.7,
+      "variacionInteranual": 55.1,
+      "variacionAcumuladaAnio": 16.1
+    },
+    {
+      "mes": "2022-04",
+      "indice": 716.9399,
+      "variacionMensual": 6,
+      "variacionInteranual": 58,
+      "variacionAcumuladaAnio": 23.1
+    },
+    {
+      "mes": "2022-05",
+      "indice": 753.147,
+      "variacionMensual": 5.1,
+      "variacionInteranual": 60.7,
+      "variacionAcumuladaAnio": 29.3
+    },
+    {
+      "mes": "2022-06",
+      "indice": 793.0278,
+      "variacionMensual": 5.3,
+      "variacionInteranual": 64,
+      "variacionAcumuladaAnio": 36.2
+    },
+    {
+      "mes": "2022-07",
+      "indice": 851.761,
+      "variacionMensual": 7.4,
+      "variacionInteranual": 71,
+      "variacionAcumuladaAnio": 46.2
+    },
+    {
+      "mes": "2022-08",
+      "indice": 911.1316,
+      "variacionMensual": 7,
+      "variacionInteranual": 78.5,
+      "variacionAcumuladaAnio": 56.4
+    },
+    {
+      "mes": "2022-09",
+      "indice": 967.3076,
+      "variacionMensual": 6.2,
+      "variacionInteranual": 83,
+      "variacionAcumuladaAnio": 66.1
+    },
+    {
+      "mes": "2022-10",
+      "indice": 1028.706,
+      "variacionMensual": 6.3,
+      "variacionInteranual": 88,
+      "variacionAcumuladaAnio": 76.6
+    },
+    {
+      "mes": "2022-11",
+      "indice": 1079.2787,
+      "variacionMensual": 4.9,
+      "variacionInteranual": 92.4,
+      "variacionAcumuladaAnio": 85.3
+    },
+    {
+      "mes": "2022-12",
+      "indice": 1134.5875,
+      "variacionMensual": 5.1,
+      "variacionInteranual": 94.8,
+      "variacionAcumuladaAnio": 94.8
+    },
+    {
+      "mes": "2023-01",
+      "indice": 1202.979,
+      "variacionMensual": 6,
+      "variacionInteranual": 98.8,
+      "variacionAcumuladaAnio": 6
+    },
+    {
+      "mes": "2023-02",
+      "indice": 1282.7091,
+      "variacionMensual": 6.6,
+      "variacionInteranual": 102.5,
+      "variacionAcumuladaAnio": 13.1
+    },
+    {
+      "mes": "2023-03",
+      "indice": 1381.1601,
+      "variacionMensual": 7.7,
+      "variacionInteranual": 104.3,
+      "variacionAcumuladaAnio": 21.7
+    },
+    {
+      "mes": "2023-04",
+      "indice": 1497.2147,
+      "variacionMensual": 8.4,
+      "variacionInteranual": 108.8,
+      "variacionAcumuladaAnio": 32
+    },
+    {
+      "mes": "2023-05",
+      "indice": 1613.5895,
+      "variacionMensual": 7.8,
+      "variacionInteranual": 114.2,
+      "variacionAcumuladaAnio": 42.2
+    },
+    {
+      "mes": "2023-06",
+      "indice": 1709.6115,
+      "variacionMensual": 6,
+      "variacionInteranual": 115.6,
+      "variacionAcumuladaAnio": 50.7
+    },
+    {
+      "mes": "2023-07",
+      "indice": 1818.0838,
+      "variacionMensual": 6.3,
+      "variacionInteranual": 113.4,
+      "variacionAcumuladaAnio": 60.2
+    },
+    {
+      "mes": "2023-08",
+      "indice": 2044.2832,
+      "variacionMensual": 12.4,
+      "variacionInteranual": 124.4,
+      "variacionAcumuladaAnio": 80.2
+    },
+    {
+      "mes": "2023-09",
+      "indice": 2304.9242,
+      "variacionMensual": 12.7,
+      "variacionInteranual": 138.3,
+      "variacionAcumuladaAnio": 103.2
+    },
+    {
+      "mes": "2023-10",
+      "indice": 2496.273,
+      "variacionMensual": 8.3,
+      "variacionInteranual": 142.7,
+      "variacionAcumuladaAnio": 120
+    },
+    {
+      "mes": "2023-11",
+      "indice": 2816.0628,
+      "variacionMensual": 12.8,
+      "variacionInteranual": 160.9,
+      "variacionAcumuladaAnio": 148.2
+    },
+    {
+      "mes": "2023-12",
+      "indice": 3533.1922,
+      "variacionMensual": 25.5,
+      "variacionInteranual": 211.4,
+      "variacionAcumuladaAnio": 211.4
+    },
+    {
+      "mes": "2024-01",
+      "indice": 4261.5324,
+      "variacionMensual": 20.6,
+      "variacionInteranual": 254.2,
+      "variacionAcumuladaAnio": 20.6
+    },
+    {
+      "mes": "2024-02",
+      "indice": 4825.7881,
+      "variacionMensual": 13.2,
+      "variacionInteranual": 276.2,
+      "variacionAcumuladaAnio": 36.6
+    },
+    {
+      "mes": "2024-03",
+      "indice": 5357.0929,
+      "variacionMensual": 11,
+      "variacionInteranual": 287.9,
+      "variacionAcumuladaAnio": 51.6
+    },
+    {
+      "mes": "2024-04",
+      "indice": 5830.227,
+      "variacionMensual": 8.8,
+      "variacionInteranual": 289.4,
+      "variacionAcumuladaAnio": 65
+    },
+    {
+      "mes": "2024-05",
+      "indice": 6073.717,
+      "variacionMensual": 4.2,
+      "variacionInteranual": 276.4,
+      "variacionAcumuladaAnio": 71.9
+    },
+    {
+      "mes": "2024-06",
+      "indice": 6351.715,
+      "variacionMensual": 4.6,
+      "variacionInteranual": 271.5,
+      "variacionAcumuladaAnio": 79.8
+    },
+    {
+      "mes": "2024-07",
+      "indice": 6607.748,
+      "variacionMensual": 4,
+      "variacionInteranual": 263.4,
+      "variacionAcumuladaAnio": 87
+    },
+    {
+      "mes": "2024-08",
+      "indice": 6883.441,
+      "variacionMensual": 4.2,
+      "variacionInteranual": 236.7,
+      "variacionAcumuladaAnio": 94.8
+    },
+    {
+      "mes": "2024-09",
+      "indice": 7122.242,
+      "variacionMensual": 3.5,
+      "variacionInteranual": 209,
+      "variacionAcumuladaAnio": 101.6
+    },
+    {
+      "mes": "2024-10",
+      "indice": 7313.954,
+      "variacionMensual": 2.7,
+      "variacionInteranual": 193,
+      "variacionAcumuladaAnio": 107
+    },
+    {
+      "mes": "2024-11",
+      "indice": 7491.431,
+      "variacionMensual": 2.4,
+      "variacionInteranual": 166,
+      "variacionAcumuladaAnio": 112
+    },
+    {
+      "mes": "2024-12",
+      "indice": 7694.0075,
+      "variacionMensual": 2.7,
+      "variacionInteranual": 117.8,
+      "variacionAcumuladaAnio": 117.8
+    },
+    {
+      "mes": "2025-01",
+      "indice": 7864.1257,
+      "variacionMensual": 2.2,
+      "variacionInteranual": 84.5,
+      "variacionAcumuladaAnio": 2.2
+    },
+    {
+      "mes": "2025-02",
+      "indice": 8052.9927,
+      "variacionMensual": 2.4,
+      "variacionInteranual": 66.9,
+      "variacionAcumuladaAnio": 4.7
+    },
+    {
+      "mes": "2025-03",
+      "indice": 8353.3158,
+      "variacionMensual": 3.7,
+      "variacionInteranual": 55.9,
+      "variacionAcumuladaAnio": 8.6
+    },
+    {
+      "mes": "2025-04",
+      "indice": 8585.6078,
+      "variacionMensual": 2.8,
+      "variacionInteranual": 47.3,
+      "variacionAcumuladaAnio": 11.6
+    },
+    {
+      "mes": "2025-05",
+      "indice": 8714.4871,
+      "variacionMensual": 1.5,
+      "variacionInteranual": 43.5,
+      "variacionAcumuladaAnio": 13.3
+    },
+    {
+      "mes": "2025-06",
+      "indice": 8855.5681,
+      "variacionMensual": 1.6,
+      "variacionInteranual": 39.4,
+      "variacionAcumuladaAnio": 15.1
+    },
+    {
+      "mes": "2025-07",
+      "indice": 9023.973,
+      "variacionMensual": 1.9,
+      "variacionInteranual": 36.6,
+      "variacionAcumuladaAnio": 17.3
+    },
+    {
+      "mes": "2025-08",
+      "indice": 9193.2441,
+      "variacionMensual": 1.9,
+      "variacionInteranual": 33.6,
+      "variacionAcumuladaAnio": 19.5
+    },
+    {
+      "mes": "2025-09",
+      "indice": 9384.0922,
+      "variacionMensual": 2.1,
+      "variacionInteranual": 31.8,
+      "variacionAcumuladaAnio": 22
+    },
+    {
+      "mes": "2025-10",
+      "indice": 9603.8623,
+      "variacionMensual": 2.3,
+      "variacionInteranual": 31.3,
+      "variacionAcumuladaAnio": 24.8
+    },
+    {
+      "mes": "2025-11",
+      "indice": 9841.3581,
+      "variacionMensual": 2.5,
+      "variacionInteranual": 31.4,
+      "variacionAcumuladaAnio": 27.9
+    },
+    {
+      "mes": "2025-12",
+      "indice": 10121.3715,
+      "variacionMensual": 2.8,
+      "variacionInteranual": 31.5,
+      "variacionAcumuladaAnio": 31.5
+    },
+    {
+      "mes": "2026-01",
+      "indice": 10413.0309,
+      "variacionMensual": 2.9,
+      "variacionInteranual": 32.4,
+      "variacionAcumuladaAnio": 2.9
+    },
+    {
+      "mes": "2026-02",
+      "indice": 10714.6255,
+      "variacionMensual": 2.9,
+      "variacionInteranual": 33.1,
+      "variacionAcumuladaAnio": 5.9
+    },
+    {
+      "mes": "2026-03",
+      "indice": 11077.0608,
+      "variacionMensual": 3.4,
+      "variacionInteranual": 32.6,
+      "variacionAcumuladaAnio": 9.4
+    },
+    {
+      "mes": "2026-04",
+      "indice": 11363.0904,
+      "variacionMensual": 2.6,
+      "variacionInteranual": 32.4,
+      "variacionAcumuladaAnio": 12.3
+    },
+    {
+      "mes": "2026-05",
+      "indice": 11607.3937,
+      "variacionMensual": 2.1,
+      "variacionInteranual": 33.2,
+      "variacionAcumuladaAnio": 14.7
+    },
+    {
+      "mes": "2026-06",
+      "indice": 11826.4103,
+      "variacionMensual": 1.9,
+      "variacionInteranual": 33.5,
+      "variacionAcumuladaAnio": 16.8
+    },
+    {
+      "mes": "2026-07",
+      "indice": 12076.3937,
+      "variacionMensual": 2.1,
+      "variacionInteranual": 33.8,
+      "variacionAcumuladaAnio": 19.3
+    },
+    {
+      "mes": "2026-08",
+      "indice": 12276.766,
+      "variacionMensual": 1.7,
+      "variacionInteranual": 33.5,
+      "variacionAcumuladaAnio": 21.3
+    },
+    {
+      "mes": "2026-09",
+      "indice": 12514.1508,
+      "variacionMensual": 1.9,
+      "variacionInteranual": 33.4,
+      "variacionAcumuladaAnio": 23.6
+    },
+    {
+      "mes": "2026-10",
+      "indice": 12785.9321,
+      "variacionMensual": 2.2,
+      "variacionInteranual": 33.1,
+      "variacionAcumuladaAnio": 26.3
+    }
+  ]
+}

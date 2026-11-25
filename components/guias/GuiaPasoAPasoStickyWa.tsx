@@ -3,16 +3,20 @@
 import { useEffect, useState } from "react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 
+import type { PaisGuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
+
 export default function GuiaPasoAPasoStickyWa({
   slug,
   h1,
   cursoSlug,
   cursoNombre,
+  pais = "cl",
 }: {
   slug: string;
   h1: string;
   cursoSlug: string;
   cursoNombre: string;
+  pais?: PaisGuiaPasoAPaso;
 }) {
   const [cerrada, setCerrada] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
@@ -31,6 +35,7 @@ export default function GuiaPasoAPasoStickyWa({
 
   const visible = !cerrada && !footerVisible;
   const waText = `Hola, vengo de la guía ${h1} y quiero la clase gratis del curso de ${cursoNombre} [${slug}]`;
+  const pagePath = pais === "cl" ? `/guias/${slug}` : `/${pais}/guias/${slug}`;
 
   return (
     <div
@@ -44,11 +49,11 @@ export default function GuiaPasoAPasoStickyWa({
     >
       <div className="mx-auto flex max-w-md items-center gap-2">
         <WhatsAppCta
-          page={`/guias/${slug}`}
+          page={pagePath}
           intent="curso"
           course={cursoNombre}
           courseSlug={cursoSlug}
-          country="cl"
+          country={pais}
           ctaPosition="guia_paso_a_paso_sticky_mobile"
           customText={waText}
           className="inline-flex min-h-[44px] min-w-0 flex-1 items-center justify-center rounded-xl bg-[var(--g-ink)] px-4 text-sm font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"

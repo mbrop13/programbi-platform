@@ -50,13 +50,15 @@ const COURSE_RESOURCE_LINKS: Record<string, { href: string; label: string }[]> =
 
 /** Tipo de recurso según su ruta. El kicker de la tarjeta lo muestra. */
 function tipoDeRecurso(href: string): string {
-  if (href.startsWith("/guias")) return "Guía";
-  if (href.startsWith("/casos")) return "Testimonios";
-  if (href.startsWith("/versus")) return "Comparativa";
-  if (href.startsWith("/test-nivel")) return "Test de nivel";
-  if (href.startsWith("/precios")) return "Precios";
-  if (href.startsWith("/empresas")) return "Empresas";
-  if (href.startsWith("/cursos")) return "Curso";
+  const path = href.replace(/^\/[a-z]{2}(?=\/)/, "");
+  if (path.startsWith("/datos")) return "Datos";
+  if (path.startsWith("/guias")) return "Guía";
+  if (path.startsWith("/casos")) return "Testimonios";
+  if (path.startsWith("/versus")) return "Comparativa";
+  if (path.startsWith("/test-nivel")) return "Test de nivel";
+  if (path.startsWith("/precios")) return "Precios";
+  if (path.startsWith("/empresas")) return "Empresas";
+  if (path.startsWith("/cursos")) return "Curso";
   return "Especialización";
 }
 
@@ -78,10 +80,40 @@ function tituloVisible(label: string): string {
  */
 export default function RecursosRelacionadosCurso({ slug, pais }: { slug: string; pais: string }) {
   const extraCurso = COURSE_RESOURCE_LINKS[slug] ?? [];
+  const extraPorPais: { href: string; label: string }[] =
+    pais === "pe" && (slug === "analisis-de-datos" || slug === "power-bi")
+      ? [
+          { href: "/pe/datos/carreras", label: "Carreras mejor pagadas en Perú" },
+          { href: "/pe/datos", label: "Datos de Perú: sueldos por carrera y Excel" },
+        ]
+      : pais === "co" && (slug === "analisis-de-datos" || slug === "power-bi")
+        ? [
+            { href: "/co/datos/carreras", label: "Carreras de datos en Colombia" },
+            {
+              href: "/co/datos/carreras/cuanto-gana-un-analista-de-datos",
+              label: "Cuánto gana un analista de datos en Colombia",
+            },
+          ]
+        : pais === "mx" && (slug === "analisis-de-datos" || slug === "power-bi")
+          ? [
+              { href: "/mx/datos/carreras", label: "Carreras y sueldos en México" },
+              { href: "/mx/datos/carreras-mejor-pagadas", label: "Carreras mejor pagadas en México" },
+            ]
+          : pais === "ar"
+            ? slug === "analisis-de-datos" || slug === "power-bi"
+              ? [{ href: "/ar/datos/carreras", label: "Carreras y sueldos de datos en Argentina" }]
+              : slug === "excel"
+                ? [
+                    { href: "/ar/guias/calcular-aguinaldo-excel", label: "Guía: calcular el aguinaldo en Excel" },
+                    { href: "/ar/datos/inflacion", label: "Datos de inflación en Argentina (IPC INDEC)" },
+                  ]
+                : []
+            : [];
 
   // Landings propias del curso primero; guías, comparativas, testimonios y el catálogo cierran la lista.
   const candidatos = [
     ...enlacesDeCurso(slug),
+    ...extraPorPais,
     ...extraCurso,
     { href: rutaLocal(pais, "/cursos"), label: "Todos los cursos" },
   ];

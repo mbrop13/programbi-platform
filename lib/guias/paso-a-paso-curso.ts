@@ -92,10 +92,15 @@ function extraerTresVinetas(slug: CursoGuiaSlug): [string, string, string] {
   ];
 }
 
-export function datosCursoParaGuia(curso: CursoGuiaSlug): DatosCursoGuia {
+import type { PaisGuiaPasoAPaso } from "./paso-a-paso-tipos";
+
+export function datosCursoParaGuia(
+  curso: CursoGuiaSlug,
+  pais: PaisGuiaPasoAPaso = "cl"
+): DatosCursoGuia {
   const found = courses.find((c) => c.slug === curso);
-  const precio = precioPublico("cl", curso);
-  const precioLista = precioListaPublico("cl", curso);
+  const precio = precioPublico(pais, curso);
+  const precioLista = precioListaPublico(pais, curso);
 
   return {
     slug: curso,
@@ -106,9 +111,9 @@ export function datosCursoParaGuia(curso: CursoGuiaSlug): DatosCursoGuia {
     imageUrl: found?.imageUrl ?? "/images/courses/power-bi-card.webp",
     temarioBullets: extraerTresVinetas(curso),
     precio,
-    precioFormateado: precio != null ? formatMoneda("cl", precio) : null,
+    precioFormateado: precio != null ? formatMoneda(pais, precio) : null,
     precioLista,
-    precioListaFormateado: precioLista != null ? formatMoneda("cl", precioLista) : null,
-    textoCuotas: textoCuotas("cl"),
+    precioListaFormateado: precioLista != null ? formatMoneda(pais, precioLista) : null,
+    textoCuotas: textoCuotas(pais),
   };
 }

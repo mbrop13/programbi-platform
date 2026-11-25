@@ -108,7 +108,20 @@ export default function Navbar() {
   const userMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const paisNav = paisDesdeRuta(pathname) ?? ISO_CHILE;
-  const recursosLinks = RECURSOS_LINKS.filter((item) => paisNav === ISO_CHILE || item.href !== "/datos");
+  const recursosLinks = RECURSOS_LINKS.flatMap((item) => {
+    if (item.href !== "/datos") return [item];
+    if (paisNav === ISO_CHILE) return [item];
+    if (paisNav === "co") {
+      return [
+        {
+          href: "/co/datos",
+          label: "Datos de Colombia",
+          desc: "Desempleo, carreras, capacitación e IPC de Colombia",
+        },
+      ];
+    }
+    return [];
+  });
   const hrefLocal = (href: string) => rutaLocal(paisNav, href);
   const hrefNav = (href: string) => {
     if (paisNav === ISO_CHILE) return href;

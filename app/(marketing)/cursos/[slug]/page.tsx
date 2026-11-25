@@ -288,6 +288,17 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         detalleLocal={detalle}
         promotions={promotions}
         referenceDateIso={new Date().toISOString().slice(0, 10)}
+        h1Override={
+          course.slug === "power-bi"
+            ? pais === "pe"
+              ? "Curso de Power BI en Perú"
+              : pais === "co"
+                ? "Curso Power BI en vivo en Colombia"
+                : pais === "ar"
+                  ? "Curso de Power BI en vivo en Argentina"
+                  : undefined
+            : undefined
+        }
         resumen={
           <CourseSummaryBox
             course={course}

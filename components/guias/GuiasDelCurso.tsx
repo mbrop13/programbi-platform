@@ -6,6 +6,10 @@ import { GUIAS_PASO_A_PASO } from "@/content/guias/paso-a-paso";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { guiaDeCurso, guiasDePais, guiasDelCurso, indiceGuias } from "@/lib/guias";
 import { GUIAS } from "@/lib/guias/generado";
+import { GUIAS_PASO_A_PASO_PE } from "@/lib/guias/paso-a-paso-pe";
+import { GUIAS_PASO_A_PASO_CO } from "@/lib/guias/paso-a-paso-co";
+import { GUIAS_PASO_A_PASO_MX } from "@/lib/guias/paso-a-paso-mx";
+import { GUIAS_PASO_A_PASO_AR } from "@/lib/guias/paso-a-paso-ar";
 import { esGuiaPublicada } from "@/lib/guias/relacionadas";
 import type { Guia } from "@/lib/guias/tipos";
 
@@ -129,16 +133,51 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
     }
     tarjetas = resultado;
   } else {
-    if (delCurso.length === 0) return null;
+    const pasoLocalesPorPais =
+      iso === "pe"
+        ? GUIAS_PASO_A_PASO_PE.filter((g) => g.curso === curso).map((g) => ({
+            path: `/pe/guias/${g.slug}`,
+            h1: g.h1,
+            description: g.subtitle,
+            badge: "Perú · Excel",
+            esLocal: true,
+          }))
+        : iso === "co"
+          ? GUIAS_PASO_A_PASO_CO.filter((g) => g.curso === curso).map((g) => ({
+              path: `/co/guias/${g.slug}`,
+              h1: g.h1,
+              description: g.subtitle,
+              badge: "Colombia · Excel",
+              esLocal: true,
+            }))
+          : iso === "mx"
+            ? GUIAS_PASO_A_PASO_MX.filter((g) => g.curso === curso).map((g) => ({
+                path: `/mx/guias/${g.slug}`,
+                h1: g.h1,
+                description: g.subtitle,
+                badge: "México · Excel",
+                esLocal: true,
+              }))
+            : iso === "ar"
+              ? GUIAS_PASO_A_PASO_AR.filter((g) => g.curso === curso).map((g) => ({
+                  path: `/ar/guias/${g.slug}`,
+                  h1: g.h1,
+                  description: g.subtitle,
+                  badge: "Argentina",
+                  esLocal: true,
+                }))
+              : [];
 
-    const vistos = new Set<string>();
+    if (delCurso.length === 0 && pasoLocalesPorPais.length === 0) return null;
+
+    const vistos = new Set<string>(pasoLocalesPorPais.map((g) => g.path));
     const destacada = guiaDeCurso(iso, curso);
     const candidatas = [
       ...(destacada && esGuiaPublicada(destacada) ? [destacada] : []),
       ...guiasDelCurso(curso),
       ...delCurso,
     ];
-    tarjetas = candidatas
+    const restantes = candidatas
       .filter((guia) => {
         if (!esGuiaPublicada(guia) || vistos.has(guia.path)) return false;
         vistos.add(guia.path);
@@ -146,7 +185,7 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
       })
       .map((guia, orden) => ({ guia, orden }))
       .sort((a, b) => prioridad(a.guia, iso) - prioridad(b.guia, iso) || a.orden - b.orden)
-      .slice(0, MAXIMO)
+      .slice(0, Math.max(0, MAXIMO - pasoLocalesPorPais.length))
       .map(({ guia }) => ({
         path: guia.path,
         h1: guia.h1,
@@ -154,11 +193,14 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
         badge: mercadoDe(guia),
         esLocal: guia.country === iso,
       }));
+    tarjetas = [...pasoLocalesPorPais, ...restantes];
   }
 
   if (tarjetas.length === 0) return null;
 
-  const hayGuiaLocal = delCurso.some((guia) => guia.country === iso);
+  const hayGuiaLocal =
+    delCurso.some((guia) => guia.country === iso) ||
+    tarjetas.some((guia) => guia.esLocal);
 
   const hubMercado = indiceGuias(iso);
   const hayHubMercado = iso === ISO_CHILE || guiasDePais(iso).some(esGuiaPublicada);
@@ -245,6 +287,19 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
               className="font-semibold text-[var(--g-accent)] underline underline-offset-4"
             >
               Ver el índice general de guías
+            </Link>
+            .
+          </p>
+        ) : null}
+
+        {iso === "ar" && curso === "excel" ? (
+          <p className="mt-6 text-sm text-[var(--g-muted)]">
+            ¿Querés cruzar tu salario o aguinaldo contra la suba de precios? Consultá el{" "}
+            <Link
+              href="/ar/datos/inflacion"
+              className="font-semibold text-[var(--g-accent)] underline underline-offset-4"
+            >
+              monitor de inflación de Argentina
             </Link>
             .
           </p>
