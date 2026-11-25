@@ -14,9 +14,12 @@ export default function CtaDatosMx({
   cursosAfines,
   ctaPosition = "datos_mx_cta",
 }: CtaDatosMxProps) {
+  const principal = (cursosAfines ?? []).find((c) => c.rol === "principal");
   const complementarios = (cursosAfines ?? []).filter(
     (c) => c.rol === "complementario"
   );
+  const hrefPrincipal = principal?.href ?? "/mx/cursos/excel";
+  const nombrePrincipal = principal?.nombre ?? "Excel en vivo";
 
   return (
     <section
@@ -46,7 +49,7 @@ export default function CtaDatosMx({
             </li>
             <li className="flex items-center gap-1.5">
               <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
-              Clase gratis coordinada por WhatsApp
+              Cotiza por WhatsApp y averigua cómo podríamos ayudarte
             </li>
           </ul>
           {complementarios.length > 0 && (
@@ -68,24 +71,24 @@ export default function CtaDatosMx({
 
         <div className="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col">
           <Link
-            href="/mx/cursos/excel"
+            href={hrefPrincipal}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
           >
-            Ver Curso de Excel en México
+            Ver Curso de {nombrePrincipal} en México
             <ArrowRight className="size-4" />
           </Link>
           <WhatsAppCta
             page={page}
             intent="curso"
-            course="Curso de Excel en vivo"
-            courseSlug="excel"
+            course={`Curso de ${nombrePrincipal}`}
+            courseSlug={principal?.slug ?? "excel"}
             country="mx"
             ctaPosition={ctaPosition}
-            customText="Hola, me interesa el Curso de Excel en vivo para México y quiero coordinar mi clase gratis."
+            customText={`Hola, vengo de ${page} en ProgramBI México y quiero cotizar el curso de ${nombrePrincipal} y averiguar cómo me pueden ayudar.`}
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-surface-hover"
           >
             <MessageCircle className="size-4 text-emerald-600" />
-            Coordinar clase gratis por WhatsApp
+            Cotiza el curso por WhatsApp
           </WhatsAppCta>
         </div>
       </div>

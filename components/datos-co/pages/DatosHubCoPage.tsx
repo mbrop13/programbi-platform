@@ -346,7 +346,7 @@ export async function PageCoHub({
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Aprende con clases en vivo y proyectos reales en Power BI, Análisis de Datos y Excel.
-              Disponible en 3 cuotas sin interés y con clase gratis de prueba.
+              Disponible en 3 cuotas sin interés; cotiza por WhatsApp y averigua cómo podríamos ayudarte.
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
               <Link

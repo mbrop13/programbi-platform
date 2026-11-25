@@ -242,7 +242,7 @@ export async function PageCoInflacion({
             </h2>
             <p className="text-sm text-muted-foreground">
               Aprende Excel aplicado y Power BI con proyectos reales. Clases en vivo, 3 cuotas sin
-              interés y clase gratis de prueba.
+              interés; cotiza por WhatsApp y averigua cómo podríamos ayudarte.
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2.5">

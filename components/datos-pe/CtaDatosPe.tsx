@@ -31,8 +31,8 @@ export function CtaDatosPe({
   const chips = recomendacion ? recomendacion.chips : CURSOS_BASE_PE;
 
   const customText = carrera && recomendacion
-    ? `Hola, vengo de ${pagina} (${carrera.nombre}) y quiero consultar por una clase gratis y el curso de ${recomendacion.principal.nombre} en Perú.`
-    : `Hola, vengo de ${pagina} y quiero consultar por una clase gratis de Excel o Power BI en Perú.`;
+    ? `Hola, vengo de ${pagina} (${carrera.nombre}) y quiero cotizar el curso de ${recomendacion.principal.nombre} en Perú y averiguar cómo me pueden ayudar.`
+    : `Hola, vengo de ${pagina} y quiero cotizar un curso de Excel o Power BI en Perú y averiguar cómo me pueden ayudar.`;
 
   return (
     <Card
@@ -66,14 +66,14 @@ export function CtaDatosPe({
                   <strong className="font-medium text-foreground">
                     {recomendacion.secundario.nombre}
                   </strong>
-                  . Clases en vivo con proyectos reales, {CUOTAS_SIN_INTERES} cuotas sin interés y
-                  clase gratis coordinada por WhatsApp.
+                  . Clases en vivo con proyectos reales y {CUOTAS_SIN_INTERES} cuotas sin interés.
+                  Revisa el curso completo o cotiza por WhatsApp y averigua cómo podríamos ayudarte.
                 </>
               ) : (
                 <>
                   Domina tablas dinámicas, Power Query, DAX y visualización de datos con proyectos
-                  reales. Disponible en {CUOTAS_SIN_INTERES} cuotas sin interés y clase gratis
-                  coordinada por WhatsApp.
+                  reales en {CUOTAS_SIN_INTERES} cuotas sin interés. Revisa el curso completo o
+                  cotiza por WhatsApp y averigua cómo podríamos ayudarte.
                 </>
               )}
             </p>
@@ -96,6 +96,16 @@ export function CtaDatosPe({
           </div>
 
           <div className="flex w-full shrink-0 flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+            <Link
+              href={recomendacion ? recomendacion.principal.href : "/pe/cursos/excel"}
+              className={cn(
+                buttonVariants({ variant: "default", size: "lg" }),
+                "min-h-11 w-full justify-center gap-1.5 rounded-lg px-4 text-sm font-medium sm:w-auto",
+              )}
+            >
+              Ver curso de {recomendacion ? recomendacion.principal.nombre : "Excel"}
+              <ArrowUpRight className="size-4" aria-hidden="true" />
+            </Link>
             <WhatsAppCta
               page={pagina}
               intent="general"
@@ -105,23 +115,13 @@ export function CtaDatosPe({
               ctaPosition="datos_pe_cta"
               customText={customText}
               className={cn(
-                buttonVariants({ variant: "default", size: "lg" }),
-                "min-h-11 w-full justify-center gap-2 rounded-lg px-4 text-sm font-medium sm:w-auto",
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "min-h-11 w-full justify-center gap-2 rounded-lg bg-card px-4 text-sm font-medium sm:w-auto",
               )}
             >
               <MessageCircle className="size-4" aria-hidden="true" />
-              Clase gratis por WhatsApp
+              Cotiza el curso por WhatsApp
             </WhatsAppCta>
-            <Link
-              href={recomendacion ? recomendacion.principal.href : "/pe/cursos/excel"}
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "min-h-11 w-full justify-center gap-1.5 rounded-lg bg-card px-4 text-sm font-medium sm:w-auto",
-              )}
-            >
-              Temario y precios
-              <ArrowUpRight className="size-4" aria-hidden="true" />
-            </Link>
           </div>
         </div>
       </CardContent>

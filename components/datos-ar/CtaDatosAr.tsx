@@ -39,12 +39,11 @@ export function CtaDatosAr({
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
             Trabajás con planillas reales, conectás series oficiales como las del INDEC y
             armás tableros listos para presentar en tu laburo. Podés sumarte en{" "}
-            <strong className="font-semibold text-foreground">3 cuotas sin interés</strong> o
-            pedir una{" "}
+            <strong className="font-semibold text-foreground">3 cuotas sin interés</strong> o{" "}
             <strong className="font-semibold text-foreground">
-              clase gratis coordinada por WhatsApp
-            </strong>{" "}
-            para ver cómo enseñamos.
+              cotizar el curso por WhatsApp y averiguar cómo podríamos ayudarte
+            </strong>
+            .
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-sm font-medium">
             <Link
@@ -72,24 +71,24 @@ export function CtaDatosAr({
         </div>
 
         <div className="flex shrink-0 flex-col gap-2.5 sm:flex-row lg:flex-col">
+          <Link
+            href="/ar/cursos/analisis-de-datos"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-emerald-700"
+          >
+            Ver curso de Análisis de Datos
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
           <WhatsAppCta
             page={page}
             country="ar"
             intent="pack"
             ctaPosition={ctaPosition}
-            customText="Hola ProgramBI, estuve viendo los datos de Argentina y quiero coordinar una clase gratis de Excel / Power BI."
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-emerald-700"
-          >
-            <MessageCircle className="size-4" aria-hidden="true" />
-            Coordinar clase gratis por WhatsApp
-          </WhatsAppCta>
-          <Link
-            href="/ar/cursos/analisis-de-datos"
+            customText="Hola ProgramBI, estuve viendo los datos de Argentina y quiero cotizar un curso de Excel o Power BI y averiguar cómo me pueden ayudar."
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
-            Ver programas de Argentina
-            <ArrowRight className="size-4" aria-hidden="true" />
-          </Link>
+            <MessageCircle className="size-4" aria-hidden="true" />
+            Cotizá el curso por WhatsApp
+          </WhatsAppCta>
         </div>
       </div>
     </section>

@@ -305,7 +305,7 @@ export async function PageCoDesempleo({
             </h2>
             <p className="text-sm text-muted-foreground">
               Domina modelado, DAX y visualización ejecutiva en nuestro curso en vivo de Power BI.
-              Disponible en 3 cuotas sin interés y con clase gratis.
+              Disponible en 3 cuotas sin interés; cotiza por WhatsApp y averigua cómo podríamos ayudarte.
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2.5">

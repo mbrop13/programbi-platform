@@ -294,7 +294,7 @@ export default async function CuantoGanaAnalistaDatosCoPage({
           pagina="/co/datos/carreras/cuanto-gana-un-analista-de-datos"
           cursos={cursos}
           titulo="¿Quieres prepararte para trabajar como analista de datos?"
-          subtitulo="Aprende Análisis de Datos, Power BI y SQL Server en vivo con proyectos reales. Disponible en 3 cuotas sin interés y con clase gratis coordinada por WhatsApp."
+          subtitulo="Aprende Análisis de Datos, Power BI y SQL Server en vivo con proyectos reales y 3 cuotas sin interés. Revisa el curso o cotiza por WhatsApp y averigua cómo podríamos ayudarte."
           ctaPosition="analista_datos_co"
         />
 

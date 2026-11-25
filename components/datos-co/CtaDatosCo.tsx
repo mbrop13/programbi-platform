@@ -55,15 +55,16 @@ export function CtaDatosCo({
   className,
 }: CtaDatosCoProps) {
   const listaCursos = cursos && cursos.length > 0 ? cursos : CURSOS_BASE_CO;
+  const cursoPrincipal = listaCursos[0] ?? CURSOS_BASE_CO[0];
   const descripcion =
     subtitulo ??
     (carreraNombre
-      ? `Complementa tu perfil en ${carreraNombre} con clases en vivo y proyectos reales. Disponible en 3 cuotas sin interés y con clase gratis coordinada por WhatsApp.`
-      : "Domina análisis de datos, tableros ejecutivos y automatización con clases en vivo y proyectos reales. Disponible en 3 cuotas sin interés y con clase gratis coordinada por WhatsApp.");
+      ? `Complementa tu perfil en ${carreraNombre} con clases en vivo, proyectos reales y 3 cuotas sin interés. Revisa el curso o cotiza por WhatsApp y averigua cómo podríamos ayudarte.`
+      : "Domina análisis de datos, tableros ejecutivos y automatización con clases en vivo, proyectos reales y 3 cuotas sin interés. Revisa el curso o cotiza por WhatsApp y averigua cómo podríamos ayudarte.");
 
   const customText = carreraNombre
-    ? `Hola, vengo de ${pagina} (${carreraNombre}) en ProgramBI Colombia y quiero información sobre temario y precios, las 3 cuotas sin interés y la clase gratis.`
-    : `Hola, vengo de ${pagina} en ProgramBI Colombia y quiero información sobre temario y precios, las 3 cuotas sin interés y la clase gratis.`;
+    ? `Hola, vengo de ${pagina} (${carreraNombre}) en ProgramBI Colombia y quiero cotizar el curso de ${cursoPrincipal.titulo} y averiguar cómo me pueden ayudar.`
+    : `Hola, vengo de ${pagina} en ProgramBI Colombia y quiero cotizar un curso y averiguar cómo me pueden ayudar.`;
 
   return (
     <Card
@@ -109,21 +110,34 @@ export function CtaDatosCo({
           </div>
 
           <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end">
-            <WhatsAppCta
-              page={pagina}
-              country="co"
-              ctaPosition={ctaPosition}
-              customText={customText}
-              className={cn(
-                buttonVariants({ variant: "default", size: "lg" }),
-                "min-h-11 w-full justify-center gap-2 rounded-lg px-4 text-sm font-medium sm:w-auto"
-              )}
-            >
-              <MessageCircle className="size-4" aria-hidden="true" />
-              Temario y precios por WhatsApp
-            </WhatsAppCta>
+            <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+              <Link
+                href={cursoPrincipal.href}
+                prefetch={false}
+                className={cn(
+                  buttonVariants({ variant: "default", size: "lg" }),
+                  "min-h-11 w-full justify-center gap-1.5 rounded-lg px-4 text-sm font-medium sm:w-auto"
+                )}
+              >
+                Ver curso de {cursoPrincipal.titulo}
+                <ArrowUpRight className="size-4" aria-hidden="true" />
+              </Link>
+              <WhatsAppCta
+                page={pagina}
+                country="co"
+                ctaPosition={ctaPosition}
+                customText={customText}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "min-h-11 w-full justify-center gap-2 rounded-lg bg-card px-4 text-sm font-medium sm:w-auto"
+                )}
+              >
+                <MessageCircle className="size-4" aria-hidden="true" />
+                Cotiza el curso por WhatsApp
+              </WhatsAppCta>
+            </div>
             <p className="text-[11px] text-muted-foreground">
-              3 cuotas sin interés · Clase gratis coordinada por WhatsApp
+              3 cuotas sin interés · Averigua cómo podríamos ayudarte
             </p>
           </div>
         </div>
