@@ -586,7 +586,7 @@ export default function CourseDetailClient({
   // Estados Unidos muestra el precio sin formulario y arriba del PDF de
   // temario; el resto de los mercados lo muestra debajo, tras el gate.
   const bloquePrecio =
-    !isEmpresa && canSeePrice && precioLocalCliente != null ? (
+    !isEmpresa && precioDirecto && precioLocalCliente != null ? (
       <div className="mb-5 space-y-1 leading-snug">
         {precioListaCliente != null && precioListaCliente > precioLocalCliente ? (
           <div className="flex items-center gap-2 text-xs">
@@ -921,15 +921,20 @@ export default function CourseDetailClient({
                         </WhatsAppCta>
                       </div>
                     ) : null}
-                    {!canSeePrice || precioLocalCliente == null ? (
+                    {!precioDirecto || precioLocalCliente == null ? (
                       <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl border border-line bg-canvas px-3.5 py-2.5 text-xs">
-                        {!canSeePrice && descuentoLocalCliente > 0 ? (
-                          <span className="w-full text-base font-bold tracking-tight text-ink">
-                            {descuentoLocalCliente}% de descuento
-                          </span>
-                        ) : !canSeePrice && precioLocalCliente != null && !precioDirecto ? (
+                        {!precioDirecto && descuentoLocalCliente > 0 ? (
+                          <div className="flex w-full items-center gap-2">
+                            <span className="rounded-full bg-[#15803D]/10 px-2.5 py-0.5 text-xs font-semibold text-[#126c34]">
+                              {descuentoLocalCliente}% off
+                            </span>
+                            <span className="text-xs font-semibold text-ink">
+                              Descuento vigente
+                            </span>
+                          </div>
+                        ) : !precioDirecto && precioLocalCliente != null ? (
                           <span className="w-full text-sm font-bold tracking-tight text-ink">
-                            Precio normal en {monedaPublica(pais)}
+                            Precio normal en {monedaPublica(pais)} (ver temario PDF)
                           </span>
                         ) : null}
                         {numCuotas > 0 ? (
@@ -1014,8 +1019,6 @@ export default function CourseDetailClient({
                   </WhatsAppCta>
                 ) : null}
               </div>
-
-              {precioDirecto ? null : bloquePrecio}
 
               {isEmpresa ? (
                 <>

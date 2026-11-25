@@ -1,5 +1,5 @@
 import type { DatosBloqueLocal } from "./tipos";
-import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import { resumenDescuentoCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const resumenCatalogo = resumenPreciosCatalogo("co");
 
@@ -140,7 +140,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuánto cuesta y cómo se paga?",
-          a: `${resumenPrecioCursoTexto("co", "power-bi", "Power BI")} Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos.`,
+          a: `${resumenDescuentoCursoTexto("co", "power-bi", "Power BI")} Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos.`,
         },
         {
           q: "¿Qué certificado recibo?",
@@ -181,7 +181,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se consulta el valor?",
-          a: `${resumenPrecioCursoTexto("co", "analisis-de-datos", "Análisis de Datos")} El checkout confirma el monto antes de pagar.`,
+          a: `${resumenDescuentoCursoTexto("co", "analisis-de-datos", "Análisis de Datos")} El checkout confirma el monto antes de pagar.`,
         },
       ],
     },
@@ -218,7 +218,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga el curso?",
-          a: `${resumenPrecioCursoTexto("co", "python", "Python para Datos")} Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos.`,
+          a: `${resumenDescuentoCursoTexto("co", "python", "Python para Datos")} Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos.`,
         },
       ],
     },

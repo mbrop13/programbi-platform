@@ -1,6 +1,6 @@
 import type { DatosBloqueLocal } from "./tipos";
 import { textoCuotas } from "@/config/cuotas";
-import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import { resumenDescuentoCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
 
 const resumenCatalogo = resumenPreciosCatalogo("ar");
 const cuotasAr = textoCuotas("ar");
@@ -168,7 +168,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuánto cuesta y cómo se paga?",
-          a: `${resumenPrecioCursoTexto("ar", "power-bi", "Power BI")} Se paga con Mercado Pago Argentina en {cuotas}, Mercado Pago Wallet o transferencia bancaria en pesos argentinos (ARS).`,
+          a: `${resumenDescuentoCursoTexto("ar", "power-bi", "Power BI")} Se paga con Mercado Pago Argentina en {cuotas}, Mercado Pago Wallet o transferencia bancaria en pesos argentinos (ARS).`,
         },
         {
           q: "¿Qué certificado recibo?",
@@ -209,7 +209,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se consulta el valor y hay cuotas?",
-          a: `${resumenPrecioCursoTexto("ar", "analisis-de-datos", "Análisis de Datos")} El pago se procesa con Mercado Pago Argentina en {cuotas}.`,
+          a: `${resumenDescuentoCursoTexto("ar", "analisis-de-datos", "Análisis de Datos")} El pago se procesa con Mercado Pago Argentina en {cuotas}.`,
         },
       ],
     },
@@ -246,7 +246,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga el curso?",
-          a: `${resumenPrecioCursoTexto("ar", "python", "Python para Datos")} Se paga con Mercado Pago Argentina en {cuotas} o transferencia bancaria en pesos argentinos (ARS).`,
+          a: `${resumenDescuentoCursoTexto("ar", "python", "Python para Datos")} Se paga con Mercado Pago Argentina en {cuotas} o transferencia bancaria en pesos argentinos (ARS).`,
         },
       ],
     },

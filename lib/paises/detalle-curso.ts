@@ -3,7 +3,7 @@
  * localizadas para el pie de página (horario, certificado y precio vigente).
  */
 
-import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO, type Pais } from "@/config/paises";
+import { getPais, ISO_CHILE, muestraPrecioDirecto, normalizarPais, SLUGS_CURSO, type Pais } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { courseDurationHours, getCourseBySlug } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
@@ -98,6 +98,44 @@ export function resumenPrecioCursoTexto(
     : "";
 
   return `${estructura}${parteCuotas}. Arriba puedes descargar el PDF completo con el temario, los enlaces de pago y los valores de combos con varios cursos.`;
+}
+
+/**
+ * Resumen sin cifras de precio para las FAQs visibles de las fichas de curso
+ * (y su FAQPage JSON-LD): indica estructura, porcentaje de descuento vigente
+ * y cuotas, derivando al PDF de temario y precios arriba.
+ */
+export function resumenDescuentoCursoTexto(
+  iso: string | null | undefined,
+  slug: string,
+  courseTitle?: string,
+  promotions?: readonly PromocionAplicable[],
+): string {
+  const pais = getPais(normalizarPais(iso));
+  const precio = precioVenta(pais.iso, slug, promotions);
+  const course = getCourseBySlug(slug);
+  const titulo = courseTitle ?? course?.title ?? "Este curso";
+  const lugar = pais.iso === ISO_CHILE ? "Chile" : pais.nombre;
+
+  if (precio == null) {
+    return `En ${lugar} todavía no hay un valor público publicado para ${titulo}; el arancel vigente, los medios de pago locales y la fecha de inicio se consultan directamente por WhatsApp. También puedes descargar arriba el PDF completo con el temario del curso.`;
+  }
+
+  const lista = precioListaVenta(pais.iso, slug, promotions);
+  const descuento = lista != null ? porcentajeDescuento(lista, precio) : 0;
+  const niveles = course ? publicLevelCount(course) : 2;
+  const horas = course ? catalogHours(course) : courseDurationHours(slug);
+  const cuotas = textoCuotas(pais.iso);
+
+  const parteDescuento =
+    descuento > 0 ? `, con ${descuento}% de descuento vigente` : "";
+  const estructura =
+    niveles === 1
+      ? `${titulo} en ${lugar} es un programa de nivel único de ${horas} horas en vivo${parteDescuento}`
+      : `${titulo} en ${lugar} se dicta en 2 niveles independientes de ${horas} horas en vivo cada uno (Básico-Intermedio y Avanzado), con pago por nivel${parteDescuento}`;
+  const parteCuotas = cuotas ? ` y pago disponible en ${cuotas}` : "";
+
+  return `${estructura}${parteCuotas}. Arriba puedes descargar el PDF de temario y precios para ver el arancel vigente en ${pais.moneda}, los enlaces de pago y los combos con varios cursos.`;
 }
 
 /**
@@ -229,9 +267,12 @@ export function detalleCursoLocal(opts: {
   if (opts.slug) {
     const tituloCurso =
       opts.courseTitle ?? getCourseBySlug(opts.slug)?.title ?? opts.slug;
+    const respuestaPrecio = muestraPrecioDirecto(pais.iso)
+      ? resumenPrecioCursoTexto(pais.iso, opts.slug, tituloCurso, opts.promotions)
+      : resumenDescuentoCursoTexto(pais.iso, opts.slug, tituloCurso, opts.promotions);
     faqs.push({
       q: `¿Cuánto cuesta ${tituloCurso} en ${lugar}?`,
-      a: resumenPrecioCursoTexto(pais.iso, opts.slug, tituloCurso, opts.promotions),
+      a: respuestaPrecio,
     });
   }
 

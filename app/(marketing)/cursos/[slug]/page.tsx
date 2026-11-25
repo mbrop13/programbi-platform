@@ -23,8 +23,14 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { esRutaIndexablePais } from "@/lib/seo/indexabilidad";
 import { ROBOTS_INDEX_FOLLOW } from "@/lib/seo/metadata-base";
 import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
+import { monedaPublica } from "@/config/pricing";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
-import { localizarMercado } from "@/lib/paises/precios";
+import {
+  descuentoPublico,
+  localizarMercado,
+  precioListaVenta,
+  precioVenta,
+} from "@/lib/paises/precios";
 import { conPais, robotsLocal } from "@/lib/paises/metadata";
 import { getBloqueLocal, getSeoBloque, esRutaSeoLocal } from "@/lib/data/contenido-paises";
 import { detalleCursoLocal } from "@/lib/paises/detalle-curso";
@@ -136,6 +142,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const ruta = `/cursos/${slug}`;
   const indexable = esRutaIndexablePais(pais, ruta);
 
+  const promotions = pais === ISO_CHILE ? await getActivePromotions() : [];
+  const precio = precioVenta(pais, slug, promotions);
+  const lista = precio != null ? precioListaVenta(pais, slug, promotions) : null;
+  const descuento = precio != null ? descuentoPublico(pais, slug, promotions) : 0;
+
   const metadata: Metadata = {
     title: pais === "cl" ? (titleCl ?? seo?.title ? { absolute: titleCl ?? seo!.title } : titleBase) : { absolute: title },
     description,
@@ -168,6 +179,18 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       description,
       images: [shareImage],
     },
+    ...(precio != null
+      ? {
+          other: {
+            "product:price:amount": String(precio),
+            "product:price:currency": monedaPublica(pais),
+            ...(lista != null && lista > precio
+              ? { "product:original_price:amount": String(lista) }
+              : {}),
+            ...(descuento > 0 ? { "product:discount_percentage": String(descuento) } : {}),
+          },
+        }
+      : {}),
   };
 
   return aplicarSeoLocal(metadata, pais, rutaCursoBloque(slug));

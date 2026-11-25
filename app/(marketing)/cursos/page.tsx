@@ -16,7 +16,7 @@ import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib
 import { getPais, ISO_CHILE, normalizarPais, PAISES_INDEXABLES } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
-import { formatMoneda, muestraPrecioLocal, precioVenta } from "@/lib/paises/precios";
+import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
 export const revalidate = 86400;
@@ -98,7 +98,7 @@ export default async function CursosPage({
     numberOfItems: courses.length,
     itemListElement: courses.map((course, index) => {
       const url = absoluteUrl(rutaLocal(pais, `/cursos/${course.slug}`));
-      const local = muestraPrecioLocal(pais) ? precioVenta(pais, course.slug, promotions) : null;
+      const local = precioVenta(pais, course.slug, promotions);
       return {
         "@type": "ListItem",
         position: index + 1,

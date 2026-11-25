@@ -142,11 +142,6 @@ export default function CourseSummaryBox({
   const precioDirecto = muestraPrecioDirecto(iso)
     ? precioVenta(iso, course.slug, promotions)
     : null;
-  const precioVigente = precioVenta(iso, course.slug, promotions);
-  const muestraPrecioExactoChile =
-    iso === ISO_CHILE &&
-    (course.slug === "sql-server" || course.slug === "analitica-mineria") &&
-    precioVigente != null;
   const etiquetaDescuento = muestraPrecioDirecto(iso)
     ? null
     : etiquetaDescuentoCurso(iso, course.slug, promotions);
@@ -195,19 +190,6 @@ export default function CourseSummaryBox({
             <>
               {montoConCodigo(iso, precioDirecto)}
               {niveles > 1 ? " por nivel" : ""} (pago directo en {info.moneda}).
-            </>
-          ) : muestraPrecioExactoChile && precioVigente != null ? (
-            <>
-              {montoConCodigo(iso, precioVigente)}
-              {niveles > 1 ? " por nivel" : ""}
-              {cuotas ? `, pago en ${cuotas}` : ""} ·{" "}
-              <Link
-                href={brochureHref}
-                className="font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
-              >
-                Temario y precios
-              </Link>
-              .
             </>
           ) : (
             <>

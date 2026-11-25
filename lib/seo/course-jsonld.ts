@@ -27,11 +27,14 @@ import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { PRECIOS_VALID_FROM, monedaPublica } from "@/config/pricing";
 import { rutaLocal } from "@/lib/paises/rutas";
 import {
+  descuentoPublico,
   localizarMercado,
+  precioListaVenta,
   precioVenta,
   promocionesParaPais,
   type PromocionAplicable,
 } from "@/lib/paises/precios";
+import { resumenPrecioCursoTexto } from "@/lib/paises/detalle-curso";
 
 const OFFER_PRICE_VALID_UNTIL = "2026-12-31";
 
@@ -125,6 +128,10 @@ export function getCourseJsonLd(
   const promotions = promocionesParaPais(pais, options?.promotions);
   const precio =
     view === "empresas" ? null : precioVenta(pais, course.slug, promotions);
+  const lista =
+    precio != null ? precioListaVenta(pais, course.slug, promotions) : null;
+  const descuento =
+    precio != null ? descuentoPublico(pais, course.slug, promotions) : 0;
   const startDate = view === "empresas" ? undefined : resolveCourseStartDate(course.slug, options);
 
   const seoDescription =
@@ -179,7 +186,31 @@ export function getCourseJsonLd(
             price: precio,
             priceCurrency: monedaPublica(pais),
             validFrom: PRECIOS_VALID_FROM,
+            description: resumenPrecioCursoTexto(pais, course.slug, course.title, promotions),
             ...(!getPais(pais).sinDescuento ? { priceValidUntil: OFFER_PRICE_VALID_UNTIL } : {}),
+            ...(lista != null && lista > precio
+              ? {
+                  priceSpecification: [
+                    {
+                      "@type": "UnitPriceSpecification",
+                      priceType: "https://schema.org/SalePrice",
+                      price: precio,
+                      priceCurrency: monedaPublica(pais),
+                      name:
+                        descuento > 0
+                          ? `Arancel vigente con ${descuento}% de descuento`
+                          : "Arancel vigente",
+                    },
+                    {
+                      "@type": "UnitPriceSpecification",
+                      priceType: "https://schema.org/ListPrice",
+                      price: lista,
+                      priceCurrency: monedaPublica(pais),
+                      name: "Precio normal de lista",
+                    },
+                  ],
+                }
+              : {}),
           }
         : {}),
     },
