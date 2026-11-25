@@ -23,6 +23,7 @@ import {
   TrendingUp,
   Trophy,
   Zap,
+  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import type { Course } from "@/lib/data/courses";
@@ -156,9 +157,14 @@ function ModuleCard({
   const hours = module.hours;
   const isIa = module.highlight || module.icon === "star" || module.icon === "bot";
 
+  // Acordeón: el primer módulo abre solo y el resto se despliega al tocarlo.
+  // Los temas quedan en el HTML aunque estén plegados.
   return (
-    <div className="relative overflow-hidden rounded-[22px] border border-line bg-paper">
-      <div className="flex items-center gap-3 p-4 text-left sm:gap-4 sm:p-5 lg:px-6">
+    <details
+      open={index === 0}
+      className="group/modulo relative overflow-hidden rounded-[22px] border border-line bg-paper"
+    >
+      <summary className="flex cursor-pointer list-none items-center gap-3 p-4 text-left sm:gap-4 sm:p-5 lg:px-6 [&::-webkit-details-marker]:hidden">
         <div className="relative shrink-0">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-wash text-sm font-bold text-ink sm:h-12 sm:w-12">
             {Icon ? <Icon className="h-5 w-5" /> : index + 1}
@@ -192,9 +198,14 @@ function ModuleCard({
                   : module.subtitle}
               </span>
             )}
+            <span className="text-faint">· {topics.length} temas</span>
           </div>
         </div>
-      </div>
+        <ChevronDown
+          aria-hidden
+          className="h-5 w-5 shrink-0 text-mute transition-transform duration-200 group-open/modulo:rotate-180"
+        />
+      </summary>
 
       <ul className="space-y-2.5 border-t border-line px-4 pb-5 pt-4 sm:px-6 sm:pb-6">
         {topics.map((topic, ti) => {
@@ -209,7 +220,7 @@ function ModuleCard({
           );
         })}
       </ul>
-    </div>
+    </details>
   );
 }
 
@@ -375,7 +386,7 @@ export default function TemarioSection({
 
             <div
               data-testid="temario-bottom-cta"
-              className="rounded-[22px] border border-line bg-paper p-5 sm:p-6"
+              className={`rounded-[22px] border border-line bg-paper p-5 sm:p-6 ${embedded ? "max-lg:hidden" : ""}`}
             >
               <p className="text-base font-bold tracking-tight text-ink sm:text-lg">
                 ¿Tienes dudas sobre el temario de {course.title}?

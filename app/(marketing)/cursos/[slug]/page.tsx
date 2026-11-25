@@ -12,6 +12,7 @@ import ComparativaCursosIA from "@/components/marketing/ComparativaCursosIA";
 import PlantillaVentasPowerBi from "@/components/marketing/PlantillaVentasPowerBi";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
 import RecursosRelacionadosCurso from "@/components/marketing/RecursosRelacionadosCurso";
+import ExpandibleMovil from "@/components/marketing/ExpandibleMovil";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import CourseSummaryBox, { faqsResumenCurso } from "@/components/marketing/CourseSummaryBox";
 import PeruPowerBiSection from "@/components/paises/PeruPowerBiSection";
@@ -310,28 +311,46 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
       <PeruPowerBiSection pais={pais} slug={course.slug} />
       {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.
           Reemplaza a CountryContext, que repetía los mismos datos. */}
-      <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} promotions={promotions} />
+      {/* Bloques largos de texto: en celular se muestran recortados con
+          «Ver más» (ExpandibleMovil). El HTML completo se mantiene para SEO. */}
+      <ExpandibleMovil etiqueta="Ver más del curso en tu país">
+        <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} promotions={promotions} />
+      </ExpandibleMovil>
       {/* Datos del mercado para la ficha: precio en moneda local (gate del
           brochure), horario convertido, pago, cuotas, clase gratis y
           certificado, más el resto de fichas y guías del país. */}
       {bloque ? (
-        <BloqueLocalPais iso={pais} bloque={bloque} contexto="ficha" conEnlaces />
+        <ExpandibleMovil>
+          <BloqueLocalPais iso={pais} bloque={bloque} contexto="ficha" conEnlaces />
+        </ExpandibleMovil>
       ) : null}
-      <BloqueLocalContenido
-        iso={pais}
-        ruta={rutaCursoBloque(course.slug)}
-        inicio={inicio}
-        fin={fin}
-        conFaqJsonLd={false}
-      />
-      <FichaSeoExtra slug={course.slug} pais={pais} />
+      <ExpandibleMovil fondo="var(--color-wash)">
+        <BloqueLocalContenido
+          iso={pais}
+          ruta={rutaCursoBloque(course.slug)}
+          inicio={inicio}
+          fin={fin}
+          conFaqJsonLd={false}
+        />
+      </ExpandibleMovil>
+      <ExpandibleMovil etiqueta="Ver programa completo">
+        <FichaSeoExtra slug={course.slug} pais={pais} />
+      </ExpandibleMovil>
       {/* Bloque único de la antigua landing /curso-power-bi (plantilla CSV),
           migrado aquí antes de convertir esa landing en 301. */}
-      {course.slug === "power-bi" ? <PlantillaVentasPowerBi pais={pais} /> : null}
-      <GuiasDelCurso curso={course.slug} pais={pais} />
+      {course.slug === "power-bi" ? (
+        <ExpandibleMovil fondo="var(--color-paper)">
+          <PlantillaVentasPowerBi pais={pais} />
+        </ExpandibleMovil>
+      ) : null}
+      <ExpandibleMovil fondo="var(--g-bg, var(--color-canvas))" etiqueta="Ver todas las guías">
+        <GuiasDelCurso curso={course.slug} pais={pais} />
+      </ExpandibleMovil>
       {/* Enlaces internos que antes iban en el hero: landings, guías, caso y
           catálogo, en tarjetas y renderizados en el servidor (valor SEO). */}
-      <RecursosRelacionadosCurso slug={course.slug} pais={pais} />
+      <ExpandibleMovil etiqueta="Ver más recursos">
+        <RecursosRelacionadosCurso slug={course.slug} pais={pais} />
+      </ExpandibleMovil>
       {course.slug === "chatgpt" || course.slug === "gemini" ? (
         <div className="border-t border-line bg-canvas px-4 py-6 sm:px-6 lg:px-8">
           <p className="mx-auto max-w-[1400px] text-xs leading-relaxed text-faint">

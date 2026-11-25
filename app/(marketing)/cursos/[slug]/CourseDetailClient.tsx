@@ -53,6 +53,7 @@ import {
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
+import ExpandibleMovil from "@/components/marketing/ExpandibleMovil";
 import { CourseCohortFacts, CourseCohortStrip } from "@/components/marketing/CourseCohortStrip";
 import {
   CourseAudienceAndResults,
@@ -632,13 +633,13 @@ export default function CourseDetailClient({
 
   return (
     <>
-      <section className="bg-canvas px-4 pt-10 sm:px-6 lg:px-8 lg:pt-14">
+      <section className="bg-canvas px-4 pt-3 sm:px-6 sm:pt-8 lg:px-8 lg:pt-14">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="contents lg:col-span-7 lg:block lg:min-w-0">
             <div className="min-w-0">
               <nav
                 aria-label="Ruta de navegación"
-                className="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-mute"
+                className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-mute lg:mb-4"
               >
                 <Link href={rutaLocal(pais, "/")} className="no-underline hover:text-ink">
                   Inicio
@@ -661,7 +662,7 @@ export default function CourseDetailClient({
                 {heading}
               </h1>
 
-              <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-mute">
+              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-mute lg:mt-6">
                 <li className="inline-flex items-center gap-1.5">
                   <Clock size={15} /> {hours} h
                 </li>
@@ -670,11 +671,14 @@ export default function CourseDetailClient({
                 {activeLevel ? <li>{activeLevel.name}</li> : null}
               </ul>
 
-              <div
-                data-testid="ficha-hero-cta-mobile"
-                className="mt-5 flex flex-col gap-2.5 sm:flex-row lg:hidden"
-              >
-                {isEmpresa ? (
+              {/* En móvil los CTA del curso viven en la barra fija inferior
+                  (BarraFijaFicha). La vista empresas no tiene barra: conserva
+                  sus dos botones aquí. */}
+              {isEmpresa ? (
+                <div
+                  data-testid="ficha-hero-cta-mobile"
+                  className="mt-5 flex flex-col gap-2.5 sm:flex-row lg:hidden"
+                >
                   <Link
                     href={quoteHref}
                     className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
@@ -682,64 +686,20 @@ export default function CourseDetailClient({
                     Cotizar para mi empresa
                     <ArrowRight size={16} aria-hidden />
                   </Link>
-                ) : esInicioLejano ? (
-                  <>
-                    <WhatsAppCta
-                      page={rutaLocal(pais, `/cursos/${course.slug}`)}
-                      intent="curso"
-                      course={`${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)})`}
-                      courseSlug={course.slug}
-                      country={pais}
-                      ctaPosition="curso_hero"
-                      customText={whatsappClaseGratisTexto}
-                      className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
-                    >
-                      <MessageCircle size={16} aria-hidden />
-                      Agenda tu clase gratis
-                    </WhatsAppCta>
-                    <a
-                      href="#inscripcion"
-                      onClick={() =>
-                        trackCtaClick("Ver fechas y precio", "course_detail_hero_mobile", {
-                          course_slug: course.slug,
-                        })
-                      }
-                      className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
-                    >
-                      Ver fechas y precio
-                      <ArrowRight size={16} aria-hidden />
-                    </a>
-                  </>
-                ) : (
-                  <a
-                    href="#inscripcion"
-                    onClick={() =>
-                      trackCtaClick("Ver fechas y precio", "course_detail_hero_mobile", {
-                        course_slug: course.slug,
-                      })
-                    }
-                    className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
-                  >
-                    Ver fechas y precio
-                    <ArrowRight size={16} aria-hidden />
-                  </a>
-                )}
-                {!esInicioLejano || isEmpresa ? (
                   <WhatsAppCta
-                    page={rutaLocal(pais, isEmpresa ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`)}
-                    intent={isEmpresa ? "empresas" : "curso"}
+                    page={rutaLocal(pais, `/cursos/${course.slug}?para=empresas`)}
+                    intent="empresas"
                     course={`${course.title} (${rutaLocal(pais, `/cursos/${course.slug}`)})`}
                     courseSlug={course.slug}
                     country={pais}
                     ctaPosition="curso_hero"
-                    customText={isEmpresa ? undefined : whatsappTextoIA}
                     className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
                   >
                     <MessageCircle size={16} aria-hidden />
                     Hablar por WhatsApp
                   </WhatsAppCta>
-                ) : null}
-              </div>
+                </div>
+              ) : null}
 
               {hasGallery ? (
                 <CourseGallery
@@ -1130,7 +1090,9 @@ export default function CourseDetailClient({
         </div>
       </section>
 
-      <TuProfesor />
+      <ExpandibleMovil etiqueta="Ver todo el equipo">
+        <TuProfesor />
+      </ExpandibleMovil>
 
       {testimonios}
 
@@ -1146,13 +1108,15 @@ export default function CourseDetailClient({
         <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="mx-auto max-w-[1400px]">
             <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Otros cursos</h2>
-            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {/* En celular, carrusel horizontal: tres tarjetas apiladas ocupaban
+                casi dos pantallas. */}
+            <div className="mt-8 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
               {relatedCourses.map((rc) => {
                 return (
                   <Link
                     key={rc.slug}
                     href={rutaLocal(pais, `/cursos/${rc.slug}`)}
-                    className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
+                    className="group w-[82%] shrink-0 snap-start overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20 sm:w-auto"
                   >
                     <div className="relative aspect-[16/10] bg-wash">
                       <CourseImage src={rc.imageUrl} alt={rc.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
@@ -1186,10 +1150,10 @@ export default function CourseDetailClient({
           cursoSlug={course.slug}
           pais={pais}
           resumen={[
-            descuentoLocalCliente > 0 ? `${descuentoLocalCliente}% de descuento` : null,
-            // "Lunes, 7 de diciembre de 2026" → "Inicia 7 de diciembre": la barra es angosta.
+            descuentoLocalCliente > 0 ? `${descuentoLocalCliente}% dcto.` : null,
+            // "Lunes, 7 de diciembre de 2026" → "Inicia 7 dic": la barra es angosta.
             nextStart
-              ? `Inicia ${nextStart.date.replace(/^[^,]+,\s*/, "").replace(/\s+de\s+\d{4}$/, "").toLowerCase()}`
+              ? `Inicia ${nextStart.date.replace(/^[^,]+,\s*/, "").replace(/\s+de\s+\d{4}$/, "").replace(/\s+de\s+([a-záéíóú]{3})[a-záéíóú]*$/i, " $1").toLowerCase()}`
               : null,
           ]
             .filter(Boolean)
@@ -1619,12 +1583,19 @@ function BarraFijaFicha({
     };
   }, []);
 
-  const visible = !footerVisible && !escribiendo;
+  // Arranca abajo y sube apenas carga la ficha, como una hoja que se asoma.
+  const [entro, setEntro] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setEntro(true), 350);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  const visible = entro && !footerVisible && !escribiendo;
 
   const principal =
-    "inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-ink px-4 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]";
+    "inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl bg-ink px-4 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]";
   const secundario =
-    "inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold no-underline transition-transform active:scale-[0.98]";
+    "inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold no-underline transition-transform active:scale-[0.98]";
 
   return (
     <div
@@ -1633,15 +1604,18 @@ function BarraFijaFicha({
       data-testid="ficha-barra-fija"
       aria-hidden={!visible}
       inert={!visible}
-      className={`fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 mx-auto max-w-xl rounded-2xl border border-line bg-paper/95 p-2 shadow-[0_12px_40px_rgba(23,23,22,0.18)] backdrop-blur-md transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none lg:hidden ${
-        visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[calc(100%+1.5rem)] opacity-0"
+      className={`fixed inset-x-0 bottom-0 z-40 rounded-t-[28px] border-t border-line bg-paper px-4 pb-[calc(0.875rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-14px_40px_rgba(23,23,22,0.14)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:hidden ${
+        visible ? "translate-y-0" : "pointer-events-none translate-y-full"
       }`}
     >
-      <div className="flex items-center justify-between gap-3 px-2 pb-2 pt-0.5">
-        <p className="min-w-0 truncate text-sm font-semibold text-ink">{curso}</p>
+      <div className="mx-auto max-w-xl">
+      <div aria-hidden className="mx-auto mb-2.5 h-1 w-10 rounded-full bg-line-strong" />
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="min-w-0 truncate text-[15px] font-bold tracking-tight text-ink">{curso}</p>
         {resumen ? (
-          <p className="max-w-[62%] shrink-0 truncate rounded-full bg-canvas px-2.5 py-0.5 text-xs font-medium text-mute">
-            {resumen}
+          <p className="inline-flex max-w-[62%] shrink-0 items-center gap-1.5 truncate rounded-full bg-[#15803D]/10 px-2.5 py-1 text-xs font-semibold text-[#126c34]">
+            <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#15803D]" />
+            <span className="truncate">{resumen}</span>
           </p>
         ) : null}
       </div>
@@ -1676,6 +1650,7 @@ function BarraFijaFicha({
           <MessageCircle size={17} aria-hidden />
           WhatsApp
         </WhatsAppCta>
+      </div>
       </div>
     </div>
   );
