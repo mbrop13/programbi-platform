@@ -111,7 +111,7 @@
   line-height: .95;
   letter-spacing: -.05em;
 }
-.valorHero span, .valorHub span { font-size: .5em; font-weight: 800; color: #ffd84d; letter-spacing: -.03em; vertical-align: .12em; }
+.valorHero span, .valorHub span { font-size: .5em; font-weight: 800; color: #69b1ff; letter-spacing: -.03em; vertical-align: .12em; }
 .valorHero sup { font-size: .27em; vertical-align: super; letter-spacing: 0; }
 .etiquetaHero { margin: .6rem 0 0; font-weight: 700; font-size: 1.1rem; }
 .recuento { margin: .2rem 0 0; font-size: 1rem; color: #fff; }
@@ -125,7 +125,7 @@
 .miniSerie svg { display: block; width: 100%; height: auto; overflow: visible; }
 .miniGuia { stroke: currentColor; opacity: .3; stroke-dasharray: 3 5; fill: none; }
 .miniLinea { stroke: currentColor; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.miniPunto { fill: #ffd84d; stroke: currentColor; stroke-width: 2.75; }
+.miniPunto { fill: #1890ff; stroke: currentColor; stroke-width: 2.75; }
 .miniFechas { display: flex; justify-content: space-between; gap: .5rem; color: inherit; font-size: .8rem; line-height: 1.4; }
 .heroComparacion {
   display: flex;
@@ -187,7 +187,7 @@
 .regionesRelacionadas a { display: block; width: fit-content; margin-top: .4rem; }
 
 .descargas { display: grid; grid-template-columns: minmax(0, 1fr); gap: .85rem; }
-.cardCurso { background: #ffd84d; border-color: #ffd84d; color: #111214; }
+.cardCurso { background: #e6f4ff; border-color: #91caff; color: #111214; }
 .cardCurso a { display: block; width: fit-content; margin-top: .65rem; font-weight: 700; }
 .cardCurso a.botonCursoWa {
   display: inline-flex;

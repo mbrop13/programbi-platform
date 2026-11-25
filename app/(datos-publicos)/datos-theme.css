@@ -63,8 +63,8 @@
   --color-ipc-suave: #ffeee3;
   --color-empleo: #0e7a55;
   --color-empleo-suave: #e2f5ec;
-  /* Único acento: marcador amarillo. */
-  --color-resalte: #ffd84d;
+  /* Único acento: azul de marca (antes amarillo #ffd84d). */
+  --color-resalte: #1890ff;
 
   /*
    * "blue" pasa a ser el cobalto de carreras y "slate" el gris neutro de la web principal, para que los

@@ -156,7 +156,7 @@ export default async function InstitucionPage({ params }: { params: Promise<{ sl
               </div>
             )}
             {pagina.acreditacion ? (
-              <span className="sticker absolute top-4 left-4 bg-resalte text-base text-foreground">
+              <span className="sticker absolute top-4 left-4 bg-resalte text-base text-white">
                 {pagina.acreditacion} años de acreditación
               </span>
             ) : null}

@@ -4,7 +4,7 @@
  * Fondo gris neutro de la web principal (#f7f7f8) + tinta (#111214); el color lo ponen los temas.
  * Tres colores de tema, uno por observatorio, para orientarse de un vistazo:
  *   carreras = cobalto, inflación = mandarina, empleo = esmeralda.
- * Un único acento: el amarillo "marcador", que subraya la cifra o palabra clave de cada pantalla.
+ * Un único acento: el azul "marcador" (#1890ff), que subraya la cifra o palabra clave de cada pantalla.
  * Display: Bricolage Grotesque (titulares y cifras). Texto: Figtree.
  */
 .datos-scope {
@@ -85,18 +85,18 @@
   line-height: 1.65;
 }
 
-/* Motivo de identidad: marcador amarillo detrás de la cifra o palabra que importa. */
+/* Motivo de identidad: marcador azul detrás de la cifra o palabra que importa. */
 .datos-scope .marcador {
   padding: 0 0.12em;
   margin: 0 -0.04em;
   border-radius: 0.18em;
-  background: linear-gradient(transparent 12%, #ffd84d 12%, #ffd84d 88%, transparent 88%);
-  color: inherit;
+  background: linear-gradient(transparent 12%, #1890ff 12%, #1890ff 88%, transparent 88%);
+  color: #ffffff;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-/* Etiqueta tipo sticker sobre fotos: rotación leve para restarle solemnidad. */
+/* Etiqueta sobre fotos y datos: recta, sin rotación, para un tono más profesional. */
 .datos-scope .sticker {
   display: inline-flex;
   align-items: center;
@@ -106,7 +106,7 @@
   font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif;
   font-weight: 700;
   letter-spacing: -0.01em;
-  transform: rotate(-2.5deg);
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

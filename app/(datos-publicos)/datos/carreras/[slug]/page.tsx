@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "@/components/datos/EnlaceNavegacionDatos";
 import { notFound } from "next/navigation";
-import { Calculator, GitCompare } from "lucide-react";
+import { Calculator, GitCompare, Trophy } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CarrerasParecidas } from "@/components/datos/CarrerasParecidas";
@@ -27,7 +27,7 @@ import {
   TIPO_ETIQUETAS,
   tipoPrincipalDeCarrera,
 } from "@/lib/datos/carreras";
-import { tituloH1Ficha } from "@/lib/datos/carreras-profesion";
+import { partesTituloFicha } from "@/lib/datos/carreras-profesion";
 import { nombreCortoCarrera } from "@/lib/datos/carreras-seo-mapa";
 import { fechaCorta } from "@/lib/datos/formato";
 import { carrerasParecidas } from "@/lib/datos/parecidas";
@@ -80,6 +80,7 @@ export default async function FichaCarreraPage({
   if (!principal || !ctx) notFound();
 
   const nombreCorto = nombreCortoCarrera(carrera);
+  const tituloFicha = partesTituloFicha(carrera.slug, carrera.nombre);
   const instituciones = getInstitucionesCarrera(slug);
   const programas = getProgramasCarrera(slug);
   const resumen = resumenFichaCarrera(carrera, ctx);
@@ -123,16 +124,28 @@ export default async function FichaCarreraPage({
               <span className="rounded-lg bg-carreras-suave px-2.5 py-1 font-semibold text-blue-800">
                 {carrera.area}
               </span>
-              <span className="sticker bg-resalte text-sm text-foreground">
-                Puesto {ctx.posicionTipo} de {ctx.totalTipo} en {TIPO_ETIQUETAS[ctx.tipo].plural.toLowerCase()}
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-resalte px-2.5 py-1 font-semibold text-white shadow-[0_2px_8px_rgba(24,144,255,0.28)]">
+                <Trophy className="size-3.5" aria-hidden="true" />
+                <span>
+                  <span className="tabular-nums">#{ctx.posicionTipo}</span> de {ctx.totalTipo} en{" "}
+                  {TIPO_ETIQUETAS[ctx.tipo].plural.toLowerCase()}
+                </span>
               </span>
               <span className="text-muted-foreground">
                 Edición {meta.edicion} · act. {fechaCorta(meta.fetched_at)}
               </span>
             </div>
 
-            <h1 className="h1-datos max-w-4xl text-foreground">
-              {tituloH1Ficha(carrera.slug, carrera.nombre)}
+            <h1 className="max-w-4xl text-foreground">
+              <span className="h1-datos block">{tituloFicha.titulo}</span>
+              {tituloFicha.subtitulo ? (
+                <>
+                  {" "}
+                  <span className="mt-3 block text-lg font-medium leading-snug tracking-normal text-muted-foreground sm:text-xl">
+                    {tituloFicha.subtitulo}
+                  </span>
+                </>
+              ) : null}
             </h1>
 
             <div className="flex flex-wrap items-center gap-2 pt-0.5">

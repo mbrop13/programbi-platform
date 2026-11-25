@@ -181,7 +181,7 @@ export default function InflacionPage() {
         </div>
         <Link
           href="/datos/carreras"
-          className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-xl bg-white px-5 text-[15px] font-semibold text-foreground transition-colors hover:bg-resalte"
+          className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-xl bg-white px-5 text-[15px] font-semibold text-foreground transition-colors hover:bg-[#e6f4ff]"
         >
           Ver sueldos de carreras
           <ArrowRight className="size-4" aria-hidden="true" />

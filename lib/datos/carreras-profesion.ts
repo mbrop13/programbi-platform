@@ -48,9 +48,22 @@ export const PROFESION_POR_SLUG: Record<string, string> = {
 };
 
 export function tituloH1Ficha(slug: string, nombre: string): string {
+  const { titulo, subtitulo } = partesTituloFicha(slug, nombre);
+  return subtitulo ? `${titulo} ${subtitulo}` : titulo;
+}
+
+/**
+ * El mismo H1 partido en dos para el diseño: una pregunta corta como título
+ * y el nombre oficial de la carrera como subtítulo. Unidas dan exactamente
+ * `tituloH1Ficha`, así el texto del H1 no cambia para buscadores.
+ */
+export function partesTituloFicha(
+  slug: string,
+  nombre: string
+): { titulo: string; subtitulo: string | null } {
   const prof = PROFESION_POR_SLUG[slug];
   if (prof) {
-    return `¿Cuánto gana un/a ${prof} en Chile? Sueldo de ${nombre}`;
+    return { titulo: `¿Cuánto gana un/a ${prof} en Chile?`, subtitulo: `Sueldo de ${nombre}` };
   }
-  return `Sueldo y empleabilidad de ${nombre} en Chile`;
+  return { titulo: `Sueldo y empleabilidad de ${nombre} en Chile`, subtitulo: null };
 }

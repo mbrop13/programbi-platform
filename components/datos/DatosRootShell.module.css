@@ -204,8 +204,9 @@
 
 .footer {
   margin-top: 80px;
-  background: #111214;
-  color: #d4d6da;
+  border-top: 1px solid #e4e6ea;
+  background: #ffffff;
+  color: #3a3d42;
 }
 .footerInner {
   box-sizing: border-box;
@@ -221,7 +222,7 @@
 }
 .footerLema {
   margin: 0;
-  color: #ffffff;
+  color: #111214;
   font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif;
   font-size: 26px;
   font-weight: 700;
@@ -231,12 +232,12 @@
 .footerLema mark {
   padding: 0 4px;
   border-radius: 4px;
-  background: #ffd84d;
-  color: #111214;
+  background: #1890ff;
+  color: #ffffff;
 }
 .footerBrand p:not(.footerLema) {
   margin: 14px 0 0;
-  color: #b0b4bb;
+  color: #5b6068;
   font-size: 14.5px;
   line-height: 1.6;
 }
@@ -246,6 +247,7 @@
   padding: 8px 10px;
   border-radius: 10px;
   background: #f7f7f8;
+  border: 1px solid #e4e6ea;
 }
 .footerLogo img {
   display: block;
@@ -260,7 +262,7 @@
 }
 .footer nav strong {
   margin-bottom: 6px;
-  color: #ffffff;
+  color: #111214;
   font-family: var(--font-datos-display), var(--font-datos-sans), sans-serif;
   font-size: 15px;
   font-weight: 700;
@@ -269,17 +271,17 @@
   display: inline-flex;
   align-items: center;
   min-height: 32px;
-  color: #d4d6da;
+  color: #3a3d42;
   text-decoration: none;
   transition: color 0.15s ease;
 }
 .footer nav a:hover {
-  color: #ffd84d;
+  color: #0958d9;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 .footer :where(a):focus-visible {
-  outline: 2px solid #ffd84d;
+  outline: 2px solid #1890ff;
   outline-offset: 3px;
   border-radius: 4px;
 }

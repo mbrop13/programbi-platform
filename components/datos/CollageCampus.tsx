@@ -71,12 +71,7 @@ export function CollageCampus({
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            <span
-              className={cn(
-                "sticker absolute bottom-3 left-3 bg-white text-xs text-foreground",
-                i % 2 === 1 && "rotate-[2deg]"
-              )}
-            >
+            <span className="sticker absolute bottom-3 left-3 bg-white text-xs text-foreground">
               {item.nombre}
             </span>
           </div>
@@ -85,7 +80,7 @@ export function CollageCampus({
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="sticker bg-carreras text-[15px] text-white">{carreras} carreras</span>
-        <span className="sticker rotate-[2deg] bg-resalte text-[15px] text-foreground">
+        <span className="sticker bg-resalte text-[15px] text-white">
           {entero(programas)} programas 2026
         </span>
       </div>

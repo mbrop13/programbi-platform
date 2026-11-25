@@ -115,7 +115,7 @@ function SparkDesempleo({ tasas }: { tasas: readonly number[] }) {
         strokeLinejoin="round"
         opacity="0.9"
       />
-      <circle cx={ultimo[0]} cy={ultimo[1]} r="6.5" fill="#ffd84d" stroke="#0e7a55" strokeWidth="2" />
+      <circle cx={ultimo[0]} cy={ultimo[1]} r="6.5" fill="#1890ff" stroke="#0e7a55" strokeWidth="2" />
     </svg>
   );
 }
@@ -178,7 +178,7 @@ export default function DatosPage() {
           <span className="sticker absolute top-4 left-4 bg-carreras text-[15px] text-white">
             {carrerasMeta.conteos.genericas_unicas} carreras
           </span>
-          <span className="sticker absolute bottom-4 left-5 rotate-[2deg] bg-resalte text-[15px] text-foreground">
+          <span className="sticker absolute bottom-4 left-5 bg-resalte text-[15px] text-white">
             {entero(carrerasMeta.conteos.filas_C)} programas 2026
           </span>
         </div>
@@ -313,7 +313,7 @@ export default function DatosPage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href={RUTA_DESEMPLEO}
-              className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-white px-5 text-[15px] font-semibold text-foreground transition-colors hover:bg-resalte active:bg-[#f5c400]"
+              className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-white px-5 text-[15px] font-semibold text-foreground transition-colors hover:bg-[#e6f4ff] active:bg-[#bae0ff]"
             >
               Ver desempleo por región
               <ArrowRight className="size-4" aria-hidden="true" />
