@@ -118,9 +118,13 @@ export default function RecursosRelacionadosCurso({ slug, pais }: { slug: string
     { href: rutaLocal(pais, "/cursos"), label: "Todos los cursos" },
   ];
 
+  const excluirSueldosChile =
+    pais === "pe" || pais === "mx" || pais === "ar" || pais === "co";
+
   const vistos = new Set<string>();
   const enlaces: { href: string; label: string }[] = [];
   for (const enlace of candidatos) {
+    if (excluirSueldosChile && enlace.href === "/sueldos-analista-datos-chile") continue;
     if (vistos.has(enlace.href)) continue;
     vistos.add(enlace.href);
     enlaces.push(enlace);

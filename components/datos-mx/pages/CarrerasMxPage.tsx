@@ -10,7 +10,6 @@ import {
 } from "@/lib/datos-mx/carreras";
 import { pesosMx } from "@/lib/datos-mx/formato";
 import {
-  buildLanguagesMx,
   canonicalMxUrl,
   jsonLdBreadcrumbListMx,
   jsonLdDatasetMx,
@@ -34,14 +33,14 @@ export async function metadataMxCarreras({
   if (pais !== "mx") return {};
 
   const canonical = canonicalMxUrl("/mx/datos/carreras");
-  const hreflang = hreflangDatosDe("/mx/datos/carreras");
+  const languages = hreflangDatosDe("/mx/datos/carreras");
 
   return {
     title: { absolute: TITLE },
     description: DESCRIPTION,
     alternates: {
       canonical,
-      languages: buildLanguagesMx(canonical, hreflang),
+      ...(languages ? { languages } : {}),
     },
     robots: { index: true, follow: true },
     openGraph: {

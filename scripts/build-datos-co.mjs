@@ -28,6 +28,11 @@ const SLUGS_RESERVADOS = new Set([
   "csv",
 ]);
 
+const CORRECCIONES_SLUG = {
+  "administracion-de-la-seguridad-y-saluden-el-trabajo":
+    "administracion-de-la-seguridad-y-salud-en-el-trabajo",
+};
+
 function parseCsvRow(line) {
   const out = [];
   let cur = "";
@@ -179,9 +184,10 @@ function main() {
     const esFicha = r.sugerido_ficha === "si";
     if (!esRanking && !esFicha) continue;
 
-    assert(!SLUGS_RESERVADOS.has(r.slug), `Slug reservado colisiona: ${r.slug}`);
-    assert(!slugsVistos.has(r.slug), `Slug duplicado: ${r.slug}`);
-    slugsVistos.add(r.slug);
+    const slug = CORRECCIONES_SLUG[r.slug] ?? r.slug;
+    assert(!SLUGS_RESERVADOS.has(slug), `Slug reservado colisiona: ${slug}`);
+    assert(!slugsVistos.has(slug), `Slug duplicado: ${slug}`);
+    slugsVistos.add(slug);
 
     if (esFicha) {
       fichasPorNivel[r.nivel_formacion] = (fichasPorNivel[r.nivel_formacion] || 0) + 1;
@@ -226,7 +232,7 @@ function main() {
     }
 
     programasPublicados.push({
-      slug: r.slug,
+      slug,
       programa: r.programa,
       programa_normalizado: r.programa_normalizado,
       nivel_formacion: r.nivel_formacion,

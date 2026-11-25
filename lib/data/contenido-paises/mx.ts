@@ -11,9 +11,9 @@ const contenido: ContenidoPais = {
   },
   seoPaginas: {
     cursos: {
-      title: "Cursos Power BI, SQL y datos en México | ProgramBI",
+      title: "Cursos en vivo de datos, Excel e IA en México | ProgramBI",
       description:
-        "Catálogo en vivo para México: Power BI, SQL, Python y análisis de datos. Horario de Ciudad de México, precios en MXN y proyecto final.",
+        "Catálogo en vivo para México: SQL, Python, Excel, análisis de datos e IA. Horario de Ciudad de México, precios en MXN y proyecto final.",
     },
     faq: {
       title: "Preguntas frecuentes de cursos en México | ProgramBI",
@@ -218,9 +218,9 @@ export const bloqueLocal: DefinicionBloqueLocal = {
         "Cursos en vivo por Zoom para México: análisis de datos, Power BI, SQL y Python. Horario del centro de México, precios en MXN, 3 cuotas y certificado.",
     },
     cursos: {
-      title: "Cursos Power BI, SQL y Python en México | ProgramBI",
+      title: "Cursos en vivo de datos, Excel e IA en México | ProgramBI",
       description:
-        "Catálogo en vivo para México: Power BI, SQL, Python y análisis de datos. Horario de CDMX, precios en pesos y proyecto final con certificado.",
+        "Catálogo en vivo para México: SQL, Python, Excel, análisis de datos e IA. Horario de CDMX, precios en pesos y proyecto final con certificado.",
     },
     "power-bi": {
       title: "Curso de Power BI en vivo para México | ProgramBI",

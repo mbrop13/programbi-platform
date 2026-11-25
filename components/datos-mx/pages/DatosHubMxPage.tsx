@@ -11,7 +11,6 @@ import {
   UMA_2026_MX,
 } from "@/lib/datos-mx/parametros";
 import {
-  buildLanguagesMx,
   canonicalMxUrl,
   jsonLdBreadcrumbListMx,
 } from "@/lib/datos-mx/seo";
@@ -40,7 +39,6 @@ export async function metadataMxHub({
     description: DESCRIPTION,
     alternates: {
       canonical,
-      languages: buildLanguagesMx(canonical),
     },
     robots: { index: true, follow: true },
     openGraph: {

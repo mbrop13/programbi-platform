@@ -51,6 +51,7 @@ function courseHeadingLabel(course: CourseCatalogItem, pais: string): string {
     if (pais === "cl") return "Curso de Power BI en Chile";
     if (pais === "ar") return "Curso de Power BI en Argentina";
     if (pais === "co") return "Curso Power BI en vivo en Colombia";
+    if (pais === "mx") return "Curso de Power BI en México";
     return "Curso de Power BI";
   }
   if (course.slug === "power-automate") {
@@ -65,6 +66,7 @@ function courseDetailAnchor(course: CourseCatalogItem, pais: string): string {
     if (pais === "cl") return "Ver curso de Power BI en Chile →";
     if (pais === "ar") return "Curso de Power BI en Argentina →";
     if (pais === "co") return "Curso de Power BI en Colombia →";
+    if (pais === "mx") return "Curso de Power BI en México →";
     return "Ver curso de Power BI →";
   }
   return `Ver curso de ${course.title} →`;
@@ -250,9 +252,11 @@ export default function CursosPageClient({
               ? "Cursos en vivo de análisis de datos, Excel e IA en Perú"
               : pais === "co"
                 ? "Catálogo de cursos en vivo de datos, Excel e IA en Colombia"
-                : pais === "ar"
-                  ? "Cursos en vivo de análisis de datos, Excel e IA en Argentina"
-                  : `Cursos de Power BI, SQL y análisis de datos en ${paisNombre}`}
+                : pais === "mx"
+                  ? "Cursos en vivo de análisis de datos, Excel e IA en México"
+                  : pais === "ar"
+                    ? "Cursos en vivo de análisis de datos, Excel e IA en Argentina"
+                    : `Cursos de Power BI, SQL y análisis de datos en ${paisNombre}`}
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-mute sm:text-base">
             {pais === "pe" ? (

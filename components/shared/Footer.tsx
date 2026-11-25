@@ -80,6 +80,19 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
     if (!esRutaLocalizable(base)) return href;
     return esRutaIndexablePais(pais, base) ? hrefLocal(href) : href;
   };
+  const navCompanyLinks = companyLinks.flatMap((item) => {
+    if (item.href !== "/sueldos-analista-datos-chile") return [item];
+    if (pais === "pe" || pais === "mx" || pais === "ar") return [];
+    if (pais === "co") {
+      return [
+        {
+          label: "Sueldo analista de datos Colombia",
+          href: "/co/datos/carreras/cuanto-gana-un-analista-de-datos",
+        },
+      ];
+    }
+    return [item];
+  });
   const topCourses = NAV_COURSE_GROUPS.flatMap((g) => g.items).slice(0, 6);
   const contactoMx = pais === "mx" ? getPais("mx").contacto : null;
 
@@ -112,7 +125,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
         </div>
 
         <nav className="flex flex-col gap-3 text-sm font-medium text-text-primary" aria-label="Sitio">
-          {companyLinks.map((item) => (
+          {navCompanyLinks.map((item) => (
             <Link key={item.href} href={hrefIndexable(item.href)} className="no-underline transition-colors hover:text-text-secondary">
               {item.label === "Registrarse" ? etiquetaBoton(pais, item.label) : item.label}
             </Link>

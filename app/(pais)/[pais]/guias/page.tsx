@@ -84,23 +84,27 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       ? "Guías y plantillas de Excel laboral en Colombia | ProgramBI"
       : pais === "pe"
         ? "Guías de Excel, datos e IA en Perú | ProgramBI"
-        : pais === "ar"
-          ? "Guías de Excel, datos e IA para Argentina | ProgramBI"
-          : pais === "us"
-            ? "Guías de datos e IA en español en EE. UU. | ProgramBI"
-            : titleLargo.length <= 60
-              ? titleLargo
-              : `Guías de datos en ${nombre} | ProgramBI`;
+        : pais === "mx"
+          ? "Guías de Excel, datos e IA en México | ProgramBI"
+          : pais === "ar"
+            ? "Guías de Excel, datos e IA para Argentina | ProgramBI"
+            : pais === "us"
+              ? "Guías de datos e IA en español en EE. UU. | ProgramBI"
+              : titleLargo.length <= 60
+                ? titleLargo
+                : `Guías de datos en ${nombre} | ProgramBI`;
   const description =
     pais === "co"
       ? "Guías prácticas y plantillas Excel 2026 para Colombia: prima de servicios, cesantías, intereses, liquidación de contrato y nómina paso a paso."
       : pais === "pe"
         ? "Guías prácticas de Excel laboral, análisis de datos e IA en Perú: gratificación, CTS, liquidación, quinta categoría, boleta y plantillas .xlsx."
-        : pais === "ar"
-          ? "Guías prácticas de Excel, análisis de datos e IA para Argentina: fórmulas, plantillas descargables, indicadores locales y ejemplos paso a paso."
-          : pais === "us"
-            ? "Guías prácticas en español de Claude, Power BI, SQL, Python y Excel para hispanohablantes en Estados Unidos: rutas, ejemplos y cursos en vivo."
-            : `Guías prácticas de Claude, Power BI, SQL, Python y Excel en ${nombre}: rutas de estudio, sueldos del mercado y cursos en vivo.`;
+        : pais === "mx"
+          ? "Guías prácticas de Excel laboral, análisis de datos e IA en México: aguinaldo, finiquito, ISR 2026, PTU, plantillas .xlsx y rutas de estudio."
+          : pais === "ar"
+            ? "Guías prácticas de Excel, análisis de datos e IA para Argentina: fórmulas, plantillas descargables, indicadores locales y ejemplos paso a paso."
+            : pais === "us"
+              ? "Guías prácticas en español de Claude, Power BI, SQL, Python y Excel para hispanohablantes en Estados Unidos: rutas, ejemplos y cursos en vivo."
+              : `Guías prácticas de Claude, Power BI, SQL, Python y Excel en ${nombre}: rutas de estudio, sueldos del mercado y cursos en vivo.`;
   const indexable = esIndexable(pais);
   const share = pageOg({
     title:
@@ -142,7 +146,18 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
   if (!esIsoPais(pais) || pais === ISO_CHILE) notFound();
 
   if (pais === "co") {
+    const guiasPreviasCo = guiasDePais("co");
     const canonicalCo = absoluteUrl("/co/guias");
+    const todasCoParaSchema = [
+      ...GUIAS_PASO_A_PASO_CO.map((guia) => ({
+        name: guia.h1,
+        url: absoluteUrl(`/co/guias/${guia.slug}`),
+      })),
+      ...guiasPreviasCo.map((guia) => ({
+        name: guia.h1,
+        url: absoluteUrl(guia.path),
+      })),
+    ];
     const jsonLdCo = {
       "@context": "https://schema.org",
       "@graph": [
@@ -151,19 +166,19 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
           "@id": `${canonicalCo}#collection`,
           name: "Guías y plantillas de Excel laboral en Colombia (2026)",
           description:
-            "Guías paso a paso y plantillas descargables en Excel con parámetros laborales de Colombia 2026.",
+            "Guías paso a paso y plantillas descargables en Excel con parámetros laborales de Colombia 2026, además de rutas de estudio para Colombia.",
           inLanguage: "es-CO",
           url: canonicalCo,
         },
         {
           "@type": "ItemList",
           "@id": `${canonicalCo}#list`,
-          numberOfItems: GUIAS_PASO_A_PASO_CO.length,
-          itemListElement: GUIAS_PASO_A_PASO_CO.map((guia, index) => ({
+          numberOfItems: todasCoParaSchema.length,
+          itemListElement: todasCoParaSchema.map((item, index) => ({
             "@type": "ListItem",
             position: index + 1,
-            name: guia.h1,
-            url: absoluteUrl(`/co/guias/${guia.slug}`),
+            name: item.name,
+            url: item.url,
           })),
         },
       ],
@@ -222,6 +237,48 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
               </li>
             ))}
           </ol>
+
+          <section aria-labelledby="guias-previas-co" className="mt-14">
+            <h2
+              id="guias-previas-co"
+              className="text-xl font-bold tracking-tight text-[var(--g-ink)] sm:text-2xl"
+            >
+              Más guías de datos, Power BI, SQL, Python e IA en Colombia
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--g-muted)]">
+              Rutas de estudio, precios locales en COP y guías prácticas publicadas para Colombia.
+            </p>
+            <ol className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {guiasPreviasCo.map((guia, idx) => (
+                <li key={guia.path}>
+                  <Link
+                    href={guia.path}
+                    className="group flex h-full flex-col justify-between gap-3 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-5 no-underline shadow-[var(--g-card-shadow)] transition-all hover:-translate-y-0.5 hover:border-[var(--g-accent)] hover:shadow-[var(--g-card-shadow-hover)]"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-semibold tabular-nums text-[var(--g-subtle)]">
+                        {String(idx + 1).padStart(2, "0")}
+                      </span>
+                      <GuiaVisualBadge tone="neutral">
+                        {nombreCurso(guia.course)}
+                      </GuiaVisualBadge>
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold leading-snug text-[var(--g-ink)] group-hover:text-[var(--g-accent)]">
+                        {guia.h1}
+                      </h3>
+                      <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[var(--g-muted)]">
+                        {guia.description}
+                      </p>
+                    </div>
+                    <span className="text-xs font-semibold text-[var(--g-accent)]">
+                      Leer guía →
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </section>
 
           <section className="mt-12 rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-6 shadow-[var(--g-card-shadow)]">
             <h2 className="text-lg font-bold text-[var(--g-ink)]">
@@ -323,7 +380,9 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
       ? "Guías prácticas de Excel, datos e IA en Argentina"
       : pais === "pe"
         ? "Guías prácticas de Excel, datos e IA en Perú"
-        : `Guías de datos y Power BI en ${nombre}`;
+        : pais === "mx"
+          ? "Guías de Excel, datos e IA en México"
+          : `Guías de datos y Power BI en ${nombre}`;
 
   const subtitulo =
     pais === "ar"
@@ -397,12 +456,20 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
             </>
           ) : null}
           {pais === "mx" ? (
-            <Link
-              href="/mx/datos"
-              className="inline-flex min-h-[44px] items-center font-semibold text-[var(--g-accent)] underline underline-offset-4 hover:text-[var(--g-ink)] sm:min-h-0"
-            >
-              Ver datos salariales y carreras en México
-            </Link>
+            <>
+              <Link
+                href="/mx/cursos/power-bi"
+                className="inline-flex min-h-[44px] items-center font-semibold text-[var(--g-accent)] underline underline-offset-4 hover:text-[var(--g-ink)] sm:min-h-0"
+              >
+                Curso de Power BI en México
+              </Link>
+              <Link
+                href="/mx/datos"
+                className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)] sm:min-h-0"
+              >
+                Ver datos salariales y carreras en México
+              </Link>
+            </>
           ) : null}
           {pais === "ar" ? (
             <>

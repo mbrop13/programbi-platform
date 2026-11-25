@@ -109,14 +109,54 @@ export default function Navbar() {
   const pathname = usePathname();
   const paisNav = paisDesdeRuta(pathname) ?? ISO_CHILE;
   const recursosLinks = RECURSOS_LINKS.flatMap((item) => {
+    if (item.href === "/sueldos-analista-datos-chile") {
+      if (paisNav === "pe" || paisNav === "mx" || paisNav === "ar") return [];
+      if (paisNav === "co") {
+        return [
+          {
+            href: "/co/datos/carreras/cuanto-gana-un-analista-de-datos",
+            label: "Sueldo analista de datos Colombia",
+            desc: "Referencia salarial y salida laboral en Colombia",
+          },
+        ];
+      }
+      return [item];
+    }
     if (item.href !== "/datos") return [item];
     if (paisNav === ISO_CHILE) return [item];
+    if (paisNav === "pe") {
+      return [
+        {
+          href: "/pe/datos",
+          label: "Datos de Perú",
+          desc: "Sueldos por carrera y plantillas de Excel de Perú",
+        },
+      ];
+    }
+    if (paisNav === "mx") {
+      return [
+        {
+          href: "/mx/datos",
+          label: "Datos de México",
+          desc: "Carreras IMCO, sueldos y plantillas laborales de México",
+        },
+      ];
+    }
+    if (paisNav === "ar") {
+      return [
+        {
+          href: "/ar/datos",
+          label: "Datos de Argentina",
+          desc: "Carreras, inflación, desempleo y aguinaldo de Argentina",
+        },
+      ];
+    }
     if (paisNav === "co") {
       return [
         {
           href: "/co/datos",
           label: "Datos de Colombia",
-          desc: "Desempleo, carreras, capacitación e IPC de Colombia",
+          desc: "Desempleo, carreras, salarios e IPC de Colombia",
         },
       ];
     }

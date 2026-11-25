@@ -294,9 +294,11 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
               ? "Curso de Power BI en Perú"
               : pais === "co"
                 ? "Curso Power BI en vivo en Colombia"
-                : pais === "ar"
-                  ? "Curso de Power BI en vivo en Argentina"
-                  : undefined
+                : pais === "mx"
+                  ? "Curso de Power BI en vivo en México"
+                  : pais === "ar"
+                    ? "Curso de Power BI en vivo en Argentina"
+                    : undefined
             : undefined
         }
         resumen={

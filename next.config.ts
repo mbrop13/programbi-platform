@@ -709,6 +709,11 @@ const nextConfig: NextConfig = {
         destination: "/ai/:rest*",
         statusCode: 301,
       },
+      {
+        source: "/co/datos/carreras/administracion-de-la-seguridad-y-saluden-el-trabajo",
+        destination: "/co/datos/carreras/administracion-de-la-seguridad-y-salud-en-el-trabajo",
+        statusCode: 301,
+      },
     ];
   },
   async headers() {

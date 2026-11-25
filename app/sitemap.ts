@@ -37,6 +37,7 @@ import { getFichasCarrerasCo } from "@/lib/datos-co/carreras";
 import { getInflacionCo } from "@/lib/datos-co/macro";
 import { getCarrerasPublicablesMx, getMetaCarrerasMx } from "@/lib/datos-mx/carreras";
 import { getCarrerasAr } from "@/lib/datos-ar/carreras";
+import senceData from "@/data/datos-fase3/sence.json";
 import inflacionArJson from "@/data/ar/inflacion.json";
 import desempleoArJson from "@/data/ar/desempleo.json";
 import { getTarjetasInstituciones } from "@/lib/datos/instituciones-paginas";
@@ -222,7 +223,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: fechaIsoDesglose(EDAD.fuente.fecha_actualizacion),
       changeFrequency: "monthly" as const,
     }] : []),
-    { url: `${SITE_URL}/datos/capacitacion`, changeFrequency: "yearly" },
+    entrada("/datos/capacitacion", 0.7, "yearly", `${senceData.year}-12-31`),
     entrada("/empresas", 0.95, "weekly"),
     // Herramientas B2B de autoservicio (diagnóstico de madurez y calculadora de
     // ahorro): páginas propias e indexables, solo en Chile (sin carpeta de país).

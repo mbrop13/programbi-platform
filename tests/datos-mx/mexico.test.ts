@@ -154,10 +154,8 @@ test("canonicales absolutos /mx/... y ausencia de license abierta en Dataset IMC
       m.alternates?.canonical,
       `${SITE_URL}/mx/datos/carreras/${c.slug}`
     );
-    assert.equal(
-      (m.alternates?.languages as Record<string, string>)?.["es-MX"],
-      `${SITE_URL}/mx/datos/carreras/${c.slug}`
-    );
+    const esperado = hreflangDatosDe(`/mx/datos/carreras/${c.slug}`);
+    assert.deepEqual(m.alternates?.languages, esperado);
   }
 
   const dataset = jsonLdDatasetMx({

@@ -79,7 +79,9 @@ export default function IndicePais({ pais }: { pais: string }) {
                               ? "curso de Power BI en Perú"
                               : pais === "co" && curso.slug === "power-bi"
                                 ? "curso de Power BI en Colombia"
-                                : curso.title}
+                                : pais === "mx" && curso.slug === "power-bi"
+                                  ? "curso de Power BI en México"
+                                  : curso.title}
                         </Link>
                       </li>
                     ))}

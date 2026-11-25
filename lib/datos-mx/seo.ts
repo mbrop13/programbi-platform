@@ -22,10 +22,13 @@ export function canonicalMxUrl(path: string): string {
 export function buildLanguagesMx(
   canonical: string,
   extraLanguages?: Record<string, string>
-): Record<string, string> {
+): Record<string, string> | undefined {
+  if (!extraLanguages || Object.keys(extraLanguages).length === 0) {
+    return undefined;
+  }
   return {
     "es-MX": canonical,
-    ...(extraLanguages ?? {}),
+    ...extraLanguages,
   };
 }
 
@@ -36,7 +39,7 @@ export function metadataHubCarrerasMx(opts?: {
   const meta = getMetaCarrerasMx();
   const path = opts?.path ?? BASE_MX_PATH;
   const canonical = canonicalMxUrl(path);
-  const hreflang = hreflangDatosDe(path);
+  const languages = opts?.languages ?? hreflangDatosDe(path);
   const title = `Carreras mejor pagadas en México ${meta.edicion} | ProgramBI`;
   const description = `Ranking de las ${meta.totalPublicables} carreras mejor pagadas en México ${meta.edicion}: ingreso mensual, campo laboral, desocupación e informalidad con datos IMCO y ENOE.`;
 
@@ -45,7 +48,7 @@ export function metadataHubCarrerasMx(opts?: {
     description,
     alternates: {
       canonical,
-      languages: buildLanguagesMx(canonical, { ...hreflang, ...(opts?.languages ?? {}) }),
+      ...(languages ? { languages } : {}),
     },
     robots: { index: true, follow: true },
     openGraph: {
@@ -70,7 +73,7 @@ export function metadataFichaCarreraMx(
 ): Metadata {
   const path = `${FICHAS_MX_PATH}/${carrera.slug}`;
   const canonical = canonicalMxUrl(path);
-  const hreflang = hreflangDatosDe(path);
+  const languages = opts?.languages ?? hreflangDatosDe(path);
   const title = tituloFichaMx(carrera);
   const description = metaFichaMx(carrera);
 
@@ -79,7 +82,7 @@ export function metadataFichaCarreraMx(
     description,
     alternates: {
       canonical,
-      languages: buildLanguagesMx(canonical, { ...hreflang, ...(opts?.languages ?? {}) }),
+      ...(languages ? { languages } : {}),
     },
     robots: { index: true, follow: true },
     openGraph: {

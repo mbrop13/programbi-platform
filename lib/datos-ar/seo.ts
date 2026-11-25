@@ -31,14 +31,14 @@ export function metadataDatosAr(opts: {
   const limpio = opts.subpath ? opts.subpath.replace(/^\/+/, "") : "";
   const path = limpio ? `/ar/datos/${limpio}` : "/ar/datos";
   const url = canonicalArUrl(opts.subpath);
-  const languages = opts.languages ?? hreflangDatosDe(path) ?? { "es-AR": url };
+  const languages = opts.languages ?? hreflangDatosDe(path);
   return {
     title: { absolute: opts.title },
     description: opts.description,
     keywords: opts.keywords,
     alternates: {
       canonical: url,
-      languages,
+      ...(languages ? { languages } : {}),
     },
     robots: opts.noindex ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
