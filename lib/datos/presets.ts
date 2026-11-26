@@ -19,6 +19,8 @@ export interface PresetDefinicion {
   slug: PresetSlug;
   tituloCorto: string;
   h1: string;
+  /** Fragmento literal del H1 que lleva el marcador azul (motivo de identidad de /datos). */
+  h1Marcador: string;
   titleSeo: string;
   descriptionSeo: string;
   metodologia: string[];
@@ -32,6 +34,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "mejor-pagadas",
     tituloCorto: "Mejor pagadas",
     h1: "Carreras mejor pagadas en Chile: ranking por tipo de institución",
+    h1Marcador: "mejor pagadas",
     titleSeo: "Carreras mejor pagadas en Chile 2025-2026: U, IP y CFT",
     descriptionSeo:
       "Ranking oficial de las 25 carreras mejor pagadas en Chile en universidades, IP y CFT al 4.º año según mifuturo.cl (Mineduc), con empleabilidad y sueldo.",
@@ -59,6 +62,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "mas-empleabilidad",
     tituloCorto: "Más empleabilidad",
     h1: "Carreras con mayor empleabilidad en Chile al primer año",
+    h1Marcador: "mayor empleabilidad",
     titleSeo: "Carreras con más empleabilidad en Chile (≥ 100 titulados)",
     descriptionSeo:
       "Top 25 carreras con mayor empleabilidad al 1.er año en Chile según mifuturo.cl (Mineduc), filtradas con al menos 100 titulados 2024 para evitar extremos chicos.",
@@ -86,6 +90,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "mejor-sueldo-por-arancel",
     tituloCorto: "Mejor sueldo por arancel",
     h1: "Carreras con mejor relación entre sueldo y arancel en Chile",
+    h1Marcador: "entre sueldo y arancel",
     titleSeo: "Carreras con mejor retorno por arancel en Chile 2026",
     descriptionSeo:
       "Compara el ingreso bruto anual al 4.º año frente al costo total estimado de arancel y titulación en Chile 2026 según datos oficiales de mifuturo.cl.",
@@ -113,6 +118,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "baratas-con-buena-empleabilidad",
     tituloCorto: "Baratas con buena empleabilidad",
     h1: "Carreras más económicas con alta empleabilidad en Chile",
+    h1Marcador: "alta empleabilidad",
     titleSeo: "Carreras baratas con alta empleabilidad en Chile 2026",
     descriptionSeo:
       "Carreras en el cuartil más económico de arancel 2026 de su tipo de institución y en el 25 % superior de empleabilidad al 1.er año, según mifuturo.cl.",
@@ -140,6 +146,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "crecieron-en-sueldo-real",
     tituloCorto: "Crecieron en sueldo real",
     h1: "Carreras que más crecieron en sueldo real en Chile (2020–2024)",
+    h1Marcador: "más crecieron en sueldo real",
     titleSeo: "Carreras que más subieron de sueldo real en Chile 2020-2024",
     descriptionSeo:
       "Carreras con mayor aumento real del ingreso bruto al 4.º año entre los años de ingreso 2020 y 2024 en Chile, en pesos constantes de septiembre de 2025.",
@@ -167,6 +174,7 @@ export const PRESETS_MAP: Record<PresetSlug, PresetDefinicion> = {
     slug: "mejor-pagadas-vespertinas",
     tituloCorto: "Vespertinas mejor pagadas",
     h1: "Carreras vespertinas mejor pagadas en Chile",
+    h1Marcador: "vespertinas mejor pagadas",
     titleSeo: "Carreras vespertinas mejor pagadas en Chile 2026",
     descriptionSeo:
       "Ranking de carreras con oferta vespertina en Chile en 2026 ordenadas por ingreso bruto al 4.º año según mifuturo.cl (Mineduc), con advertencia metodológica.",

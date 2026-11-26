@@ -1,11 +1,7 @@
 import Link from "@/components/datos/EnlaceNavegacionDatos";
-import { ArrowUpRight, SlidersHorizontal } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button-variants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMetaCarreras, TIPO_ETIQUETAS } from "@/lib/datos/carreras";
-import { anosDesdeSemestres, fechaCorta, pesos, porcentaje } from "@/lib/datos/formato";
+import { fechaCorta, pesos, porcentaje } from "@/lib/datos/formato";
 import {
   filasPreset,
   PRESETS_MAP,
@@ -28,149 +24,149 @@ import { FaqDatos } from "./FaqDatos";
 import { FuenteLinea } from "./FuenteLinea";
 import { DatosViewTracker } from "./HubCarrerasExtras";
 import { MigasDatos } from "./MigasDatos";
+import { RankingPreset, type FilaRankingPreset, type MetricaPreset } from "./RankingPreset";
 
-function TablaPreset({
+/** Cifra que ordena cada ranking: define la barra de cada fila y qué columna no se repite. */
+const METRICA: Record<PresetSlug, MetricaPreset> = {
+  "mejor-pagadas": "ing4",
+  "mas-empleabilidad": "emp1",
+  "mejor-sueldo-por-arancel": "ratio",
+  "baratas-con-buena-empleabilidad": "arancel",
+  "crecieron-en-sueldo-real": "crec",
+  "mejor-pagadas-vespertinas": "ing4",
+};
+
+function aFilas(filas: PresetRow[]): FilaRankingPreset[] {
+  return filas.map((r, idx) => ({
+    pos: idx + 1,
+    slug: r.slug,
+    tipo: r.tipo,
+    nombre: r.nombre,
+    area: r.area,
+    valor: r.valorMetrica,
+    texto: r.textoMetrica,
+    ing4: r.ing4,
+    emp1: r.emp1,
+    arancel: r.arancel_med,
+    dur: r.dur_real,
+  }));
+}
+
+function TituloConMarcador({ texto, marcador }: { texto: string; marcador: string }) {
+  const i = texto.indexOf(marcador);
+  if (i < 0) return <>{texto}</>;
+  return (
+    <>
+      {texto.slice(0, i)}
+      <span className="marcador">{marcador}</span>
+      {texto.slice(i + marcador.length)}
+    </>
+  );
+}
+
+/** Dato de apoyo bajo la cifra principal: la otra mitad de la decisión (sueldo o empleo). */
+function datoApoyo(fila: PresetRow, metrica: MetricaPreset): string {
+  if (metrica === "ing4" || metrica === "arancel") {
+    return `Empleabilidad 1.er año: ${porcentaje(fila.emp1)}`;
+  }
+  return `Sueldo al 4.º año: ${pesos(fila.ing4)}`;
+}
+
+function Podio({
   filas,
-  columnaExtraLabel,
-  mostrarTipo = true,
+  etiquetas,
+  metrica,
+  metricaLabel,
 }: {
   filas: PresetRow[];
-  columnaExtraLabel: string;
-  mostrarTipo?: boolean;
+  etiquetas: string[];
+  metrica: MetricaPreset;
+  metricaLabel: string;
 }) {
-  if (filas.length === 0) {
-    return (
-      <Card className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0">
-        <CardContent className="p-6 text-sm text-muted-foreground">
-          No hay carreras que cumplan este criterio en la edición actual.
-        </CardContent>
-      </Card>
-    );
-  }
+  if (filas.length === 0) return null;
 
   return (
-    <div className="space-y-3">
-      {/* Desktop Table */}
-      <div className="hidden overflow-x-auto rounded-xl border border-border bg-card shadow-xs md:block">
-        <table className="w-full border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-border bg-muted/50 text-xs font-medium text-muted-foreground">
-              <th className="w-12 px-3 py-3 text-center">#</th>
-              <th className="px-3 py-3">Carrera</th>
-              {mostrarTipo ? <th className="px-3 py-3">Tipo</th> : null}
-              <th className="px-3 py-3 text-right">{columnaExtraLabel}</th>
-              <th className="px-3 py-3 text-right">Sueldo 4.º año</th>
-              <th className="px-3 py-3 text-right">Empleabilidad</th>
-              <th className="px-3 py-3 text-right">Arancel anual</th>
-              <th className="px-3 py-3 text-right">Duración real</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/70">
-            {filas.map((row, idx) => (
-              <tr
-                key={`${row.slug}-${row.tipo}`}
-                className="transition-colors hover:bg-muted/35"
+    <section aria-labelledby="podio-titulo">
+      <h2 id="podio-titulo" className="sr-only">
+        Primeros lugares
+      </h2>
+      <ol className="grid grid-cols-2 gap-3 md:grid-cols-[1.3fr_1fr_1fr]">
+        {filas.map((fila, i) => {
+          const lider = i === 0;
+          return (
+            <li
+              key={`${fila.slug}-${fila.tipo}`}
+              className={cn(
+                "group relative flex flex-col rounded-2xl border transition-colors",
+                lider
+                  ? "col-span-2 border-blue-600 bg-blue-600 p-5 text-white hover:bg-blue-700 sm:p-6 md:col-span-1"
+                  : "border-border bg-card p-4 text-foreground hover:border-foreground/30 sm:p-5",
+                filas.length === 2 && !lider && "col-span-2 md:col-span-1"
+              )}
+            >
+              <p
+                className={cn(
+                  "text-sm font-medium",
+                  lider ? "text-white/85" : "text-muted-foreground"
+                )}
               >
-                <td className="px-3 py-3.5 text-center text-xs font-medium text-muted-foreground tabular-nums">
-                  {idx + 1}
-                </td>
-                <td className="px-3 py-3.5">
-                  <Link
-                    href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
-                    className="font-semibold text-foreground hover:text-blue-700 hover:underline"
-                  >
-                    {row.nombre}
-                  </Link>
-                  <div className="text-xs text-muted-foreground">{row.area}</div>
-                </td>
-                {mostrarTipo ? (
-                  <td className="px-3 py-3.5">
-                    <Badge
-                      variant="secondary"
-                      className="h-auto rounded px-1.5 py-0.5 text-[11px] font-medium"
-                    >
-                      {TIPO_ETIQUETAS[row.tipo].corto}
-                    </Badge>
-                  </td>
-                ) : null}
-                <td className="px-3 py-3.5 text-right font-semibold text-blue-700 tabular-nums">
-                  {row.textoMetrica}
-                </td>
-                <td className="px-3 py-3.5 text-right font-semibold text-foreground tabular-nums">
-                  {pesos(row.ing4)}
-                </td>
-                <td className="px-3 py-3.5 text-right text-foreground tabular-nums">
-                  {porcentaje(row.emp1)}
-                </td>
-                <td className="px-3 py-3.5 text-right text-xs text-foreground tabular-nums">
-                  {pesos(row.arancel_med)}
-                </td>
-                <td className="px-3 py-3.5 text-right text-xs text-muted-foreground tabular-nums">
-                  {row.dur_real !== null ? anosDesdeSemestres(row.dur_real) : "Sin dato"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                {etiquetas[i]}
+              </p>
+              <h3
+                className={cn(
+                  "mt-2 font-display leading-tight font-bold tracking-tight text-balance",
+                  lider ? "text-xl sm:text-2xl" : "text-base sm:text-lg"
+                )}
+              >
+                <Link
+                  href={`/datos/carreras/${fila.slug}?tipo=${fila.tipo}`}
+                  className={cn(
+                    "underline-offset-4 after:absolute after:inset-0 after:rounded-2xl group-hover:underline focus-visible:outline-none! focus-visible:after:ring-2 focus-visible:after:ring-offset-2",
+                    lider ? "focus-visible:after:ring-blue-600" : "focus-visible:after:ring-ring"
+                  )}
+                >
+                  {fila.nombre}
+                </Link>
+              </h3>
+              <p className={cn("mt-1 text-sm", lider ? "text-white/85" : "text-muted-foreground")}>
+                {fila.area}
+              </p>
 
-      {/* Mobile Cards */}
-      <div className="space-y-3 md:hidden">
-        {filas.map((row, idx) => (
-          <Card
-            key={`${row.slug}-${row.tipo}`}
-            className="gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0"
-          >
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                    #{idx + 1} · {TIPO_ETIQUETAS[row.tipo].corto} · {row.area}
-                  </span>
-                  <h3 className="mt-0.5 text-base font-semibold text-foreground">
-                    <Link
-                      href={`/datos/carreras/${row.slug}?tipo=${row.tipo}`}
-                      className="hover:text-blue-700 hover:underline"
-                    >
-                      {row.nombre}
-                    </Link>
-                  </h3>
-                </div>
-                <span className="shrink-0 text-sm font-semibold text-blue-700 tabular-nums">
-                  {row.textoMetrica}
-                </span>
+              <div className={cn("mt-auto", lider ? "pt-5" : "pt-4 sm:pt-5")}>
+                <p
+                  className={cn(
+                    "font-display leading-none font-extrabold tracking-tight tabular-nums",
+                    lider ? "kpi-hero" : "text-2xl sm:text-3xl"
+                  )}
+                >
+                  {fila.textoMetrica}
+                </p>
+                <p className={cn("mt-1.5 text-sm", lider ? "text-white/85" : "text-muted-foreground")}>
+                  {metricaLabel}
+                </p>
+                <p
+                  className={cn(
+                    "mt-3 border-t pt-3 tabular-nums",
+                    lider
+                      ? "border-white/25 text-sm text-white"
+                      : "border-border text-xs text-foreground sm:text-sm"
+                  )}
+                >
+                  {datoApoyo(fila, metrica)}
+                </p>
               </div>
-              <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border/70 pt-3 text-xs">
-                <div>
-                  <div className="text-muted-foreground">Sueldo 4.º</div>
-                  <div className="font-semibold text-foreground tabular-nums">
-                    {pesos(row.ing4)}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground">Empleo 1.º</div>
-                  <div className="font-semibold text-foreground tabular-nums">
-                    {porcentaje(row.emp1)}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground">Arancel</div>
-                  <div className="font-medium text-foreground tabular-nums">
-                    {pesos(row.arancel_med)}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
   );
 }
 
 export function VistaPreset({ slug }: { slug: PresetSlug }) {
   const def = PRESETS_MAP[slug];
   const meta = getMetaCarreras();
+  const metrica = METRICA[slug];
   const esMejorPagadas = slug === "mejor-pagadas";
 
   const filasU = esMejorPagadas ? filasPreset(slug, "u") : [];
@@ -199,126 +195,118 @@ export function VistaPreset({ slug }: { slug: PresetSlug }) {
     ],
   };
 
-  const otrosPresets = PRESET_SLUGS.filter((s) => s !== slug);
+  // Mejor pagadas: cada tipo es su propio ranking, así que el podio muestra al primero de cada uno.
+  const podio = esMejorPagadas
+    ? [filasU[0], filasIp[0], filasCft[0]].filter((f): f is PresetRow => Boolean(f))
+    : filasUnicas.slice(0, 3);
+  const etiquetasPodio = esMejorPagadas
+    ? podio.map((f) => `N.º 1 en ${TIPO_ETIQUETAS[f.tipo].plural}`)
+    : podio.map((f, i) => `${i + 1}.º lugar · ${TIPO_ETIQUETAS[f.tipo].singular}`);
+
+  const filasCliente = esMejorPagadas
+    ? [...aFilas(filasU), ...aFilas(filasIp), ...aFilas(filasCft)]
+    : aFilas(filasUnicas);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:space-y-10 lg:py-10">
       <DatosViewTracker evento="datos_preset_view" params={{ preset: slug }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <MigasDatos migas={migas} />
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <header className="max-w-3xl space-y-2.5">
-            <Badge
-              variant="secondary"
-              className="h-auto rounded-md border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
-            >
-              Edición {meta.edicion} · Actualizado el {fechaCorta(meta.fetched_at)}
-            </Badge>
-            <h1 className="h1-datos text-foreground">{def.h1}</h1>
-            <p className="text-base leading-relaxed text-muted-foreground">{def.descriptionSeo}</p>
-          </header>
+        <header className="max-w-3xl space-y-4">
+          <h1 className="h1-datos text-foreground">
+            <TituloConMarcador texto={def.h1} marcador={def.h1Marcador} />
+          </h1>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            {def.descriptionSeo}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Edición {meta.edicion} · actualizado el {fechaCorta(meta.fetched_at)} · fuente
+            mifuturo.cl (SIES, Mineduc)
+          </p>
+        </header>
 
-          <Link
-            href={`/datos/carreras${def.queryFiltros}`}
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "h-9 shrink-0 gap-2 rounded-lg bg-card px-3.5 text-xs font-medium"
-            )}
-          >
-            <SlidersHorizontal className="size-3.5 text-blue-700" aria-hidden="true" />
-            Personalizar filtros
-          </Link>
-        </div>
+        <nav aria-label="Rankings de carreras">
+          <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden">
+            {PRESET_SLUGS.map((s) => {
+              const actual = s === slug;
+              return (
+                <li key={s} className="shrink-0">
+                  <Link
+                    href={`/datos/carreras/${s}`}
+                    aria-current={actual ? "page" : undefined}
+                    className={cn(
+                      "inline-flex h-11 items-center rounded-xl border px-3.5 text-sm font-medium whitespace-nowrap transition-colors sm:h-9",
+                      actual
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border bg-card text-foreground hover:border-foreground/40 active:bg-muted"
+                    )}
+                  >
+                    {PRESETS_MAP[s].tituloCorto}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </div>
 
-      <section aria-label="Tabla de resultados">
-        {esMejorPagadas ? (
-          <Tabs defaultValue="u" className="space-y-4">
-            <TabsList className="h-9 bg-muted p-1">
-              <TabsTrigger value="u" className="px-3 text-xs font-medium sm:text-sm">
-                Universidades ({filasU.length})
-              </TabsTrigger>
-              <TabsTrigger value="ip" className="px-3 text-xs font-medium sm:text-sm">
-                Institutos (IP) ({filasIp.length})
-              </TabsTrigger>
-              <TabsTrigger value="cft" className="px-3 text-xs font-medium sm:text-sm">
-                CFT ({filasCft.length})
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="u" keepMounted>
-              <TablaPreset
-                filas={filasU}
-                columnaExtraLabel={def.columnaExtraLabel}
-                mostrarTipo={false}
-              />
-            </TabsContent>
-            <TabsContent value="ip" keepMounted>
-              <TablaPreset
-                filas={filasIp}
-                columnaExtraLabel={def.columnaExtraLabel}
-                mostrarTipo={false}
-              />
-            </TabsContent>
-            <TabsContent value="cft" keepMounted>
-              <TablaPreset
-                filas={filasCft}
-                columnaExtraLabel={def.columnaExtraLabel}
-                mostrarTipo={false}
-              />
-            </TabsContent>
-          </Tabs>
-        ) : (
-          <TablaPreset filas={filasUnicas} columnaExtraLabel={def.columnaExtraLabel} />
-        )}
-      </section>
-
-      <EnResumen
-        frases={resumen}
-        fuente={`Fuente: www.mifuturo.cl (SIES, Mineduc), edición ${meta.edicion}.`}
+      <Podio
+        filas={podio}
+        etiquetas={etiquetasPodio}
+        metrica={metrica}
+        metricaLabel={def.columnaExtraLabel}
       />
 
-      <Card
-        aria-labelledby="metodologia-preset-titulo"
-        className="prose-datos gap-3 rounded-xl border border-border bg-card py-6 shadow-xs ring-0"
-      >
-        <CardHeader className="px-6 pb-0">
-          <CardTitle id="metodologia-preset-titulo" className="text-lg font-semibold text-foreground">
-            Cómo se construye este ranking
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2.5 px-6 text-sm leading-relaxed text-foreground/85">
-          {def.metodologia.map((parrafo) => (
-            <p key={parrafo}>{parrafo}</p>
-          ))}
-        </CardContent>
-      </Card>
-
-      <section aria-labelledby="otras-vistas-titulo" className="space-y-3">
-        <h2 id="otras-vistas-titulo" className="text-base font-semibold text-foreground">
-          Otras listas recomendadas
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {otrosPresets.map((otro) => {
-            const p = PRESETS_MAP[otro];
-            return (
-              <Link
-                key={otro}
-                href={`/datos/carreras/${otro}`}
-                className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground shadow-xs transition-all hover:border-slate-300 hover:text-blue-700"
-              >
-                <span>{p.tituloCorto}</span>
-                <ArrowUpRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-              </Link>
-            );
-          })}
+      <section aria-labelledby="ranking-titulo" className="space-y-4">
+        <div className="space-y-1">
+          <h2 id="ranking-titulo" className="h2-datos text-foreground">
+            Ranking completo
+          </h2>
+          <p className="text-sm text-muted-foreground sm:text-base">
+            Abre cualquier carrera para ver su sueldo año a año, las instituciones que la dictan y
+            sus aranceles.
+          </p>
         </div>
+        <RankingPreset
+          filas={filasCliente}
+          metrica={metrica}
+          metricaLabel={def.columnaExtraLabel}
+          separadoPorTipo={esMejorPagadas}
+          hrefExplorador={`/datos/carreras${def.queryFiltros}`}
+        />
       </section>
+
+      <div className="grid items-start gap-4 lg:grid-cols-2">
+        <EnResumen
+          frases={resumen}
+          fuente={`Fuente: www.mifuturo.cl (SIES, Mineduc), edición ${meta.edicion}.`}
+        />
+
+        <Card
+          aria-labelledby="metodologia-preset-titulo"
+          className="prose-datos gap-3 rounded-xl border border-border bg-card py-5 shadow-xs ring-0"
+        >
+          <CardHeader className="px-6 pb-0">
+            <CardTitle
+              id="metodologia-preset-titulo"
+              className="text-base font-semibold tracking-tight text-foreground"
+            >
+              Cómo se construye este ranking
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2.5 px-6 text-sm leading-relaxed text-foreground/85">
+            {def.metodologia.map((parrafo) => (
+              <p key={parrafo}>{parrafo}</p>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
 
       <CarrerasAltaAfinidad />
 

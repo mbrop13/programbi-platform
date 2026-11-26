@@ -29,6 +29,8 @@ interface BuscadorCarrerasProps {
   children?: React.ReactNode;
   /** Clases del disparador cuando `variante="boton"`. */
   botonClassName?: string;
+  /** Texto con que se abre el diálogo (ej. lo que ya se escribió en otro buscador). */
+  consultaInicial?: string;
 }
 
 export function BuscadorCarreras({
@@ -40,6 +42,7 @@ export function BuscadorCarreras({
   variante = "campo",
   children,
   botonClassName,
+  consultaInicial,
 }: BuscadorCarrerasProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
@@ -71,11 +74,12 @@ export function BuscadorCarreras({
     (abierto: boolean) => {
       setOpen(abierto);
       if (abierto) {
+        if (consultaInicial) setQuery(consultaInicial);
         setUsado(true);
         void ensureLoaded();
       }
     },
-    [ensureLoaded]
+    [ensureLoaded, consultaInicial]
   );
 
   React.useEffect(() => {
