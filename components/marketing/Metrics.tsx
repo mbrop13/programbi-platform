@@ -1,6 +1,9 @@
+import { courses } from "@/lib/data/courses";
+
 export const stats = [
   { value: "+5.000", label: "Estudiantes formados" },
-  { value: "13", label: "Programas en vivo" },
+  // Mismo conteo que la sección «Cursos» de la home, para que las dos cifras no se contradigan.
+  { value: String(courses.length), label: "Programas en vivo" },
   { value: "100%", label: "Clases en vivo por Zoom" },
 ];
 

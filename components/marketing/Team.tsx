@@ -19,55 +19,52 @@ export default function Team() {
           {mentors.map((mentor) => (
             <article
               key={mentor.name}
-              className="flex gap-4 rounded-[22px] border border-line bg-paper p-5"
+              className="flex flex-col rounded-[22px] border border-line bg-paper p-5"
             >
-              <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl bg-wash">
-                {mentor.imageUrl ? (
-                  <CourseImage
-                    src={mentor.imageUrl}
-                    alt={mentor.name}
-                    fill
-                    sizes="96px"
-                    className="object-cover object-[center_18%]"
-                  />
-                ) : null}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <h3 className="truncate text-[17px] font-bold tracking-tight text-ink">
-                      {mentor.name}
-                      {mentor.isFounder ? (
-                        <span className="ml-2 rounded-full bg-wash px-2 py-0.5 align-middle text-[10px] font-semibold text-mute">
-                          Fundador
-                        </span>
-                      ) : null}
-                    </h3>
-                    <p className="mt-0.5 truncate text-[13px] text-mute">{mentor.role}</p>
-                  </div>
-                  {mentor.linkedinUrl ? (
-                    <a
-                      href={mentor.linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0 text-mute transition-colors hover:text-ink"
-                      aria-label={`LinkedIn de ${mentor.name}`}
-                    >
-                      <Linkedin size={16} />
-                    </a>
+              {/* Foto junto al nombre; el perfil va debajo a todo el ancho para que no se corte en móvil. */}
+              <div className="flex items-start gap-4">
+                <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl bg-wash sm:size-20">
+                  {mentor.imageUrl ? (
+                    <CourseImage
+                      src={mentor.imageUrl}
+                      alt={mentor.name}
+                      fill
+                      sizes="80px"
+                      className="object-cover object-[center_18%]"
+                    />
                   ) : null}
                 </div>
-                <ul className="mt-2.5 space-y-1 text-[13px] leading-snug text-mute">
-                  {mentor.credentials.slice(0, 3).map((line) => (
-                    <li key={line} className="line-clamp-2">
-                      {line}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2.5 text-xs font-medium text-ink">
-                  {mentor.studentCount.toLocaleString("es-CL")}+ alumnos · {mentor.yearsExperience}+ años
-                </p>
+                <div className="min-w-0 flex-1 pt-0.5">
+                  <h3 className="text-[17px] leading-tight font-bold tracking-tight text-ink">
+                    {mentor.name}
+                  </h3>
+                  <p className="mt-1 text-[13px] text-mute">{mentor.role}</p>
+                  {mentor.isFounder ? (
+                    <span className="mt-1.5 inline-block rounded-full bg-wash px-2 py-0.5 text-[11px] font-semibold text-mute">
+                      Fundador
+                    </span>
+                  ) : null}
+                </div>
+                {mentor.linkedinUrl ? (
+                  <a
+                    href={mentor.linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="-mt-2.5 -mr-2.5 grid size-11 shrink-0 place-items-center rounded-xl text-mute transition-colors hover:bg-wash hover:text-ink"
+                    aria-label={`LinkedIn de ${mentor.name}`}
+                  >
+                    <Linkedin size={18} aria-hidden="true" />
+                  </a>
+                ) : null}
               </div>
+              <ul className="mt-4 space-y-1.5 text-[13px] leading-snug text-mute">
+                {mentor.credentials.slice(0, 3).map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+              <p className="mt-auto pt-3 text-xs font-medium text-ink">
+                {mentor.studentCount.toLocaleString("es-CL")}+ alumnos · {mentor.yearsExperience}+ años
+              </p>
             </article>
           ))}
         </div>

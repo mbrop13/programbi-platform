@@ -1120,6 +1120,16 @@ body.footer-revealed [class*="z-[9998]"] {
   }
 }
 
+/* Páginas con su propio botón de WhatsApp a la vista (hero de la home): la burbuja
+   queda oculta hasta que WhatsAppButton confirma que ese bloque salió de pantalla. */
+body:has([data-oculta-wa-flotante]) .wa-flotante {
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+body:has([data-oculta-wa-flotante]) .wa-flotante:not([data-libre]) {
+  opacity: 0;
+  visibility: hidden;
+}
+
 /* ========================================================================== */
 /* Sistema Visual Editorial de Guías (.guias-scope)                           */
 /* Encapsulado para no alterar los tokens globales de los demás módulos.      */

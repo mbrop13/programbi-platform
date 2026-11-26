@@ -34,6 +34,29 @@ export default function WhatsAppButton() {
     setMensaje((i) => (i + 1) % MENSAJES.length);
   };
 
+  // Si la página ya muestra su propio botón de WhatsApp (p. ej. la hero de la home),
+  // la burbuja espera a que ese bloque salga de pantalla: así no lo duplica ni tapa
+  // contenido. El CSS la mantiene oculta desde el HTML del servidor (sin parpadeo)
+  // hasta que este efecto marca `data-libre`.
+  const [libre, setLibre] = useState(false);
+  useEffect(() => {
+    const bloques = document.querySelectorAll("[data-oculta-wa-flotante]");
+    if (bloques.length === 0 || !("IntersectionObserver" in window)) {
+      setLibre(true);
+      return;
+    }
+    const visibles = new Set<Element>();
+    const io = new IntersectionObserver((entradas) => {
+      for (const e of entradas) {
+        if (e.isIntersecting) visibles.add(e.target);
+        else visibles.delete(e.target);
+      }
+      setLibre(visibles.size === 0);
+    });
+    bloques.forEach((b) => io.observe(b));
+    return () => io.disconnect();
+  }, [pathname]);
+
   useEffect(() => {
     const showTimer = setTimeout(abrir, 2000);
     const hideTimer = setTimeout(cerrar, 7000);
@@ -94,7 +117,10 @@ export default function WhatsAppButton() {
   if (!href) return null;
 
   return (
-    <div className="wa-flotante pointer-events-none fixed right-6 bottom-6 z-[9998] flex items-center justify-end select-none">
+    <div
+      data-libre={libre ? "" : undefined}
+      className="wa-flotante pointer-events-none fixed right-6 bottom-6 z-[9998] flex items-center justify-end select-none"
+    >
         {showTooltip && (
           <div
             className="absolute right-full top-1/2 -translate-y-1/2 mr-3 flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-ink px-3.5 py-2 text-[13px] font-semibold text-canvas shadow-lg pointer-events-auto"

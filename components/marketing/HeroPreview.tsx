@@ -87,7 +87,7 @@ export default function HeroPreview({
         <div
           role="tablist"
           aria-label="Herramientas del programa"
-          className="flex items-center gap-1"
+          className="flex shrink-0 items-center gap-1 whitespace-nowrap"
         >
           {HERO_TABS.map((tab, idx) => {
             const Icon = ICONOS[tab.id];
@@ -119,10 +119,15 @@ export default function HeroPreview({
           })}
         </div>
 
-        <span className="hidden truncate font-mono text-[11px] font-medium text-text-muted sm:inline">
-          {activeFile}
+        <span className="hidden min-w-0 truncate font-mono text-[11px] font-medium text-text-muted sm:inline">
+          Datos de ejemplo · {activeFile}
         </span>
       </div>
+
+      {/* En móvil las pestañas ocupan todo el ancho: el aviso va en su propia línea. */}
+      <p className="border-b border-border bg-surface px-4 py-1.5 font-mono text-[11px] font-medium text-text-muted sm:hidden">
+        Datos de ejemplo · {activeFile}
+      </p>
 
       {/* Viewport con respiración real */}
       <div
@@ -179,7 +184,7 @@ function BarraCurso({
               </span>
             ) : null}
           </div>
-          <p className="mt-0.5 truncate text-xs text-[#b4b7c0] tabular-nums">{detalle}</p>
+          <p className="mt-0.5 text-xs text-[#b4b7c0] tabular-nums sm:truncate">{detalle}</p>
         </div>
       </div>
 

@@ -402,6 +402,7 @@ export default function Navbar() {
               width={150}
               height={32}
               sizes="150px"
+              loading="eager"
               className="h-8 w-[150px] object-contain object-left"
             />
           </Link>

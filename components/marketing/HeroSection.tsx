@@ -117,8 +117,13 @@ export default function HeroSection({
 
   return (
     <section id="inicio" className="bg-bg text-text-primary">
-      <div className="mx-auto grid max-w-[1440px] gap-10 px-4 pt-6 pb-12 sm:px-6 sm:pt-8 sm:pb-14 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-center lg:px-8 lg:pt-10 lg:pb-16 xl:gap-14 xl:px-10">
-        <div className="min-w-0">
+      {/*
+        Tres celdas: texto + botones, panel y prueba (checks + cifras). En móvil van en ese
+        orden para que el panel entre en la primera pantalla; en escritorio el texto y la
+        prueba comparten la columna izquierda y el panel ocupa la derecha, como antes.
+      */}
+      <div className="mx-auto grid max-w-[1440px] gap-8 px-4 pt-6 pb-12 sm:px-6 sm:pt-8 sm:pb-14 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-x-10 lg:gap-y-0 lg:px-8 lg:pt-10 lg:pb-16 xl:gap-x-14 xl:px-10">
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1 lg:self-end" data-oculta-wa-flotante>
           {proximo ? (
             <Link
               href={proximo.href}
@@ -180,34 +185,9 @@ export default function HeroSection({
             )}
           </div>
           <p className="mt-3 text-sm text-text-muted">Te respondemos con fechas y valores.</p>
-
-          <ul className="mt-6 flex flex-col gap-2 text-sm font-medium text-text-primary sm:flex-row sm:flex-wrap sm:gap-x-5">
-            {BENEFICIOS.map((item) => (
-              <li key={item} className="inline-flex items-center gap-2">
-                <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-text-primary text-surface">
-                  <Check size={11} strokeWidth={3} aria-hidden="true" />
-                </span>
-                {item}
-              </li>
-            ))}
-          </ul>
-
-          <dl className="mt-8 grid max-w-[34rem] grid-cols-3 border-t border-border pt-6">
-            {stats.map((s, i) => (
-              <div
-                key={s.label}
-                className={`flex flex-col-reverse ${i > 0 ? "border-l border-border pl-4 sm:pl-6" : "pr-2"}`}
-              >
-                <dt className="mt-1 text-xs leading-snug text-text-secondary">{s.label}</dt>
-                <dd className="text-2xl font-semibold tracking-tight text-text-primary tabular-nums sm:text-3xl">
-                  {s.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
         </div>
 
-        <div className="min-w-0">
+        <div className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
           <HeroPreview cursos={cursosDelPanel(pais, schedules, promotions)}>
             {profesor?.imageUrl ? (
               <div className="flex shrink-0 items-center gap-2.5">
@@ -230,6 +210,33 @@ export default function HeroSection({
               </div>
             ) : null}
           </HeroPreview>
+        </div>
+
+        <div className="min-w-0 lg:col-start-1 lg:row-start-2 lg:self-start">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-text-primary lg:mt-6">
+            {BENEFICIOS.map((item) => (
+              <li key={item} className="inline-flex items-center gap-2">
+                <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-text-primary text-surface">
+                  <Check size={11} strokeWidth={3} aria-hidden="true" />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <dl className="mt-6 grid max-w-[34rem] grid-cols-3 border-t border-border pt-6 lg:mt-8">
+            {stats.map((s, i) => (
+              <div
+                key={s.label}
+                className={`flex flex-col-reverse ${i > 0 ? "border-l border-border pl-4 sm:pl-6" : "pr-2"}`}
+              >
+                <dt className="mt-1 text-xs leading-snug text-text-secondary">{s.label}</dt>
+                <dd className="text-2xl font-semibold tracking-tight text-text-primary tabular-nums sm:text-3xl">
+                  {s.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
     </section>

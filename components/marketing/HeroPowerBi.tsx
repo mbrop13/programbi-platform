@@ -134,7 +134,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
             <Kpi
               label="Ingresos"
               value={data.ingresos}
-              hint={`${data.delta > 0 ? "+" : ""}${data.delta}% YoY`}
+              hint={`${data.delta > 0 ? "+" : ""}${data.delta} % vs. ${Number(year) - 1}`}
               trend={data.delta > 0 ? "up" : "down"}
             />
             <Kpi label="Órdenes" value={data.ordenes} hint={`Año ${year}`} />
@@ -152,7 +152,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                 </p>
                 <span className="text-xs font-medium text-[#0b63c5] tabular-nums dark:text-[#60a5fa]">
                   {activeBar !== null
-                    ? `${MONTHS[activeBar]}: $${data.barsM[activeBar].toFixed(1)}M`
+                    ? `${MONTHS[activeBar]}: ${millones(data.barsM[activeBar], demo.locale)}`
                     : `Total: ${data.ingresos}`}
                 </span>
               </div>
@@ -185,7 +185,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                           textAnchor="end"
                           className="fill-[#525866] text-[9.5px] tabular-nums dark:fill-[#9ca3af]"
                         >
-                          {tick}M
+                          {tick} M
                         </text>
                       </g>
                     );
@@ -235,7 +235,7 @@ export default function PowerBiCanvas({ demo }: { demo: DemoPais }) {
                           className="cursor-pointer"
                           tabIndex={0}
                           role="button"
-                          aria-label={`${MONTHS[i]}: $${val.toFixed(1)}M`}
+                          aria-label={`${MONTHS[i]}: ${millones(val, demo.locale)}`}
                           onMouseEnter={() => setActiveBar(i)}
                           onMouseLeave={() => setActiveBar(null)}
                           onFocus={() => setActiveBar(i)}
@@ -474,6 +474,15 @@ function Kpi({
   );
 }
 
+/** Cifras del panel con el formato del país (coma decimal en Chile): `$234,5 M`. */
+function decimal(n: number, locale: string): string {
+  return n.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
+function millones(n: number, locale: string): string {
+  return `$${decimal(n, locale)} M`;
+}
+
 function compute(region: RegionKey, year: "2025" | "2026", channel: string | null, demo: DemoPais) {
   const yf = year === "2025" ? 0.86 : 1;
   const rf = region === "all" ? 1 : region === 0 ? 0.55 : region === 1 ? 0.27 : 0.18;
@@ -500,14 +509,14 @@ function compute(region: RegionKey, year: "2025" | "2026", channel: string | nul
     (channel ? CHANNELS.filter((c) => c.name === channel) : CHANNELS.slice(0, 2)).map((c) => ({
       mes,
       canal: c.name,
-      ventas: `$${((18 - i) * 1.4 * f * (c.name === "Retail" ? 1.2 : 0.8)).toFixed(1)}M`,
+      ventas: millones((18 - i) * 1.4 * f * (c.name === "Retail" ? 1.2 : 0.8), demo.locale),
     })),
   );
 
   return {
-    ingresos: `$${ingresos.toFixed(1)}M`,
+    ingresos: millones(ingresos, demo.locale),
     ordenes: ordenes.toLocaleString(demo.locale),
-    ticket: `$${(27.8 * yf).toFixed(1)}k`,
+    ticket: `$${decimal(27.8 * yf, demo.locale)} mil`,
     delta: year === "2026" ? 12 : -4,
     barsM,
     channels,
