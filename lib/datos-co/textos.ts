@@ -8,6 +8,7 @@ import {
   millonesCortoCo,
   nombreProgramaCo,
   pesosCo,
+  plural,
   porcentajeCo,
   smmlvCo,
 } from "./formato";
@@ -101,11 +102,11 @@ export function narrativaUnicaFichaCo(carrera: CarreraCo): string[] {
   }
 
   const parteSnies = carrera.snies_2025
-    ? ` En el registro SNIES 2025, este programa reportó ${enteroCo(carrera.snies_2025.graduados_2025)} graduados en ${enteroCo(carrera.snies_2025.n_ies)} instituciones.`
+    ? ` En el registro SNIES 2025, este programa reportó ${enteroCo(carrera.snies_2025.graduados_2025)} graduados en ${plural(carrera.snies_2025.n_ies, "institución", "instituciones")}.`
     : "";
 
   parrafos.push(
-    `De sus ${grad} graduados cotizantes en seguridad social distribuidos en ${enteroCo(carrera.n_ies)} instituciones de educación superior, el ${pct4} percibe 4 SMMLV o más.${parteSnies}`
+    `De sus ${grad} graduados cotizantes en seguridad social distribuidos en ${plural(carrera.n_ies, "institución", "instituciones")} de educación superior, el ${pct4} percibe 4 SMMLV o más.${parteSnies}`
   );
 
   if (carrera.sector_ies) {
@@ -133,7 +134,7 @@ export function faqsFichaCo(carrera: CarreraCo): PreguntaFaqCo[] {
     },
     {
       pregunta: `¿Qué porcentaje gana 4 SMMLV o más en ${nombre}?`,
-      respuesta: `Entre los ${grad} graduados cotizantes en seguridad social observados por el OLE en ${enteroCo(carrera.n_ies)} instituciones, el ${pct4} se ubica en los tramos de 4 SMMLV o superiores ($7.003.620 o más a valores de 2026).`,
+      respuesta: `Entre los ${grad} graduados cotizantes en seguridad social observados por el OLE en ${plural(carrera.n_ies, "institución", "instituciones")}, el ${pct4} se ubica en los tramos de 4 SMMLV o superiores ($7.003.620 o más a valores de 2026).`,
     },
   ];
 
@@ -148,7 +149,7 @@ export function faqsFichaCo(carrera: CarreraCo): PreguntaFaqCo[] {
   if (carrera.snies_2025) {
     faqs.push({
       pregunta: `¿Cuántos estudiantes se graduaron de ${nombre} en 2025?`,
-      respuesta: `De acuerdo con el SNIES del Ministerio de Educación Nacional, en 2025 se registraron ${enteroCo(carrera.snies_2025.graduados_2025)} graduados de ${nombre} (${carrera.nivel_formacion}) en ${enteroCo(carrera.snies_2025.n_ies)} instituciones.`,
+      respuesta: `De acuerdo con el SNIES del Ministerio de Educación Nacional, en 2025 se registraron ${enteroCo(carrera.snies_2025.graduados_2025)} graduados de ${nombre} (${carrera.nivel_formacion}) en ${plural(carrera.snies_2025.n_ies, "institución", "instituciones")}.`,
     });
   }
 

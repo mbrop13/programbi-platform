@@ -1,28 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Building2, Trophy } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button-variants";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EnResumen } from "@/components/datos/EnResumen";
 import { FaqDatos } from "@/components/datos/FaqDatos";
-import { KpiCard } from "@/components/datos/KpiCard";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { CtaDatosCo } from "@/components/datos-co/CtaDatosCo";
 import { GraficoRangosCo } from "@/components/datos-co/carreras/GraficoRangosCo";
 import {
   getFichaPorSlugCo,
-  getFichasCarrerasCo,
   getIesPorCarreraCo,
   getMetaCarrerasCo,
+  medianaNivelCo,
   posicionEnNivelCo,
 } from "@/lib/datos-co/carreras";
 import { cursosAfinesCo } from "@/lib/datos-co/cursos-afines";
 import {
   enteroCo,
+  nombreIesCo,
   nombreProgramaCo,
   pesosCo,
+  plural,
   porcentajeCo,
   smmlvCo,
 } from "@/lib/datos-co/formato";
@@ -41,9 +37,7 @@ import {
   relacionadasFichaCo,
   tituloFichaCo,
 } from "@/lib/datos-co/textos";
-import { cn } from "@/lib/utils";
-
-
+import type { NivelFormacionCo } from "@/lib/datos-co/types";
 
 export async function metadataCoFicha({
   params,
@@ -72,19 +66,80 @@ function enlaceRankingPorNivel(nivel: string): { href: string; label: string } {
   if (nivel === "Tecnológico") {
     return {
       href: "/co/datos/carreras/tecnologicas-mejor-pagadas",
-      label: "Ver ranking de carreras tecnológicas",
+      label: "Ranking de carreras tecnológicas",
     };
   }
   if (nivel === "Formación técnica profesional") {
     return {
       href: "/co/datos/carreras/mejor-pagadas#ranking-tecnicas",
-      label: "Ver ranking de técnicas profesionales",
+      label: "Ranking de técnicas profesionales",
     };
   }
   return {
     href: "/co/datos/carreras/mejor-pagadas#ranking-universitarias",
-    label: "Ver ranking de carreras universitarias",
+    label: "Ranking de carreras universitarias",
   };
+}
+
+/** Nombre del nivel en plural para frases como «la mediana de las carreras tecnológicas». */
+function nivelEnFrase(nivel: NivelFormacionCo | string): string {
+  if (nivel === "Tecnológico") return "las carreras tecnológicas";
+  if (nivel === "Formación técnica profesional") return "las técnicas profesionales";
+  if (nivel === "Universitario") return "las carreras universitarias";
+  return `su nivel (${nivel})`;
+}
+
+const H2 = "text-2xl font-bold tracking-[-0.02em] text-ink sm:text-[1.75rem]";
+
+/** Barra horizontal comparativa: siempre parte en cero para no exagerar diferencias. */
+function BarraComparada({
+  etiqueta,
+  valor,
+  max,
+  destacada,
+}: {
+  etiqueta: string;
+  valor: number;
+  max: number;
+  destacada?: boolean;
+}) {
+  const ancho = Math.max(2, Math.min(100, (valor / max) * 100));
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-3 text-sm">
+        <span className={destacada ? "font-semibold text-ink" : "text-mute"}>{etiqueta}</span>
+        <span className={`tabular-nums ${destacada ? "font-semibold text-ink" : "text-mute"}`}>
+          {smmlvCo(valor)}
+        </span>
+      </div>
+      <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-wash" aria-hidden="true">
+        <div
+          className={`h-full rounded-full ${destacada ? "bg-[#0b63c5]" : "bg-[#0b63c5]/35"}`}
+          style={{ width: `${ancho}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Dato({
+  valor,
+  etiqueta,
+  detalle,
+}: {
+  valor: string;
+  etiqueta: string;
+  detalle?: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-5">
+      <dt className="text-sm text-mute">{etiqueta}</dt>
+      <dd className="mt-2 text-2xl font-bold tracking-tight text-ink tabular-nums sm:text-[1.75rem]">
+        {valor}
+      </dd>
+      {detalle ? <dd className="mt-1 text-sm text-mute tabular-nums">{detalle}</dd> : null}
+    </div>
+  );
 }
 
 export async function PageCoFicha({
@@ -101,12 +156,52 @@ export async function PageCoFicha({
   const meta = getMetaCarrerasCo();
   const nombre = nombreProgramaCo(carrera.programa);
   const pos = posicionEnNivelCo(carrera.slug);
+  const medNivel = medianaNivelCo(carrera.nivel_formacion);
   const narrativa = narrativaUnicaFichaCo(carrera);
   const faqs = faqsFichaCo(carrera);
   const iesLista = getIesPorCarreraCo(carrera.slug);
   const relacionadas = relacionadasFichaCo(carrera, 4);
   const cursos = cursosAfinesCo(carrera);
   const rankingLink = enlaceRankingPorNivel(carrera.nivel_formacion);
+  const maxComparacion = Math.max(carrera.mediana_smmlv, medNivel.mediana_smmlv) * 1.1;
+  const maxIes = Math.max(...iesLista.map((i) => i.mediana_smmlv), 0.01);
+  const iesOrdenadas = [...iesLista].sort((a, b) => b.mediana_smmlv - a.mediana_smmlv);
+  // Carreras como Administración tienen más de 100 instituciones: se muestran 10 y el resto se despliega.
+  const IES_VISIBLES = 10;
+  // Las fuentes vienen con raya y punto final; se presentan con dos puntos y sin punto doble.
+  const limpiarFuente = (f: string) => f.replace(/\s—\s/g, ": ").replace(/\.$/, "");
+  const fuenteOle = limpiarFuente(meta.fuente_ole);
+  const fuenteSnies = limpiarFuente(meta.fuente_snies);
+
+  const filaIes = (item: (typeof iesLista)[number]) => (
+    <li
+      key={item.ies}
+      className={`grid gap-3 p-4 sm:items-center sm:gap-6 sm:px-6 ${
+        iesLista.length > 1 ? "sm:grid-cols-[minmax(0,1fr)_minmax(0,12rem)_8rem]" : "sm:grid-cols-[minmax(0,1fr)_8rem]"
+      }`}
+    >
+      <div className="min-w-0">
+        <p className="font-semibold text-ink">{nombreIesCo(item.ies)}</p>
+        <p className="mt-0.5 text-sm text-mute tabular-nums">
+          {item.sector_ies} · {plural(item.graduados_cotizantes, "cotizante", "cotizantes")} ·{" "}
+          {porcentajeCo(item.pct_4plus_smmlv)} con 4 SMMLV o más
+        </p>
+      </div>
+      {/* Con una sola institución la barra no compara nada: se omite. */}
+      {iesLista.length > 1 ? (
+        <div className="h-2 overflow-hidden rounded-full bg-wash" aria-hidden="true">
+          <div
+            className="h-full rounded-full bg-[#0b63c5]"
+            style={{ width: `${Math.max(3, (item.mediana_smmlv / maxIes) * 100)}%` }}
+          />
+        </div>
+      ) : null}
+      <p className="text-left font-semibold text-ink tabular-nums sm:text-right">
+        {pesosCo(item.mediana_cop_2026)}
+        <span className="block text-xs font-normal text-mute">{smmlvCo(item.mediana_smmlv)}</span>
+      </p>
+    </li>
+  );
 
   const migas = [
     ...MIGAS_CARRERAS_CO,
@@ -133,7 +228,7 @@ export async function PageCoFicha({
   ];
 
   return (
-    <div className="bg-background">
+    <div className="bg-canvas">
       {jsonLd.map((schema, idx) => (
         <script
           key={idx}
@@ -142,239 +237,238 @@ export async function PageCoFicha({
         />
       ))}
 
-      <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
-        <MigasDatos migas={migas} />
+      {/* Encabezado: la pregunta y la respuesta, con su comparación */}
+      <header className="border-b border-line bg-paper">
+        <div className="mx-auto max-w-6xl px-4 pt-6 pb-10 sm:px-6 lg:pt-8 lg:pb-14">
+          <MigasDatos migas={migas} />
 
-        <header className="space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{carrera.nivel_formacion}</Badge>
-            <Badge variant="outline">{carrera.area_conocimiento}</Badge>
-            {pos ? (
-              <Badge variant="outline" className="border-blue-200 bg-blue-50/60 text-blue-800">
-                Puesto #{pos.posicion} de {pos.total} en {carrera.nivel_formacion}
-              </Badge>
-            ) : null}
-          </div>
+          {/*
+            Tres celdas: título, tarjeta de la mediana y texto. En móvil la tarjeta va justo
+            después del título (la cifra es la respuesta); en escritorio queda a la derecha.
+          */}
+          <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-x-12 lg:gap-y-0">
+            <div className="order-1 min-w-0 lg:order-none lg:col-start-1 lg:row-start-1 lg:self-end">
+              <p className="text-sm font-medium text-mute">
+                {carrera.nivel_formacion} · {carrera.area_conocimiento}
+              </p>
+              <h1 className="mt-3 max-w-[24ch] text-[clamp(2rem,4.2vw,3.1rem)] leading-[1.07] font-bold tracking-[-0.035em] text-balance text-ink">
+                {h1FichaCo(carrera)}
+              </h1>
+            </div>
+            <div className="order-3 min-w-0 lg:order-none lg:col-start-1 lg:row-start-2">
+              <p className="max-w-[60ch] text-lg leading-relaxed text-pretty text-mute lg:mt-5">
+                Sus graduados que cotizan en seguridad social ganan una mediana de{" "}
+                <strong className="font-semibold text-ink">{pesosCo(carrera.mediana_cop_2026)}</strong> al mes,
+                según el seguimiento {meta.anio_seguimiento} del Observatorio Laboral para la Educación (cohorte{" "}
+                {meta.cohorte}, a valores del salario mínimo de 2026).
+              </p>
+              <nav aria-label="Más carreras" className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
+                <Link href="/co/datos/carreras" prefetch={false} className="text-[#0b63c5] underline-offset-4 hover:underline">
+                  Todas las carreras
+                </Link>
+                <Link href={rankingLink.href} prefetch={false} className="text-[#0b63c5] underline-offset-4 hover:underline">
+                  {rankingLink.label}
+                </Link>
+                <Link href="/co/datos/carreras/comparar" prefetch={false} className="text-[#0b63c5] underline-offset-4 hover:underline">
+                  Comparar carreras
+                </Link>
+              </nav>
+            </div>
 
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            {h1FichaCo(carrera)}
-          </h1>
-
-          <div className="flex flex-wrap items-center gap-3 pt-1">
-            <Link
-              href="/co/datos/carreras"
-              prefetch={false}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-700 hover:underline"
+            <section
+              aria-label="Mediana salarial"
+              className="order-2 rounded-3xl border border-line bg-canvas p-6 sm:p-7 lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-end"
             >
-              <ArrowLeft className="size-4" aria-hidden="true" />
-              Todas las carreras
-            </Link>
-            <span className="text-muted-foreground" aria-hidden="true">·</span>
-            <Link
-              href={rankingLink.href}
-              prefetch={false}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-700 hover:underline"
-            >
-              <Trophy className="size-4" aria-hidden="true" />
-              {rankingLink.label}
-            </Link>
+              <p className="text-sm font-medium text-mute">Mediana mensual</p>
+              <p className="mt-1 text-[clamp(2.5rem,6vw,3.25rem)] leading-none font-bold tracking-[-0.04em] text-ink tabular-nums">
+                {pesosCo(carrera.mediana_cop_2026)}
+              </p>
+              <p className="mt-2 text-sm text-mute tabular-nums">
+                {smmlvCo(carrera.mediana_smmlv)}
+                {pos ? (
+                  <>
+                    {" · "}
+                    <span className="font-semibold text-ink">
+                      puesto {pos.posicion} de {pos.total}
+                    </span>{" "}
+                    en {carrera.nivel_formacion}
+                  </>
+                ) : null}
+              </p>
+              <div className="mt-6 space-y-4 border-t border-line pt-5">
+                <BarraComparada etiqueta="Esta carrera" valor={carrera.mediana_smmlv} max={maxComparacion} destacada />
+                <BarraComparada
+                  etiqueta={`Mediana de ${nivelEnFrase(carrera.nivel_formacion).replace(/^las /, "")}`}
+                  valor={medNivel.mediana_smmlv}
+                  max={maxComparacion}
+                />
+              </div>
+            </section>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Indicadores principales">
-          <KpiCard
-            variante="primary"
-            etiqueta="Mediana salarial COP 2026"
-            valor={pesosCo(carrera.mediana_cop_2026)}
-            delta={smmlvCo(carrera.mediana_smmlv)}
-            subtitulo={`Promedio: ${pesosCo(carrera.promedio_cop_2026)} (${smmlvCo(carrera.promedio_smmlv)})`}
-            fuente="OLE Base IBC 2023"
-          />
-          <KpiCard
+      <div className="mx-auto max-w-6xl space-y-16 px-4 py-12 sm:px-6 lg:py-16">
+        {/* Cifras de apoyo */}
+        <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <Dato
             etiqueta="Ganan 4 SMMLV o más"
             valor={porcentajeCo(carrera.pct_4plus_smmlv)}
-            subtitulo={`Equivalente a ${pesosCo(meta.smmlv_2026_cop * 4)} o más (2026)`}
-            fuente="Cohorte 2020–2022"
+            detalle={`${pesosCo(meta.smmlv_2026_cop * 4)} o más al mes`}
           />
-          <KpiCard
-            etiqueta="Cotizantes en seguridad social"
+          <Dato
+            etiqueta="Ingreso promedio"
+            valor={pesosCo(carrera.promedio_cop_2026)}
+            detalle={smmlvCo(carrera.promedio_smmlv)}
+          />
+          <Dato
+            etiqueta="Graduados que cotizan"
             valor={enteroCo(carrera.graduados_cotizantes)}
-            subtitulo={`Distribuidos en ${enteroCo(carrera.n_ies)} instituciones`}
-            fuente="OLE seguimiento 2023"
+            detalle={`en ${plural(carrera.n_ies, "institución", "instituciones")}`}
           />
           {carrera.snies_2025 ? (
-            <KpiCard
-              etiqueta="Graduados SNIES 2025"
+            <Dato
+              etiqueta="Graduados en 2025"
               valor={enteroCo(carrera.snies_2025.graduados_2025)}
-              subtitulo={`Reportados en ${enteroCo(carrera.snies_2025.n_ies)} IES`}
-              fuente="SNIES Mineduc 2025"
+              detalle={`SNIES, ${plural(carrera.snies_2025.n_ies, "institución", "instituciones")}`}
             />
           ) : (
-            <KpiCard
-              etiqueta="Ingreso promedio COP 2026"
-              valor={pesosCo(carrera.promedio_cop_2026)}
-              delta={smmlvCo(carrera.promedio_smmlv)}
-              subtitulo="Media aritmética interpolada OLE"
-              fuente="SMMLV 2026"
-            />
+            <Dato etiqueta="Cohorte medida" valor={meta.cohorte} detalle={`Seguimiento ${meta.anio_seguimiento}`} />
           )}
+        </dl>
+
+        {/* Distribución */}
+        <section aria-labelledby="distribucion-titulo" className="space-y-5">
+          <div className="max-w-[62ch] space-y-2">
+            <h2 id="distribucion-titulo" className={H2}>
+              ¿Cuánto ganan sus graduados?
+            </h2>
+            <p className="text-base leading-relaxed text-mute">
+              Cómo se reparten los graduados según su ingreso, medido en salarios mínimos (SMMLV). La mediana
+              es el ingreso del graduado que queda justo al medio.
+            </p>
+          </div>
+          <GraficoRangosCo
+            rangos={carrera.rangos_smmlv}
+            totalCotizantes={carrera.graduados_cotizantes}
+            nombrePrograma={nombre}
+            smmlvCop={meta.smmlv_2026_cop}
+            medianaSmmlv={carrera.mediana_smmlv}
+          />
         </section>
 
-        <EnResumen
-          titulo={`Análisis de ${nombre} en Colombia`}
-          frases={narrativa}
-          fuente={`Fuente: ${meta.fuente_ole} · SMMLV 2026 (${pesosCo(meta.smmlv_2026_cop)})`}
-        />
+        {/* Lectura de los datos */}
+        <section aria-labelledby="analisis-titulo" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-12">
+          <h2 id="analisis-titulo" className={H2}>
+            Qué dicen los datos de {nombre}
+          </h2>
+          <div className="space-y-4 text-[17px] leading-[1.7] text-mute">
+            {narrativa.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+            <p className="text-sm text-faint">
+              Fuente: {fuenteOle}. Montos convertidos con el SMMLV 2026 ({pesosCo(meta.smmlv_2026_cop)}).
+            </p>
+          </div>
+        </section>
 
-        <GraficoRangosCo
-          rangos={carrera.rangos_smmlv}
-          totalCotizantes={carrera.graduados_cotizantes}
-          nombrePrograma={nombre}
-          smmlvCop={meta.smmlv_2026_cop}
-        />
-
+        {/* Oficial vs privado */}
         {carrera.sector_ies ? (
-          <Card className="gap-4 rounded-xl border border-border bg-card py-5 shadow-xs ring-0">
-            <CardHeader className="px-6 pb-0">
-              <CardTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
-                <Building2 className="size-5 text-blue-700" aria-hidden="true" />
-                Desglose por sector IES (Oficial vs. Privado)
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Comparativa entre instituciones oficiales y privadas (ambos sectores cuentan con al menos 30 cotizantes).
+          <section aria-labelledby="sector-titulo" className="space-y-5">
+            <div className="max-w-[62ch] space-y-2">
+              <h2 id="sector-titulo" className={H2}>
+                Instituciones oficiales y privadas
+              </h2>
+              <p className="text-base leading-relaxed text-mute">
+                Mediana de sus graduados según dónde estudiaron (ambos grupos tienen al menos 30 cotizantes).
               </p>
-            </CardHeader>
-            <CardContent className="grid gap-4 px-6 sm:grid-cols-2">
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
               {(
                 [
-                  { titulo: "Sector Oficial (Público)", data: carrera.sector_ies.oficial },
-                  { titulo: "Sector Privado", data: carrera.sector_ies.privado },
+                  { titulo: "Oficiales (públicas)", data: carrera.sector_ies.oficial },
+                  { titulo: "Privadas", data: carrera.sector_ies.privado },
                 ] as const
               ).map((sec) => (
-                <div
-                  key={sec.titulo}
-                  className="rounded-xl border border-border bg-muted/25 p-4 space-y-2"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-semibold text-foreground">{sec.titulo}</h3>
-                    <Badge variant="outline" className="text-[11px]">
-                      {enteroCo(sec.data.n_ies)} IES
-                    </Badge>
-                  </div>
-                  <p className="text-2xl font-bold tabular-nums text-foreground">
+                <div key={sec.titulo} className="rounded-2xl border border-line bg-paper p-5 sm:p-6">
+                  <h3 className="text-sm font-semibold text-mute">{sec.titulo}</h3>
+                  <p className="mt-2 text-[1.75rem] font-bold tracking-tight text-ink tabular-nums">
                     {pesosCo(sec.data.mediana_cop_2026)}
                   </p>
-                  <p className="text-xs text-muted-foreground tabular-nums">
-                    {smmlvCo(sec.data.mediana_smmlv)} · {porcentajeCo(sec.data.pct_4plus_smmlv)} con ≥4 SMMLV ·{" "}
-                    {enteroCo(sec.data.graduados_cotizantes)} cotizantes
+                  <p className="mt-1 text-sm text-mute tabular-nums">
+                    {smmlvCo(sec.data.mediana_smmlv)} · {porcentajeCo(sec.data.pct_4plus_smmlv)} gana 4 SMMLV o más
+                  </p>
+                  <p className="mt-3 border-t border-line pt-3 text-sm text-mute tabular-nums">
+                    {plural(sec.data.graduados_cotizantes, "cotizante", "cotizantes")} en{" "}
+                    {plural(sec.data.n_ies, "institución", "instituciones")}
                   </p>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         ) : null}
 
+        {/* Por institución */}
         {iesLista.length > 0 ? (
-          <Card className="gap-3 rounded-xl border border-border bg-card py-5 shadow-xs ring-0">
-            <CardHeader className="px-6 pb-0">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
-                  Instituciones de educación superior (IES) con 30 o más cotizantes
-                </CardTitle>
-                <Badge variant="secondary">{iesLista.length} IES</Badge>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Desglose por institución según el seguimiento 2023 del OLE para {nombre}.
+          <section aria-labelledby="ies-titulo" className="space-y-5">
+            <div className="max-w-[62ch] space-y-2">
+              <h2 id="ies-titulo" className={H2}>
+                Dónde se estudia y cuánto ganan sus graduados
+              </h2>
+              <p className="text-base leading-relaxed text-mute">
+                {iesLista.length === 1
+                  ? "La institución con 30 o más graduados cotizantes en el seguimiento del OLE."
+                  : `Las ${iesLista.length} instituciones con 30 o más graduados cotizantes, ordenadas por mediana.`}
               </p>
-            </CardHeader>
-            <CardContent className="px-4 sm:px-6">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[620px] text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-border text-xs font-medium text-muted-foreground">
-                      <th className="py-2.5 pr-3">Institución (IES)</th>
-                      <th className="px-3 py-2.5">Sector</th>
-                      <th className="px-3 py-2.5 text-right">Mediana COP 2026</th>
-                      <th className="px-3 py-2.5 text-right">SMMLV</th>
-                      <th className="px-3 py-2.5 text-right">% ≥ 4 SMMLV</th>
-                      <th className="pl-3 py-2.5 text-right">Cotizantes</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/70">
-                    {iesLista.map((item) => (
-                      <tr key={item.ies} className="hover:bg-muted/35">
-                        <td className="py-2.5 pr-3 font-medium text-foreground">
-                          {nombreProgramaCo(item.ies)}
-                        </td>
-                        <td className="px-3 py-2.5">
-                          <Badge variant="outline" className="text-[11px] font-normal">
-                            {item.sector_ies}
-                          </Badge>
-                        </td>
-                        <td className="px-3 py-2.5 text-right font-semibold tabular-nums text-foreground">
-                          {pesosCo(item.mediana_cop_2026)}
-                        </td>
-                        <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">
-                          {smmlvCo(item.mediana_smmlv, false)}
-                        </td>
-                        <td className="px-3 py-2.5 text-right font-medium tabular-nums text-emerald-700">
-                          {porcentajeCo(item.pct_4plus_smmlv)}
-                        </td>
-                        <td className="pl-3 py-2.5 text-right tabular-nums text-muted-foreground">
-                          {enteroCo(item.graduados_cotizantes)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-line bg-paper">
+              <ul className="divide-y divide-line">{iesOrdenadas.slice(0, IES_VISIBLES).map(filaIes)}</ul>
+              {iesOrdenadas.length > IES_VISIBLES ? (
+                <details className="group border-t border-line">
+                  <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-center px-4 text-sm font-semibold text-[#0b63c5] hover:bg-canvas [&::-webkit-details-marker]:hidden">
+                    <span className="group-open:hidden">
+                      Ver las otras {iesOrdenadas.length - IES_VISIBLES} instituciones
+                    </span>
+                    <span className="hidden group-open:inline">Ocultar las otras instituciones</span>
+                  </summary>
+                  <ul className="divide-y divide-line border-t border-line">
+                    {iesOrdenadas.slice(IES_VISIBLES).map(filaIes)}
+                  </ul>
+                </details>
+              ) : null}
+            </div>
+          </section>
         ) : null}
 
+        {/* Relacionadas */}
         {relacionadas.length > 0 ? (
-          <section aria-labelledby="carreras-relacionadas-co" className="space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2
-                id="carreras-relacionadas-co"
-                className="text-xl font-semibold tracking-tight text-foreground"
-              >
-                Carreras relacionadas en {carrera.nivel_formacion}
-              </h2>
-              <Link
-                href="/co/datos/carreras/comparar"
-                prefetch={false}
-                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
-              >
-                Comparar carreras
-                <ArrowRight className="size-3.5" aria-hidden="true" />
-              </Link>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <section aria-labelledby="relacionadas-titulo" className="space-y-5">
+            <h2 id="relacionadas-titulo" className={H2}>
+              Carreras parecidas en {carrera.nivel_formacion}
+            </h2>
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {relacionadas.map((rel) => (
-                <Link
-                  key={rel.slug}
-                  href={`/co/datos/carreras/${rel.slug}`}
-                  prefetch={false}
-                  className="group flex flex-col justify-between rounded-xl border border-border bg-card p-4 transition-colors hover:border-blue-300 hover:bg-blue-50/20"
-                >
-                  <div className="space-y-1.5">
-                    <p className="text-xs text-muted-foreground">{rel.area_conocimiento}</p>
-                    <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-700">
+                <li key={rel.slug}>
+                  <Link
+                    href={`/co/datos/carreras/${rel.slug}`}
+                    prefetch={false}
+                    className="group flex h-full flex-col justify-between rounded-2xl border border-line bg-paper p-5 transition-colors hover:border-ink/40"
+                  >
+                    <span className="text-[15px] leading-snug font-semibold text-ink group-hover:underline group-hover:underline-offset-4">
                       {nombreProgramaCo(rel.programa)}
-                    </h3>
-                  </div>
-                  <div className="mt-3 flex items-baseline justify-between border-t border-border/60 pt-2 text-xs">
-                    <span className="font-semibold tabular-nums text-foreground">
-                      {pesosCo(rel.mediana_cop_2026)}
                     </span>
-                    <span className="tabular-nums text-emerald-700">
-                      {porcentajeCo(rel.pct_4plus_smmlv)} ≥4 SMMLV
+                    <span className="mt-4 block border-t border-line pt-3">
+                      <span className="block text-lg font-bold text-ink tabular-nums">
+                        {pesosCo(rel.mediana_cop_2026)}
+                      </span>
+                      <span className="text-sm text-mute tabular-nums">
+                        {porcentajeCo(rel.pct_4plus_smmlv)} gana 4 SMMLV o más
+                      </span>
                     </span>
-                  </div>
-                </Link>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
         ) : null}
 
@@ -387,16 +481,19 @@ export async function PageCoFicha({
 
         <FaqDatos faqs={faqs} />
 
-        <footer className="border-t border-border/80 pt-5 text-xs leading-relaxed text-muted-foreground">
+        <footer className="border-t border-line pt-6 text-sm leading-relaxed text-mute">
           <p>
-            Fuentes: {meta.fuente_ole} ({meta.fuente_ole_url}) · {meta.fuente_snies} (
-            {meta.fuente_snies_url}).{" "}
-            <Link
-              href="/co/datos/carreras/metodologia"
-              prefetch={false}
-              className="underline hover:text-foreground"
-            >
-              Ver metodología completa
+            Fuentes:{" "}
+            <a href={meta.fuente_ole_url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-ink">
+              {fuenteOle}
+            </a>{" "}
+            y{" "}
+            <a href={meta.fuente_snies_url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-ink">
+              {fuenteSnies}
+            </a>
+            . Son cifras referenciales de graduados que cotizan en seguridad social; no son una oferta de sueldo.{" "}
+            <Link href="/co/datos/carreras/metodologia" prefetch={false} className="font-semibold text-ink underline underline-offset-4">
+              Ver metodología
             </Link>
             .
           </p>
