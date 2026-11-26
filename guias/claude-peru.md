@@ -8,10 +8,12 @@ url_curso: https://www.programbi.com/pe/cursos/claude
 title: Curso de Claude en Perú: guía práctica y clases en vivo
 meta: "Aprende a usar Claude (Anthropic) en tu trabajo en Perú: prompts, Projects, Artifacts y Excel sin programar. Guía práctica y curso en vivo de 20 h."
 h1: Cómo usar Claude AI para trabajo administrativo en Perú
-updated: 2026-11-14
+updated: 2026-11-26
 sources:
   - https://www.programbi.com/pe/cursos/claude
   - https://www.gob.pe/institucion/congreso-de-la-republica/normas-legales/243470-29733
+  - https://claude.com/pricing
+  - https://www.sunat.gob.pe
 nota_hermes: |
   ELEMENTO VISUAL: tabla del contenido del programa + recuadro «Ley 29733 y datos personales».
   Intención: "curso claude perú", "curso de claude ai lima" (transaccional) → click_registro en /pe/cursos/claude. country=pe, course=claude.
@@ -25,9 +27,9 @@ nota_hermes: |
 
 **Respuesta directa:** el [curso de Claude de ProgramBI para Perú](https://www.programbi.com/pe/cursos/claude) dura **20 horas en vivo por Zoom**, divididas en cinco módulos de cuatro horas, y enseña a usar Claude —el asistente de inteligencia artificial creado por Anthropic— en labores de oficina: correos, informes, hojas de Excel, presentaciones y pequeñas automatizaciones, **sin necesidad de programar**. Abre **nuevos grupos todos los meses** (revisa la próxima fecha en la ficha), con clases **lunes y miércoles de 17:30 a 19:30, hora de Perú**. Precio: **{precio_local}**.
 
-El programa incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y un proyecto final construido sobre un proceso de tu propia chamba. El pago es en soles con Mercado Pago Perú, Yape, Plin o transferencia. Los datos provienen de la ficha del curso, revisada el 4 de noviembre de 2026.
+El programa incluye acceso al campus virtual con las clases grabadas y el material durante el curso, certificado digital y un proyecto final construido sobre un proceso de tu propia chamba. El pago se realiza con tarjeta internacional vía Mercado Pago (cobro en CLP desde Chile) o transferencia internacional. Los datos provienen de la ficha del curso, revisada el 26 de noviembre de 2026.
 
-**[CTA-TOP]** — Inicios cada mes · lunes y miércoles 17:30 hora de Perú · «Ver el curso».
+<!-- CTA-TOP -->
 
 ## La idea detrás del curso
 
@@ -82,6 +84,21 @@ Antes, armar el informe semanal significaba abrir tres correos, copiar tablas, c
 
 Esa estructura —contexto, tarea, formato, tono y restricciones— es la base del módulo 2.
 
+## Cuánto cuesta Claude (Anthropic) en soles en Perú
+
+Si vas a contratar directamente una cuenta en [claude.com/pricing](https://claude.com/pricing), estos son los planes oficiales de Anthropic (verificados el 26 de noviembre de 2026) con conversión referencial usando el tipo de cambio venta de SUNAT del 25 de noviembre de 2026 (`S/ 3,479` por dólar):
+
+| Plan de Claude | Precio oficial (USD) | Equivalente referencial en soles |
+|---|---|---|
+| Free | US$ 0 / mes | S/ 0 |
+| Pro (mensual) | US$ 20 / mes | ~S/ 70 / mes |
+| Pro (anual) | US$ 17 / mes (facturado anual en US$ 200) | ~S/ 59 / mes |
+| Max | Desde US$ 100 / mes | ~S/ 348 / mes |
+| Team (mensual) | US$ 25 / usuario / mes | ~S/ 87 / mes |
+| Team (anual) | US$ 20 / usuario / mes | ~S/ 70 / mes |
+
+Ten en cuenta que Anthropic cobra en dólares estadounidenses (USD) sin incluir impuestos locales, por lo que el cargo final en soles depende del tipo de cambio que aplique tu banco emisor el día de la operación. Para el arancel del curso en vivo de ProgramBI, descarga el PDF «Temario y precios» en la ficha del curso o consulta por WhatsApp.
+
 ## Protección de datos: Ley 29733
 
 En Perú, el tratamiento de datos personales se rige por la [Ley 29733, Ley de Protección de Datos Personales](https://www.gob.pe/institucion/congreso-de-la-republica/normas-legales/243470-29733). Antes de cargar en Claude información de clientes, trabajadores o planillas de sueldos, revisa la política de tu empresa y el plan de Claude que utilizan: los planes empresariales tienen condiciones de privacidad diferentes a las de una cuenta personal. El módulo 1 cubre planes y privacidad, y el módulo 5 seguridad y uso responsable. Para casos concretos, consulta con el área legal.
@@ -130,7 +147,7 @@ Durante la semana previa, anota las tareas repetitivas que haces y cuánto tiemp
 ## Preguntas frecuentes
 
 **¿Cuánto cuesta el curso de Claude en Perú?**
-{precio_local}, en soles con Mercado Pago Perú, Yape, Plin o transferencia.
+{precio_local}. Puedes pagar en 3 cuotas sin interés con tarjeta internacional vía Mercado Pago (cobro en CLP desde Chile) o mediante transferencia internacional.
 
 **¿Cuándo empieza?**
 Cada mes inicia una nueva cohorte; cursamos lunes y miércoles de 17:30 a 19:30, hora de Perú (revisa la fecha en la ficha).

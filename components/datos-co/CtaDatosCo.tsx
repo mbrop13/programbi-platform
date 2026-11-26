@@ -42,6 +42,8 @@ export interface CtaDatosCoProps {
   subtitulo?: string;
   carreraNombre?: string;
   ctaPosition?: string;
+  whatsappLabel?: string;
+  whatsappText?: string;
   className?: string;
 }
 
@@ -52,6 +54,8 @@ export function CtaDatosCo({
   subtitulo,
   carreraNombre,
   ctaPosition = "datos_co_cta",
+  whatsappLabel = "Cotiza el curso por WhatsApp",
+  whatsappText,
   className,
 }: CtaDatosCoProps) {
   const listaCursos = cursos && cursos.length > 0 ? cursos : CURSOS_BASE_CO;
@@ -62,9 +66,11 @@ export function CtaDatosCo({
       ? `Complementa tu perfil en ${carreraNombre} con clases en vivo, proyectos reales y 3 cuotas sin interés. Revisa el curso o cotiza por WhatsApp y averigua cómo podríamos ayudarte.`
       : "Domina análisis de datos, tableros ejecutivos y automatización con clases en vivo, proyectos reales y 3 cuotas sin interés. Revisa el curso o cotiza por WhatsApp y averigua cómo podríamos ayudarte.");
 
-  const customText = carreraNombre
-    ? `Hola, vengo de ${pagina} (${carreraNombre}) en ProgramBI Colombia y quiero cotizar el curso de ${cursoPrincipal.titulo} y averiguar cómo me pueden ayudar.`
-    : `Hola, vengo de ${pagina} en ProgramBI Colombia y quiero cotizar un curso y averiguar cómo me pueden ayudar.`;
+  const customText =
+    whatsappText ??
+    (carreraNombre
+      ? `Hola, vengo de ${pagina} (${carreraNombre}) en ProgramBI Colombia y quiero cotizar el curso de ${cursoPrincipal.titulo} y averiguar cómo me pueden ayudar.`
+      : `Hola, vengo de ${pagina} en ProgramBI Colombia y quiero cotizar un curso y averiguar cómo me pueden ayudar.`);
 
   return (
     <Card
@@ -125,6 +131,8 @@ export function CtaDatosCo({
               <WhatsAppCta
                 page={pagina}
                 country="co"
+                intent="curso"
+                courseSlug={cursoPrincipal.slug}
                 ctaPosition={ctaPosition}
                 customText={customText}
                 className={cn(
@@ -133,7 +141,7 @@ export function CtaDatosCo({
                 )}
               >
                 <MessageCircle className="size-4" aria-hidden="true" />
-                Cotiza el curso por WhatsApp
+                {whatsappLabel}
               </WhatsAppCta>
             </div>
             <p className="text-[11px] text-muted-foreground">

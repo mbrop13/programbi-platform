@@ -142,8 +142,9 @@ export function EmpresasContactForm({
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       next.email = "Escribe un email válido.";
     }
-    if (!telefonoOpcional && (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8)) {
-      next.whatsapp = "Escribe tu WhatsApp.";
+    const waDigits = whatsapp.replace(/\D/g, "");
+    if (waDigits.length > 0 && waDigits.length < 7) {
+      next.whatsapp = "Si ingresas WhatsApp, incluye al menos 7 dígitos.";
     }
     if (!privacy) next.privacy = "Debes aceptar la política de privacidad.";
     return next;
@@ -302,16 +303,13 @@ export function EmpresasContactForm({
         />
         <Field
           id="emp-whatsapp"
-          label={telefonoOpcional ? "Teléfono / WhatsApp (opcional)" : "WhatsApp"}
+          label="WhatsApp"
+          optional
           value={whatsapp}
           onChange={setWhatsapp}
           error={errors.whatsapp}
           autoComplete="tel"
-          helper={
-            telefonoOpcional
-              ? `En ${getPais(pais).nombre} te respondemos por email; agrégalo solo si prefieres WhatsApp.`
-              : "Incluye código de país. Chile: +56 9..."
-          }
+          helper="Opcional: agrégalo solo si prefieres coordinación por WhatsApp."
         />
       </div>
 

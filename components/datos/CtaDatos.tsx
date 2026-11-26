@@ -42,23 +42,106 @@ export function CtaDatos({ slug, area, nombreCorto, pagina, className }: CtaDato
     slug && area ? cursosParaCarrera(slug, area) : null;
 
   if (esFichaCarrera && recomendacion?.banda === "baja") {
+    const softWaHref = whatsappHref({
+      page: pagePath,
+      customText: `Hola, vengo de /datos/carreras/${slug} y me gustaría aprender a analizar datos con Excel o Power BI.`,
+    });
+
+    const handleSoftWhatsApp = (e: MouseEvent<HTMLAnchorElement>) => {
+      const hrefConUtm = withPageUtms(softWaHref);
+      e.currentTarget.href = hrefConUtm;
+      trackWhatsAppClick({
+        cta_location: "datos_soft",
+        cta_position: "datos_soft",
+        carrera_slug: slug,
+        course_slug: "excel",
+        country: "cl",
+        page: pagePath,
+        page_path: pagePath,
+        href: hrefConUtm,
+      });
+    };
+
     return (
-      <p
+      <Card
+        aria-labelledby="cta-datos-soft-titulo"
         className={cn(
-          "rounded-xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground",
+          "gap-0 rounded-xl border border-border bg-card py-0 shadow-xs ring-0",
           className,
         )}
       >
-        Puedes comparar esta carrera con otras en el{" "}
-        <Link href="/datos/carreras/comparar" className="font-medium text-blue-700 hover:underline">
-          comparador de sueldos y empleabilidad
-        </Link>{" "}
-        o volver al{" "}
-        <Link href="/datos/carreras" className="font-medium text-blue-700 hover:underline">
-          ranking de carreras en Chile
-        </Link>
-        .
-      </p>
+        <CardContent className="space-y-4 p-5 sm:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl space-y-1.5">
+              <h2
+                id="cta-datos-soft-titulo"
+                className="text-base font-semibold tracking-tight text-foreground sm:text-lg"
+              >
+                Aprende a analizar estos datos
+              </h2>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Si quieres trabajar con reportes, indicadores o planillas de tu área, puedes revisar
+                el temario y precios en la ficha de Excel o Power BI.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {[
+                  { slug: "excel", href: "/cursos/excel", nombre: "Excel" },
+                  { slug: "power-bi", href: "/cursos/power-bi", nombre: "Power BI" },
+                ].map((curso) => (
+                  <Link
+                    key={curso.href}
+                    href={curso.href}
+                    onClick={() =>
+                      trackCtaCursoClick({
+                        cta_location: "datos_soft",
+                        carrera_slug: slug ?? "",
+                        course_slug: curso.slug,
+                        page_path: pagePath,
+                      })
+                    }
+                    className={cn(
+                      buttonVariants({ variant: "secondary", size: "sm" }),
+                      "h-7 gap-1 rounded-md px-2.5 text-xs font-medium",
+                    )}
+                  >
+                    {curso.nombre}
+                    <ArrowUpRight className="size-3 text-muted-foreground" aria-hidden="true" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="shrink-0">
+              <a
+                href={softWaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-wa-tracked="1"
+                onClick={handleSoftWhatsApp}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "default" }),
+                  "min-h-10 w-full justify-center gap-2 rounded-lg bg-card px-4 text-sm font-medium sm:w-auto",
+                )}
+              >
+                <MessageCircle className="size-4" aria-hidden="true" />
+                Consultar por WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <p className="border-t border-border pt-3 text-xs text-muted-foreground">
+            También puedes comparar esta carrera en el{" "}
+            <Link href="/datos/carreras/comparar" className="font-medium text-blue-700 hover:underline">
+              comparador de sueldos y empleabilidad
+            </Link>{" "}
+            o volver al{" "}
+            <Link href="/datos/carreras" className="font-medium text-blue-700 hover:underline">
+              ranking de carreras en Chile
+            </Link>
+            .
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 

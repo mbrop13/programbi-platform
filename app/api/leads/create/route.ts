@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { courses as courseCatalog, type Course } from "@/lib/data/courses";
@@ -118,7 +118,7 @@ function isMissingPricingVariantError(error: { code?: string; message?: string }
 // ─── Anti-Bot Helpers ───
 
 /** Honeypot: if a hidden field is filled, it's a bot */
-function isHoneypotFilled(body: any): boolean {
+function isHoneypotFilled(body: { _website?: unknown; _company_url?: unknown; _fax?: unknown }): boolean {
   return !!(body._website || body._company_url || body._fax);
 }
 
@@ -204,7 +204,7 @@ export async function POST(req: NextRequest) {
 
     const adminDb = createAdminClient();
 
-    const insertData: Record<string, any> = {
+    const insertData: Record<string, unknown> = {
       name,
       email,
       whatsapp: whatsapp || null,
@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
 
     // `pricing_variant` solo viaja si el formulario lo envía. Si la columna aún
     // no existe en este entorno, Supabase rechaza el insert y se reintenta sin ella.
-    const insertPayload: Record<string, any> = { ...insertData };
+    const insertPayload: Record<string, unknown> = { ...insertData };
     if (pricingVariant) insertPayload.pricing_variant = pricingVariant;
 
     let { error } = await adminDb.from("course_leads").insert(insertPayload);
@@ -281,37 +281,61 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // ─── Disparar emails ───
+    // ─── Disparar emails en segundo plano tras responder HTTP 200 ───
     const courses = selectedCourses || (sourceCourse ? [sourceCourse] : []);
+    const adminMessage = typeof insertData.message === "string" ? insertData.message : (message ?? undefined);
 
-    // 1. Notificación interna al equipo de ventas
-    try {
-      await sendNewLeadNotificationToAdmin({
-        name, email, phone: whatsapp ?? undefined, courses, message: insertData.message ?? message ?? undefined,
-        leadType: leadType ?? undefined, company: company ?? undefined, position: position ?? undefined, employeeCount: employeeCount ?? undefined,
-        pais,
-        sourceCourse: sourceCourse || null,
-      });
-    } catch (err: any) {
-      console.error("❌ Admin email error:", err?.message, err?.stack);
-    }
-
-    // 2. Confirmación al lead (diferente para empresa vs. individual, se omite para webinar)
-    if (leadType !== "webinar") {
+    after(async () => {
+      // 1. Notificación interna al equipo de ventas
       try {
-        if (isEnterprise && company) {
-          await sendEnterpriseQuoteToLead({ name, email, company, courses, employeeCount: employeeCount ?? undefined });
-        } else {
-          await sendQuoteConfirmationToLead({ name, email, courses, message: message ?? undefined, pais });
-        }
-      } catch (err: any) {
-        console.error("❌ Quote email error:", err?.message, err?.stack);
+        await sendNewLeadNotificationToAdmin({
+          name,
+          email,
+          phone: whatsapp ?? undefined,
+          courses,
+          message: adminMessage,
+          leadType: leadType ?? undefined,
+          company: company ?? undefined,
+          position: position ?? undefined,
+          employeeCount: employeeCount ?? undefined,
+          pais,
+          sourceCourse: sourceCourse || null,
+        });
+      } catch (err: unknown) {
+        const e = err instanceof Error ? err : null;
+        console.error("❌ Admin email error:", e?.message ?? err, e?.stack);
       }
-    }
+
+      // 2. Confirmación al lead (diferente para empresa vs. individual, se omite para webinar)
+      if (leadType !== "webinar") {
+        try {
+          if (isEnterprise && company) {
+            await sendEnterpriseQuoteToLead({
+              name,
+              email,
+              company,
+              courses,
+              employeeCount: employeeCount ?? undefined,
+            });
+          } else {
+            await sendQuoteConfirmationToLead({
+              name,
+              email,
+              courses,
+              message: message ?? undefined,
+              pais,
+            });
+          }
+        } catch (err: unknown) {
+          const e = err instanceof Error ? err : null;
+          console.error("❌ Quote email error:", e?.message ?? err, e?.stack);
+        }
+      }
+    });
 
     return NextResponse.json(successBody);
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("API Error in leads/create:", err);
     return NextResponse.json({ error: "Ocurrió un error inesperado." }, { status: 500 });
   }

@@ -1,9 +1,7 @@
 import { textoCuotas } from "@/config/cuotas";
-import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { courses } from "@/lib/data/courses";
 import { getCourseSyllabus, type SyllabusTopic } from "@/lib/data/syllabuses";
 import type { CursoGuiaSlug } from "@/lib/guias/paso-a-paso-tipos";
-import { formatMoneda } from "@/lib/paises/precios";
 
 export interface DatosCursoGuia {
   slug: CursoGuiaSlug;
@@ -99,8 +97,6 @@ export function datosCursoParaGuia(
   pais: PaisGuiaPasoAPaso = "cl"
 ): DatosCursoGuia {
   const found = courses.find((c) => c.slug === curso);
-  const precio = precioPublico(pais, curso);
-  const precioLista = precioListaPublico(pais, curso);
 
   return {
     slug: curso,
@@ -110,10 +106,10 @@ export function datosCursoParaGuia(
     accentColor: found?.accentColor ?? "#171716",
     imageUrl: found?.imageUrl ?? "/images/courses/power-bi-card.webp",
     temarioBullets: extraerTresVinetas(curso),
-    precio,
-    precioFormateado: precio != null ? formatMoneda(pais, precio) : null,
-    precioLista,
-    precioListaFormateado: precioLista != null ? formatMoneda(pais, precioLista) : null,
+    precio: null,
+    precioFormateado: null,
+    precioLista: null,
+    precioListaFormateado: null,
     textoCuotas: textoCuotas(pais),
   };
 }

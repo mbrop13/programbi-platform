@@ -1,6 +1,6 @@
 import type { ContenidoPais } from "./tipos";
 import type { DefinicionBloqueLocal } from "./bloque";
-import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import { resumenDescuentoCatalogo } from "@/lib/paises/detalle-curso";
 
 const contenido: ContenidoPais = {
   iso: "co",
@@ -18,7 +18,7 @@ const contenido: ContenidoPais = {
     faq: {
       title: "Preguntas frecuentes de cursos en Colombia | ProgramBI",
       description:
-        "Horarios de Bogotá, pagos en COP con PSE o Nequi, certificados y requisitos de los cursos en vivo de ProgramBI en Colombia.",
+        "Horarios de Bogotá, pago con tarjeta internacional vía Mercado Pago o transferencia internacional, certificados y requisitos de los cursos en vivo de ProgramBI en Colombia.",
     },
     implementacion: {
       title: "Implementación Power BI en Colombia | ProgramBI",
@@ -104,10 +104,10 @@ const contenido: ContenidoPais = {
     },
   ],
   moneda: {
-    titulo: "Pesos colombianos y pagos con PSE o Nequi",
+    titulo: "Valor referencial en COP y pago internacional",
     resumen:
-      "El catálogo de Colombia se publica en pesos colombianos (COP): la ficha de cada curso muestra el precio de lista y el valor vigente.",
-    nota: "El checkout procesa el pago con Mercado Pago y muestra tarjeta, PSE o Nequi cuando están habilitados. Si la cuenta local no está disponible, informa el equivalente en CLP antes de confirmar.",
+      "El catálogo de Colombia muestra valores referenciales en pesos colombianos (COP) en el PDF «Temario y precios» de cada ficha.",
+    nota: "El pago se procesa con tarjeta internacional vía Mercado Pago (el cobro se realiza en CLP desde Chile y tu banco efectúa la conversión a COP) o mediante transferencia internacional.",
   },
   mercado: {
     ejemplo:
@@ -115,7 +115,7 @@ const contenido: ContenidoPais = {
     horario:
       "Colombia se mantiene en UTC-5 todo el año, mientras Chile cambia por horario de verano. La clase de 19:30 en Chile se ve a las 17:30 en Bogotá en verano chileno y a las 18:30 en invierno. La ficha de la cohorte muestra la equivalencia exacta.",
     facturacion:
-      "Los cursos se pagan en pesos colombianos con Mercado Pago Colombia. Los proyectos in-company se cotizan con alcance y moneda en la propuesta.",
+      "Los cursos se pagan con tarjeta internacional vía Mercado Pago (cobro procesado en CLP desde Chile con conversión bancaria a COP) o transferencia internacional. Los proyectos in-company se cotizan con alcance y moneda en la propuesta.",
   },
   nosotros: {
     parrafo:
@@ -138,13 +138,13 @@ const contenido: ContenidoPais = {
       categoria: "cursos",
     },
     {
-      q: "¿Puedo pagar con PSE o Nequi?",
-      a: "Sí, cuando la cuenta de Mercado Pago de Colombia está habilitada. También puedes pagar con tarjeta o coordinar una transferencia con el equipo de admisiones.",
+      q: "¿Cómo puedo pagar desde Colombia?",
+      a: "Con tarjeta de crédito o débito internacional vía Mercado Pago (en 3 cuotas sin interés cuando tu banco lo habilita) o mediante transferencia internacional coordinada con el equipo de admisiones.",
       categoria: "pagos",
     },
     {
-      q: "¿El catálogo está en pesos colombianos?",
-      a: `${resumenPreciosCatalogo("co")} Si la cuenta local no está habilitada, el checkout muestra el equivalente en CLP para confirmar con el valor a la vista.`,
+      q: "¿En qué moneda se procesa el cobro si el valor referencial está en COP?",
+      a: `${resumenDescuentoCatalogo("co")} El cobro con tarjeta vía Mercado Pago se procesa en pesos chilenos (CLP) desde Chile y tu banco realiza la conversión a COP según su tipo de cambio.`,
       categoria: "pagos",
     },
     {
@@ -167,21 +167,21 @@ export const bloqueLocal: DefinicionBloqueLocal = {
   parrafos: [
     "Colombia combina sectores muy intensivos en datos: retail y consumo masivo, fintech y banca, energía y servicios públicos, y agro. En esas operaciones el reporte suele quedar repartido entre el POS, la facturación electrónica y planillas de área. Tanto en el curso de Power BI en Colombia como en los programas de SQL Server, Python y análisis de datos, los ejercicios trabajan ventas por sede y canal, cartera, recaudo y márgenes con una definición común.",
     "Las clases son en vivo por Zoom en horario de Bogotá (America/Bogota, UTC-5 todo el año), con cobertura para profesionales en Bogotá, Medellín, Cali y Barranquilla y grabaciones en el campus virtual. El catálogo se publica en pesos colombianos (COP) y cada ficha incluye su PDF de Temario y precios, clase gratis y 3 cuotas sin interés.",
-    "El pago se procesa con Mercado Pago Colombia mediante PSE, Nequi, tarjeta o transferencia bancaria en pesos; si la cuenta local no está disponible, el checkout muestra el equivalente en CLP antes de confirmar. Cada cohorte cierra con un proyecto práctico y certificado digital de ProgramBI con código de verificación.",
+    "El pago se procesa con tarjeta internacional vía Mercado Pago (cobro en CLP desde Chile con conversión bancaria a COP) o transferencia internacional, con valor referencial en COP en el PDF «Temario y precios» y 3 cuotas sin interés. Cada cohorte cierra con un proyecto práctico y certificado digital de ProgramBI con código de verificación.",
   ],
   empresas:
     "Para equipos en Colombia (Bogotá, Medellín, Cali, Barranquilla y otras ciudades), la capacitación in-company se arma con los datos de la empresa: POS, facturación electrónica, cartera o reportes operativos. Se dicta en vivo por Zoom en horario de Bogotá, con grabaciones en el campus, factura corporativa y certificado con código de verificación para cada participante.",
   notas: {
     precio:
-      "El catálogo de Colombia se publica en pesos colombianos (COP). El monto vigente y los descuentos están en el PDF de Temario y precios de cada curso; el checkout muestra el total antes de pagar.",
+      "El valor referencial en pesos colombianos (COP) y los descuentos están en el PDF «Temario y precios» de cada curso; el checkout muestra el total antes de pagar.",
     horario:
       "Colombia se mantiene en UTC-5 todo el año (America/Bogota), sin horario de verano. En Chile la clase es de {horarioChile}; cuando Chile cambia de hora, la diferencia con Bogotá se mueve una hora. La ficha de la cohorte muestra la equivalencia exacta.",
     pago:
-      "Mercado Pago Colombia procesa PSE, Nequi y tarjeta; la transferencia en pesos colombianos se coordina con admisiones. Si pagas con tarjeta emitida fuera de Colombia, el cargo final lo define tu banco.",
+      "Pago con tarjeta internacional vía Mercado Pago (el cobro se procesa en CLP desde Chile y tu banco realiza la conversión a COP) o transferencia internacional coordinada con admisiones.",
     cuotas:
-      "Aplican a todos los cursos en Colombia: 3 cuotas sin interés sin recargo por financiamiento. La pasarela confirma la disponibilidad al pagar.",
+      "Aplican en la pasarela según las condiciones de tu tarjeta y banco emisor: 3 cuotas sin interés, sin recargo por financiamiento.",
     "clase-gratis":
-      "La clase gratis es una sesión abierta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; si aún no hay fecha, puedes pedir que te avisen.",
+      "Clase gratis: coordínala por WhatsApp con el equipo de admisiones según tu disponibilidad.",
     certificado:
       "El certificado digital de ProgramBI lleva código de verificación y se suma al campus virtual con las clases y el material usado durante el curso. Es un certificado de ProgramBI, distinto de la certificación PL-300 de Microsoft.",
   },
@@ -195,47 +195,51 @@ export const bloqueLocal: DefinicionBloqueLocal = {
       a: "{resumenPrecios}",
     },
     {
-      q: "¿Puedo pagar desde Colombia con PSE, Nequi, tarjeta o transferencia?",
-      a: "Sí. Mercado Pago Colombia acepta PSE, Nequi y tarjeta de crédito o débito; la transferencia en pesos se coordina con admisiones. {notaPago}",
+      q: "¿Puedo pagar desde Colombia con tarjeta o transferencia?",
+      a: "Sí. Aceptamos tarjeta internacional vía Mercado Pago (el cobro se procesa en CLP desde Chile y tu banco realiza la conversión a COP) o transferencia internacional coordinada con admisiones. {notaPago}",
     },
     {
       q: "¿Hay 3 cuotas sin interés para Colombia?",
-      a: "Sí: {cuotas} en todos los cursos, sin recargo por financiamiento. La pasarela confirma la disponibilidad con tu medio de pago en el checkout.",
+      a: "Sí: {cuotas} con tarjeta vía Mercado Pago, según la disponibilidad de tu banco emisor, sin recargo por financiamiento.",
     },
     {
       q: "¿Hay clase gratis antes de inscribirme?",
-      a: "Sí. Hay una clase gratis abierta por Zoom para conocer cómo se trabaja en vivo, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; mientras tanto puedes pedir que te avisen.",
+      a: "Sí. Puedes coordinar una clase gratis por WhatsApp antes de inscribirte para conocer cómo trabajamos en vivo.",
     },
     {
       q: "¿Qué certificado recibo al terminar?",
       a: "Un certificado digital de ProgramBI con código de verificación y acceso al campus virtual con las clases grabadas y el material de práctica. La certificación PL-300 de Microsoft se rinde y se paga aparte.",
     },
   ],
+  enlacesExtras: [
+    { href: "/co/cursos/power-bi-bogota", label: "Power BI en Bogotá" },
+    { href: "/co/cursos/power-bi-medellin", label: "Power BI en Medellín" },
+  ],
   seo: {
     hub: {
       title: "Cursos de datos en vivo en Colombia | ProgramBI",
       description:
-        "Formación en vivo en Power BI, análisis de datos y Python para profesionales de Colombia: horario de Bogotá, precios en COP y 3 cuotas sin interés.",
+        "Formación en vivo en Power BI, análisis de datos y Python para profesionales de Colombia: horario de Bogotá, valor referencial en COP y 3 cuotas sin interés.",
     },
     cursos: {
       title: "Catálogo de cursos de datos en Colombia | ProgramBI",
       description:
-        "Cursos de datos en vivo en Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP, clase gratis y certificado.",
+        "Cursos de datos en vivo en Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, valor referencial en COP, clase gratis y certificado.",
     },
     "power-bi": {
-      title: "Curso Power BI en vivo en Colombia | ProgramBI",
+      title: "Curso de Power BI en vivo en Colombia (COP y 3 cuotas) | ProgramBI",
       description:
-        "Curso Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en 20 horas. Horario de Bogotá, valor en COP y 3 cuotas sin interés.",
+        "Curso de Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en 20 horas. Horario de Bogotá, valor referencial en COP en el PDF «Temario y precios» y 3 cuotas sin interés.",
     },
     "analisis-de-datos": {
       title: "Curso de análisis de datos en Colombia | ProgramBI",
       description:
-        "Análisis de datos en vivo para Colombia: SQL Server, Power BI y Python en dos niveles de 60 horas. Horario de Bogotá, valor en COP y certificado.",
+        "Análisis de datos en vivo para Colombia: SQL Server, Power BI y Python en dos niveles de 60 horas. Horario de Bogotá, valor referencial en COP y certificado.",
     },
     python: {
       title: "Curso de Python para datos en Colombia | ProgramBI",
       description:
-        "Python para datos en vivo para Colombia (20 h): Pandas, visualización y automatización. Horario de Bogotá, valor en COP y 3 cuotas sin interés.",
+        "Python para datos en vivo para Colombia (20 h): Pandas, visualización y automatización. Horario de Bogotá, valor referencial en COP y 3 cuotas sin interés.",
     },
     empresas: {
       title: "Capacitación in-company en Colombia | ProgramBI",
@@ -245,7 +249,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     precios: {
       title: "Precios de cursos en Colombia | ProgramBI",
       description:
-        "Precios de los cursos en vivo para Colombia: valores en COP, Temario y precios de cada curso, medios de pago como PSE o Nequi y 3 cuotas sin interés.",
+        "Información de aranceles para Colombia: valor referencial en COP en el PDF «Temario y precios», pago con tarjeta internacional vía Mercado Pago o transferencia internacional y 3 cuotas sin interés.",
     },
   },
 };

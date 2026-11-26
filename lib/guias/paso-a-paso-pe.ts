@@ -1,6 +1,8 @@
 import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
 
 import guiaGratificacion from "@/content/guias/paso-a-paso-pe/calcular-gratificacion-excel";
+import guiaGratificacionTrunca from "@/content/guias/paso-a-paso-pe/gratificacion-trunca-excel";
+import guiaPlanillaSueldos from "@/content/guias/paso-a-paso-pe/planilla-de-sueldos-excel-peru";
 import guiaCts from "@/content/guias/paso-a-paso-pe/calcular-cts-excel";
 import guiaLiquidacion from "@/content/guias/paso-a-paso-pe/liquidacion-beneficios-sociales-excel";
 import guiaQuinta from "@/content/guias/paso-a-paso-pe/renta-quinta-categoria-excel";
@@ -12,6 +14,8 @@ import guiaBoleta from "@/content/guias/paso-a-paso-pe/boleta-de-pago-excel";
  */
 export const GUIAS_PASO_A_PASO_PE: GuiaPasoAPaso[] = [
   guiaGratificacion,
+  guiaGratificacionTrunca,
+  guiaPlanillaSueldos,
   guiaCts,
   guiaLiquidacion,
   guiaQuinta,

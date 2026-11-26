@@ -119,8 +119,9 @@ export default function LeadForm() {
     const next: Record<string, string> = {};
     if (!name.trim()) next.name = "Escribe tu nombre.";
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "Escribe un correo electrónico válido.";
-    if (!telefonoOpcional && (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8)) {
-      next.whatsapp = "Escribe tu WhatsApp con código de país.";
+    const waDigits = whatsapp.replace(/\D/g, "");
+    if (waDigits.length > 0 && waDigits.length < 7) {
+      next.whatsapp = "Si ingresas WhatsApp, incluye al menos 7 dígitos.";
     }
     if (selected.length === 0) next.course = "Elige al menos un programa.";
     if (!privacy) next.privacy = "Debes aceptar la política de privacidad.";
@@ -422,17 +423,13 @@ export default function LeadForm() {
 
                     <Field
                       id="whatsapp"
-                      label={telefonoOpcional ? "WhatsApp (opcional)" : "WhatsApp"}
+                      label="WhatsApp (opcional)"
                       placeholder="+56 9 ..."
                       value={whatsapp}
                       onChange={setWhatsapp}
                       error={errors.whatsapp}
                       autoComplete="tel"
-                      helper={
-                        telefonoOpcional
-                          ? `En ${getPais(pais).nombre} te respondemos por correo; agrégalo solo si prefieres WhatsApp.`
-                          : "Incluye código de país, por ejemplo +56 9 ..."
-                      }
+                      helper="Opcional: agrégalo solo si prefieres que te escribamos por WhatsApp."
                     />
 
                     <div className="flex flex-col gap-1.5">

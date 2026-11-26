@@ -459,6 +459,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...GUIAS_PASO_A_PASO_CO.map((g) =>
       entrada(`/co/guias/${g.slug}`, 0.7, "monthly", g.updated)
     ),
+    entrada("/co/cursos/power-bi-bogota", 0.7, "monthly", "2026-11-26"),
+    entrada("/co/cursos/power-bi-medellin", 0.7, "monthly", "2026-11-26"),
   ];
 
   const metaMx = getMetaCarrerasMx();

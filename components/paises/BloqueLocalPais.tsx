@@ -4,7 +4,6 @@ import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import type { DatosBloqueLocal } from "@/lib/data/contenido-paises";
 import { jsonLdString } from "@/lib/seo";
 import { rutaLocal } from "@/lib/paises/rutas";
-import type { WhatsAppIntent } from "@/lib/whatsapp";
 
 /** Página que monta el bloque. Cambia el H2 y algunos enlaces. */
 export type ContextoBloqueLocal = "hub" | "cursos" | "ficha" | "empresas" | "precios";
@@ -117,10 +116,10 @@ export default function BloqueLocalPais({
                 <dd className="mt-3">
                   <WhatsAppCta
                     page={pagePath}
-                    intent={"clase-gratis" as WhatsAppIntent}
+                    intent="curso"
                     country={iso}
                     ctaPosition="bloque_local_clase_gratis"
-                    customText={`Hola, quiero coordinar la clase gratis por Zoom desde ${bloque.nombre}.`}
+                    customText={`Hola, quiero coordinar una clase gratis desde ${bloque.nombre}.`}
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink underline underline-offset-4 hover:text-mute"
                   >
                     Coordinar clase gratis por WhatsApp

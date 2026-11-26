@@ -84,7 +84,7 @@ export function LandingHero({ landing }: { landing: NicheLanding }) {
                 </div>
 
                 <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-mute">
-                  <span>Clase gratis · sesión abierta por Zoom sin costo</span>
+                  <span>Clase gratis: coordínala por WhatsApp</span>
                   {cuotas ? (
                     <>
                       <span aria-hidden="true">·</span>

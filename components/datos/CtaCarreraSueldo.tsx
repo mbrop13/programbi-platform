@@ -117,7 +117,7 @@ export function CtaCarreraSueldo({
             >
               <MessageCircle className="size-4 shrink-0" aria-hidden="true" />
               {OFERTA_CLASE_GRATIS_WHATSAPP
-                ? "Pedir clase gratis por WhatsApp"
+                ? "Coordinar clase gratis"
                 : "Consultar por WhatsApp"}
             </a>
           </div>

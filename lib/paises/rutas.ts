@@ -1,4 +1,11 @@
-import { esIsoPais, getPais, ISO_CHILE, normalizarPais, PAISES_CARPETA } from "@/config/paises";
+import {
+  esIsoPais,
+  getPais,
+  ISO_CHILE,
+  normalizarPais,
+  PAISES_CARPETA,
+  SLUGS_CURSO,
+} from "@/config/paises";
 import { absoluteUrl } from "@/lib/seo";
 import { esRutaNoindexPais } from "@/lib/paises/indexabilidad";
 import { esRutaIndexablePais, esRutaNoindexGlobal } from "@/lib/seo/indexabilidad";
@@ -27,10 +34,12 @@ export function esRutaLocalizable(path: string): boolean {
   if (path === "/") return true;
   if (RAICES.some((raiz) => path === raiz)) return true;
   const partes = path.split("/").filter(Boolean);
-  return (
-    partes.length === 2 &&
-    (partes[0] === "cursos" || partes[0] === "test-nivel")
-  );
+  if (partes.length !== 2) return false;
+  if (partes[0] === "test-nivel") return true;
+  if (partes[0] === "cursos") {
+    return (SLUGS_CURSO as readonly string[]).includes(partes[1]);
+  }
+  return false;
 }
 
 export function quitarPais(pathname: string): string {

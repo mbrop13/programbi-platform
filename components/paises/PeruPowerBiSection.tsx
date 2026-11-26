@@ -124,17 +124,17 @@ export default function PeruPowerBiSection({
 
           <article className="rounded-[26px] border border-line bg-paper p-6">
             <h3 className="text-lg font-bold tracking-tight text-ink">
-              Precio del curso de Power BI en Perú en soles (PEN)
+              Temario, valor referencial en soles (PEN) y pago internacional
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-mute">
-              El catálogo para Perú se publica en soles peruanos (PEN). El arancel vigente de cada
-              nivel de {horasPorNivel} horas y el porcentaje de descuento activo se consultan en el
-              PDF de temario y precios de la ficha, y el monto exacto en soles se muestra en el
-              checkout antes de confirmar la inscripción.
+              El arancel vigente de cada nivel de {horasPorNivel} horas, su valor referencial en
+              soles (PEN) y el descuento activo se consultan en el PDF de temario y precios de esta
+              ficha.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-mute">
-              El pago se procesa con Mercado Pago Perú (tarjeta de crédito o débito, Yape o Plin)
-              {cuotas ? ` con ${cuotas}` : ""}, o mediante transferencia en soles coordinada con
+              El pago se realiza con tarjeta de crédito o débito internacional vía Mercado Pago (el
+              cobro se procesa en CLP desde Chile y tu banco realiza la conversión a soles)
+              {cuotas ? ` con ${cuotas}` : ""}, o mediante transferencia internacional coordinada con
               admisiones. Para equipos que requieren capacitación in-company con factura corporativa,
               puedes cotizar en{" "}
               <Link
@@ -152,7 +152,7 @@ export default function PeruPowerBiSection({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-canvas no-underline"
               >
-                <FileText size={15} aria-hidden /> Ver temario y precios en soles (PDF)
+                <FileText size={15} aria-hidden /> Ver temario y precios (PDF)
               </Link>
               <Link
                 href="/pe/guias/como-aprender-power-bi-en-peru"

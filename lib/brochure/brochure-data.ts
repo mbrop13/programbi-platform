@@ -437,7 +437,7 @@ function armarInscripcion(slug: string, pais: string): string {
   return pais === "cl" ? base : `${base}&pais=${encodeURIComponent(pais)}`;
 }
 
-const NOTA_CLASE_GRATIS = "Clase gratis · sesión abierta por Zoom sin costo";
+const NOTA_CLASE_GRATIS = "Clase gratis: coordínala por WhatsApp";
 
 function formatMonedaBrochure(iso: string, monto: number): string {
   const pais = getPais(iso);

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { courses, getCourseBySlug, type Course } from "@/lib/data/courses";
+import { getCourseSyllabus } from "@/lib/data/syllabuses";
 import { getActivePromotions, getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
-import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
+import CourseDetailClient, { type RelatedCourseSummary } from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
+import CertificadoEjemploFicha from "@/components/marketing/CertificadoEjemploFicha";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
 import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
@@ -33,6 +35,8 @@ import {
 } from "@/lib/paises/precios";
 import { conPais, robotsLocal } from "@/lib/paises/metadata";
 import { getBloqueLocal, getSeoBloque, esRutaSeoLocal } from "@/lib/data/contenido-paises";
+import { getIntroFichaPe } from "@/lib/data/contenido-paises/pe";
+import { getIntroFichaAr } from "@/lib/paises/contenido-local/ar";
 import { detalleCursoLocal } from "@/lib/paises/detalle-curso";
 import { horarioDeCohorte } from "@/lib/paises/horarios";
 import { aplicarSeoLocal } from "@/lib/paises/contenido-local/seo";
@@ -216,6 +220,53 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
   }
 
   const schedules = schedulesData as CourseSchedule[];
+  const syllabus = getCourseSyllabus(course);
+
+  const PRIORIDAD_RELACIONADOS: Record<string, readonly string[]> = {
+    chatgpt: ["gemini", "claude", "ia-productividad"],
+    gemini: ["chatgpt", "claude", "ia-productividad"],
+    claude: ["chatgpt", "gemini", "ia-productividad"],
+    "ia-productividad": ["chatgpt", "gemini", "claude"],
+  };
+  const disponibles = courses.filter((c) => c.slug !== course.slug);
+  const prioridad = PRIORIDAD_RELACIONADOS[course.slug];
+  const relatedList = prioridad
+    ? [
+        ...prioridad
+          .map((s) => disponibles.find((c) => c.slug === s))
+          .filter((c): c is Course => Boolean(c)),
+        ...disponibles.filter((c) => !prioridad.includes(c.slug)),
+      ].slice(0, 3)
+    : disponibles.slice(0, 3);
+  const relatedCourses: RelatedCourseSummary[] = relatedList.map((c) => ({
+    slug: c.slug,
+    title: c.title,
+    shortDesc: c.shortDescription,
+    hours: c.durationHours,
+    level: c.level,
+    image: c.imageUrl,
+  }));
+
+  const relevantSlugs = new Set<string>([
+    course.slug,
+    ...relatedCourses.map((c) => c.slug),
+    ...(course.slug === "analisis-de-datos" ? ["sql-server", "power-bi", "python"] : []),
+  ]);
+  const courseSchedules = schedules.filter((s) => relevantSlugs.has(s.course_slug));
+
+  const courseSeo = seo
+    ? {
+        h1: seo.h1,
+        h1Cl: seo.h1Cl,
+        intro: seo.intro,
+      }
+    : undefined;
+  const introLocal =
+    pais === "ar"
+      ? getIntroFichaAr(course.slug)
+      : pais === "pe"
+        ? getIntroFichaPe(course.slug)
+        : null;
 
   // Horario local y preguntas de pie de página (incluye precio vigente del mercado).
   const cohorte = schedules.find((s) => s.course_slug === course.slug);
@@ -307,7 +358,11 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
       <CourseDetailClient
         key={course.slug}
         course={cursoSinPrecios(course)}
-        initialSchedules={schedules}
+        syllabus={syllabus}
+        relatedCourses={relatedCourses}
+        initialSchedules={courseSchedules}
+        courseSeo={courseSeo}
+        introLocal={introLocal}
         detalleLocal={detalle}
         promotions={promotions}
         referenceDateIso={new Date().toISOString().slice(0, 10)}
@@ -322,7 +377,9 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
                   : pais === "ar"
                     ? "Curso de Power BI en vivo en Argentina"
                     : undefined
-            : undefined
+            : course.slug === "analisis-de-datos" && pais === "pe"
+              ? "Curso de analista de datos en vivo en Perú"
+              : undefined
         }
         resumen={
           <CourseSummaryBox
@@ -338,6 +395,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         // profesor: es prueba social y no puede quedar bajo los bloques SEO. Se
         // oculta sola si no hay testimonios o con NEXT_PUBLIC_TESTIMONIOS=0.
         testimonios={<TestimoniosDeCurso cursoSlug={course.slug} />}
+        certificadoEjemplo={<CertificadoEjemploFicha courseTitle={course.title} />}
         comparativa={
           course.slug === "chatgpt" || course.slug === "gemini" ? (
             <ComparativaCursosIA slug={course.slug} pais={pais} />

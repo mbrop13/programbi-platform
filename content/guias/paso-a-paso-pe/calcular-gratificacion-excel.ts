@@ -3,14 +3,15 @@ import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
 export const guia: GuiaPasoAPaso = {
   slug: "calcular-gratificacion-excel",
   pais: "pe",
-  title: "Cómo calcular gratificación en Excel (Perú 2026)",
-  meta: "Calcula la gratificación de julio y diciembre en Excel (Ley 27735), bonificación 9 % o 6,75 % y gratificación trunca con plantilla descargable.",
-  h1: "Cómo calcular la gratificación en Excel (Perú 2026)",
+  title: "Cómo calcular gratificación de diciembre 2026 en Excel (Perú)",
+  meta: "Calcula la gratificación de diciembre 2026 en Excel (Ley 27735, plazo 15 de diciembre), bonificación 9 % o 6,75 %, RMV S/ 1.230 y gratificación trunca.",
+  h1: "Cómo calcular la gratificación de diciembre 2026 en Excel (Perú)",
   subtitle:
-    "Arma una planilla parametrizada en Excel para calcular la gratificación legal de Fiestas Patrias y Navidad bajo la Ley 27735, sumar la bonificación extraordinaria (9 % EsSalud o 6,75 % EPS) y obtener la gratificación trunca por meses completos.",
+    "Arma una planilla parametrizada en Excel para calcular la gratificación de diciembre 2026 (plazo legal 15 de diciembre de 2026) bajo la Ley 27735 y el D.S. 005-2002-TR, sumar la bonificación extraordinaria (9 % EsSalud o 6,75 % EPS, Ley 29351/30334) y aplicar la RMV vigente de S/ 1.230.",
   keywordPrincipal: "como calcular gratificacion en excel peru",
   keywords: [
     "como calcular gratificacion en excel peru",
+    "gratificacion diciembre 2026 excel peru",
     "calculo gratificacion ley 27735 excel",
     "bonificacion extraordinaria 9 porciento essalud",
     "gratificacion trunca excel peru",
@@ -19,19 +20,19 @@ export const guia: GuiaPasoAPaso = {
   cursoSecundario: "power-bi",
   herramienta: "Excel",
   nivel: "Básico",
-  updated: "2026-11-25",
+  updated: "2026-11-26",
   published: "2026-11-25",
   totalTimeIso: "PT25M",
   en30Segundos: {
     queLogras:
-      "Un libro de Excel con hoja Parametros y hoja Calculo_Gratificacion que determina la remuneración computable, los meses completos del semestre, la gratificación ordinaria o trunca y la bonificación extraordinaria de EsSalud o EPS.",
+      "Un libro de Excel con hoja Parametros y hoja Calculo_Gratificacion que determina la remuneración computable (con RMV de S/ 1.230 vigente desde el 1 de octubre de 2026), los meses completos de julio a diciembre 2026, la gratificación ordinaria o trunca y la bonificación extraordinaria de EsSalud o EPS.",
     herramienta: "Microsoft Excel (365, 2021 o Web)",
     tiempo: "25 minutos",
     bullets: [
-      "Hoja Parametros con fecha de vigencia, tasas de bonificación extraordinaria (9 % EsSalud y 6,75 % EPS) y asignación familiar vigente.",
-      "Cálculo automático de meses calendario completos laborados en el semestre enero-junio (julio) o julio-diciembre (diciembre).",
+      "Hoja Parametros con RMV vigente de S/ 1.230 (D.S. N.° 015-2026-TR), asignación familiar de S/ 123,00 y tasas de bonificación extraordinaria (9 % EsSalud y 6,75 % EPS).",
+      "Cálculo automático de meses calendario completos laborados en el semestre julio-diciembre 2026 (o enero-junio para Fiestas Patrias).",
       "Determinación de la remuneración computable sumando sueldo básico, asignación familiar y promedio de remuneraciones variables.",
-      "Cálculo de gratificación bruta, bonificación extraordinaria inafecta y total a depositar dentro del plazo legal (15 de julio y 15 de diciembre).",
+      "Control del plazo legal máximo de pago: 15 de diciembre de 2026 para Navidad (y 15 de julio para Fiestas Patrias).",
     ],
   },
   rutaVisual: [
@@ -96,12 +97,12 @@ export const guia: GuiaPasoAPaso = {
       resumenHowTo:
         "Crea una hoja Parametros que guarde la fecha de vigencia, el porcentaje de bonificación extraordinaria de EsSalud (9 %) y EPS (6,75 %), y el valor de la asignación familiar.",
       parrafos: [
-        "Cuando calculas gratificaciones en Excel para una planilla mensual o semestral, nunca escribas porcentajes fijos dentro de las fórmulas. Aunque las tasas de bonificación extraordinaria de la Ley 29351 (incorporada de forma permanente por la Ley 30334) se mantienen en 9 % para EsSalud y 6,75 % para trabajadores afiliados a una EPS, otros valores como la Remuneración Mínima Vital (RMV) —que define la asignación familiar equivalente al 10 %— sí pueden actualizarse por decreto supremo.",
-        "Abre un libro nuevo de Excel y crea una primera hoja llamada Parametros. En las primeras filas registra la fecha de vigencia del cálculo, el periodo semestral seleccionado (Julio o Diciembre), la RMV vigente publicada en el portal oficial del Ministerio de Trabajo y Promoción del Empleo (gob.pe/mtpe), y las dos tasas de bonificación extraordinaria.",
-        "Separar estos supuestos en celdas de entrada te permite auditar cualquier cálculo pasado con solo revisar la columna de vigencia y reutilizar la misma plantilla en los semestres siguientes sin reescribir fórmulas. Si trabajas en áreas de finanzas o compensaciones, también puedes complementar tu análisis revisando la sección de [datos económicos de Perú](/pe/datos) en ProgramBI.",
+        "Cuando calculas gratificaciones en Excel para una planilla mensual o semestral, nunca escribas porcentajes fijos dentro de las fórmulas. Aunque las tasas de bonificación extraordinaria de la Ley 29351 (incorporada de forma permanente por la Ley 30334) se mantienen en 9 % para EsSalud y 6,75 % para trabajadores afiliados a una EPS, otros valores como la Remuneración Mínima Vital (RMV), que define la asignación familiar equivalente al 10 %, sí se actualizan por decreto supremo. Para la gratificación de diciembre 2026 rige la RMV de S/ 1.230 vigente desde el 1 de octubre de 2026 según el D.S. N.° 015-2026-TR (gob.pe/mtpe), por lo que la asignación familiar asciende a S/ 123,00.",
+        "Abre un libro nuevo de Excel y crea una primera hoja llamada Parametros. En las primeras filas registra la fecha de vigencia del cálculo, el periodo semestral seleccionado (para Navidad 2026, del 1 de julio al 31 de diciembre de 2026), la RMV vigente de S/ 1.230 publicada por el Ministerio de Trabajo y Promoción del Empleo (gob.pe/mtpe), y las dos tasas de bonificación extraordinaria.",
+        "Separar estos supuestos en celdas de entrada te permite auditar cualquier cálculo pasado con solo revisar la columna de vigencia y reutilizar la misma plantilla en los semestres siguientes sin reescribir fórmulas. Si trabajas en áreas de finanzas o compensaciones, revisa también nuestra guía pilar de [planilla de sueldos en Excel para Perú](/pe/guias/planilla-de-sueldos-excel-peru) y la sección de [datos económicos de Perú](/pe/datos) en ProgramBI.",
       ],
       tabla: {
-        caption: "Estructura de la hoja Parametros (verificar valores vigentes en gob.pe antes de liquidar)",
+        caption: "Estructura de la hoja Parametros (valores vigentes al cierre de diciembre 2026 en gob.pe/mtpe)",
         encabezados: [
           "Celda",
           "Parámetro",
@@ -112,14 +113,14 @@ export const guia: GuiaPasoAPaso = {
           [
             "Parametros!B2",
             "Fecha de vigencia",
-            "2026-11-25 (actualizar al cierre del semestre)",
+            "2026-11-26 (semestre jul-dic 2026)",
             "Control interno de nómina",
           ],
           [
             "Parametros!B3",
             "RMV vigente (S/)",
-            "[Completar con RMV vigente publicada por MTPE]",
-            "gob.pe/mtpe",
+            "1230 (vigente desde 01/10/2026)",
+            "D.S. N.° 015-2026-TR / gob.pe/mtpe",
           ],
           [
             "Parametros!B4",
@@ -231,8 +232,8 @@ export const guia: GuiaPasoAPaso = {
       resumenHowTo:
         "Verifica las fechas límite de depósito (15 de julio y 15 de diciembre) y la regla de pago dentro de las 48 horas cuando ocurre un cese laboral.",
       parrafos: [
-        "El empleador tiene plazo hasta la primera quincena de julio (15 de julio) para pagar la gratificación de Fiestas Patrias y hasta la primera quincena de diciembre (15 de diciembre) para la gratificación de Navidad. Si el día 15 cae sábado, domingo o feriado, conviene programar el abono el día hábil anterior para evitar intereses moratorios y eventuales multas de SUNAFIL.",
-        "Cuando el trabajador cesa antes de alcanzar la oportunidad de pago (por ejemplo, renuncia el 20 de octubre), corresponde pagar la gratificación trunca dentro de las 48 horas siguientes al cese junto con su [liquidación de beneficios sociales](/pe/guias/liquidacion-beneficios-sociales-excel). Al igual que la gratificación ordinaria, la trunca se calcula solo por meses calendario completos laborados en el semestre y también lleva la bonificación extraordinaria del 9 % o 6,75 %.",
+        "El empleador tiene plazo hasta la primera quincena de julio (15 de julio) para pagar la gratificación de Fiestas Patrias y hasta la primera quincena de diciembre (para Navidad 2026, el plazo legal máximo es el 15 de diciembre de 2026). Si el día 15 cae sábado, domingo o feriado, conviene programar el abono el día hábil anterior para evitar intereses moratorios y eventuales multas de SUNAFIL.",
+        "Cuando el trabajador cesa antes de alcanzar la oportunidad de pago (por ejemplo, renuncia antes del 15 de diciembre de 2026), corresponde pagar la [gratificación trunca en Excel](/pe/guias/gratificacion-trunca-excel) dentro de las 48 horas siguientes al cese junto con su [liquidación de beneficios sociales](/pe/guias/liquidacion-beneficios-sociales-excel). Al igual que la gratificación ordinaria, la trunca se calcula solo por meses calendario completos laborados en el semestre y también lleva la bonificación extraordinaria del 9 % o 6,75 %.",
         "En tu hoja de Excel, agrega una columna de alerta visual con formato condicional o fórmula SI para verificar que ningún trabajador con menos de un mes completo reciba pago erróneo y que el tipo de régimen (General o Pequeña Empresa) aplique el factor 1 o 0,5 respectivamente.",
       ],
       tabla: {
@@ -335,9 +336,9 @@ export const guia: GuiaPasoAPaso = {
     },
   ],
   relacionadas: [
+    "gratificacion-trunca-excel",
+    "planilla-de-sueldos-excel-peru",
     "calcular-cts-excel",
-    "liquidacion-beneficios-sociales-excel",
-    "boleta-de-pago-excel",
   ],
   enlacesExternos: [
     {
@@ -352,6 +353,16 @@ export const guia: GuiaPasoAPaso = {
     },
   ],
   enlacesInternosExtra: [
+    {
+      label: "Cómo calcular la gratificación trunca en Excel",
+      href: "/pe/guias/gratificacion-trunca-excel",
+      descripcion: "Cálculo por cese antes del 15 de diciembre, sextos completos y pago en 48 horas.",
+    },
+    {
+      label: "Planilla de sueldos en Excel (Perú 2026)",
+      href: "/pe/guias/planilla-de-sueldos-excel-peru",
+      descripcion: "Guía pilar con el flujo completo de boleta, gratificación, CTS, quinta categoría y liquidación.",
+    },
     {
       label: "Curso de Excel en vivo (Perú)",
       href: "/pe/cursos/excel",

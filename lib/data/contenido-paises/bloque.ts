@@ -23,6 +23,8 @@ import { esGuiaPublicada } from "@/lib/guias/relacionadas";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
 import {
   montoConCodigo,
+  resumenDescuentoCatalogo,
+  resumenDescuentoCursoTexto,
   resumenPrecioCursoTexto,
   resumenPreciosCatalogo,
 } from "@/lib/paises/detalle-curso";
@@ -111,6 +113,8 @@ export type DefinicionBloqueLocal = {
   notas: Partial<Record<ClaveHechoLocal, string>>;
   /** 4 a 6 preguntas. Aceptan los mismos marcadores que las notas. */
   preguntas: FaqLocal[];
+  /** Enlaces internos adicionales para el bloque de fichas del país. */
+  enlacesExtras?: EnlaceLocal[];
   /** Title y description de las siete rutas. */
   seo: Record<RutaSeoLocal, SeoPagina>;
 };
@@ -170,8 +174,12 @@ export function construirBloque(
     ? etiquetaDescuentoCurso(iso, curso.slug)
     : etiquetaDescuentoCatalogo(iso);
   const resumenPrecios = curso
-    ? resumenPrecioCursoTexto(iso, curso.slug, curso.title)
-    : resumenPreciosCatalogo(iso);
+    ? muestraPrecioDirecto(iso)
+      ? resumenPrecioCursoTexto(iso, curso.slug, curso.title)
+      : resumenDescuentoCursoTexto(iso, curso.slug, curso.title)
+    : muestraPrecioDirecto(iso)
+      ? resumenPreciosCatalogo(iso)
+      : resumenDescuentoCatalogo(iso);
   const fechaGratis = fechaClaseGratis();
 
   const ctx: Ctx = {
@@ -248,7 +256,7 @@ export function construirBloque(
       valor: fechaGratis ? `Próxima: ${fechaGratis}` : "Coordinada por WhatsApp",
       detalle: nota(
         "clase-gratis",
-        "Clase abierta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada."
+        "Clase gratis: coordínala por WhatsApp."
       ),
     },
     {
@@ -262,12 +270,15 @@ export function construirBloque(
     },
   ];
 
-  const fichas: EnlaceLocal[] = courses
-    .filter((item) => item.slug !== curso?.slug)
-    .map((item) => ({
-      href: rutaLocal(iso, `/cursos/${item.slug}`),
-      label: item.title,
-    }));
+  const fichas: EnlaceLocal[] = [
+    ...courses
+      .filter((item) => item.slug !== curso?.slug)
+      .map((item) => ({
+        href: rutaLocal(iso, `/cursos/${item.slug}`),
+        label: item.title,
+      })),
+    ...(definicion.enlacesExtras ?? []),
+  ];
 
   const guias: EnlaceLocal[] = guiasDePais(iso)
     .filter(esGuiaPublicada)

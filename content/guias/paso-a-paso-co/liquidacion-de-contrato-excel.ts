@@ -181,6 +181,7 @@ export const guia: GuiaPasoAPaso = {
       titulo: "Nota sobre indemnización según modalidad y consolidación del neto",
       parrafos: [
         "La indemnización por despido sin justa causa (artículo 64 del Código Sustantivo del Trabajo) no es automática en toda liquidación: solo procede cuando el empleador termina el contrato sin justa causa comprobada, y su fórmula cambia según la modalidad:",
+        "Si necesitas construir plantillas de liquidación con validaciones de datos, funciones lógicas y control de topes sin depender de archivos prestados, conoce nuestro [curso de excel](/co/cursos/excel) en vivo.",
       ],
       lista: [
         "Contrato a término fijo: equivale al valor de los salarios correspondientes al tiempo que faltare para cumplir el plazo estipulado del contrato.",

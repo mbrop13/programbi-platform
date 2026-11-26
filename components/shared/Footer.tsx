@@ -36,7 +36,6 @@ const companyLinks = [
   { label: "Casos y testimonios de alumnos", href: "/casos" },
   { label: "Glosario de datos", href: "/glosario" },
   { label: "Comparativas de herramientas", href: "/versus" },
-  { label: "Registrarse", href: "/?auth=register" },
 ];
 
 /** Países con hub indexable publicado (/guias o /{pais}/guias). */
@@ -250,7 +249,9 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
         </div>
       </div>
       <p className="mx-auto mt-12 max-w-[1440px] text-xs text-text-muted">
-        ProgramBI SPA · {pais === ISO_CHILE ? "Chile" : getPais(pais).nombre}
+        {pais === ISO_CHILE
+          ? "ProgramBI SpA · Operamos desde Chile"
+          : `ProgramBI SpA (Chile) · Clases en vivo para ${getPais(pais).nombre}`}
       </p>
     </footer>
   );

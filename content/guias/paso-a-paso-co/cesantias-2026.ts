@@ -157,6 +157,7 @@ export const guia: GuiaPasoAPaso = {
       titulo: "Casos de prueba 2026",
       parrafos: [
         "Comprueba que tu archivo arroje los siguientes resultados antes de generar la planilla para el operador PILA o el fondo de cesantías:",
+        "Si quieres dominar funciones condicionales, tablas dinámicas y automatización de planillas laborales desde cero, revisa nuestro [curso de excel](/co/cursos/excel) en vivo.",
       ],
       tabla: {
         caption: "Ejemplos verificados de cesantías 2026",

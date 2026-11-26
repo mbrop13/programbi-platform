@@ -1,6 +1,6 @@
 import type { ContenidoPais } from "./tipos";
 import { textoCuotas } from "@/config/cuotas";
-import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import { resumenDescuentoCatalogo } from "@/lib/paises/detalle-curso";
 
 const cuotasAr = textoCuotas("ar");
 
@@ -54,7 +54,7 @@ const contenido: ContenidoPais = {
     titulo: "Del Excel de todos los días al tablero que se usa en la reunión",
     parrafos: [
       "En Argentina el dato suele estar repartido entre la facturación electrónica de ARCA (ex AFIP), el ERP, las planillas de campo y algún archivo que finanzas arma a mano. Los programas están pensados para analistas financieros, pymes y equipos de agro y exportación, fintech, retail e industria que necesitan llegar al comité con una única versión del número.",
-      `El recorrido arranca en Excel, sigue en SQL Server y termina en Power BI y Python, trabajando inflación con el IPC del INDEC y tipo de cambio con series del BCRA. La clase de 19:30 a 21:30 en Chile se cursa en horario de Buenos Aires de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno, con valores en pesos argentinos (ARS) en el PDF de temario y precios y pago por Mercado Pago Argentina en ${cuotasAr}.`,
+      `El recorrido arranca en Excel, sigue en SQL Server y termina en Power BI y Python, trabajando inflación con el IPC del INDEC y tipo de cambio con series del BCRA. La clase de 19:30 a 21:30 en Chile se cursa en horario de Buenos Aires de 19:30 a 21:30 en verano chileno y de 20:30 a 22:30 en invierno chileno, con valores referenciales en pesos argentinos (ARS) en el PDF «Temario y precios» y pago con tarjeta internacional vía Mercado Pago (cobro procesado en CLP desde Chile) en ${cuotasAr} o transferencia internacional.`,
     ],
   },
   casos: [
@@ -106,10 +106,10 @@ const contenido: ContenidoPais = {
     },
   ],
   moneda: {
-    titulo: "Pesos argentinos y pago con Mercado Pago",
+    titulo: "Valor referencial en ARS y pago internacional",
     resumen:
-      `El catálogo de Argentina se publica en pesos argentinos (ARS) dentro del PDF de temario y precios de cada curso, con pago habilitado en ${cuotasAr}.`,
-    nota: "El checkout procesa el pago con Mercado Pago Argentina. Si la cuenta local no está habilitada, antes de confirmar muestra el equivalente en pesos chilenos (CLP).",
+      `El catálogo de Argentina muestra valores referenciales en pesos argentinos (ARS) dentro del PDF «Temario y precios» de cada curso, con opción de ${cuotasAr}.`,
+    nota: "El checkout procesa el pago con tarjeta internacional vía Mercado Pago (el cobro se realiza en CLP desde Chile y tu banco efectúa la conversión) o mediante transferencia internacional.",
   },
   mercado: {
     ejemplo:
@@ -117,7 +117,7 @@ const contenido: ContenidoPais = {
     horario:
       "Argentina mantiene la misma hora todo el año. Chile pasa a UTC-3 en verano y UTC-4 en invierno, así que la clase de 19:30 a 21:30 en Chile se ve de 19:30 a 21:30 o de 20:30 a 22:30 en Buenos Aires. La ficha de la cohorte muestra la conversión exacta.",
     facturacion:
-      `Los cursos abiertos se abonan en pesos argentinos (ARS) por Mercado Pago Argentina en ${cuotasAr}. Los proyectos in-company se cotizan aparte; la propuesta indica alcance, moneda y condiciones de facturación.`,
+      `Los cursos abiertos se abonan con tarjeta internacional vía Mercado Pago (cobro procesado en CLP desde Chile) en ${cuotasAr} o mediante transferencia internacional. Los proyectos in-company se cotizan aparte; la propuesta indica alcance, moneda y condiciones de facturación.`,
   },
   nosotros: {
     parrafo:
@@ -141,12 +141,12 @@ const contenido: ContenidoPais = {
     },
     {
       q: "¿Puedo pagar en cuotas?",
-      a: `Sí: todos los cursos en Argentina se pueden pagar en ${cuotasAr} con Mercado Pago Argentina, sin recargo por financiamiento. También puedes abonar con Mercado Pago Wallet o transferencia bancaria en pesos argentinos (ARS).`,
+      a: `Sí: los cursos en Argentina admiten ${cuotasAr} con tarjeta internacional vía Mercado Pago (según disponibilidad de tu banco emisor, sin recargo por financiamiento). También puedes coordinar transferencia internacional con admisiones.`,
       categoria: "pagos",
     },
     {
       q: "¿El precio final está en pesos argentinos?",
-      a: `${resumenPreciosCatalogo("ar")} Si la cuenta local de Mercado Pago no está habilitada, el checkout informa el equivalente en CLP para que la decisión sea con el número a la vista.`,
+      a: `${resumenDescuentoCatalogo("ar")} Si la cuenta local de Mercado Pago no está habilitada, el checkout informa el equivalente en CLP para que la decisión sea con el número a la vista.`,
       categoria: "pagos",
     },
     {

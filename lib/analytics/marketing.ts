@@ -539,12 +539,14 @@ function sendGenerateLeadBeacon(opts: {
   // gtag session; if either is missing, fall back to gtag(transport_type: "beacon").
   if (!session.sid || !session.sct) return false;
   const debug = analyticsDebugEnabled();
+  const landingPage = opts.landing_page || readLandingPath();
   const params = new URLSearchParams({
     v: "2",
     tid: GA_MEASUREMENT_ID,
     cid,
     sid: session.sid,
     sct: session.sct,
+    seg: "1",
     en: GA_LEAD_EVENTS.GENERATE_LEAD,
     dl: buildPageViewTarget().page_location,
     dt: document.title,
@@ -561,7 +563,7 @@ function sendGenerateLeadBeacon(opts: {
   if (opts.lead_type) params.set("ep.lead_type", opts.lead_type);
   if (opts.lead_source) params.set("ep.lead_source", opts.lead_source);
   if (opts.country) params.set("ep.country", opts.country);
-  if (opts.landing_page) params.set("ep.landing_page", opts.landing_page);
+  if (landingPage) params.set("ep.landing_page", landingPage);
   // The normal /g/collect endpoint with _dbg=1 feeds DebugView. Do NOT use
   // /debug/g/collect: that validates the payload but records nothing anywhere.
   try {
@@ -1250,6 +1252,7 @@ export function trackCheckoutStart(opts: {
     location: opts.location || "pago",
     pais: country,
     country,
+    transport_type: "beacon",
   });
 
   const sortedSlugs = [...opts.courseSlugs].sort().join(",");
@@ -1260,6 +1263,7 @@ export function trackCheckoutStart(opts: {
     course_slugs: courseSlugsStr,
     pais: country,
     country,
+    transport_type: "beacon",
   });
 }
 
@@ -1315,12 +1319,20 @@ export type WhatsAppCtaPosition =
   | "floating"
   | "footer"
   | "guia_cta"
+  | "guia_top"
+  | "guia_mid"
+  | "guia_end"
+  | "guia_sidebar"
+  | "guia_sticky_mobile"
   | "curso_hero"
   | "curso_ayuda"
   | "ficha_sueldo"
   | "ficha_final"
   | "datos_portada"
   | "datos_desempleo"
+  | "datos_soft"
+  | "co_analista_sueldos"
+  | "notify_next_date"
   | "otros";
 
 const WHATSAPP_CTA_POSITIONS = new Set<WhatsAppCtaPosition>([
@@ -1328,12 +1340,20 @@ const WHATSAPP_CTA_POSITIONS = new Set<WhatsAppCtaPosition>([
   "floating",
   "footer",
   "guia_cta",
+  "guia_top",
+  "guia_mid",
+  "guia_end",
+  "guia_sidebar",
+  "guia_sticky_mobile",
   "curso_hero",
   "curso_ayuda",
   "ficha_sueldo",
   "ficha_final",
   "datos_portada",
   "datos_desempleo",
+  "datos_soft",
+  "co_analista_sueldos",
+  "notify_next_date",
   "otros",
 ]);
 
@@ -1414,6 +1434,7 @@ export function trackWhatsAppClick(opts?: {
     // Keep legacy params for existing GA4 reports/explorations.
     page_path: pagePath,
     curso_slug: courseSlug,
+    transport_type: "beacon",
   });
 }
 
@@ -1613,6 +1634,7 @@ export function trackLeadSubmit(
     form_name: formName,
     course_slug: courseSlug,
     country,
+    transport_type: "beacon",
   });
   // Marcar generate_lead como evento clave en GA4 Admin
   trackGenerateLead({

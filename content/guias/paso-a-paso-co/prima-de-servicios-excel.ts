@@ -182,6 +182,7 @@ export const guia: GuiaPasoAPaso = {
       titulo: "Ejemplos verificados: semestre completo y proporcional",
       parrafos: [
         "Comprueba tu hoja con dos casos de prueba reales de 2026: un trabajador con 1 SMMLV ($1.750.905) que laboró los 180 días del segundo semestre y otro que gana $4.000.000 (sin auxilio) e ingresó el 1 de octubre de 2026 (90 días).",
+        "Si quieres agilizar tus cierres semestrales con fórmulas dinámicas, tablas y validación automática de parámetros, conoce nuestro [curso de excel](/co/cursos/excel) en vivo.",
       ],
       tabla: {
         caption: "Casos de verificación para la prima de servicios 2026",

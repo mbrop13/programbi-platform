@@ -41,14 +41,9 @@ export function GuiaCursoLateral(props: Props) {
         {curso.horas} horas en vivo
         {curso.textoCuotas ? <span className="text-[var(--g-muted)]"> · {curso.textoCuotas}</span> : null}
       </p>
-      {curso.precioFormateado ? (
-        <p className="mt-1 flex items-baseline gap-2 tabular-nums">
-          <span className="text-base font-bold text-[var(--g-ink)]">{curso.precioFormateado}</span>
-          {curso.precioListaFormateado ? (
-            <span className="text-xs text-[var(--g-subtle)] line-through">{curso.precioListaFormateado}</span>
-          ) : null}
-        </p>
-      ) : null}
+      <p className="mt-1 text-xs font-medium text-[var(--g-muted)]">
+        Temario y precios en la ficha
+      </p>
 
       <div className="mt-4 flex flex-col gap-2">
         <WhatsAppCta
@@ -97,7 +92,7 @@ export function GuiaCursoCierre({
       <p className="mt-3 text-sm tabular-nums opacity-80">
         {curso.horas} horas en vivo
         {curso.textoCuotas ? ` · ${curso.textoCuotas}` : ""}
-        {curso.precioFormateado ? ` · ${curso.precioFormateado}` : ""}
+        {" · Temario y precios en la ficha"}
       </p>
       <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
         <WhatsAppCta

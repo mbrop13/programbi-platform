@@ -5,6 +5,9 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CourseImage from "@/components/shared/CourseImage";
 import AuthModal from "@/components/shared/AuthModal";
+import { BrochureGateForm } from "@/components/marketing/BrochureGateForm";
+import NotifyNextDate from "@/components/marketing/NotifyNextDate";
+import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { getSavedLeadInfo } from "@/lib/pricing-gate";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -36,7 +39,7 @@ import { useCountry } from "@/lib/context/CountryContext";
 import { validateCouponAction } from "@/lib/supabase/comunidad-ai";
 import { trackCheckoutStart, trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
-import { getPais, normalizarPais } from "@/config/paises";
+import { getPais, muestraPrecioDirecto, normalizarPais } from "@/config/paises";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { formatMoneda, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal, totalLocalConCupon } from "@/lib/paises/precios";
 import { NOTA_CUOTAS_MEDIOS } from "@/config/cuotas";
@@ -191,9 +194,10 @@ export default function PagoClient({
   // Custom dropdown open key (slug-levelName)
   const [openDropdownKey, setOpenDropdownKey] = useState<string | null>(null);
 
-  const [notifyLoading, setNotifyLoading] = useState<string | null>(null);
-  const [notifySuccess, setNotifySuccess] = useState<Set<string>>(new Set());
-  
+  const { unlocked: priceUnlocked } = usePriceUnlock();
+  const showPrices = isAuthenticated || priceUnlocked || muestraPrecioDirecto(paisPago);
+  const isFallbackCl = estadoPago?.modo === "fallback-cl";
+
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [guestName, setGuestName] = useState(initialName);
   const [guestEmail, setGuestEmail] = useState(initialEmail);
@@ -560,29 +564,6 @@ export default function PagoClient({
       return next;
     });
   }
-
-  const handleNotifyMe = async (slug: string, levelName: string) => {
-    const key = `${slug}-${levelName}`;
-    if (notifySuccess.has(key)) return;
-    setNotifyLoading(key);
-    try {
-      await fetch("/api/leads/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: initialName || "Visitante",
-          email: initialEmail || "",
-          courseSlug: slug,
-          levelName,
-        }),
-      });
-      setNotifySuccess(prev => new Set(prev).add(key));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setNotifyLoading(null);
-    }
-  };
 
   const cartItems = Object.values(cart);
   const cartItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
@@ -1086,40 +1067,47 @@ export default function PagoClient({
 
                        <div className="flex w-full shrink-0 flex-col items-start gap-3 border-t border-line p-5 md:w-44 md:items-end md:border-l md:border-t-0 md:p-6">
                            {mode === "individual" && currentLevelData?.price ? (
-                              <div className="flex flex-col items-start sm:items-end">
-                                 {(() => {
-                                    const pricing = getDiscountedPrice(course.slug, currentLevelData.price, activeLevel);
-                                    const tachado = tachadoLocal(course.slug);
-                                    const listPrice = isBundle
-                                      ? Math.max(747000, pricing.listPrice ?? 0)
-                                      : pricing.listPrice;
-                                    const discountPct = listPrice && listPrice > pricing.finalPrice
-                                      ? Math.round(((listPrice - pricing.finalPrice) / listPrice) * 100)
-                                      : 0;
-                                    const showDiscount = Boolean(tachado) || (listPrice != null && listPrice > pricing.finalPrice);
-                                    return (
-                                      <>
-                                        {pricing.hasDiscount && !isBundle ? (
-                                          <span className="mb-1 text-xs font-semibold text-ink">Promoción</span>
-                                        ) : null}
-                                        {showDiscount ? (
-                                          <span className="text-xs font-semibold text-faint line-through">
-                                            {tachado
-                                              ? `${tachado.texto} · ${tachado.pct}% off`
-                                              : `${convertAndFormat(listPrice!)} · ${discountPct}% off`}
-                                          </span>
-                                        ) : null}
-                                        <div className="flex flex-col items-start sm:items-end">
-                                          <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
-                                          {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                            <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
-                                          )}
-                                        </div>
-                                      </>
-                                    );
-                                 })()}
-                                 {notaClp(getDiscountedPrice(course.slug, currentLevelData.price, activeLevel).finalPrice)}
-                              </div>
+                              showPrices ? (
+                                <div className="flex flex-col items-start sm:items-end">
+                                   {(() => {
+                                      const pricing = getDiscountedPrice(course.slug, currentLevelData.price, activeLevel);
+                                      const tachado = tachadoLocal(course.slug);
+                                      const listPrice = isBundle
+                                        ? Math.max(747000, pricing.listPrice ?? 0)
+                                        : pricing.listPrice;
+                                      const discountPct = listPrice && listPrice > pricing.finalPrice
+                                        ? Math.round(((listPrice - pricing.finalPrice) / listPrice) * 100)
+                                        : 0;
+                                      const showDiscount = Boolean(tachado) || (listPrice != null && listPrice > pricing.finalPrice);
+                                      return (
+                                        <>
+                                          {pricing.hasDiscount && !isBundle ? (
+                                            <span className="mb-1 text-xs font-semibold text-ink">Promoción</span>
+                                          ) : null}
+                                          {showDiscount ? (
+                                            <span className="text-xs font-semibold text-faint line-through">
+                                              {tachado
+                                                ? `${tachado.texto} · ${tachado.pct}% off`
+                                                : `${convertAndFormat(listPrice!)} · ${discountPct}% off`}
+                                            </span>
+                                          ) : null}
+                                          <div className="flex flex-col items-start sm:items-end">
+                                            <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
+                                            {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                              <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
+                                            )}
+                                          </div>
+                                        </>
+                                      );
+                                   })()}
+                                   {notaClp(getDiscountedPrice(course.slug, currentLevelData.price, activeLevel).finalPrice)}
+                                </div>
+                              ) : (
+                                <div className="flex flex-col items-start md:items-end">
+                                  <span className="text-xs font-semibold text-ink">Temario y precios en el PDF</span>
+                                  <span className="mt-0.5 text-[11px] text-mute">Desbloquea para inscribirte</span>
+                                </div>
+                              )
                            ) : mode === "enterprise" ? null : (
                                <div className="flex flex-col items-start sm:items-end">
                                    <span className="text-xs text-faint">Precio no disponible</span>
@@ -1165,18 +1153,16 @@ export default function PagoClient({
                                 </div>
                               ) : null}
                               {!canBuy || sinFechaPublicada ? (
-                                <button
-                                  type="button"
-                                  onClick={() => handleNotifyMe(course.slug, activeLevel)}
-                                  disabled={notifySuccess.has(cartKey) || notifyLoading === cartKey}
-                                  className={
-                                    canBuy
-                                      ? "mt-1 flex h-8 w-full items-center justify-center gap-1.5 rounded-md px-2 text-[11px] font-semibold text-mute transition-colors hover:text-ink sm:w-auto"
-                                      : `mt-1 flex h-10 w-full items-center justify-center gap-2 rounded-md px-4 text-xs font-semibold transition-colors sm:w-auto ${notifySuccess.has(cartKey) ? "bg-wash text-ink" : "border border-line bg-wash text-ink hover:bg-paper"}`
-                                  }
-                                >
-                                  {notifyLoading === cartKey ? <Loader2 className="h-4 w-4 animate-spin" /> : notifySuccess.has(cartKey) ? <><CheckCircle2 className="h-4 w-4" /> Registrado</> : <><Bell className="h-4 w-4" /> Avísame cuando haya fecha</>}
-                                </button>
+                                <NotifyNextDate
+                                  courseSlug={course.slug}
+                                  courseTitle={course.title}
+                                  levelName={activeLevel}
+                                  pais={paisPago}
+                                  ctaLocation="pago_notify"
+                                  initialEmail={userEmail || guestEmail || initialEmail}
+                                  variant="compact"
+                                  className="mt-1 w-full"
+                                />
                               ) : null}
                               </>
                            ) : (
@@ -1257,30 +1243,36 @@ export default function PagoClient({
                                           })()}
                                        </div>
                                        <div className="flex shrink-0 flex-col items-end">
-                                          {tachadoLocal(item.slug, item.quantity) ? (
-                                            <div className="mb-1 flex items-center gap-1.5">
-                                              <span className="text-[11px] font-semibold text-faint line-through">
-                                                {tachadoLocal(item.slug, item.quantity)?.texto}
-                                              </span>
-                                              <span className="rounded-md bg-ink px-1.5 py-0.5 text-[10px] font-semibold text-paper">
-                                                −{tachadoLocal(item.slug, item.quantity)?.pct}%
-                                              </span>
-                                            </div>
-                                          ) : item.originalPrice && item.originalPrice > item.price ? (
-                                            <div className="mb-1 flex items-center gap-1.5">
-                                              <span className="text-[11px] font-semibold text-faint line-through">
-                                                {convertAndFormat(item.originalPrice * item.quantity)}
-                                              </span>
-                                              <span className="rounded-md bg-ink px-1.5 py-0.5 text-[10px] font-semibold text-paper">
-                                                −{Math.round((1 - item.price / item.originalPrice) * 100)}%
-                                              </span>
-                                            </div>
-                                          ) : null}
-                                          <span className="text-sm font-semibold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity, item.slug, item.quantity)}</span>
-                                          {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                            <span className="mt-0.5 text-[10px] font-semibold text-faint">
-                                              ≈ ${Math.round((item.price * item.quantity) / 900)} USD
-                                            </span>
+                                          {showPrices ? (
+                                            <>
+                                              {tachadoLocal(item.slug, item.quantity) ? (
+                                                <div className="mb-1 flex items-center gap-1.5">
+                                                  <span className="text-[11px] font-semibold text-faint line-through">
+                                                    {tachadoLocal(item.slug, item.quantity)?.texto}
+                                                  </span>
+                                                  <span className="rounded-md bg-ink px-1.5 py-0.5 text-[10px] font-semibold text-paper">
+                                                    −{tachadoLocal(item.slug, item.quantity)?.pct}%
+                                                  </span>
+                                                </div>
+                                              ) : item.originalPrice && item.originalPrice > item.price ? (
+                                                <div className="mb-1 flex items-center gap-1.5">
+                                                  <span className="text-[11px] font-semibold text-faint line-through">
+                                                    {convertAndFormat(item.originalPrice * item.quantity)}
+                                                  </span>
+                                                  <span className="rounded-md bg-ink px-1.5 py-0.5 text-[10px] font-semibold text-paper">
+                                                    −{Math.round((1 - item.price / item.originalPrice) * 100)}%
+                                                  </span>
+                                                </div>
+                                              ) : null}
+                                              <span className="text-sm font-semibold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity, item.slug, item.quantity)}</span>
+                                              {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                                <span className="mt-0.5 text-[10px] font-semibold text-faint">
+                                                  ≈ ${Math.round((item.price * item.quantity) / 900)} USD
+                                                </span>
+                                              )}
+                                            </>
+                                          ) : (
+                                            <span className="text-xs font-semibold text-mute">En el PDF</span>
                                           )}
                                           {item.slug === "asesoria" ? (
                                             <div className="mt-2 flex items-center gap-2 rounded-md border border-line bg-wash">
@@ -1312,219 +1304,283 @@ export default function PagoClient({
                                  </div>
                               )}
 
-                              <div className="mb-4 border-t border-line pt-4">
-                                <button
-                                  type="button"
-                                  onClick={() => setShowCouponInput(!showCouponInput)}
-                                  className="flex w-full cursor-pointer items-center justify-between border-none bg-transparent py-1 text-xs font-semibold text-mute transition-colors hover:text-ink"
-                                >
-                                  <span className="flex items-center gap-1.5">
-                                    <Tag className="h-3.5 w-3.5" /> ¿Tienes un cupón?
-                                  </span>
-                                  {showCouponInput ? <ChevronUp className="h-3.5 w-3.5 text-faint" /> : <ChevronDown className="h-3.5 w-3.5 text-faint" />}
-                                </button>
-                                
-                                <AnimatePresence initial={false}>
-                                  {(showCouponInput || appliedCoupon) && (
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                                      animate={{ height: "auto", opacity: 1, marginTop: 12 }}
-                                      exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                                      className="overflow-hidden"
-                                    >
-                                      {appliedCoupon ? (
-                                        <div className="flex items-center justify-between rounded-md border border-line bg-wash px-4 py-3">
-                                          <div className="flex items-center gap-2">
-                                            <Tag className="h-4 w-4 shrink-0 text-ink" />
-                                            <div>
-                                              <span className="font-mono text-xs font-semibold tracking-wide text-ink">{appliedCoupon.code}</span>
-                                              <span className="ml-2 text-[11px] font-semibold text-mute">−{appliedCoupon.discount_percentage}%</span>
-                                            </div>
-                                          </div>
-                                          <button type="button" onClick={handleRemoveCoupon} className="flex cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-1 text-mute transition-colors hover:text-ink">
-                                            <X className="h-3.5 w-3.5" />
-                                          </button>
-                                        </div>
-                                      ) : (
-                                        <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                                          <div className="relative flex-1">
-                                            <input
-                                              type="text"
-                                              placeholder="Código"
-                                              value={couponCodeInput}
-                                              onChange={e => {
-                                                setCouponCodeInput(e.target.value);
-                                                if (couponError) setCouponError(null);
-                                              }}
-                                              className={`${fieldClass} font-mono uppercase tracking-wider placeholder:font-sans placeholder:normal-case placeholder:tracking-normal`}
-                                            />
-                                          </div>
-                                          <button
-                                            type="submit"
-                                            disabled={validatingCoupon || !couponCodeInput.trim()}
-                                            className="flex cursor-pointer items-center gap-1.5 rounded-md border-none bg-ink px-4 py-2.5 text-xs font-semibold text-paper transition-colors hover:opacity-90 disabled:opacity-50"
-                                          >
-                                            {validatingCoupon ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
-                                          </button>
-                                        </form>
-                                      )}
-                                      
-                                      {couponError && (
-                                        <motion.p initial={{ opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} className="mt-1.5 px-1 text-[11px] font-semibold text-danger">
-                                          {couponError}
-                                        </motion.p>
-                                      )}
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
-
-                              {appliedCoupon && (
-                                <div className="mb-3 flex items-center justify-between text-xs font-semibold">
-                                  <span className="text-faint">Subtotal</span>
-                                  <span className="tabular-nums text-ink">{textoTotal(totalPrice, cartItems, false)}</span>
-                                </div>
-                              )}
-                              
-                              {appliedCoupon && (
-                                <div className="mb-4 flex items-center justify-between rounded-md border border-line bg-wash p-2.5 text-xs font-semibold text-ink">
-                                  <span className="flex items-center gap-1"><Tag className="h-3.5 w-3.5"/> Descuento ({appliedCoupon.code})</span>
-                                  <span className="tabular-nums">−{textoDescuentoCupon(couponDiscountAmount, cartItems)}</span>
-                                </div>
-                              )}
-
-                              <div className="mb-6 flex items-end justify-between border-t border-line pt-4">
-                                 <span className="font-semibold text-mute">Total</span>
-                                 <div className="text-right">
-                                   <span className="block text-2xl font-bold tabular-nums text-ink">
-                                     {textoTotal(appliedCoupon ? finalPriceWithCoupon : totalPrice, cartItems)}
-                                   </span>
-                                   {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                     <span className="text-xs font-semibold text-faint">
-                                       ≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD
-                                     </span>
-                                   )}
-                                   {notaClp(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
-                                 </div>
-                              </div>
-
-                              <p className="mb-6 text-xs leading-snug text-mute">{NOTA_CUOTAS_MEDIOS}</p>
-
-                              {!mercadoLocal && country.currency.code !== "CLP" && (
-                                <div className="mb-6 rounded-md border border-line bg-wash p-4 text-left">
-                                  <div className="flex items-start gap-2.5">
-                                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-mute" />
-                                    <div>
-                                      <p className="mb-1 text-xs font-semibold text-ink">
-                                        Conversión
-                                      </p>
-                                      <p className="text-xs leading-snug text-mute">
-                                        Se procesa el pago en <span className="font-semibold text-ink">{country.currency.code}</span> usando la referencia publicada.
-                                      </p>
-                                      <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 border-t border-line pt-2 text-[11px] font-semibold text-faint">
-                                        <span>Ref. USD: $1 USD = $900 CLP</span>
-                                        {country.currency.code !== "USD" && (
-                                          <span>$1 USD ≈ {(country.currency.rate * 900).toFixed(2)} {country.currency.code}</span>
-                                        )}
-                                      </div>
-                                    </div>
+                              {!showPrices ? (
+                                <div className="space-y-4 border-t border-line pt-4">
+                                  <div className="flex items-baseline justify-between">
+                                    <span className="font-semibold text-mute">Total</span>
+                                    <span className="text-sm font-bold text-ink">Temario y precios en el PDF</span>
                                   </div>
-                                </div>
-                              )}
 
-                              {!isAuthenticated && (
-                                <div className="mb-5 rounded-xl border border-line bg-wash p-4">
-                                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                                    <p className="text-xs font-bold text-ink">
-                                      Tus datos para recibir el acceso y comprobante
-                                    </p>
+                                  <BrochureGateForm
+                                    slug={cartItems[0]?.slug || "power-bi"}
+                                    courseTitle={cartItems[0]?.title || "Cursos ProgramBI"}
+                                    pais={paisPago}
+                                    source="pago_gate"
+                                    idPrefix="pago-gate-desktop"
+                                    heading="Desbloquea precios y habilita el pago"
+                                    subheading="Deja tu nombre y correo para ver los montos, abrir el PDF y continuar al pago directo."
+                                    buttonLabel="Ver precios y abrir temario"
+                                    onUnlocked={(lead) => {
+                                      setGuestName((prev) => prev || lead.name);
+                                      setGuestEmail((prev) => prev || lead.email);
+                                      if (lead.whatsapp) setGuestWhatsapp((prev) => prev || lead.whatsapp);
+                                    }}
+                                  />
+
+                                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                                     <button
                                       type="button"
                                       onClick={() => setShowLoginModal(true)}
-                                      className="cursor-pointer border-none bg-transparent p-0 text-[11px] font-semibold text-mute underline underline-offset-2 hover:text-ink"
+                                      className="cursor-pointer border-none bg-transparent p-0 font-semibold text-mute underline underline-offset-2 hover:text-ink"
                                     >
-                                      Ya tengo cuenta — Iniciar sesión
+                                      Ya tengo cuenta: Iniciar sesión
                                     </button>
+                                    <a
+                                      href={whatsappHref({
+                                        page: "/pago",
+                                        course: cartItems[0]?.title,
+                                        country: paisPago,
+                                        intent: "curso",
+                                      })}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="font-semibold text-ink underline underline-offset-2 hover:text-mute"
+                                    >
+                                      Cotizar por WhatsApp
+                                    </a>
                                   </div>
-                                  <div className="space-y-2.5">
-                                    <div>
-                                      <label htmlFor="desktop-guest-name" className="mb-1 block text-[11px] font-semibold text-mute">
-                                        Nombre completo
-                                      </label>
-                                      <input
-                                        id="desktop-guest-name"
-                                        type="text"
-                                        autoComplete="name"
-                                        placeholder="Tu nombre y apellido"
-                                        value={guestName}
-                                        onChange={(e) => {
-                                          setGuestName(e.target.value);
-                                          if (guestError) setGuestError(null);
-                                        }}
-                                        className={fieldClass}
-                                      />
-                                    </div>
-                                    <div>
-                                      <label htmlFor="desktop-guest-email" className="mb-1 block text-[11px] font-semibold text-mute">
-                                        Email
-                                      </label>
-                                      <input
-                                        id="desktop-guest-email"
-                                        type="email"
-                                        autoComplete="email"
-                                        placeholder="tu@correo.com"
-                                        value={guestEmail}
-                                        onChange={(e) => {
-                                          setGuestEmail(e.target.value);
-                                          if (guestError) setGuestError(null);
-                                        }}
-                                        className={fieldClass}
-                                      />
-                                    </div>
-                                    <div>
-                                      <label htmlFor="desktop-guest-whatsapp" className="mb-1 block text-[11px] font-semibold text-mute">
-                                        WhatsApp
-                                      </label>
-                                      <input
-                                        id="desktop-guest-whatsapp"
-                                        type="tel"
-                                        autoComplete="tel"
-                                        placeholder="+56 9 1234 5678"
-                                        value={guestWhatsapp}
-                                        onChange={(e) => {
-                                          setGuestWhatsapp(e.target.value);
-                                          if (guestError) setGuestError(null);
-                                        }}
-                                        className={fieldClass}
-                                      />
-                                    </div>
-                                  </div>
-                                  {guestError && (
-                                    <p className="mt-2.5 text-xs font-semibold text-danger">
-                                      {guestError}
-                                    </p>
-                                  )}
                                 </div>
-                              )}
+                              ) : (
+                                <>
+                                  <div className="mb-4 border-t border-line pt-4">
+                                    <button
+                                      type="button"
+                                      onClick={() => setShowCouponInput(!showCouponInput)}
+                                      className="flex w-full cursor-pointer items-center justify-between border-none bg-transparent py-1 text-xs font-semibold text-mute transition-colors hover:text-ink"
+                                    >
+                                      <span className="flex items-center gap-1.5">
+                                        <Tag className="h-3.5 w-3.5" /> ¿Tienes un cupón?
+                                      </span>
+                                      {showCouponInput ? <ChevronUp className="h-3.5 w-3.5 text-faint" /> : <ChevronDown className="h-3.5 w-3.5 text-faint" />}
+                                    </button>
+                                    
+                                    <AnimatePresence initial={false}>
+                                      {(showCouponInput || appliedCoupon) && (
+                                        <motion.div
+                                          initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                          animate={{ height: "auto", opacity: 1, marginTop: 12 }}
+                                          exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                                          className="overflow-hidden"
+                                        >
+                                          {appliedCoupon ? (
+                                            <div className="flex items-center justify-between rounded-md border border-line bg-wash px-4 py-3">
+                                              <div className="flex items-center gap-2">
+                                                <Tag className="h-4 w-4 shrink-0 text-ink" />
+                                                <div>
+                                                  <span className="font-mono text-xs font-semibold tracking-wide text-ink">{appliedCoupon.code}</span>
+                                                  <span className="ml-2 text-[11px] font-semibold text-mute">−{appliedCoupon.discount_percentage}%</span>
+                                                </div>
+                                              </div>
+                                              <button type="button" onClick={handleRemoveCoupon} className="flex cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-1 text-mute transition-colors hover:text-ink">
+                                                <X className="h-3.5 w-3.5" />
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                                              <div className="relative flex-1">
+                                                <input
+                                                  type="text"
+                                                  placeholder="Código"
+                                                  value={couponCodeInput}
+                                                  onChange={e => {
+                                                    setCouponCodeInput(e.target.value);
+                                                    if (couponError) setCouponError(null);
+                                                  }}
+                                                  className={`${fieldClass} font-mono uppercase tracking-wider placeholder:font-sans placeholder:normal-case placeholder:tracking-normal`}
+                                                />
+                                              </div>
+                                              <button
+                                                type="submit"
+                                                disabled={validatingCoupon || !couponCodeInput.trim()}
+                                                className="flex cursor-pointer items-center gap-1.5 rounded-md border-none bg-ink px-4 py-2.5 text-xs font-semibold text-paper transition-colors hover:opacity-90 disabled:opacity-50"
+                                              >
+                                                {validatingCoupon ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
+                                              </button>
+                                            </form>
+                                          )}
+                                          
+                                          {couponError && (
+                                            <motion.p initial={{ opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} className="mt-1.5 px-1 text-[11px] font-semibold text-danger">
+                                              {couponError}
+                                            </motion.p>
+                                          )}
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </div>
 
-                              <motion.button
-                                type="button"
-                                onClick={handleCheckout}
-                                disabled={isCheckingOut}
-                                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-none bg-ink py-3.5 text-sm font-semibold text-paper transition-opacity disabled:opacity-60"
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                {isCheckingOut ? (
-                                  <Loader2 className="h-5 w-5 animate-spin" />
-                                ) : (
-                                  <><ShoppingCart className="h-5 w-5" /> Pagar</>
-                                )}
-                              </motion.button>
-                              
-                              <div className="mt-4 flex items-center justify-center gap-2 text-[11px] font-medium text-faint">
-                                <BadgeCheck className="h-3.5 w-3.5 text-ink" />
-                                <span>Pago cifrado vía Flow</span>
-                              </div>
+                                  {appliedCoupon && (
+                                    <div className="mb-3 flex items-center justify-between text-xs font-semibold">
+                                      <span className="text-faint">Subtotal</span>
+                                      <span className="tabular-nums text-ink">{textoTotal(totalPrice, cartItems, false)}</span>
+                                    </div>
+                                  )}
+                                  
+                                  {appliedCoupon && (
+                                    <div className="mb-4 flex items-center justify-between rounded-md border border-line bg-wash p-2.5 text-xs font-semibold text-ink">
+                                      <span className="flex items-center gap-1"><Tag className="h-3.5 w-3.5"/> Descuento ({appliedCoupon.code})</span>
+                                      <span className="tabular-nums">−{textoDescuentoCupon(couponDiscountAmount, cartItems)}</span>
+                                    </div>
+                                  )}
+
+                                  <div className="mb-6 flex items-end justify-between border-t border-line pt-4">
+                                     <span className="font-semibold text-mute">Total</span>
+                                     <div className="text-right">
+                                       <span className="block text-2xl font-bold tabular-nums text-ink">
+                                         {textoTotal(appliedCoupon ? finalPriceWithCoupon : totalPrice, cartItems)}
+                                       </span>
+                                       {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                         <span className="text-xs font-semibold text-faint">
+                                           ≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD
+                                         </span>
+                                       )}
+                                       {notaClp(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
+                                     </div>
+                                  </div>
+
+                                  <p className="mb-6 text-xs leading-snug text-mute">{NOTA_CUOTAS_MEDIOS}</p>
+
+                                  {isFallbackCl ? (
+                                    <div className="mb-6 rounded-md border border-line bg-wash p-4 text-left">
+                                      <div className="flex items-start gap-2.5">
+                                        <Info className="mt-0.5 h-4 w-4 shrink-0 text-mute" />
+                                        <div>
+                                          <p className="mb-1 text-xs font-semibold text-ink">
+                                            Cobro internacional en CLP
+                                          </p>
+                                          <p className="text-xs leading-snug text-mute">
+                                            El cobro se procesa en CLP vía Mercado Pago Chile con conversión automática del banco o tarjeta internacional.
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ) : !mercadoLocal && country.currency.code !== "CLP" ? (
+                                    <div className="mb-6 rounded-md border border-line bg-wash p-4 text-left">
+                                      <div className="flex items-start gap-2.5">
+                                        <Info className="mt-0.5 h-4 w-4 shrink-0 text-mute" />
+                                        <div>
+                                          <p className="mb-1 text-xs font-semibold text-ink">
+                                            Conversión
+                                          </p>
+                                          <p className="text-xs leading-snug text-mute">
+                                            Se procesa el pago en <span className="font-semibold text-ink">{country.currency.code}</span> usando la referencia publicada.
+                                          </p>
+                                          <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 border-t border-line pt-2 text-[11px] font-semibold text-faint">
+                                            <span>Ref. USD: $1 USD = $900 CLP</span>
+                                            {country.currency.code !== "USD" && (
+                                              <span>$1 USD ≈ {(country.currency.rate * 900).toFixed(2)} {country.currency.code}</span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ) : null}
+
+                                  {!isAuthenticated && (
+                                    <div className="mb-5 rounded-xl border border-line bg-wash p-4">
+                                      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                                        <p className="text-xs font-bold text-ink">
+                                          Tus datos para recibir el acceso y comprobante
+                                        </p>
+                                        <button
+                                          type="button"
+                                          onClick={() => setShowLoginModal(true)}
+                                          className="cursor-pointer border-none bg-transparent p-0 text-[11px] font-semibold text-mute underline underline-offset-2 hover:text-ink"
+                                        >
+                                          Ya tengo cuenta: Iniciar sesión
+                                        </button>
+                                      </div>
+                                      <div className="space-y-2.5">
+                                        <div>
+                                          <label htmlFor="desktop-guest-name" className="mb-1 block text-[11px] font-semibold text-mute">
+                                            Nombre completo
+                                          </label>
+                                          <input
+                                            id="desktop-guest-name"
+                                            type="text"
+                                            autoComplete="name"
+                                            placeholder="Tu nombre y apellido"
+                                            value={guestName}
+                                            onChange={(e) => {
+                                              setGuestName(e.target.value);
+                                              if (guestError) setGuestError(null);
+                                            }}
+                                            className={fieldClass}
+                                          />
+                                        </div>
+                                        <div>
+                                          <label htmlFor="desktop-guest-email" className="mb-1 block text-[11px] font-semibold text-mute">
+                                            Email
+                                          </label>
+                                          <input
+                                            id="desktop-guest-email"
+                                            type="email"
+                                            autoComplete="email"
+                                            placeholder="tu@correo.com"
+                                            value={guestEmail}
+                                            onChange={(e) => {
+                                              setGuestEmail(e.target.value);
+                                              if (guestError) setGuestError(null);
+                                            }}
+                                            className={fieldClass}
+                                          />
+                                        </div>
+                                        <div>
+                                          <label htmlFor="desktop-guest-whatsapp" className="mb-1 block text-[11px] font-semibold text-mute">
+                                            WhatsApp
+                                          </label>
+                                          <input
+                                            id="desktop-guest-whatsapp"
+                                            type="tel"
+                                            autoComplete="tel"
+                                            placeholder="+56 9 1234 5678"
+                                            value={guestWhatsapp}
+                                            onChange={(e) => {
+                                              setGuestWhatsapp(e.target.value);
+                                              if (guestError) setGuestError(null);
+                                            }}
+                                            className={fieldClass}
+                                          />
+                                        </div>
+                                      </div>
+                                      {guestError && (
+                                        <p className="mt-2.5 text-xs font-semibold text-danger">
+                                          {guestError}
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  <motion.button
+                                    type="button"
+                                    onClick={handleCheckout}
+                                    disabled={isCheckingOut}
+                                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-none bg-ink py-3.5 text-sm font-semibold text-paper transition-opacity disabled:opacity-60"
+                                    whileTap={{ scale: 0.98 }}
+                                  >
+                                    {isCheckingOut ? (
+                                      <Loader2 className="h-5 w-5 animate-spin" />
+                                    ) : (
+                                      <><ShoppingCart className="h-5 w-5" /> Pagar</>
+                                    )}
+                                  </motion.button>
+                                  
+                                  <div className="mt-4 flex items-center justify-center gap-2 text-[11px] font-medium text-faint">
+                                    <BadgeCheck className="h-3.5 w-3.5 text-ink" />
+                                    <span>Pago cifrado vía Mercado Pago</span>
+                                  </div>
+                                </>
+                              )}
                             </>
                         )}
                       </div>
@@ -1709,30 +1765,36 @@ export default function PagoClient({
                             ) : null}
                           </div>
                           <div className="flex shrink-0 flex-col items-end">
-                            {tachadoLocal(item.slug, item.quantity) ? (
-                              <div className="mb-0.5 flex items-center gap-1.5">
-                                <span className="text-[11px] font-semibold text-faint line-through">
-                                  {tachadoLocal(item.slug, item.quantity)?.texto}
-                                </span>
-                                <span className="rounded-md bg-ink px-1 py-px text-[10px] font-semibold text-paper">
-                                  −{tachadoLocal(item.slug, item.quantity)?.pct}%
-                                </span>
-                              </div>
-                            ) : item.originalPrice && item.originalPrice > item.price ? (
-                              <div className="mb-0.5 flex items-center gap-1.5">
-                                <span className="text-[11px] font-semibold text-faint line-through">
-                                  {convertAndFormat(item.originalPrice * item.quantity)}
-                                </span>
-                                <span className="rounded-md bg-ink px-1 py-px text-[10px] font-semibold text-paper">
-                                  −{Math.round((1 - item.price / item.originalPrice) * 100)}%
-                                </span>
-                              </div>
-                            ) : null}
-                            <span className="text-[15px] font-bold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity, item.slug, item.quantity)}</span>
-                            {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                              <span className="mt-0.5 text-[10px] font-semibold text-faint">
-                                ≈ ${Math.round((item.price * item.quantity) / 900)} USD
-                              </span>
+                            {showPrices ? (
+                              <>
+                                {tachadoLocal(item.slug, item.quantity) ? (
+                                  <div className="mb-0.5 flex items-center gap-1.5">
+                                    <span className="text-[11px] font-semibold text-faint line-through">
+                                      {tachadoLocal(item.slug, item.quantity)?.texto}
+                                    </span>
+                                    <span className="rounded-md bg-ink px-1 py-px text-[10px] font-semibold text-paper">
+                                      −{tachadoLocal(item.slug, item.quantity)?.pct}%
+                                    </span>
+                                  </div>
+                                ) : item.originalPrice && item.originalPrice > item.price ? (
+                                  <div className="mb-0.5 flex items-center gap-1.5">
+                                    <span className="text-[11px] font-semibold text-faint line-through">
+                                      {convertAndFormat(item.originalPrice * item.quantity)}
+                                    </span>
+                                    <span className="rounded-md bg-ink px-1 py-px text-[10px] font-semibold text-paper">
+                                      −{Math.round((1 - item.price / item.originalPrice) * 100)}%
+                                    </span>
+                                  </div>
+                                ) : null}
+                                <span className="text-[15px] font-bold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity, item.slug, item.quantity)}</span>
+                                {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                  <span className="mt-0.5 text-[10px] font-semibold text-faint">
+                                    ≈ ${Math.round((item.price * item.quantity) / 900)} USD
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <span className="text-xs font-semibold text-mute">En el PDF</span>
                             )}
                             <button type="button" onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="mt-1.5 cursor-pointer rounded-md border-none bg-wash px-2 py-0.5 text-[11px] font-semibold text-ink">Quitar</button>
                           </div>
@@ -1740,7 +1802,47 @@ export default function PagoClient({
                       ))}
                     </div>
 
-                    {!isAuthenticated && (
+                    {!showPrices ? (
+                      <div className="mt-4 space-y-3">
+                        <BrochureGateForm
+                          slug={cartItems[0]?.slug || "power-bi"}
+                          courseTitle={cartItems[0]?.title || "Cursos ProgramBI"}
+                          pais={paisPago}
+                          source="pago_gate_mobile"
+                          idPrefix="pago-gate-mobile"
+                          heading="Desbloquea precios y habilita el pago"
+                          subheading="Deja tu nombre y correo para ver los montos y abrir el PDF."
+                          buttonLabel="Ver precios y abrir temario"
+                          onUnlocked={(lead) => {
+                            setGuestName((prev) => prev || lead.name);
+                            setGuestEmail((prev) => prev || lead.email);
+                            if (lead.whatsapp) setGuestWhatsapp((prev) => prev || lead.whatsapp);
+                          }}
+                        />
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                          <button
+                            type="button"
+                            onClick={() => setShowLoginModal(true)}
+                            className="cursor-pointer border-none bg-transparent p-0 font-semibold text-mute underline underline-offset-2 hover:text-ink"
+                          >
+                            Ya tengo cuenta: Iniciar sesión
+                          </button>
+                          <a
+                            href={whatsappHref({
+                              page: "/pago",
+                              course: cartItems[0]?.title,
+                              country: paisPago,
+                              intent: "curso",
+                            })}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-ink underline underline-offset-2 hover:text-mute"
+                          >
+                            Cotizar por WhatsApp
+                          </a>
+                        </div>
+                      </div>
+                    ) : !isAuthenticated ? (
                       <div className="mt-4 rounded-xl border border-line bg-paper p-3.5">
                         <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
                           <p className="text-xs font-bold text-ink">
@@ -1751,7 +1853,7 @@ export default function PagoClient({
                             onClick={() => setShowLoginModal(true)}
                             className="cursor-pointer border-none bg-transparent p-0 text-[11px] font-semibold text-mute underline underline-offset-2 hover:text-ink"
                           >
-                            Ya tengo cuenta — Iniciar sesión
+                            Ya tengo cuenta: Iniciar sesión
                           </button>
                         </div>
                         <div className="space-y-2">
@@ -1798,7 +1900,7 @@ export default function PagoClient({
                           </p>
                         )}
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </motion.div>
               )}
@@ -1823,21 +1925,39 @@ export default function PagoClient({
                   <span className="flex items-center gap-1 text-[11px] font-semibold text-faint">
                     Ver detalle {isMobileCartOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
                   </span>
-                  <span className="mt-1 block text-xl font-bold leading-none tabular-nums text-ink">
-                    {textoTotal(appliedCoupon ? finalPriceWithCoupon : totalPrice, cartItems)} {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && <span className="text-[11px] font-semibold text-mute">≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD</span>}
-                  </span>
-                  {notaClp(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
+                  {showPrices ? (
+                    <>
+                      <span className="mt-1 block text-xl font-bold leading-none tabular-nums text-ink">
+                        {textoTotal(appliedCoupon ? finalPriceWithCoupon : totalPrice, cartItems)} {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && <span className="text-[11px] font-semibold text-mute">≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD</span>}
+                      </span>
+                      {notaClp(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
+                    </>
+                  ) : (
+                    <span className="mt-1 block text-sm font-bold leading-tight text-ink">
+                      Temario y precios en el PDF
+                    </span>
+                  )}
                 </div>
               </div>
               
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); handleCheckout(); }}
-                disabled={isCheckingOut}
-                className="flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border-none bg-ink px-5 py-3 text-[13px] font-semibold text-paper disabled:opacity-60"
-              >
-                {isCheckingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar"}
-              </button>
+              {showPrices ? (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleCheckout(); }}
+                  disabled={isCheckingOut}
+                  className="flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border-none bg-ink px-5 py-3 text-[13px] font-semibold text-paper disabled:opacity-60"
+                >
+                  {isCheckingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar"}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setIsMobileCartOpen(true); }}
+                  className="flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border-none bg-ink px-5 py-3 text-[13px] font-semibold text-paper"
+                >
+                  Ver precios
+                </button>
+              )}
             </div>
           </motion.div>
         </>

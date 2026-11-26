@@ -11,6 +11,9 @@ export default function LogoSlider({ className }: { className?: string }) {
       id="empresas-logos"
       className={cn("border-y border-line bg-wash/40 py-8 lg:py-10", className)}
     >
+      <p className="mx-auto mb-5 max-w-[1400px] px-4 text-center text-xs font-semibold uppercase tracking-[0.16em] text-mute sm:px-6 lg:px-8">
+        Empresas que hemos capacitado
+      </p>
       <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
         <div className="logo-track">
           {loop.map((logo, i) => (

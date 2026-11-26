@@ -2,9 +2,6 @@ import { ISO_CHILE, normalizarPais } from "@/config/paises";
 import type { Guia } from "@/lib/guias/tipos";
 import {
   descuentoPublico,
-  formatMoneda,
-  porcentajeDescuento,
-  precioListaVenta,
   precioVenta,
   promocionesParaPais,
   type PromocionAplicable,
@@ -28,7 +25,7 @@ const MARCADOR_PRECIO = /\{\{\s*precio(?::[^}]*)?\s*\}\}|\{precio_local\}/gi;
  * acompaña. Las cifras de sueldos u otros datos de la guía no se tocan.
  */
 const MONTO_CURSO =
-  /(?:\$\s?)?\b(?:169|338|349|159|319|235|236)[.,]?(?:000|900)\b(?:\s*(?:CLP|ARS|MXN|PEN|COP|UYU))?/gi;
+  /(?:\$\s?)?\b(?:169|249|338|349|159|319|235|236)[.,]?(?:000|900)\b(?:\s*(?:CLP|ARS|MXN|PEN|COP|UYU))?/gi;
 
 /**
  * Combina marcadores y montos históricos en una sola pasada para no volver a
@@ -41,10 +38,6 @@ const TOKEN_PRECIO_GUIA = new RegExp(
 
 function resolverIsoGuia(country: string | null | undefined): string {
   return country ? normalizarPais(country) : ISO_CHILE;
-}
-
-function formatearMonedaGuia(iso: string, monto: number): string {
-  return formatMoneda(iso, monto).replace(/\u00a0/g, " ");
 }
 
 /**
@@ -113,9 +106,9 @@ export function resolverPrecios(
 }
 
 /**
- * Texto completo de precio para las FAQs finales de la guía y su JSON-LD
- * `FAQPage`: expone el valor vigente con descuento, el precio normal y el
- * porcentaje de descuento (sin «Desde»).
+ * Texto de precio sin montos visibles para las FAQs finales de la guía:
+ * mantiene oculto el arancel numérico en el HTML público y remite al PDF
+ * de temario y precios o a WhatsApp si el país no tiene monto publicado.
  */
 export function precioTextoFaqGuia(
   guia: Pick<Guia, "country" | "course">,
@@ -123,18 +116,14 @@ export function precioTextoFaqGuia(
 ): string {
   const targetIso = resolverIsoGuia(guia.country);
   const promosPais = promocionesParaPais(targetIso, promotions);
-  const cobro = precioVenta(targetIso, guia.course, promosPais);
-  if (cobro == null) {
+  if (precioVenta(targetIso, guia.course, promosPais) == null) {
     return "consulta el valor vigente por WhatsApp";
   }
-  const cobroTexto = formatearMonedaGuia(targetIso, cobro);
-  const lista = precioListaVenta(targetIso, guia.course, promosPais);
-  const pct = lista != null ? porcentajeDescuento(lista, cobro) : 0;
-  if (lista != null && pct > 0) {
-    const listaTexto = formatearMonedaGuia(targetIso, lista);
-    return `${cobroTexto} (precio normal ${listaTexto}, con ${pct}% de descuento vigente)`;
+  const pct = descuentoPublico(targetIso, guia.course, promosPais);
+  if (pct <= 0) {
+    return "consulta los valores en el PDF de temario y precios";
   }
-  return cobroTexto;
+  return `${pct}% de descuento vigente (valor en tu moneda en el PDF de temario y precios)`;
 }
 
 /**

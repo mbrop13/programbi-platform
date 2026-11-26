@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import CourseImage from "@/components/shared/CourseImage";
 import CourseGallery from "@/components/marketing/CourseGallery";
 import { hasCourseGallery } from "@/lib/data/course-gallery";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
   BookOpen,
@@ -17,7 +17,8 @@ import {
   FileText,
   MessageCircle,
 } from "lucide-react";
-import { type Course, courses } from "@/lib/data/courses";
+import type { Course } from "@/lib/data/courses";
+import type { CourseSyllabusData } from "@/lib/data/syllabuses/types";
 import {
   advancedHeading,
   checkoutLevelName,
@@ -31,9 +32,9 @@ import {
   type CourseOfferView,
 } from "@/lib/data/course-views";
 import { createClient } from "@/lib/supabase/client";
-import AuthModal from "@/components/shared/AuthModal";
 import TuProfesor from "@/components/equipo/TuProfesor";
 import TemarioSection from "@/components/marketing/temario/TemarioSection";
+import NotifyNextDate from "@/components/marketing/NotifyNextDate";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
 import {
@@ -44,12 +45,10 @@ import {
 } from "@/lib/data/course-schedules";
 import { conHoraPais, zonaDe } from "@/lib/paises/horarios";
 import {
-  trackClickRegistro,
   trackCourseView,
   trackCtaClick,
   trackLeadSubmit,
   trackTemario,
-  trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
@@ -59,8 +58,8 @@ import {
   CourseAudienceAndResults,
   CourseFaq,
   isCourseCroSlug,
+  renderInternalLinks,
 } from "@/components/marketing/CourseLeadSections";
-import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -72,7 +71,6 @@ import {
   precioVenta,
   type PromocionAplicable,
 } from "@/lib/paises/precios";
-import { whatsappHref } from "@/lib/whatsapp";
 import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
@@ -86,8 +84,23 @@ import { COUNTRIES } from "@/lib/context/CountryContext";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { courseBrochureUrl } from "@/lib/pricing-gate";
 import { BrochureGateForm } from "@/components/marketing/BrochureGateForm";
-import { getIntroFichaAr } from "@/lib/paises/contenido-local/ar";
-import { getIntroFichaPe } from "@/lib/data/contenido-paises/pe";
+
+const AuthModal = dynamic(() => import("@/components/shared/AuthModal"), { ssr: false });
+
+export type RelatedCourseSummary = {
+  slug: string;
+  title: string;
+  shortDesc: string;
+  hours: number;
+  level: string;
+  image: string;
+};
+
+export type CourseSeoSummary = {
+  h1?: string;
+  h1Cl?: string;
+  intro?: string;
+};
 
 function phoneCodeFor(iso: string) {
   return COUNTRIES.find((country) => country.iso === iso)?.phoneCode || "+56";
@@ -263,13 +276,6 @@ function readOfferFromUrl(): { para: CourseOfferView | null; nivel: string | nul
   };
 }
 
-const PRIORIDAD_RELACIONADOS: Record<string, readonly string[]> = {
-  chatgpt: ["gemini", "claude", "ia-productividad"],
-  gemini: ["chatgpt", "claude", "ia-productividad"],
-  claude: ["chatgpt", "gemini", "ia-productividad"],
-  "ia-productividad": ["chatgpt", "gemini", "claude"],
-};
-
 function whatsappTextoCursoIA(course: Course, pais: string): string | undefined {
   if (course.slug !== "chatgpt" && course.slug !== "gemini") return undefined;
   const nombrePais = getPais(pais).nombre;
@@ -278,18 +284,25 @@ function whatsappTextoCursoIA(course: Course, pais: string): string | undefined 
 
 export default function CourseDetailClient({
   course,
+  syllabus,
+  relatedCourses = [],
   initialSchedules,
   initialView = "publico",
   initialLevelName,
+  courseSeo,
+  introLocal,
   detalleLocal,
   promotions = [],
   referenceDateIso,
   resumen,
   testimonios,
+  certificadoEjemplo,
   comparativa,
   h1Override,
 }: {
   course: Course;
+  syllabus: CourseSyllabusData;
+  relatedCourses?: RelatedCourseSummary[];
   initialSchedules: CourseSchedule[];
   /**
    * Compatibilidad: la ficha se genera estática, así que el servidor ya no
@@ -299,6 +312,8 @@ export default function CourseDetailClient({
   initialView?: CourseOfferView;
   /** Igual que `initialView`, para `?nivel=`. */
   initialLevelName?: string;
+  courseSeo?: CourseSeoSummary;
+  introLocal?: string[] | null;
   detalleLocal?: DetalleCursoLocal;
   promotions?: readonly PromocionAplicable[];
   /** Fecha de referencia YYYY-MM-DD para evaluar la regla de inicio lejano (> 21 días). */
@@ -307,6 +322,8 @@ export default function CourseDetailClient({
   resumen?: ReactNode;
   /** Citas de alumnos, renderizadas en el servidor. Van tras el profesor. */
   testimonios?: ReactNode;
+  /** Ejemplo ilustrativo de certificado, renderizado en el servidor. */
+  certificadoEjemplo?: ReactNode;
   /** Tabla comparativa de cursos de IA (Server Component), para ChatGPT y Gemini. */
   comparativa?: ReactNode;
   /** H1 específico de mercado para evitar canibalización en vistas públicas. */
@@ -333,7 +350,7 @@ export default function CourseDetailClient({
   };
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authRedirect, setAuthRedirect] = useState(`/cursos/${course.slug}`);
+  const [authRedirect] = useState(`/cursos/${course.slug}`);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>(initialSchedules);
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
@@ -341,16 +358,6 @@ export default function CourseDetailClient({
   const pais = usePaisRuta();
   const esChatgptOGemini = course.slug === "chatgpt" || course.slug === "gemini";
   const whatsappTextoIA = whatsappTextoCursoIA(course, pais);
-  const relatedCourses = useMemo(() => {
-    const disponibles = courses.filter((c) => c.slug !== course.slug);
-    const prioridad = PRIORIDAD_RELACIONADOS[course.slug];
-    if (!prioridad) return disponibles.slice(0, 3);
-    const priorizados = prioridad
-      .map((s) => disponibles.find((c) => c.slug === s))
-      .filter((c): c is Course => Boolean(c));
-    const restantes = disponibles.filter((c) => !prioridad.includes(c.slug));
-    return [...priorizados, ...restantes].slice(0, 3);
-  }, [course.slug]);
   const scheduleZone = zonaDe(pais);
   const tiered = isTieredCourse(course);
   const isEmpresa = view === "empresas";
@@ -368,13 +375,6 @@ export default function CourseDetailClient({
   const descuentoLocalCliente = descuentoPublico(pais, course.slug, promotions);
   const brochureUrl = courseBrochureUrl(course.slug, pais);
   const numCuotas = cuotasSinInteres(pais);
-  // Sin fecha futura en la BD, el CTA ofrece aviso por WhatsApp (intent `fechas`).
-  const avisameFechaHref = whatsappHref({
-    page: `/cursos/${course.slug}`,
-    intent: "fechas",
-    course: course.title,
-    country: pais,
-  });
 
   // Particular: la compra siempre está disponible (haya o no fecha publicada),
   // tanto con sesión iniciada como en modo invitado directamente en /pago.
@@ -532,8 +532,7 @@ export default function CourseDetailClient({
   const outcomes = activeLevel?.whatYouLearn?.length ? activeLevel.whatYouLearn : course.whatYouLearn;
   const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleZone, pais) : null;
   const isCroTemplate = isCourseCroSlug(course.slug) && view === "publico";
-  const seo = COURSE_SEO[course.slug];
-  const h1Base = (pais === ISO_CHILE && seo?.h1Cl) || seo?.h1 || course.title;
+  const h1Base = (pais === ISO_CHILE && courseSeo?.h1Cl) || courseSeo?.h1 || course.title;
   const heading =
     view === "publico" && h1Override
       ? h1Override
@@ -545,11 +544,10 @@ export default function CourseDetailClient({
               : h1Base,
           pais
         );
-  const introLocalAr = view === "publico" && pais === "ar" ? getIntroFichaAr(course.slug) : null;
-  const introLocalPe = view === "publico" && pais === "pe" ? getIntroFichaPe(course.slug) : null;
+  const introPais = view === "publico" ? introLocal ?? null : null;
   const introParagraphs =
     view === "publico"
-      ? (introLocalAr ?? introLocalPe ?? (localizarMercado(seo?.intro || "", pais).split("\n\n").filter(Boolean) ?? []))
+      ? (introPais ?? (localizarMercado(courseSeo?.intro || "", pais).split("\n\n").filter(Boolean) ?? []))
       : [];
   const offerLead =
     view === "avanzado"
@@ -558,12 +556,12 @@ export default function CourseDetailClient({
         ? tiered
           ? `Capacitación de ${course.title} para equipos. Básico, intermedio y avanzado, en vivo.`
           : course.slug === "analisis-de-datos"
-            ? "Capacitación de Análisis de Datos para tu equipo. Dos niveles de 60 horas —básico-intermedio y avanzado— con SQL Server, Power BI y Python, y el tamaño de equipo que necesites."
+            ? "Capacitación de Análisis de Datos para tu equipo. Dos niveles de 60 horas (básico-intermedio y avanzado) con SQL Server, Power BI y Python, y el tamaño de equipo que necesites."
             : `Capacitación de ${course.title} para equipos. ${course.shortDescription}`
-        : introLocalPe?.[0] || course.shortDescription?.trim() || introParagraphs[0] || "";
+        : (pais === "pe" ? introPais?.[0] : undefined) || course.shortDescription?.trim() || introParagraphs[0] || "";
   const offerMore =
-    view === "publico" && introLocalPe
-      ? introLocalPe.slice(1)
+    view === "publico" && pais === "pe" && introPais
+      ? introPais.slice(1)
       : view === "publico" && course.shortDescription?.trim()
         ? introParagraphs
         : view === "publico"
@@ -623,7 +621,7 @@ export default function CourseDetailClient({
         ) : null}
         {!precioDirecto ? (
           <p className="text-xs text-mute">
-            Clase gratis · sesión abierta por Zoom sin costo
+            Clase gratis · coordínala por WhatsApp
           </p>
         ) : null}
         <p className="text-xs text-mute">
@@ -676,6 +674,14 @@ export default function CourseDetailClient({
                 <li>Certificado</li>
                 {activeLevel ? <li>{activeLevel.name}</li> : null}
               </ul>
+
+              {pais === "co" && course.slug === "power-bi" && view === "publico" ? (
+                <p className="mt-3 inline-flex flex-wrap items-center gap-2 rounded-xl border border-line bg-paper px-3.5 py-2 text-xs font-medium text-ink">
+                  <span>Valor referencial en COP (en el PDF «Temario y precios»)</span>
+                  <span aria-hidden className="text-faint">·</span>
+                  <span className="font-semibold">Pago en 3 cuotas sin interés</span>
+                </p>
+              ) : null}
 
               {/* En móvil los CTA del curso viven en la barra fija inferior
                   (BarraFijaFicha). La vista empresas no tiene barra: conserva
@@ -784,34 +790,15 @@ export default function CourseDetailClient({
               <div className="relative mb-4">
                 <p className="mb-2 text-sm font-medium text-ink">Próxima fecha</p>
                 {activeSchedulesList.length === 0 ? (
-                  // Sin fecha futura en la BD no se inventa ninguna: se ofrece
-                  // aviso por WhatsApp (intent `fechas`).
-                  <a
-                    href={avisameFechaHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-wa-tracked="1"
-                    onClick={() =>
-                      trackWhatsAppClick({
-                        cta_position: "curso_ayuda",
-                        course: course.slug,
-                        course_slug: course.slug,
-                        country: pais,
-                        page: typeof window !== "undefined" ? window.location.pathname : `/cursos/${course.slug}`,
-                        page_path: typeof window !== "undefined" ? window.location.pathname : `/cursos/${course.slug}`,
-                        href: avisameFechaHref,
-                      })
-                    }
-                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-line-strong bg-canvas px-3 py-3 text-left no-underline transition-colors hover:bg-wash"
-                  >
-                    <span className="flex min-w-0 items-start gap-2.5">
-                      <Calendar size={16} className="mt-0.5 shrink-0 text-ink" />
-                      <span className="text-sm font-semibold leading-snug text-ink">
-                        Avísame cuando abra la próxima fecha
-                      </span>
-                    </span>
-                    <MessageCircle size={16} className="shrink-0 text-mute" aria-hidden />
-                  </a>
+                  <NotifyNextDate
+                    variant="button"
+                    courseSlug={course.slug}
+                    courseTitle={course.title}
+                    levelName={activeLevel?.name}
+                    pais={pais}
+                    ctaLocation="course_detail_sidebar"
+                    className="w-full sm:[&>button]:w-full"
+                  />
                 ) : (
                   <button
                     type="button"
@@ -843,45 +830,38 @@ export default function CourseDetailClient({
                   </button>
                 )}
 
-                <AnimatePresence>
-                  {isScheduleDropdownOpen && activeSchedulesList.length > 0 && (
-                    <>
-                      <div className="fixed inset-0 z-30" onClick={() => setIsScheduleDropdownOpen(false)} />
-                      <motion.div
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 6 }}
-                        className="absolute left-0 right-0 z-40 mt-2 max-h-64 overflow-y-auto rounded-2xl border border-line bg-paper py-1 shadow-[0_16px_40px_rgba(23,23,22,0.10)]"
-                      >
-                        {activeSchedulesList.map((sch, idx) => {
-                          const conv = formatSchedule(sch, scheduleZone, pais);
-                          return (
-                            <button
-                              key={sch.id || idx}
-                              type="button"
-                              onClick={() => {
-                                setSelectedScheduleIndex(idx);
-                                setIsScheduleDropdownOpen(false);
-                              }}
-                              className={`flex w-full items-start gap-2 px-3 py-2.5 text-left text-sm ${
-                                selectedScheduleIndex === idx ? "bg-wash" : "hover:bg-wash"
-                              }`}
-                            >
-                              <Clock size={14} className="mt-0.5 shrink-0" />
-                              <span>
-                                <span className="block font-semibold text-ink">{conv.date}</span>
-                                <span className="text-xs text-mute">
-                                  {conv.days} · {conv.time}
-                                  {view === "publico" && tiered && sch.level_name ? ` · ${sch.level_name}` : ""}
-                                </span>
+                {isScheduleDropdownOpen && activeSchedulesList.length > 0 ? (
+                  <>
+                    <div className="fixed inset-0 z-30" onClick={() => setIsScheduleDropdownOpen(false)} />
+                    <div className="absolute left-0 right-0 z-40 mt-2 max-h-64 overflow-y-auto rounded-2xl border border-line bg-paper py-1 shadow-[0_16px_40px_rgba(23,23,22,0.10)]">
+                      {activeSchedulesList.map((sch, idx) => {
+                        const conv = formatSchedule(sch, scheduleZone, pais);
+                        return (
+                          <button
+                            key={sch.id || idx}
+                            type="button"
+                            onClick={() => {
+                              setSelectedScheduleIndex(idx);
+                              setIsScheduleDropdownOpen(false);
+                            }}
+                            className={`flex w-full items-start gap-2 px-3 py-2.5 text-left text-sm ${
+                              selectedScheduleIndex === idx ? "bg-wash" : "hover:bg-wash"
+                            }`}
+                          >
+                            <Clock size={14} className="mt-0.5 shrink-0" />
+                            <span>
+                              <span className="block font-semibold text-ink">{conv.date}</span>
+                              <span className="text-xs text-mute">
+                                {conv.days} · {conv.time}
+                                {view === "publico" && tiered && sch.level_name ? ` · ${sch.level_name}` : ""}
                               </span>
-                            </button>
-                          );
-                        })}
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                ) : null}
               </div>
 
               {precioDirecto && bloquePrecio ? (
@@ -944,7 +924,7 @@ export default function CourseDetailClient({
                         ) : null}
                         {!precioDirecto ? (
                           <span className="w-full text-[11px] text-mute">
-                            Clase gratis · sesión abierta por Zoom sin costo
+                            Clase gratis · coordínala por WhatsApp
                           </span>
                         ) : null}
                         <Link
@@ -1044,7 +1024,7 @@ export default function CourseDetailClient({
                 </>
               ) : null}
 
-              <CourseCardDescription lead={offerLead} more={offerMore} />
+              <CourseCardDescription lead={offerLead} more={offerMore} pais={pais} />
 
               <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-line pt-4 text-[13px] leading-snug text-ink">
                 {includes.map((item) => (
@@ -1090,6 +1070,7 @@ export default function CourseDetailClient({
           <div className="order-5 min-w-0 lg:order-none lg:col-span-7">
             <TemarioSection
               course={course}
+              syllabus={syllabus}
               selectedLevel={syllabusIndex}
               isFreeTrial={isFreeTrial}
               embedded
@@ -1105,6 +1086,12 @@ export default function CourseDetailClient({
       </ExpandibleMovil>
 
       {testimonios}
+
+      {certificadoEjemplo ? (
+        <div className="border-t border-line bg-canvas px-4 pb-16 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1400px]">{certificadoEjemplo}</div>
+        </div>
+      ) : null}
 
       {isCroTemplate ? (
         <CourseFaq slug={course.slug} extra={detalleLocal?.faqs} pais={pais} />
@@ -1129,7 +1116,7 @@ export default function CourseDetailClient({
                     className="group w-[82%] shrink-0 snap-start overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20 sm:w-auto"
                   >
                     <div className="relative aspect-[16/10] bg-wash">
-                      <CourseImage src={rc.imageUrl} alt={rc.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+                      <CourseImage src={rc.image} alt={rc.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
                     </div>
                     <div className="px-4 pt-4">
                       <CourseCohortFacts
@@ -1143,7 +1130,7 @@ export default function CourseDetailClient({
                     </div>
                     <div className="px-6 py-5">
                       <p className="text-lg font-bold tracking-tight text-ink">{rc.title}</p>
-                      <p className="mt-1 text-sm text-mute">{rc.shortDescription}</p>
+                      <p className="mt-1 text-sm text-mute">{rc.shortDesc}</p>
                       <span className="mt-2 block text-sm font-semibold text-ink">Ver temario y precios →</span>
                     </div>
                   </Link>
@@ -1183,19 +1170,19 @@ export default function CourseDetailClient({
   );
 }
 
-function CourseCardDescription({ lead, more }: { lead: string; more: string[] }) {
+function CourseCardDescription({ lead, more, pais }: { lead: string; more: string[]; pais: string }) {
   if (!lead && more.length === 0) return null;
   // En la tarjeta fija: entrada recortada (con «Ver más» para el resto) y
   // tipografía un punto más chica para que el formulario quede a la vista.
   return (
     <div className="mt-4 border-t border-line pt-4 text-[13px] leading-relaxed text-mute">
-      {lead ? <p className={more.length > 0 ? "line-clamp-3" : undefined}>{lead}</p> : null}
+      {lead ? <p className={more.length > 0 ? "line-clamp-3" : undefined}>{renderInternalLinks(lead, pais)}</p> : null}
       {more.length > 0 ? (
         <details className="mt-2">
           <summary className="cursor-pointer text-[13px] font-semibold text-ink">Ver más</summary>
           <div className="mt-2 space-y-2">
             {more.map((paragraph) => (
-              <p key={paragraph.slice(0, 48)}>{paragraph}</p>
+              <p key={paragraph.slice(0, 48)}>{renderInternalLinks(paragraph, pais)}</p>
             ))}
           </div>
         </details>
@@ -1207,6 +1194,7 @@ function CourseCardDescription({ lead, more }: { lead: string; more: string[] })
 function CourseContactForm({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [submittedEmail, setSubmittedEmail] = useState("");
   const [contactType, setContactType] = useState<"personal" | "empresa">("personal");
   const [selectedServices, setSelectedServices] = useState<string[]>(["Capacitación In-Company"]);
@@ -1256,13 +1244,29 @@ function CourseContactForm({ course }: { course: Course }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const rawWhatsapp = String(formData.get("whatsapp") || "").trim();
+    const whatsapp = rawWhatsapp ? withDialCode(rawWhatsapp, phonePrefix) : "";
+    const nombre = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const company = String(formData.get("company") || "").trim();
+
+    if (nombre.length < 2) {
+      setFormError("Escribe tu nombre completo.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      setFormError("Escribe un correo electrónico válido.");
+      return;
+    }
+    if (contactType === "empresa" && company.length < 2) {
+      setFormError("Indica el nombre de tu empresa.");
+      return;
+    }
+
+    setFormError(null);
     setIsSubmitting(true);
     try {
-      const formData = new FormData(e.target as HTMLFormElement);
-      const rawWhatsapp = String(formData.get("whatsapp") || "").trim();
-      const whatsapp = rawWhatsapp ? withDialCode(rawWhatsapp, phonePrefix) : "";
-      const nombre = String(formData.get("name") || "");
-      const email = String(formData.get("email") || "");
 
       // Particular: abrir el brochure y desbloquear precios de inmediato, de
       // forma sincrónica dentro del handler para que el navegador no lo trate
@@ -1524,6 +1528,12 @@ function CourseContactForm({ course }: { course: Course }) {
                   onChange={(e) => setHoneypot(e.target.value)}
                 />
               </div>
+
+              {formError ? (
+                <p role="alert" className="text-sm font-medium text-red-700">
+                  {formError}
+                </p>
+              ) : null}
 
               <button
                 type="submit"

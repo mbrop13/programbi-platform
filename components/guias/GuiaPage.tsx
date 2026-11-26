@@ -225,6 +225,7 @@ export default async function GuiaPage({ guia, rutaIndice, nombreMercado, relaci
                         course={guia.course}
                         guiaSlug={guia.slug}
                         inicio={inicio}
+                        ctaPosition={parte === "TOP" ? "guia_top" : parte === "MID" ? "guia_mid" : "guia_end"}
                       />
                     );
                   }

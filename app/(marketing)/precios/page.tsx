@@ -19,7 +19,12 @@ import {
 import { textoCuotas } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { etiquetaDescuentoCatalogo, localizarMercado, type PromocionAplicable } from "@/lib/paises/precios";
-import { resumenPrecioCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import {
+  resumenDescuentoCatalogo,
+  resumenDescuentoCursoTexto,
+  resumenPrecioCursoTexto,
+  resumenPreciosCatalogo,
+} from "@/lib/paises/detalle-curso";
 import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagina";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
@@ -84,7 +89,9 @@ function faqsDe(
   return [
     {
       q: `¿Cuánto cuestan los cursos en ${pais.nombre}?`,
-      a: resumenPreciosCatalogo(pais.iso, promotions),
+      a: muestraPrecioDirecto(pais.iso)
+        ? resumenPreciosCatalogo(pais.iso, promotions)
+        : resumenDescuentoCatalogo(pais.iso, promotions),
     },
     {
       q: "¿Qué incluye el precio?",
@@ -100,7 +107,9 @@ function faqsDe(
     },
     {
       q: `¿Cuánto cuesta el curso de Power BI en ${pais.nombre}?`,
-      a: resumenPrecioCursoTexto(pais.iso, "power-bi", powerBi?.title ?? "Power BI", promotions),
+      a: muestraPrecioDirecto(pais.iso)
+        ? resumenPrecioCursoTexto(pais.iso, "power-bi", powerBi?.title ?? "Power BI", promotions)
+        : resumenDescuentoCursoTexto(pais.iso, "power-bi", powerBi?.title ?? "Power BI", promotions),
     },
     {
       q: "¿Cuál es el mejor curso de Power BI en vivo en LatAm?",
@@ -304,7 +313,7 @@ export default async function PreciosPage({
               </dl>
               {!precioDirecto ? (
                 <p className="mt-4 border-t border-line pt-3 text-xs font-medium text-mute">
-                  Clase gratis · sesión abierta por Zoom sin costo.
+                  Clase gratis disponible coordinándola por WhatsApp.
                 </p>
               ) : null}
             </div>

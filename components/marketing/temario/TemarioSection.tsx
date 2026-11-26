@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useMemo, useState } from "react";
 import {
   ArrowRight,
   BarChart3,
@@ -32,16 +31,15 @@ import { trackCtaClick } from "@/lib/analytics/marketing";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
 import {
-  getCourseSyllabus,
-  getSyllabusLevel,
   levelHours,
   normalizeTopic,
   type BenefitItem,
+  type CourseSyllabusData,
   type SyllabusLevelContent,
   type SyllabusModule,
   type SyllabusModuleIcon,
   type SyllabusTopic,
-} from "@/lib/data/syllabuses";
+} from "@/lib/data/syllabuses/types";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<SyllabusModuleIcon, LucideIcon> = {
@@ -89,21 +87,16 @@ function topicBadge(topic: SyllabusTopic): string | null {
 function TopicRow({
   topic,
   locked,
-  delay,
 }: {
   topic: SyllabusTopic;
   accent?: string;
   locked?: boolean;
-  delay: number;
 }) {
   const badge = topicBadge(topic);
   const isSpecial = topic.kind === "objective" || topic.kind === "functions" || topic.kind === "problems";
 
   return (
-    <motion.li
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay, duration: 0.2 }}
+    <li
       className={cn(
         "group/topic flex items-start gap-3 text-sm",
         locked ? "text-faint" : "text-mute"
@@ -137,7 +130,7 @@ function TopicRow({
           {badge}
         </span>
       )}
-    </motion.li>
+    </li>
   );
 }
 
@@ -146,19 +139,72 @@ function ModuleCard({
   index,
   isFreeTrial,
   isPowerBiTrial,
+  deferTopics,
+  onExpandAll,
 }: {
   module: SyllabusModule;
   index: number;
   isFreeTrial?: boolean;
   isPowerBiTrial?: boolean;
+  deferTopics?: boolean;
+  onExpandAll?: () => void;
 }) {
   const Icon = module.icon ? ICON_MAP[module.icon] : null;
   const topics = module.topics.map(normalizeTopic);
   const hours = module.hours;
   const isIa = module.highlight || module.icon === "star" || module.icon === "bot";
 
+  if (deferTopics && index > 0) {
+    return (
+      <div className="group/modulo relative overflow-hidden rounded-[22px] border border-line bg-paper">
+        <button
+          type="button"
+          onClick={onExpandAll}
+          className="flex w-full cursor-pointer items-center gap-3 p-4 text-left transition-colors hover:bg-wash/50 sm:gap-4 sm:p-5 lg:px-6"
+        >
+          <div className="relative shrink-0">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-wash text-sm font-bold text-ink sm:h-12 sm:w-12">
+              {Icon ? <Icon className="h-5 w-5" /> : index + 1}
+            </div>
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className="text-sm font-bold leading-snug text-ink sm:text-base">
+                {module.title}
+              </h4>
+              {isIa && (
+                <span className="rounded-full border border-line px-2 py-0.5 text-[10px] font-semibold text-mute">
+                  IA
+                </span>
+              )}
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-medium text-mute sm:text-xs">
+              {hours != null && hours > 0 && (
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {hours} h
+                </span>
+              )}
+              {module.subtitle && (
+                <span>
+                  {hours != null && hours > 0
+                    ? module.subtitle
+                        .replace(/^\d+\s*Horas?\s*•\s*/i, "")
+                        .replace(/^\d+h\s*·\s*/i, "")
+                    : module.subtitle}
+                </span>
+              )}
+              <span className="text-faint">· {topics.length} temas</span>
+            </div>
+          </div>
+          <ChevronDown aria-hidden className="h-5 w-5 shrink-0 text-mute" />
+        </button>
+      </div>
+    );
+  }
+
   // Acordeón: el primer módulo abre solo y el resto se despliega al tocarlo.
-  // Los temas quedan en el HTML aunque estén plegados.
   return (
     <details
       open={index === 0}
@@ -215,7 +261,6 @@ function ModuleCard({
               key={`${module.id}-${ti}`}
               topic={topic}
               locked={locked}
-              delay={0}
             />
           );
         })}
@@ -313,22 +358,25 @@ function ContextCards({
 
 export default function TemarioSection({
   course,
+  syllabus,
   selectedLevel,
   isFreeTrial,
   embedded,
   levelOverride,
 }: {
   course: Course;
+  syllabus: CourseSyllabusData;
   selectedLevel: number;
   isFreeTrial?: boolean;
   embedded?: boolean;
   levelOverride?: SyllabusLevelContent;
 }) {
-  const syllabus = useMemo(() => getCourseSyllabus(course), [course]);
-  const level = useMemo(
-    () => levelOverride ?? getSyllabusLevel(syllabus, selectedLevel),
-    [syllabus, selectedLevel, levelOverride]
-  );
+  const [showAllModules, setShowAllModules] = useState(false);
+  const level = useMemo(() => {
+    if (levelOverride) return levelOverride;
+    const idx = Math.min(Math.max(selectedLevel, 0), syllabus.levels.length - 1);
+    return syllabus.levels[idx] ?? syllabus.levels[0];
+  }, [syllabus, selectedLevel, levelOverride]);
 
   const accent = "#171716";
   const hours = levelHours(level) || course.levels?.[selectedLevel]?.durationHours || course.durationHours;
@@ -353,35 +401,40 @@ export default function TemarioSection({
             <div>
               <h3 className="mb-4 text-xl font-bold tracking-tight text-ink">Módulos y temas</h3>
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={level.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.25 }}
-                  className="relative space-y-3"
-                >
-                  {/* Vertical rail */}
-                  <div
-                    className="absolute bottom-6 left-[1.85rem] top-6 w-0.5 sm:left-[2.1rem]"
-                    style={{
-                      background: `linear-gradient(180deg, ${hexToRgba(accent, 0.35)} 0%, ${hexToRgba(accent, 0.08)} 100%)`,
-                    }}
-                  />
-                  <div className="relative z-10 space-y-3">
-                    {modules.map((mod, idx) => (
-                      <ModuleCard
-                        key={mod.id}
-                        module={mod}
-                        index={idx}
-                        isFreeTrial={isFreeTrial}
-                        isPowerBiTrial={course.slug === "power-bi"}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+              <div key={level.id} className="relative space-y-3">
+                {/* Vertical rail */}
+                <div
+                  className="absolute bottom-6 left-[1.85rem] top-6 w-0.5 sm:left-[2.1rem]"
+                  style={{
+                    background: `linear-gradient(180deg, ${hexToRgba(accent, 0.35)} 0%, ${hexToRgba(accent, 0.08)} 100%)`,
+                  }}
+                />
+                <div className="relative z-10 space-y-3">
+                  {modules.map((mod, idx) => (
+                    <ModuleCard
+                      key={mod.id}
+                      module={mod}
+                      index={idx}
+                      isFreeTrial={isFreeTrial}
+                      isPowerBiTrial={course.slug === "power-bi"}
+                      deferTopics={!showAllModules}
+                      onExpandAll={() => setShowAllModules(true)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {!showAllModules && modules.length > 1 ? (
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllModules(true)}
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-line-strong bg-paper px-5 text-sm font-semibold text-ink transition-colors hover:bg-wash"
+                  >
+                    Ver temario completo ({modules.length} módulos)
+                  </button>
+                </div>
+              ) : null}
             </div>
 
             <div

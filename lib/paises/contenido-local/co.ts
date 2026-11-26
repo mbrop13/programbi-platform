@@ -1,7 +1,7 @@
 import type { DatosBloqueLocal } from "./tipos";
-import { resumenDescuentoCursoTexto, resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import { resumenDescuentoCatalogo, resumenDescuentoCursoTexto } from "@/lib/paises/detalle-curso";
 
-const resumenCatalogo = resumenPreciosCatalogo("co");
+const resumenCatalogo = resumenDescuentoCatalogo("co");
 
 /**
  * Bloque local de Colombia.
@@ -27,7 +27,7 @@ const datos: DatosBloqueLocal = {
     horarioDetalle:
       "Colombia se mantiene en UTC-5 todo el año, sin horario de verano. La clase de 19:30 en Chile se ve a las 17:30 en Bogotá cuando Chile está en UTC-3 y a las 18:30 cuando Chile vuelve a UTC-4. La ficha de la cohorte muestra la equivalencia.",
     pagoDetalle:
-      "El checkout procesa el pago con Mercado Pago Colombia y muestra PSE o Nequi cuando están habilitados. Si la cuenta local no está disponible, informa el equivalente en pesos chilenos antes de confirmar.",
+      "El pago se procesa con tarjeta internacional vía Mercado Pago (el cobro se realiza en CLP desde Chile y tu banco efectúa la conversión a COP) o mediante transferencia internacional coordinada con admisiones.",
     cuotasDetalle: "Sin recargo por financiamiento. La pasarela confirma las cuotas disponibles al pagar.",
     claseGratis:
       "Hay clase gratis para conocer la modalidad. La fecha se avisa cuando está confirmada; no se publican cupos que todavía no existen.",
@@ -57,7 +57,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo puedo pagar desde Colombia?",
-          a: "Con Mercado Pago Colombia (tarjeta de crédito o débito), PSE, Nequi o transferencia bancaria en pesos, según los medios habilitados en el checkout. Si pagas con una tarjeta del exterior, el cargo final lo define tu banco.",
+          a: "Con tarjeta de crédito o débito internacional vía Mercado Pago (el cobro se procesa en CLP desde Chile y tu banco realiza la conversión a COP) o mediante transferencia internacional coordinada con admisiones.",
         },
         {
           q: "¿Hay cuotas sin interés?",
@@ -107,7 +107,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga desde Colombia?",
-          a: `${resumenCatalogo} El pago se procesa con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos, y el checkout confirma el monto final.`,
+          a: `${resumenCatalogo} El pago se procesa con tarjeta internacional vía Mercado Pago (cobro en CLP desde Chile con conversión bancaria a COP) o transferencia internacional.`,
         },
       ],
     },
@@ -140,7 +140,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuánto cuesta y cómo se paga?",
-          a: `${resumenDescuentoCursoTexto("co", "power-bi", "Power BI")} Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos.`,
+          a: `${resumenDescuentoCursoTexto("co", "power-bi", "Power BI")} Se paga con tarjeta internacional vía Mercado Pago (cobro en CLP desde Chile con conversión bancaria a COP) o transferencia internacional.`,
         },
         {
           q: "¿Qué certificado recibo?",
@@ -218,7 +218,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga el curso?",
-          a: `${resumenDescuentoCursoTexto("co", "python", "Python para Datos")} Se paga con Mercado Pago Colombia, PSE, Nequi o transferencia bancaria en pesos.`,
+          a: `${resumenDescuentoCursoTexto("co", "python", "Python para Datos")} Se paga con tarjeta internacional vía Mercado Pago (cobro en CLP desde Chile con conversión bancaria a COP) o transferencia internacional.`,
         },
       ],
     },
@@ -269,7 +269,7 @@ const datos: DatosBloqueLocal = {
         "Moneda COP, PDF de temario y precios de cada curso, y checkout con Mercado Pago. El monto se confirma antes de pagar y las {cuotas} aplican a todos los cursos.",
       parrafos: [
         "Todos los cursos tienen un precio publicado en pesos colombianos. El valor vigente y las {cuotas} se descargan en el PDF de temario y precios de cada curso; la tabla de esta página muestra duración y nivel, y el checkout confirma el monto antes de pagar. No hay un precio distinto por comprar desde otra ciudad: la moneda es la del mercado colombiano.",
-        "El pago se procesa con Mercado Pago Colombia: tarjeta de crédito o débito, PSE, Nequi o transferencia bancaria en pesos, según los medios habilitados en el checkout. Si la cuenta local no está disponible, el checkout informa el equivalente en pesos chilenos (CLP) antes de confirmar. Esa conversión es informativa: el cargo final depende del medio de pago y de tu banco.",
+        "El pago se procesa con tarjeta internacional vía Mercado Pago (el cobro se realiza en CLP desde Chile y tu banco efectúa la conversión a COP) o mediante transferencia internacional coordinada con admisiones. El valor referencial en COP figura en el PDF «Temario y precios» de cada ficha.",
         "Pagar desde el exterior es posible. El checkout muestra los medios disponibles y, si usas una tarjeta emitida en otro país, el cargo final lo define tu banco, incluidos los impuestos o comisiones que aplique. ProgramBI no fija ese cargo. Si necesitas factura corporativa, admisiones coordina los datos antes del pago.",
         "El precio incluye clases en vivo por Zoom, grabaciones en el campus y certificado digital al completar. No incluye licencias de pago de Microsoft ni el examen PL-300, que se pagan aparte si decides rendirlos. Las licencias de Power BI Pro solo hacen falta para publicar y compartir informes dentro de una organización.",
         "Antes de pagar puedes revisar la ficha del curso, el PDF de temario y precios, y la fecha de la cohorte. Si el curso que buscas no tiene una cohorte abierta, admisiones confirma cuándo se publica la siguiente. No se anuncia una fecha ni cupos que no estén confirmados.",
@@ -288,8 +288,8 @@ const datos: DatosBloqueLocal = {
           a: "Sí: todos los cursos admiten {cuotas}, sin recargo por financiamiento. La pasarela confirma las cuotas disponibles según el medio de pago y el banco.",
         },
         {
-          q: "¿Puedo pagar con PSE o Nequi?",
-          a: "Sí, cuando están habilitados en el checkout de Mercado Pago Colombia. También puedes pagar con tarjeta de crédito o débito, o coordinar una transferencia bancaria en pesos.",
+          q: "¿Qué medios de pago aceptan desde Colombia?",
+          a: "Tarjeta de crédito o débito internacional vía Mercado Pago (el cobro se procesa en CLP desde Chile y tu banco realiza la conversión a COP) o transferencia internacional coordinada con admisiones.",
         },
         {
           q: "¿El certificado y el examen PL-300 están incluidos?",

@@ -924,11 +924,11 @@ export function faqsListiclePowerBiChile(): { q: string; a: string }[] {
   return [
     {
       q: "¿Cuál es el mejor curso de Power BI en Chile?",
-      a: "No hay uno solo. Si buscas el precio más bajo entre los cursos en vivo verificados, Crenn ofrece 16 h por $60.000 con máximo 8 personas. Si buscas un curso en vivo de 20 h con proyecto y precio publicado, ProgramBI está en $169.000. Coderhouse tiene 5 semanas por $198.000 con promo vigente. La mejor opción depende de tu presupuesto, tu horario y el formato que te funcione.",
+      a: "No hay uno solo. Si buscas el precio más bajo entre los cursos en vivo verificados, Crenn ofrece 16 h por $60.000 con máximo 8 personas. Si buscas un curso en vivo de 20 h con proyecto, ProgramBI ofrece Ver temario y precios en PDF (3 cuotas sin interés). Coderhouse tiene 5 semanas por $198.000 con promo vigente. La mejor opción depende de tu presupuesto, tu horario y el formato que te funcione.",
     },
     {
       q: "¿Cuál es el más barato?",
-      a: "Entre los cursos en vivo de la tabla, Crenn es el más barato: $60.000 por 16 h. Le sigue ProgramBI con $169.000 por 20 h. Platzi (US$49/mes) e IPS DATAX (US$197) se cobran en dólares y no son comparables en pesos sin considerar tipo de cambio e impuestos. Los precios promocionales cambian: revisa la fuente antes de inscribirte.",
+      a: "Entre los cursos en vivo de la tabla, Crenn es el más barato: $60.000 por 16 h. En ProgramBI (20 h) puedes revisar Ver temario y precios en PDF (3 cuotas sin interés). Platzi (US$49/mes) e IPS DATAX (US$197) se cobran en dólares y no son comparables en pesos sin considerar tipo de cambio e impuestos. Los precios promocionales cambian: revisa la fuente antes de inscribirte.",
     },
     {
       q: "¿Cuál tiene más horas?",

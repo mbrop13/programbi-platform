@@ -34,6 +34,7 @@ export default function GuiaCTA({
   course,
   guiaSlug,
   inicio = null,
+  ctaPosition,
 }: {
   variant: "top" | "mid" | "end";
   iso: string;
@@ -41,6 +42,7 @@ export default function GuiaCTA({
   guiaSlug: string;
   /** Próxima cohorte real del curso, fijada al construir el sitio. */
   inicio?: InicioGuia | null;
+  ctaPosition?: string;
 }) {
   const pais = getPais(iso);
   const curso = cursoDe(course);
@@ -137,17 +139,22 @@ export default function GuiaCTA({
             </ul>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link
-                href={rutaTemario}
+                href={rutaCurso}
                 className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl bg-[var(--g-accent)] px-4 text-xs font-semibold text-[var(--g-accent-ink)] no-underline transition-opacity hover:opacity-95 sm:min-h-[40px]"
               >
-                <FileText size={14} aria-hidden /> Ver temario y precios (PDF)
+                <FileText size={14} aria-hidden /> Ver programa y precios (PDF)
               </Link>
-              <Link
-                href={rutaCurso}
+              <WhatsAppCta
+                page={rutaCurso}
+                intent="curso"
+                course={nombreCurso}
+                courseSlug={course}
+                country={iso}
+                ctaPosition={ctaPosition ?? "guia_mid"}
                 className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-4 text-xs font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-wash)] sm:min-h-[40px]"
               >
-                Ver programa en vivo
-              </Link>
+                <MessageCircle size={14} aria-hidden /> Consultar por WhatsApp
+              </WhatsAppCta>
             </div>
           </div>
         </div>
@@ -184,6 +191,7 @@ export default function GuiaCTA({
           course={nombreCurso}
           courseSlug={course}
           country={iso}
+          ctaPosition={ctaPosition ?? "guia_end"}
           className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:bg-[var(--g-bg)]"
         >
           <MessageCircle size={15} aria-hidden />

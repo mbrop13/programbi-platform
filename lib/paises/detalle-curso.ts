@@ -205,6 +205,28 @@ export function resumenPreciosCatalogo(
   return partes.join(" ");
 }
 
+/**
+ * Resumen de catálogo SIN montos numéricos visibles para FAQs públicas en
+ * mercados con precio oculto (indica duración, cuotas sin interés y PDF).
+ */
+export function resumenDescuentoCatalogo(
+  iso: string | null | undefined,
+  promotions?: readonly PromocionAplicable[],
+): string {
+  const pais = getPais(normalizarPais(iso));
+  const pEstandar = precioVenta(pais.iso, "power-bi", promotions);
+
+  if (pEstandar == null) {
+    return `En ${pais.nombre} no hay un valor público publicado todavía; los aranceles vigentes y el PDF de temario y precios de cada curso se consultan por WhatsApp.`;
+  }
+
+  const cuotas = textoCuotas(pais.iso);
+  const lista = precioListaVenta(pais.iso, "power-bi", promotions);
+  const pct = lista != null ? porcentajeDescuento(lista, pEstandar) : 0;
+  const parteDescuento = pct > 0 ? ` con hasta ${pct}% de descuento vigente` : "";
+  return `En ${pais.nombre}, los cursos individuales tienen 20 horas por nivel (2 niveles: Básico-Intermedio y Avanzado en Power BI, Excel, SQL Server, Python y Machine Learning; nivel único en IA y Access), Análisis de Datos y Minería son programas de 60 horas por nivel y Mercado Financiero es de 30 horas${parteDescuento}. El valor vigente en ${pais.moneda}${cuotas ? ` y las opciones en ${cuotas}` : ""} se muestran en el PDF «Temario y precios» tras completar el formulario o por WhatsApp.`;
+}
+
 /** Número con separador local y el código de moneda: "$2.190 MXN". */
 export function montoConCodigo(iso: string | null | undefined, monto: number): string {
   const pais = getPais(normalizarPais(iso));

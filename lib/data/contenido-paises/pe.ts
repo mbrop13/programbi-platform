@@ -1,24 +1,24 @@
 import type { ContenidoPais } from "./tipos";
 import type { DefinicionBloqueLocal } from "./bloque";
-import { resumenPreciosCatalogo } from "@/lib/paises/detalle-curso";
+import { resumenDescuentoCatalogo } from "@/lib/paises/detalle-curso";
 
 const contenido: ContenidoPais = {
   iso: "pe",
   seo: {
     title: "Cursos de datos en vivo Perú | ProgramBI",
     description:
-      "Cursos en vivo de análisis de datos, Power BI y SQL para profesionales de Perú. Clases por Zoom en horario de Lima y precios en soles.",
+      "Cursos en vivo de análisis de datos, Power BI y SQL para profesionales de Perú. Clases por Zoom en horario de Lima y valor referencial en soles.",
   },
   seoPaginas: {
     cursos: {
-      title: "Cursos en vivo de datos, Excel e IA en Perú | ProgramBI",
+      title: "Curso de Power BI y datos en vivo en Perú | ProgramBI",
       description:
-        "Cursos en vivo de análisis de datos, Excel, SQL, Python e IA en Perú: horario de Lima, precios en soles, 3 cuotas sin interés, clase gratis y certificado.",
+        "Cursos en vivo de análisis de datos, Power BI, Excel, SQL, Python e IA en Perú: horario de Lima, valor referencial en soles (PEN), 3 cuotas sin interés y certificado.",
     },
     faq: {
       title: "Preguntas frecuentes de cursos en Perú | ProgramBI",
       description:
-        "Horarios de Lima, pagos en soles con Yape o Plin, certificados y requisitos de los cursos en vivo de ProgramBI en Perú.",
+        "Horarios de Lima, pago con tarjeta internacional vía Mercado Pago o transferencia internacional, certificados y requisitos de los cursos en vivo de ProgramBI en Perú.",
     },
     implementacion: {
       title: "Implementación Power BI en Perú | ProgramBI",
@@ -104,10 +104,10 @@ const contenido: ContenidoPais = {
     },
   ],
   moneda: {
-    titulo: "Soles peruanos y pagos con Yape, Plin o tarjeta",
+    titulo: "Valor referencial en soles (PEN) y pago internacional",
     resumen:
-      "El catálogo de Perú se publica en soles (PEN): cada curso muestra su precio de lista y el monto que se cobra en la cohorte vigente.",
-    nota: "El checkout procesa el pago con Mercado Pago y muestra tarjeta, Yape o Plin cuando están habilitados. Si la cuenta local no está disponible, informa el equivalente en CLP antes de confirmar.",
+      "El catálogo de Perú muestra valores referenciales en soles (PEN) en el PDF de temario y precios de cada ficha.",
+    nota: "El pago se procesa con tarjeta internacional vía Mercado Pago (el cobro se realiza en CLP desde Chile y tu banco efectúa la conversión a soles) o mediante transferencia internacional.",
   },
   mercado: {
     ejemplo:
@@ -115,7 +115,7 @@ const contenido: ContenidoPais = {
     horario:
       "Perú se mantiene en UTC-5 todo el año y Chile cambia con el horario de verano. La clase de 19:30 en Chile se ve a las 17:30 en Lima cuando Chile está en verano y a las 18:30 en invierno. La ficha de la cohorte muestra la equivalencia exacta.",
     facturacion:
-      "Los cursos se pagan en soles con Mercado Pago Perú. Los proyectos in-company se cotizan aparte y la propuesta indica moneda, alcance y condiciones de facturación.",
+      "Los cursos se pagan con tarjeta internacional vía Mercado Pago (procesado en CLP desde Chile con conversión bancaria a soles) o transferencia internacional. Los proyectos in-company se cotizan aparte y la propuesta indica moneda, alcance y condiciones de facturación.",
   },
   nosotros: {
     parrafo:
@@ -138,13 +138,13 @@ const contenido: ContenidoPais = {
       categoria: "cursos",
     },
     {
-      q: "¿Puedo pagar con Yape o Plin?",
-      a: "Sí, cuando la cuenta de Mercado Pago de Perú está habilitada. También puedes pagar con tarjeta o coordinar una transferencia con el equipo de admisiones.",
+      q: "¿Cómo puedo pagar desde Perú?",
+      a: "Con tarjeta de crédito o débito internacional vía Mercado Pago (en 3 cuotas sin interés cuando tu banco lo habilita) o mediante transferencia internacional coordinada con el equipo de admisiones.",
       categoria: "pagos",
     },
     {
-      q: "¿Cómo se cobra si elijo pagar en soles?",
-      a: `${resumenPreciosCatalogo("pe")} Si la cuenta local no está habilitada, el checkout informa el equivalente en CLP para confirmar con el valor a la vista.`,
+      q: "¿En qué moneda se procesa el cobro si el valor referencial está en soles?",
+      a: `${resumenDescuentoCatalogo("pe")} El cobro con tarjeta vía Mercado Pago se procesa en pesos chilenos (CLP) desde Chile y tu banco realiza la conversión a soles (PEN) según su tipo de cambio.`,
       categoria: "pagos",
     },
     {
@@ -166,22 +166,22 @@ export const bloqueLocal: DefinicionBloqueLocal = {
   titulo: "Estudiar datos en vivo desde Perú",
   parrafos: [
     "Perú combina operaciones mineras y agroindustriales con un retail y una banca que crecen rápido. En esos sectores el reporte suele llegar tarde, en formatos distintos y sin una definición común de cada indicador. Tanto en el curso de Power BI en Perú como en los programas de SQL Server, Python y análisis de datos, la formación trabaja con la lógica de esas industrias: producción y costo por unidad, rendimiento por fundo, venta por tienda y cartera por zona.",
-    "Las clases se siguen por Zoom en hora de Perú, sin viajar y sin instalar nada más que Power BI Desktop. El catálogo se publica en soles y el pago se hace con Mercado Pago Perú, Yape o Plin; si estás en otra región, la ficha de la cohorte muestra la equivalencia exacta.",
+    "Las clases se siguen por Zoom en hora de Perú, sin viajar y sin instalar nada más que Power BI Desktop. El PDF de temario y precios incluye el valor referencial en soles (PEN) y el pago se realiza con tarjeta internacional vía Mercado Pago (procesado en CLP desde Chile) o transferencia internacional.",
     "Cada cohorte combina la sesión en vivo con trabajo entre clases: los ejercicios se resuelven sobre archivos de práctica y el proyecto final se presenta al grupo. Las grabaciones quedan en el campus para quienes trabajan en turnos o viajan, y la ficha del curso indica duración, nivel y requisitos antes de inscribirse.",
   ],
   empresas:
     "Para equipos en Perú, la capacitación in-company se arma con los datos de la empresa (ERP, comprobantes electrónicos, reportes de planta). Los ejercicios usan esos archivos y los casos de minería, agroexportación, retail o banca que el equipo reconoce en su día a día. Se dicta en vivo por Zoom, con grabaciones en el campus para quienes no pueden asistir a una sesión, y la cotización se emite en soles con factura corporativa; cada participante cierra el programa con su certificado y su código de verificación. La propuesta indica moneda, alcance y condiciones de facturación; el programa se cotiza aparte de los cursos abiertos.",
   notas: {
     precio:
-      "El catálogo peruano se publica en soles (PEN) y no se convierte a dólares. El monto vigente y los descuentos están en el PDF de temario y precios del curso; el checkout muestra el total antes de pagar.",
+      "El valor referencial en soles (PEN) y los descuentos vigentes están en el PDF de temario y precios del curso; el checkout muestra el total antes de pagar.",
     horario:
       "Perú no aplica horario de verano. En Chile la clase es de {horarioChile}; cuando Chile cambia de hora, la diferencia con Lima se mueve una hora. La ficha de la cohorte muestra la equivalencia exacta.",
     pago:
-      "Mercado Pago Perú procesa tarjeta, Yape o Plin; la transferencia en soles se coordina con admisiones. Si la tarjeta fue emitida fuera de Perú, el cargo final lo define el banco emisor.",
+      "Pago con tarjeta internacional vía Mercado Pago (el cobro se procesa en CLP desde Chile y tu banco realiza la conversión a soles) o transferencia internacional coordinada con admisiones.",
     cuotas:
-      "Aplican a todos los cursos en Perú. La pasarela confirma la promoción al pagar, sin recargo por financiamiento.",
+      "Disponibles en la pasarela según las condiciones de tu tarjeta y banco emisor, sin recargo por financiamiento.",
     "clase-gratis":
-      "La clase abierta se dicta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; si aún no hay fecha, puedes pedir que te avisen.",
+      "Clase gratis: coordínala por WhatsApp con el equipo de admisiones según tu disponibilidad.",
     certificado:
       "El certificado lleva código de verificación y se suma al campus virtual con las clases y material usado para practicar durante el curso. Es un certificado de ProgramBI, no la certificación oficial PL-300 de Microsoft.",
   },
@@ -195,16 +195,16 @@ export const bloqueLocal: DefinicionBloqueLocal = {
       a: "{resumenPrecios}",
     },
     {
-      q: "¿Puedo pagar desde Perú con tarjeta, Yape o Plin?",
-      a: "Sí. Mercado Pago Perú acepta tarjeta de crédito o débito, Yape y Plin; la transferencia en soles se coordina con admisiones. {notaPago}",
+      q: "¿Puedo pagar desde Perú con tarjeta o transferencia?",
+      a: "Sí. Aceptamos tarjeta internacional vía Mercado Pago (el cobro se procesa en CLP desde Chile y tu banco realiza la conversión a soles) o transferencia internacional coordinada por WhatsApp. {notaPago}",
     },
     {
       q: "¿Hay cuotas sin interés para Perú?",
-      a: "Sí: {cuotas} en todos los cursos, sin recargo por financiamiento. La pasarela confirma la disponibilidad con tu tarjeta al momento de pagar.",
+      a: "Sí: {cuotas} con tarjeta vía Mercado Pago, según la disponibilidad de tu banco emisor, sin recargo por financiamiento.",
     },
     {
       q: "¿Hay clase gratis antes de inscribirme?",
-      a: "Sí. Hay una clase abierta por Zoom para conocer cómo se trabaja con datos, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; mientras tanto puedes pedir que te avisen.",
+      a: "Sí. Puedes coordinar una clase gratis por WhatsApp antes de inscribirte para conocer nuestra metodología en vivo.",
     },
     {
       q: "¿Qué certificado recibo al terminar?",
@@ -215,22 +215,22 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     hub: {
       title: "Cursos de datos en vivo para Perú | ProgramBI",
       description:
-        "Cursos en vivo por Zoom para Perú: análisis de datos, Power BI, SQL y Python. Horario de Lima, precios en soles, 3 cuotas sin interés y certificado.",
+        "Cursos en vivo por Zoom para Perú: análisis de datos, Power BI, SQL y Python. Horario de Lima, valor referencial en soles, 3 cuotas sin interés y certificado.",
     },
     cursos: {
-      title: "Cursos en vivo de datos, Excel e IA en Perú | ProgramBI",
+      title: "Curso de Power BI y datos en vivo en Perú | ProgramBI",
       description:
-        "Cursos en vivo de análisis de datos, Excel, SQL, Python e IA en Perú: horario de Lima, precios en soles, 3 cuotas sin interés, clase gratis y certificado.",
+        "Cursos en vivo de análisis de datos, Power BI, Excel, SQL, Python e IA en Perú: horario de Lima, valor referencial en soles, 3 cuotas sin interés y certificado.",
     },
     "power-bi": {
       title: "Curso de Power BI en Perú: en vivo y certificado | ProgramBI",
       description:
-        "Curso de Power BI en Perú en vivo por Zoom: horario de Lima, precios en soles, 3 cuotas sin interés, clase gratis y certificado digital de ProgramBI.",
+        "Curso de Power BI en Perú en vivo por Zoom: horario de Lima, valor referencial en soles (PEN), 3 cuotas sin interés, clase gratis y certificado digital de ProgramBI.",
     },
     "analisis-de-datos": {
-      title: "Curso de análisis de datos en vivo Perú | ProgramBI",
+      title: "Curso de Analista de Datos en Perú (en vivo, 60 h) | ProgramBI",
       description:
-        "Análisis de datos en vivo para Perú: SQL, Power BI y Python, 60 horas por nivel. Horario de Lima, precio en soles y certificado digital.",
+        "Curso de Analista de Datos en Perú en vivo: SQL Server, Power BI y Python, 60 horas por nivel en horario de Lima. Valor referencial en soles y certificado digital.",
     },
     python: {
       title: "Curso de Python para datos en vivo Perú | ProgramBI",
@@ -254,7 +254,7 @@ const INTRO_FICHA_PE: Record<string, string[]> = {
   "power-bi": [
     "Este es un curso de Power BI en Perú, en vivo por Zoom, pensado para analistas, control de gestión, finanzas y operaciones que hoy consolidan reportes en Excel y necesitan construir tableros que se actualicen solos.",
     "El programa abierto de nivel básico-intermedio dura 20 horas en horario de Lima, con grabaciones en el campus virtual: parte desde cero con Power Query (lenguaje M), sigue con el modelo estrella y profundiza en medidas DAX. El nivel avanzado suma otras 20 horas con inteligencia de tiempo, seguridad a nivel de fila (RLS) e integración de IA en Power BI.",
-    "Los precios para Perú se publican en soles (PEN) en el PDF de temario y precios de esta ficha, con pago por Mercado Pago Perú, Yape o Plin y 3 cuotas sin interés. Si prefieres reforzar fórmulas y tablas dinámicas antes, puedes revisar el curso de Excel en /pe/cursos/excel; para capacitar a un equipo con factura corporativa, cotiza en /pe/cursos/power-bi?para=empresas.",
+    "Los valores referenciales para Perú en soles (PEN) se consultan en el PDF de temario y precios de esta ficha, con 3 cuotas sin interés y pago con tarjeta internacional vía Mercado Pago (cobro procesado en CLP desde Chile) o transferencia internacional. Si prefieres reforzar fórmulas y tablas dinámicas antes, revisa el curso de Excel para Perú; para capacitar a un equipo con factura corporativa, cotiza en la pestaña Empresas de esta ficha.",
   ],
 };
 

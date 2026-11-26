@@ -105,6 +105,8 @@ export default function GuiasHub({
   const [nivel, setNivel] = useState(TODOS);
   const [listo, setListo] = useState(false);
   const [filtrosMovilAbiertos, setFiltrosMovilAbiertos] = useState(false);
+  const [gruposExpandidos, setGruposExpandidos] = useState<Record<string, boolean>>({});
+  const [mostrarTodosGrupos, setMostrarTodosGrupos] = useState(false);
 
   const filtrosBtnRef = useRef<HTMLButtonElement | null>(null);
   const resultadosRef = useRef<HTMLDivElement | null>(null);
@@ -808,53 +810,99 @@ export default function GuiasHub({
             ) : null}
 
             {/* Directorio por Curso con Tarjetas Visuales Táctiles */}
-            {grupos.map((grupo) => {
-              const rutaCurso =
-                grupo.curso === "general" ? null : rutaLocal(iso, `/cursos/${grupo.curso}`);
+            {(() => {
+              const LIMITE_GRUPOS_INICIAL = 6;
+              const LIMITE_TARJETAS_POR_GRUPO = 3;
+              const gruposVisibles = mostrarTodosGrupos
+                ? grupos
+                : grupos.slice(0, LIMITE_GRUPOS_INICIAL);
 
               return (
-                <section key={grupo.curso} aria-labelledby={`curso-${grupo.curso}`}>
-                  <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-[var(--g-border)] pb-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <GuiaToolVisual course={grupo.curso} size="sm" />
-                      <h2
-                        id={`curso-${grupo.curso}`}
-                        className="text-pretty break-words text-xl font-bold tracking-tight text-[var(--g-ink)]"
-                      >
-                        {grupo.nombre}
-                      </h2>
-                      <span className="rounded-full bg-[var(--g-wash)] px-2.5 py-0.5 text-xs font-medium tabular-nums text-[var(--g-muted)]">
-                        {grupo.guias.length} {grupo.guias.length === 1 ? "guía" : "guías"}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
-                      {rutaCurso ? (
-                        <Link
-                          href={rutaCurso}
-                          className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)] sm:min-h-0"
-                        >
-                          Ficha del curso
-                        </Link>
-                      ) : null}
-                      <Link
-                        href={rutaLocal(iso, "/precios")}
-                        className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-muted)] underline underline-offset-4 hover:text-[var(--g-ink)] sm:min-h-0"
-                      >
-                        Precios
-                      </Link>
-                    </div>
-                  </div>
+                <>
+                  {gruposVisibles.map((grupo) => {
+                    const rutaCurso =
+                      grupo.curso === "general" ? null : rutaLocal(iso, `/cursos/${grupo.curso}`);
+                    const expandido = Boolean(gruposExpandidos[grupo.curso]);
+                    const guiasDelGrupo = expandido
+                      ? grupo.guias
+                      : grupo.guias.slice(0, LIMITE_TARJETAS_POR_GRUPO);
+                    const hayMasEnGrupo = grupo.guias.length > LIMITE_TARJETAS_POR_GRUPO && !expandido;
 
-                  <ul className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {grupo.guias.map((guia) => (
-                      <li key={guia.path} className="min-w-0">
-                        <GuiaCard guia={guia} variant="visual" preferEditorialImage />
-                      </li>
-                    ))}
-                  </ul>
-                </section>
+                    return (
+                      <section key={grupo.curso} aria-labelledby={`curso-${grupo.curso}`}>
+                        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-[var(--g-border)] pb-3">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <GuiaToolVisual course={grupo.curso} size="sm" />
+                            <h2
+                              id={`curso-${grupo.curso}`}
+                              className="text-pretty break-words text-xl font-bold tracking-tight text-[var(--g-ink)]"
+                            >
+                              {grupo.nombre}
+                            </h2>
+                            <span className="rounded-full bg-[var(--g-wash)] px-2.5 py-0.5 text-xs font-medium tabular-nums text-[var(--g-muted)]">
+                              {grupo.guias.length} {grupo.guias.length === 1 ? "guía" : "guías"}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+                            {rutaCurso ? (
+                              <Link
+                                href={rutaCurso}
+                                className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-ink)] underline underline-offset-4 hover:text-[var(--g-accent)] sm:min-h-0"
+                              >
+                                Ficha del curso
+                              </Link>
+                            ) : null}
+                            <Link
+                              href={rutaLocal(iso, "/precios")}
+                              className="inline-flex min-h-[44px] items-center font-medium text-[var(--g-muted)] underline underline-offset-4 hover:text-[var(--g-ink)] sm:min-h-0"
+                            >
+                              Precios
+                            </Link>
+                          </div>
+                        </div>
+
+                        <ul className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                          {guiasDelGrupo.map((guia) => (
+                            <li key={guia.path} className="min-w-0">
+                              <GuiaCard guia={guia} variant="visual" preferEditorialImage />
+                            </li>
+                          ))}
+                        </ul>
+
+                        {hayMasEnGrupo ? (
+                          <div className="mt-5">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setGruposExpandidos((prev) => ({
+                                  ...prev,
+                                  [grupo.curso]: true,
+                                }))
+                              }
+                              className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] px-5 text-sm font-semibold text-[var(--g-ink)] transition-colors hover:border-[var(--g-ink)] hover:bg-[var(--g-wash)]"
+                            >
+                              Ver todas las guías del grupo ({grupo.guias.length})
+                            </button>
+                          </div>
+                        ) : null}
+                      </section>
+                    );
+                  })}
+
+                  {!mostrarTodosGrupos && grupos.length > LIMITE_GRUPOS_INICIAL ? (
+                    <div className="pt-2 text-center">
+                      <button
+                        type="button"
+                        onClick={() => setMostrarTodosGrupos(true)}
+                        className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-[var(--g-border-strong)] bg-[var(--g-surface)] px-6 text-sm font-semibold text-[var(--g-ink)] transition-colors hover:border-[var(--g-ink)] hover:bg-[var(--g-wash)]"
+                      >
+                        Ver más guías ({grupos.length - LIMITE_GRUPOS_INICIAL} categorías más)
+                      </button>
+                    </div>
+                  ) : null}
+                </>
               );
-            })}
+            })()}
           </div>
         )}
       </div>

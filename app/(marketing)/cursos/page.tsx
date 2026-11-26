@@ -16,7 +16,7 @@ import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib
 import { getPais, ISO_CHILE, normalizarPais, PAISES_INDEXABLES } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
-import { formatMoneda, precioVenta } from "@/lib/paises/precios";
+import { precioVenta } from "@/lib/paises/precios";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
 export const revalidate = 86400;
@@ -168,16 +168,6 @@ export default async function CursosPage({
         const horario = horarioLocal(pais);
         const etiquetaZona = etiquetaHoraLocal(pais);
         const cuotas = textoCuotas(pais);
-        const cursosConPrecio = courses
-          .map((c) => {
-            const precio = precioVenta(pais, c.slug, promotions);
-            if (precio == null) return null;
-            const horas = catalogHours(c);
-            const niveles = publicLevelCount(c);
-            const duracion = niveles > 1 ? `${horas} h por nivel` : `${horas} h`;
-            return `${c.title} (${duracion}): ${formatMoneda(pais, precio)}`;
-          })
-          .filter((item): item is string => Boolean(item));
 
         return (
           <section
@@ -208,12 +198,20 @@ export default async function CursosPage({
                   {horario.inicio} a {horario.fin}, {etiquetaZona}, dos veces por semana.
                 </li>
                 <li>
-                  <strong className="font-semibold">Precios vigentes en {infoPais.moneda}:</strong>{" "}
-                  {cursosConPrecio.join(" · ")}.
+                  <strong className="font-semibold">Temario y precios en {infoPais.moneda}:</strong>{" "}
+                  Cada ficha incluye el PDF «Temario y precios» con el valor vigente en{" "}
+                  {infoPais.moneda}. También puedes revisar{" "}
+                  <Link
+                    href={rutaLocal(pais, "/precios")}
+                    className="font-semibold underline underline-offset-4 hover:text-mute"
+                  >
+                    precios por país
+                  </Link>
+                  .
                 </li>
                 <li>
                   <strong className="font-semibold">Facilidades y certificado:</strong>{" "}
-                  {cuotas ? `Pago en ${cuotas}, ` : ""}clase gratis introductoria por Zoom y
+                  {cuotas ? `Pago en ${cuotas}, ` : ""}clase gratis coordinada por WhatsApp y
                   certificado digital de ProgramBI al completar.
                 </li>
               </ul>

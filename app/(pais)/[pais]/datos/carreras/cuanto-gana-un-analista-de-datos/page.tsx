@@ -118,8 +118,8 @@ export default async function CuantoGanaAnalistaDatosCoPage({
     {
       slug: "analisis-de-datos" as const,
       href: "/co/cursos/analisis-de-datos",
-      titulo: "Análisis de Datos",
-      descripcion: "Limpieza, exploración y visualización aplicada.",
+      titulo: "Análisis de Datos (60 h)",
+      descripcion: "60 horas en vivo por nivel: SQL Server, Power BI y Python.",
     },
     {
       slug: "power-bi" as const,
@@ -294,8 +294,10 @@ export default async function CuantoGanaAnalistaDatosCoPage({
           pagina="/co/datos/carreras/cuanto-gana-un-analista-de-datos"
           cursos={cursos}
           titulo="¿Quieres prepararte para trabajar como analista de datos?"
-          subtitulo="Aprende Análisis de Datos, Power BI y SQL Server en vivo con proyectos reales y 3 cuotas sin interés. Revisa el curso o cotiza por WhatsApp y averigua cómo podríamos ayudarte."
-          ctaPosition="analista_datos_co"
+          subtitulo="Curso de Análisis de Datos de 60 horas en vivo (SQL Server, Power BI y Python), con proyectos reales y 3 cuotas sin interés. Revisa la ficha o coordina una clase gratis por WhatsApp."
+          ctaPosition="co_analista_sueldos"
+          whatsappLabel="Coordinar clase gratis por WhatsApp"
+          whatsappText="Hola, vengo de /co/datos/carreras/cuanto-gana-un-analista-de-datos y quiero coordinar una clase gratis del curso de Análisis de Datos (60 h) en Colombia."
         />
 
         <FaqDatos faqs={FAQS} />

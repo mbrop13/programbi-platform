@@ -67,9 +67,9 @@ const SEO: Record<string, Partial<Record<RutaSeo, SeoLocal>>> = {
         "Cursos de datos en vivo en Colombia: Power BI, SQL, Python y análisis de datos. Horario de Bogotá, precios en COP, clase gratis y certificado.",
     },
     "curso:power-bi": {
-      title: "Curso Power BI en vivo en Colombia | ProgramBI",
+      title: "Curso de Power BI en vivo en Colombia (COP y 3 cuotas) | ProgramBI",
       description:
-        `Curso Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en ${courseDurationHours("power-bi")} horas. Horario de Bogotá, valor en COP y {cuotas}.`,
+        `Curso de Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en ${courseDurationHours("power-bi")} horas. Horario de Bogotá, valor referencial en COP en el PDF «Temario y precios» y {cuotas}.`,
     },
     "curso:excel": {
       title: "Curso de Excel en vivo en Colombia | ProgramBI",
@@ -99,7 +99,7 @@ const SEO: Record<string, Partial<Record<RutaSeo, SeoLocal>>> = {
     precios: {
       title: "Precios de cursos en Colombia | ProgramBI",
       description:
-        "Precios de los cursos en vivo para Colombia: valores en COP, temario y precios de cada curso, medios de pago como PSE o Nequi y {cuotas}.",
+        "Información de aranceles para Colombia: valor referencial en COP en el PDF «Temario y precios», pago con tarjeta internacional vía Mercado Pago o transferencia internacional y {cuotas}.",
     },
   },
 };

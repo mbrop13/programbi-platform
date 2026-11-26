@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
+import { OFERTA_CLASE_GRATIS_WHATSAPP } from "@/config/flags";
 import {
   GuiaBreadcrumbs,
   GuiaEditorialNote,
@@ -506,6 +508,48 @@ export default function GuiaPasoAPasoLayout({
                             numero={numero}
                             siguienteId={pasos[idx + 1]?.id}
                           />
+
+                          {pasos.length >= 2 && idx === Math.floor(pasos.length / 2) - 1 ? (
+                            <aside
+                              aria-label={`Aplica ${curso.nombre} en vivo`}
+                              className="mt-8 rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] p-5 sm:p-6"
+                            >
+                              <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
+                                Siguiente paso práctico
+                              </p>
+                              <p className="mt-1 text-lg font-bold tracking-[-0.015em] text-[var(--g-ink)]">
+                                Practica {curso.nombre} en vivo con casos reales
+                              </p>
+                              <p className="mt-1.5 text-sm leading-relaxed text-[var(--g-muted)]">
+                                {curso.horas} horas en vivo por Zoom
+                                {curso.textoCuotas ? ` · ${curso.textoCuotas}` : ""}. Revisa el programa completo o coordina tu clase gratis por WhatsApp.
+                              </p>
+                              <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+                                <Link
+                                  href={`${prefijo}/cursos/${guia.curso}`}
+                                  className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[var(--g-ink)] px-5 text-sm font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
+                                >
+                                  Ver temario y precios
+                                </Link>
+                                <WhatsAppCta
+                                  page={rutaGuia}
+                                  intent="curso"
+                                  course={curso.nombre}
+                                  courseSlug={guia.curso}
+                                  country={pais}
+                                  ctaPosition="guia_mid"
+                                  customText={
+                                    OFERTA_CLASE_GRATIS_WHATSAPP
+                                      ? `Hola, vengo de la guía ${guia.h1} y quiero la clase gratis del curso de ${curso.nombre} [${guia.slug}]`
+                                      : `Hola, vengo de la guía ${guia.h1} y quiero información del curso de ${curso.nombre} [${guia.slug}]`
+                                  }
+                                  className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-5 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
+                                >
+                                  {OFERTA_CLASE_GRATIS_WHATSAPP ? "Pedir clase gratis" : "Consultar por WhatsApp"}
+                                </WhatsAppCta>
+                              </div>
+                            </aside>
+                          ) : null}
                         </div>
                       </li>
                     );
@@ -552,7 +596,7 @@ export default function GuiaPasoAPasoLayout({
                   </section>
                 ) : null}
 
-                {/* Plantilla: solo cuando el archivo existe */}
+                {/* Plantilla o recurso descargable al final del artículo */}
                 {guia.plantillaArchivo ? (
                   <section
                     id="descarga-plantilla"
@@ -586,7 +630,48 @@ export default function GuiaPasoAPasoLayout({
                       />
                     </div>
                   </section>
-                ) : null}
+                ) : (
+                  <section
+                    id="descarga-temario"
+                    aria-labelledby="descarga-temario-titulo"
+                    className="mt-16 scroll-mt-24 rounded-3xl border border-[var(--g-border)] bg-[var(--g-surface)] p-6 sm:p-8"
+                  >
+                    <p className="text-sm font-medium text-[var(--g-muted)]">Recurso descargable · PDF</p>
+                    <h2
+                      id="descarga-temario-titulo"
+                      className="mt-1 text-2xl font-bold tracking-[-0.02em] text-[var(--g-ink)]"
+                    >
+                      Descarga el PDF «Temario y precios» de {curso.nombre}
+                    </h2>
+                    <p className="mt-2 text-base leading-relaxed text-[var(--g-muted)]">
+                      Accede al programa módulo por módulo, horarios locales y valores vigentes en la ficha del curso.
+                    </p>
+                    <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+                      <Link
+                        href={`${prefijo}/cursos/${guia.curso}#inscripcion`}
+                        className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-[var(--g-ink)] px-6 text-sm font-semibold text-[var(--g-surface)] no-underline transition-opacity hover:opacity-90"
+                      >
+                        Descargar Temario y precios (PDF)
+                      </Link>
+                      <WhatsAppCta
+                        page={rutaGuia}
+                        intent="curso"
+                        course={curso.nombre}
+                        courseSlug={guia.curso}
+                        country={pais}
+                        ctaPosition="guia_end"
+                        customText={
+                          OFERTA_CLASE_GRATIS_WHATSAPP
+                            ? `Hola, vengo de la guía ${guia.h1} y quiero la clase gratis del curso de ${curso.nombre} [${guia.slug}]`
+                            : `Hola, vengo de la guía ${guia.h1} y quiero información del curso de ${curso.nombre} [${guia.slug}]`
+                        }
+                        className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-[var(--g-border-strong)] bg-[var(--g-bg)] px-6 text-sm font-semibold text-[var(--g-ink)] no-underline transition-colors hover:border-[var(--g-ink)]"
+                      >
+                        {OFERTA_CLASE_GRATIS_WHATSAPP ? "Pedir clase gratis por WhatsApp" : "Consultar por WhatsApp"}
+                      </WhatsAppCta>
+                    </div>
+                  </section>
+                )}
 
                 <GuiaPasoAPasoFaq faqs={guia.faqs} />
 
@@ -651,7 +736,7 @@ export default function GuiaPasoAPasoLayout({
                   <GuiaCursoCierre
                     {...propsCurso}
                     secundarios={secundarios}
-                    ctaPosition="guia_paso_a_paso_final"
+                    ctaPosition="guia_end"
                   />
                 </div>
 
@@ -691,7 +776,7 @@ export default function GuiaPasoAPasoLayout({
             {/* Curso en la columna derecha (pantallas anchas) */}
             <div className="hidden xl:block">
               <div className="sticky top-24 pt-10">
-                <GuiaCursoLateral {...propsCurso} ctaPosition="guia_paso_a_paso_lateral" />
+                <GuiaCursoLateral {...propsCurso} ctaPosition="guia_sidebar" />
               </div>
             </div>
           </div>

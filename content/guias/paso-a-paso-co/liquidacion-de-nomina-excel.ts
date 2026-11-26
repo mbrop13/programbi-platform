@@ -184,6 +184,7 @@ export const guia: GuiaPasoAPaso = {
       parrafos: [
         "El neto a pagar al trabajador (M2) es Total Devengado (H2) menos Salud (J2), Pensión (K2) y FSP (L2) (más otras deducciones autoradas como libranzas o retención en la fuente si aplican).",
         "En columnas paralelas de costo empresa, provisiona mensualmente prima de servicios (8,33 % sobre salario + auxilio), cesantías (8,33 % sobre salario + auxilio), intereses de cesantías (1 % mensual sobre la base o 12 % de la provisión de cesantías) y vacaciones (4,17 % solo sobre salario sin auxilio).",
+        "Para dominar BUSCARX, consolidación de novedades y reportes mensuales de nómina en hojas limpias, revisa nuestro [curso de excel](/co/cursos/excel) en vivo.",
       ],
       tabla: {
         caption: "Porcentajes de provisión mensual de prestaciones sociales (empleador)",

@@ -7,6 +7,7 @@ import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
 import FeaturedCourseStrip from "@/components/marketing/FeaturedCourseStrip";
 import { Clock, Search } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
+import NotifyNextDate from "@/components/marketing/NotifyNextDate";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { type CourseSchedule } from "@/lib/data/course-schedules";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
@@ -139,6 +140,18 @@ export type CourseCatalogItem = {
   gallery?: { src: string; alt: string }[];
 };
 
+function hasConfirmedDate(slug: string, schedules: CourseSchedule[]): boolean {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return schedules.some((s) => {
+    const matches =
+      slug === "analisis-de-datos"
+        ? ["sql-server", "power-bi", "python"].includes(s.course_slug)
+        : s.course_slug === slug;
+    return matches && new Date(`${s.start_date}T12:00:00`) >= today;
+  });
+}
+
 export default function CursosPageClient({
   catalog,
   schedules,
@@ -249,7 +262,7 @@ export default function CursosPageClient({
         <div className="mx-auto max-w-3xl">
           <h1 className="text-center text-[1.7rem] font-bold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-[2.65rem]">
             {pais === "pe"
-              ? "Cursos en vivo de análisis de datos, Excel e IA en Perú"
+              ? "Curso de Power BI y cursos de datos en vivo en Perú"
               : pais === "co"
                 ? "Catálogo de cursos en vivo de datos, Excel e IA en Colombia"
                 : pais === "mx"
@@ -277,6 +290,16 @@ export default function CursosPageClient({
               </>
             )}
           </p>
+          {pais === "pe" ? (
+            <div className="mt-3 flex justify-center">
+              <Link
+                href="/pe/cursos/power-bi"
+                className="inline-flex min-h-[38px] items-center rounded-full border border-line-strong bg-paper px-4 text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash"
+              >
+                Curso de Power BI en Perú
+              </Link>
+            </div>
+          ) : null}
           <p
             aria-hidden="true"
             className="mt-3 min-h-[3rem] text-center text-base font-medium leading-snug tracking-tight text-mute sm:min-h-[1.75rem] sm:text-lg"
@@ -483,6 +506,16 @@ export default function CursosPageClient({
                     </p>
                     {precio != null ? (
                       <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
+                    ) : null}
+                    {!hasConfirmedDate(course.slug, schedules) ? (
+                      <NotifyNextDate
+                        variant="compact"
+                        courseSlug={course.slug}
+                        courseTitle={course.title}
+                        pais={pais}
+                        ctaLocation="cursos_catalog"
+                        className="mt-3"
+                      />
                     ) : null}
                     <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
                       <Link

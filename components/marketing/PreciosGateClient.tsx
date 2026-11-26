@@ -110,6 +110,7 @@ export default function PreciosGateClient({
     const nombre = name.trim();
     const correo = email.trim();
     const telefono = phone.trim();
+    const digits = telefono.replace(/\D/g, "");
 
     if (nombre.length < 2) {
       setError("Escribe tu nombre completo.");
@@ -119,15 +120,15 @@ export default function PreciosGateClient({
       setError("Revisa tu email: parece incompleto.");
       return;
     }
-    if (!precioDirecto && telefono.replace(/\D/g, "").length < 7) {
-      setError("Escribe tu teléfono o WhatsApp con al menos 7 dígitos.");
+    if (digits.length > 0 && digits.length < 7) {
+      setError("Si ingresas teléfono o WhatsApp, escribe al menos 7 dígitos.");
       return;
     }
 
     setError(null);
     setIsSubmitting(true);
 
-    const whatsapp = !precioDirecto && telefono ? withDialCode(telefono, prefix) : "";
+    const whatsapp = telefono ? withDialCode(telefono, prefix) : "";
     const curso = seleccionado;
     if (!curso) {
       setError("Elige un curso para abrir su temario con precios.");
@@ -164,13 +165,16 @@ export default function PreciosGateClient({
       ...getAntiBotFields(formLoadedAt.current || Date.now(), honeypot),
     };
 
+    const isBotTrap = Boolean(honeypot.trim());
+
     void fetch("/api/leads/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      keepalive: true,
       body: JSON.stringify(payload),
     })
       .then((res) => {
-        if (res.ok) {
+        if (res.ok && !isBotTrap) {
           trackLeadSubmit("personal", "precios", curso.slug, {
             form_name: "precios_gate",
             country: pais,
@@ -180,6 +184,18 @@ export default function PreciosGateClient({
       .catch(() => {
         // El PDF ya está abierto: un fallo de red no rompe la experiencia.
       });
+  };
+
+  const focusGateForm = (targetSlug: string) => {
+    setSlug(targetSlug);
+    const formEl = document.getElementById("ver-precios");
+    if (formEl) {
+      formEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    const nameInput = document.getElementById("precios-gate-name") as HTMLInputElement | null;
+    if (nameInput) {
+      window.setTimeout(() => nameInput.focus(), 200);
+    }
   };
 
   const fieldClass =
@@ -226,6 +242,7 @@ export default function PreciosGateClient({
         </div>
       ) : (
         <form
+          id="ver-precios"
           onSubmit={handleSubmit}
           noValidate
           data-gate-form="brochure"
@@ -246,8 +263,8 @@ export default function PreciosGateClient({
                   <>
                     {discountLabel} sobre el precio normal en {moneda}. Los aranceles de cada curso se
                     publican en su PDF de temario y precios, con el descuento vigente, las fechas en
-                    hora de tu país{cuotasTexto ? ` y las ${cuotasTexto}` : ""}. Además incluye clase
-                    gratis (sesión abierta por Zoom sin costo). Completa tus datos y abrimos el PDF de
+                    hora de tu país{cuotasTexto ? ` y las ${cuotasTexto}` : ""}. Además puedes
+                    coordinar una clase gratis por WhatsApp. Completa tus datos y abrimos el PDF de
                     tu curso principal en una pestaña nueva.
                   </>
                 )
@@ -255,9 +272,9 @@ export default function PreciosGateClient({
                   <>
                     Precio normal en {moneda}. Los aranceles de cada curso se publican en su PDF de
                     temario y precios, con las fechas en hora de tu país
-                    {cuotasTexto ? ` y ${cuotasTexto}` : ""}. También incluye clase gratis (sesión
-                    abierta por Zoom sin costo). Completa tus datos y abrimos el PDF de tu curso
-                    principal en una pestaña nueva.
+                    {cuotasTexto ? ` y ${cuotasTexto}` : ""}. También puedes coordinar una clase
+                    gratis por WhatsApp. Completa tus datos y abrimos el PDF de tu curso principal en
+                    una pestaña nueva.
                   </>
                 )}
           </p>
@@ -298,45 +315,42 @@ export default function PreciosGateClient({
             </div>
           </div>
 
-          <div className={precioDirecto ? "mt-2" : "mt-2 grid gap-2 sm:grid-cols-2"}>
-            {!precioDirecto ? (
-              <div className="flex gap-2">
-                <label htmlFor="precios-gate-prefix" className="sr-only">
-                  Código de país
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <div className="flex gap-2">
+              <label htmlFor="precios-gate-prefix" className="sr-only">
+                Código de país
+              </label>
+              <select
+                id="precios-gate-prefix"
+                name="phonePrefix"
+                value={prefix}
+                onChange={(event) => setPrefix(event.target.value)}
+                aria-label="Código de país"
+                className="h-12 w-[6.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-2 text-sm text-ink"
+              >
+                {COUNTRIES.map((country) => (
+                  <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
+                    {country.iso.toUpperCase()} {country.phoneCode}
+                  </option>
+                ))}
+              </select>
+              <div className="min-w-0 flex-1">
+                <label htmlFor="precios-gate-whatsapp" className="sr-only">
+                  WhatsApp (opcional)
                 </label>
-                <select
-                  id="precios-gate-prefix"
-                  name="phonePrefix"
-                  value={prefix}
-                  onChange={(event) => setPrefix(event.target.value)}
-                  aria-label="Código de país"
-                  className="h-12 w-[6.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-2 text-sm text-ink"
-                >
-                  {COUNTRIES.map((country) => (
-                    <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
-                      {country.iso.toUpperCase()} {country.phoneCode}
-                    </option>
-                  ))}
-                </select>
-                <div className="min-w-0 flex-1">
-                  <label htmlFor="precios-gate-whatsapp" className="sr-only">
-                    Teléfono o WhatsApp
-                  </label>
-                  <input
-                    id="precios-gate-whatsapp"
-                    name="whatsapp"
-                    type="tel"
-                    required
-                    autoComplete="tel"
-                    inputMode="tel"
-                    placeholder="Teléfono / WhatsApp"
-                    value={phone}
-                    onChange={(event) => setPhone(event.target.value)}
-                    className={fieldClass}
-                  />
-                </div>
+                <input
+                  id="precios-gate-whatsapp"
+                  name="whatsapp"
+                  type="tel"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  placeholder="WhatsApp (opcional)"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                  className={fieldClass}
+                />
               </div>
-            ) : null}
+            </div>
             <div>
               <label htmlFor="precios-gate-curso" className="sr-only">
                 Curso principal
@@ -427,14 +441,13 @@ export default function PreciosGateClient({
                         {curso.title}
                       </Link>
                     ) : (
-                      <Link
-                        href={courseBrochurePath(curso.slug, pais)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="no-underline hover:text-mute"
+                      <button
+                        type="button"
+                        onClick={() => focusGateForm(curso.slug)}
+                        className="cursor-pointer border-none bg-transparent p-0 text-left font-semibold text-ink hover:text-mute"
                       >
                         {curso.title}
-                      </Link>
+                      </button>
                     )}
                     <span className="mt-1 block text-xs font-normal text-faint">{curso.levelName}</span>
                   </th>
@@ -475,14 +488,13 @@ export default function PreciosGateClient({
                             Precio normal en {moneda}
                           </span>
                         )}
-                        <Link
-                          href={courseBrochurePath(curso.slug, pais)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline hover:text-mute"
+                        <button
+                          type="button"
+                          onClick={() => focusGateForm(curso.slug)}
+                          className="inline-flex cursor-pointer items-center gap-1.5 border-none bg-transparent p-0 text-sm font-semibold text-ink hover:text-mute"
                         >
-                          <FileText size={14} aria-hidden /> En el PDF de temario y precios
-                        </Link>
+                          <FileText size={14} aria-hidden /> Ver en el PDF de temario y precios
+                        </button>
                       </div>
                     ) : (
                       <WhatsAppCta

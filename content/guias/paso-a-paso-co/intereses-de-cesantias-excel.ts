@@ -151,6 +151,7 @@ export const guia: GuiaPasoAPaso = {
       titulo: "Verificación con ejemplos de año completo y fracción",
       parrafos: [
         "Valida tu fórmula con un trabajador de 1 SMMLV ($1.750.905 + $249.095 = $2.000.000 de base) en dos escenarios: año completo (360 días) y medio año (180 días).",
+        "Para estructurar modelos de nómina sin errores de referencia ni fórmulas rotas al copiar filas, puedes profundizar en nuestro [curso de excel](/co/cursos/excel) en vivo.",
       ],
       tabla: {
         caption: "Ejemplos verificados de intereses de cesantías 2026",

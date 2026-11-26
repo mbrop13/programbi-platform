@@ -162,15 +162,15 @@ export function BrochureGateForm({
       setError("Revisa tu email: parece incompleto.");
       return;
     }
-    if (!soloEmail && digits.length < 7) {
-      setError("Escribe tu teléfono o WhatsApp con al menos 7 dígitos.");
+    if (digits.length > 0 && digits.length < 7) {
+      setError("Si ingresas teléfono o WhatsApp, escribe al menos 7 dígitos.");
       return;
     }
 
     setError(null);
     setIsSubmitting(true);
 
-    const whatsapp = !soloEmail && telefono ? withDialCode(telefono, prefix) : "";
+    const whatsapp = telefono ? withDialCode(telefono, prefix) : "";
     const url = courseBrochureUrl(slug, pais);
     setBrochureUrl(url);
 
@@ -208,13 +208,16 @@ export function BrochureGateForm({
       ...getAntiBotFields(formLoadedAt.current, honeypot),
     };
 
+    const isBotTrap = Boolean(honeypot.trim());
+
     void fetch("/api/leads/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      keepalive: true,
       body: JSON.stringify(payload),
     })
       .then((res) => {
-        if (!res.ok) return;
+        if (!res.ok || isBotTrap) return;
         trackLeadSubmit("personal", source, slug, {
           form_name: "brochure_gate",
           country: pais,
@@ -304,42 +307,39 @@ export function BrochureGateForm({
           />
         </div>
 
-        {!soloEmail ? (
-          <div>
-            <label htmlFor={`${idPrefix}-whatsapp`} className={labelClass}>
-              WhatsApp / Teléfono
-            </label>
-            <div className="flex gap-2">
-              <select
-                id={`${idPrefix}-prefix`}
-                name="phonePrefix"
-                value={prefix}
-                onChange={(event) => setPrefix(event.target.value)}
-                aria-label="Código de país"
-                className="h-11 w-[7.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-3 text-sm font-medium text-ink"
-              >
-                {COUNTRIES.map((country) => (
-                  <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
-                    {country.iso.toUpperCase()} {country.phoneCode}
-                  </option>
-                ))}
-              </select>
+        <div>
+          <label htmlFor={`${idPrefix}-whatsapp`} className={labelClass}>
+            WhatsApp (opcional)
+          </label>
+          <div className="flex gap-2">
+            <select
+              id={`${idPrefix}-prefix`}
+              name="phonePrefix"
+              value={prefix}
+              onChange={(event) => setPrefix(event.target.value)}
+              aria-label="Código de país"
+              className="h-11 w-[7.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-3 text-sm font-medium text-ink"
+            >
+              {COUNTRIES.map((country) => (
+                <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
+                  {country.iso.toUpperCase()} {country.phoneCode}
+                </option>
+              ))}
+            </select>
 
-              <input
-                id={`${idPrefix}-whatsapp`}
-                name="whatsapp"
-                type="tel"
-                required
-                autoComplete="tel"
-                inputMode="tel"
-                placeholder="9 8765 4321"
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                className="h-11 min-w-0 flex-1 rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint"
-              />
-            </div>
+            <input
+              id={`${idPrefix}-whatsapp`}
+              name="whatsapp"
+              type="tel"
+              autoComplete="tel"
+              inputMode="tel"
+              placeholder="9 8765 4321"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              className="h-11 min-w-0 flex-1 rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint"
+            />
           </div>
-        ) : null}
+        </div>
 
         <div aria-hidden="true" style={honeypotStyle}>
           <input

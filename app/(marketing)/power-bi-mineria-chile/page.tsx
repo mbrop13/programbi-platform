@@ -97,7 +97,7 @@ export default function Page() {
             "Hola, vengo de /power-bi-mineria-chile y quiero la clase gratis del curso de Análisis de Datos para la Minería [ref:power-bi-mineria-chile]",
           fichaLabel: "Ver fechas y precio",
           temarioLabel: "Temario y precios",
-          claseGratisText: "Clase gratis · sesión abierta por Zoom sin costo",
+          claseGratisText: "Clase gratis: coordínala por WhatsApp",
           cuotasText: textoCuotas(ISO_CHILE),
           cohortNote: OPEN_COHORT_LABEL,
         }}

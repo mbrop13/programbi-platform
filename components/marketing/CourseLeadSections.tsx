@@ -8,6 +8,7 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { localizarMercado } from "@/lib/paises/precios";
 import { enlacesDeCurso } from "@/lib/seo/enlaces";
 import { ISO_CHILE, normalizarPais } from "@/config/paises";
+import { rutaLocal } from "@/lib/paises/rutas";
 
 export const COURSE_CRO_SLUGS = [
   "analisis-de-datos",
@@ -196,20 +197,36 @@ export function CourseSyllabusAndFormat({
   );
 }
 
-function faqAnswer(text: string) {
-  const parts = text.split(/(\/cursos|\/empresas)/g);
+const INTERNAL_ROUTE_RE =
+  /(\/(?:[a-z]{2}\/)?cursos\/[a-z0-9-]+\?para=empresas|\/(?:[a-z]{2}\/)?cursos\/[a-z0-9-]+|\/(?:[a-z]{2}\/)?empresas|\/(?:[a-z]{2}\/)?cursos|\/power-bi-mineria-chile)/g;
+
+function labelForInternalRoute(route: string): string {
+  if (route.includes("?para=empresas")) return "cotizar para empresas";
+  if (route === "/power-bi-mineria-chile") return "Power BI para minería en Chile";
+  if (/^\/(?:[a-z]{2}\/)?empresas$/.test(route)) return "capacitación para empresas";
+  if (/^\/(?:[a-z]{2}\/)?cursos$/.test(route)) return "catálogo de cursos";
+  if (/^\/(?:[a-z]{2}\/)?cursos\/[a-z0-9-]+$/.test(route)) return "la ficha del curso";
+  return route;
+}
+
+function hrefForInternalRoute(route: string, pais?: string): string {
+  if (route === "/power-bi-mineria-chile") return route;
+  if (/^\/[a-z]{2}\//.test(route)) return route;
+  if (!pais || normalizarPais(pais) === ISO_CHILE) return route;
+  return rutaLocal(pais, route);
+}
+
+export function renderInternalLinks(text: string, pais?: string) {
+  const parts = text.split(INTERNAL_ROUTE_RE);
   return parts.map((part, i) => {
-    if (part === "/cursos") {
+    if (i % 2 === 1) {
       return (
-        <Link key={i} href="/cursos" className="font-semibold text-ink underline-offset-4 hover:underline">
-          /cursos
-        </Link>
-      );
-    }
-    if (part === "/empresas") {
-      return (
-        <Link key={i} href="/empresas" className="font-semibold text-ink underline-offset-4 hover:underline">
-          /empresas
+        <Link
+          key={`${part}-${i}`}
+          href={hrefForInternalRoute(part, pais)}
+          className="font-semibold text-ink underline decoration-line-strong underline-offset-4 hover:text-mute"
+        >
+          {labelForInternalRoute(part)}
         </Link>
       );
     }
@@ -327,7 +344,7 @@ export function CourseFaq({
                 <span className="hidden text-2xl leading-none text-faint group-open:block">–</span>
               </summary>
               <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-mute sm:text-base">
-                {faqAnswer(item.a)}
+                {renderInternalLinks(item.a, pais)}
               </p>
             </details>
           ))}

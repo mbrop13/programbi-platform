@@ -70,7 +70,7 @@ export const COURSE_SEO: Record<
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
     intro:
-      `Este es un curso Power BI en Chile, en vivo por Zoom, para analistas, control de gestión y finanzas que hoy consolidan cifras en Excel y necesitan un dashboard que ellos mismos puedan mantener.\n\nEl curso abierto es básico-intermedio, ${courseDurationHours("power-bi")} horas —horario vespertino, hora de Chile, con grabaciones en el campus—. Une Power Query (ETL) con el modelo estrella y DAX (CALCULATE, FILTER, time intelligence). El curso avanzado, también de ${courseDurationHours("power-bi")} horas, cubre publicación en Power BI Service y seguridad a nivel de fila. El objetivo es un tablero usable en el trabajo, no una captura de pantalla.\n\nSi buscas cursos de Power BI en Chile para formarte como persona, este es el camino. Si tu empresa necesita capacitar a un equipo en los dos niveles de ${courseDurationHours("power-bi")} horas (básico-intermedio y avanzado), cotiza en /cursos/power-bi?para=empresas. Un tablero en producción con datos propios vive en /empresas. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.`,
+      `Este es un curso Power BI en Chile, en vivo por Zoom, para analistas, control de gestión y finanzas que hoy consolidan cifras en Excel y necesitan un dashboard que ellos mismos puedan mantener.\n\nEl curso abierto es básico-intermedio, ${courseDurationHours("power-bi")} horas (horario vespertino, hora de Chile, con grabaciones en el campus). Une Power Query (ETL) con el modelo estrella y DAX (CALCULATE, FILTER, time intelligence). El curso avanzado, también de ${courseDurationHours("power-bi")} horas, cubre publicación en Power BI Service y seguridad a nivel de fila. El objetivo es un tablero usable en el trabajo, no una captura de pantalla.\n\nSi buscas cursos de Power BI en Chile para formarte como persona, este es el camino. Si tu empresa necesita capacitar a un equipo en los dos niveles de ${courseDurationHours("power-bi")} horas (básico-intermedio y avanzado), cotiza en /cursos/power-bi?para=empresas. Un tablero en producción con datos propios vive en /empresas. El siguiente paso es usar el botón «Ver temario y precios» en esta página: tras dejar tus datos descargas al instante el PDF con temario, fechas y valores vigentes.`,
     faqs: [
       {
         q: "¿Hay un curso Power BI en Chile, en vivo?",
@@ -82,7 +82,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿El curso Power BI es para empresas o para personas?",
-        a: `Esta página es el curso básico-intermedio. Los dos niveles de ${courseDurationHours("power-bi")} horas (básico-intermedio y avanzado) para un equipo se cotizan en /cursos/power-bi?para=empresas. Un tablero en producción con datos propios está en /empresas.`,
+        a: `Esta página es el curso básico-intermedio. Los dos niveles de ${courseDurationHours("power-bi")} horas (básico-intermedio y avanzado) para un equipo se cotizan desde la pestaña Empresas en /cursos/power-bi?para=empresas. Un tablero en producción con datos propios se cotiza en /empresas.`,
       },
       {
         q: "¿Necesito saber DAX antes de inscribirme?",
@@ -90,7 +90,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Cómo me inscribo al curso Power BI Chile?",
-        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor de la próxima cohorte.",
+        a: "Usa el formulario «Ver temario y precios» en esta página para recibir el PDF inmediato con fechas, modalidades y aranceles vigentes; desde ahí o por WhatsApp puedes reservar tu cupo en la próxima cohorte.",
       },
       {
         q: "¿Cuánto cuesta el curso Power BI en Chile y se puede pagar en cuotas?",
@@ -118,7 +118,7 @@ export const COURSE_SEO: Record<
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
     intro:
-      `Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nSon dos niveles de ${courseDurationHours("analisis-de-datos")} horas cada uno —horario vespertino, hora de Chile, con grabaciones en el campus—. El básico-intermedio junta SQL Server, Power BI y Python, de fundamentos a modelado y visualización: ${courseDurationHours("power-bi")} horas por herramienta. El avanzado, también de ${courseDurationHours("analisis-de-datos")} horas, cubre automatización, inteligencia de tiempo y modelos. El programa completo son ${courseDurationHours("analisis-de-datos") * 2} horas.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa de ProgramBI. Sales del básico-intermedio sabiendo consultar una base, armar un modelo y entregar un dashboard usable. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.`,
+      `Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nSon dos niveles de ${courseDurationHours("analisis-de-datos")} horas cada uno (horario vespertino, hora de Chile, con grabaciones en el campus). El básico-intermedio junta SQL Server, Power BI y Python, de fundamentos a modelado y visualización: ${courseDurationHours("power-bi")} horas por herramienta. El avanzado, también de ${courseDurationHours("analisis-de-datos")} horas, cubre automatización, inteligencia de tiempo y modelos. El programa completo son ${courseDurationHours("analisis-de-datos") * 2} horas.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa de ProgramBI. Sales del básico-intermedio sabiendo consultar una base, armar un modelo y entregar un dashboard usable. El siguiente paso es usar «Ver temario y precios» en esta página para descargar al instante el PDF con el temario completo, fechas y valores vigentes.`,
     faqs: [
       {
         q: "¿Hay un curso de análisis de datos en Chile, en vivo?",
@@ -138,7 +138,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Cómo me inscribo al curso de análisis de datos?",
-        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. Para cotizar para una empresa, entra a /cursos/analisis-de-datos?para=empresas. Un proyecto in-company sigue en /empresas.",
+        a: "Usa el formulario «Ver temario y precios» en esta página para descargar el PDF inmediato con fechas y arancel vigente, y luego reserva tu cupo o coordina por WhatsApp. Para cotizar para una empresa, entra a la pestaña Empresas en /cursos/analisis-de-datos?para=empresas o revisa /empresas.",
       },
       {
         q: "¿Cuánto cuesta el curso de análisis de datos y cómo se paga?",
@@ -170,7 +170,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Trabajan con datos de mina reales?",
-        a: "En el curso usamos casos de vertical minera (producción, flota, mantenimiento). Un proyecto in-company se arma con los datos de tu área — ver /empresas.",
+        a: "En el curso usamos casos de vertical minera (producción, flota, mantenimiento). Un proyecto in-company se arma con los datos de tu área, en /empresas.",
       },
       {
         q: "¿Es capacitación SENCE o con factura corporativa?",
@@ -244,7 +244,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Y si somos una empresa?",
-        a: "El curso abierto es cupo individual. Para cotizar los niveles de un equipo, entra a /cursos/python?para=empresas. Un proyecto in-company sigue en /empresas.",
+        a: "El curso abierto es cupo individual. Para cotizar los niveles de un equipo, entra a la pestaña Empresas en /cursos/python?para=empresas. Un proyecto in-company se cotiza en /empresas.",
       },
     ],
   },
@@ -269,7 +269,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Y si somos una empresa?",
-        a: "El curso abierto es cupo individual. Para cotizar los niveles de un equipo, entra a /cursos/sql-server?para=empresas. Un proyecto in-company sigue en /empresas.",
+        a: "El curso abierto es cupo individual. Para cotizar los niveles de un equipo, entra a la pestaña Empresas en /cursos/sql-server?para=empresas. Un proyecto in-company se cotiza en /empresas.",
       },
     ],
   },
@@ -303,7 +303,7 @@ export const COURSE_SEO: Record<
     audience:
       "Para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.",
     intro:
-      `Este es un curso Power Automate en Chile, en vivo por Zoom, para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.\n\nEn ${courseDurationHours("power-automate")} horas —horario vespertino, hora de Chile, con grabaciones en el campus— armas flujos en la nube (automatizados, instantáneos y programados), conectores de Microsoft 365, expresiones y aprobaciones. También ves RPA de escritorio y Copilot para diseñar flujos sin código. Sales con automatizaciones que puedes publicar, no con una demo suelta.\n\nSi buscas un curso Power Automate o cursos Power Automate para el día a día en Chile, este es el programa. No hace falta programar: es no-code, con conectores de Microsoft 365. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor. El catálogo completo está en /cursos.`,
+      `Este es un curso Power Automate en Chile, en vivo por Zoom, para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.\n\nEn ${courseDurationHours("power-automate")} horas (horario vespertino, hora de Chile, con grabaciones en el campus) armas flujos en la nube (automatizados, instantáneos y programados), conectores de Microsoft 365, expresiones y aprobaciones. También ves RPA de escritorio y Copilot para diseñar flujos sin código. Sales con automatizaciones que puedes publicar, no con una demo suelta.\n\nSi buscas un curso Power Automate o cursos Power Automate para el día a día en Chile, este es el programa. No hace falta programar: es no-code, con conectores de Microsoft 365. El siguiente paso es usar «Ver temario y precios» en esta página para descargar al instante el PDF con temario, fechas y arancel vigente. El catálogo completo está en /cursos.`,
     faqs: [
       {
         q: "¿Hay un curso Power Automate en Chile, en vivo?",
@@ -323,7 +323,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Cómo me inscribo al curso Power Automate?",
-        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. El resto de cursos está en /cursos.",
+        a: "Usa el formulario «Ver temario y precios» en esta página para descargar el PDF inmediato con fechas y arancel vigente, y luego coordina tu inscripción por WhatsApp o checkout. El resto de los programas está en /cursos.",
       },
     ],
   },
@@ -353,7 +353,7 @@ export const COURSE_SEO: Record<
     audience:
       "Para profesionales que trabajan con Microsoft 365 y quieren aplicar Copilot en Excel, Outlook, PowerPoint y Word, y crear agentes propios en Copilot Studio.",
     intro:
-      `Este es un curso de Copilot y Copilot Studio en Chile, en vivo por Zoom, para profesionales que usan Microsoft 365 a diario y quieren pasar de consultas sueltas a crear agentes propios para su área.\n\nSon ${courseDurationHours("copilot")} horas en horario vespertino, hora de Chile, con grabaciones en el campus. Primero aplicas Microsoft Copilot en Excel, Outlook, PowerPoint y Word para procesar datos, redactar correos, armar presentaciones y generar documentos. Luego diseñas, entrenas y publicas un agente en Copilot Studio con bases de conocimiento (SharePoint, PDF, Word, web y Dataverse), temas, entidades, variables, tarjetas adaptables y publicación en Teams y sitios web.\n\nSi buscas un curso de Copilot en Chile para dominar tanto Office como Copilot Studio, este programa cubre ambos en un solo nivel intermedio-avanzado y entrega certificado digital de ProgramBI. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte. El catálogo completo está en /cursos.`,
+      `Este es un curso de Copilot y Copilot Studio en Chile, en vivo por Zoom, para profesionales que usan Microsoft 365 a diario y quieren pasar de consultas sueltas a crear agentes propios para su área.\n\nSon ${courseDurationHours("copilot")} horas en horario vespertino, hora de Chile, con grabaciones en el campus. Primero aplicas Microsoft Copilot en Excel, Outlook, PowerPoint y Word para procesar datos, redactar correos, armar presentaciones y generar documentos. Luego diseñas, entrenas y publicas un agente en Copilot Studio con bases de conocimiento (SharePoint, PDF, Word, web y Dataverse), temas, entidades, variables, tarjetas adaptables y publicación en Teams y sitios web.\n\nSi buscas un curso de Copilot en Chile para dominar tanto Office como Copilot Studio, este programa cubre ambos en un solo nivel intermedio-avanzado y entrega certificado digital de ProgramBI. El siguiente paso es usar «Ver temario y precios» en esta página para descargar al instante el PDF con temario, fechas y valores vigentes. El catálogo completo está en /cursos.`,
     faqs: [
       {
         q: "¿Hay un curso de Copilot y Copilot Studio en Chile, en vivo?",
@@ -386,7 +386,7 @@ export const COURSE_SEO: Record<
     audience:
       "Para personal administrativo y profesionales que quieren usar Claude (Anthropic) en documentos, presentaciones, Excel y tareas diarias sin programar.",
     intro:
-      `Este es un curso de Claude en Chile, en vivo por Zoom, para profesionales y personal administrativo que quieren usar la IA de Anthropic de forma práctica y segura en su trabajo diario, sin necesidad de programar.\n\nEn ${courseDurationHours("claude")} horas —horario vespertino, hora de Chile, con grabaciones en el campus— aprendes a escribir prompts claros con estructura, organizar el trabajo con Projects, Artifacts, Claude Docs y Slides, y analizar o limpiar hojas de cálculo en Excel. También ves conectores con correo, Drive y calendario, además de Claude Code y Cowork para automatización ligera.\n\nEs un programa de nivel inicial en un solo módulo completo de ${courseDurationHours("claude")} horas, válido tanto para particulares como para equipos, con certificado digital de ProgramBI al terminar. Regístrate en esta página para ver fechas, cupos y el valor de la próxima cohorte.`,
+      `Este es un curso de Claude en Chile, en vivo por Zoom, para profesionales y personal administrativo que quieren usar la IA de Anthropic de forma práctica y segura en su trabajo diario, sin necesidad de programar.\n\nEn ${courseDurationHours("claude")} horas (horario vespertino, hora de Chile, con grabaciones en el campus) aprendes a escribir prompts claros con estructura, organizar el trabajo con Projects, Artifacts, Claude Docs y Slides, y analizar o limpiar hojas de cálculo en Excel. También ves conectores con correo, Drive y calendario, además de Claude Code y Cowork para automatización ligera.\n\nEs un programa de nivel inicial en un solo módulo completo de ${courseDurationHours("claude")} horas, válido tanto para particulares como para equipos, con certificado digital de ProgramBI al terminar. Usa «Ver temario y precios» en esta página para descargar al instante el PDF con temario, fechas y arancel vigente.`,
     faqs: [
       {
         q: "¿El curso de Claude es en vivo en Chile?",
@@ -491,7 +491,7 @@ export const COURSE_SEO: Record<
     audience:
       "Para personal administrativo, finanzas, contabilidad y control de gestión que busca automatizar informes diarios, resúmenes y tareas de oficina con IA.",
     intro:
-      `Este es un curso de IA en productividad en Chile, en vivo por Zoom, para personal administrativo y profesionales de finanzas, contabilidad y control de gestión que necesitan automatizar informes diarios, resúmenes y tareas repetitivas de oficina.\n\nEn ${courseDurationHours("ia-productividad")} horas distribuidas en 6 módulos —horario vespertino, hora de Chile, con grabaciones en el campus— comparas ChatGPT, Claude, Gemini y Copilot, aplicas ingeniería de prompts con plantillas reutilizables, procesas datos desde Excel y CSV, generas documentos en Word o Google Docs y presentaciones en PowerPoint o Google Slides, y conectas flujos sin código con Outlook, Gmail, Teams y Drive.\n\nEstá abierto a todos los niveles y culmina con un proyecto final donde automatizas tu propio informe diario real, validando datos para evitar alucinaciones. Al completar recibes certificado digital de ProgramBI. Regístrate en esta página para ver fechas, cupos y el valor de la próxima cohorte.`,
+      `Este es un curso de IA en productividad en Chile, en vivo por Zoom, para personal administrativo y profesionales de finanzas, contabilidad y control de gestión que necesitan automatizar informes diarios, resúmenes y tareas repetitivas de oficina.\n\nEn ${courseDurationHours("ia-productividad")} horas distribuidas en 6 módulos (horario vespertino, hora de Chile, con grabaciones en el campus) comparas ChatGPT, Claude, Gemini y Copilot, aplicas ingeniería de prompts con plantillas reutilizables, procesas datos desde Excel y CSV, generas documentos en Word o Google Docs y presentaciones en PowerPoint o Google Slides, y conectas flujos sin código con Outlook, Gmail, Teams y Drive.\n\nEstá abierto a todos los niveles y culmina con un proyecto final donde automatizas tu propio informe diario real, validando datos para evitar alucinaciones. Al completar recibes certificado digital de ProgramBI. Usa «Ver temario y precios» en esta página para descargar al instante el PDF con temario, fechas y arancel vigente.`,
     faqs: [
       {
         q: "¿Hay un curso de IA en productividad en Chile, en vivo?",
