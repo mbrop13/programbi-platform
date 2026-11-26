@@ -41,6 +41,9 @@ export default function GuiaPasoAPasoStickyWa({
     <div
       role="region"
       aria-label="Clase gratis por WhatsApp"
+      // Mientras la barra está a la vista, la burbuja flotante se oculta (ver globals.css):
+      // si no, la tapa y no deja tocar la «×».
+      data-barra-wa-guia={visible ? "" : undefined}
       aria-hidden={!visible}
       inert={!visible}
       className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--g-border-strong)] bg-[var(--g-surface)] px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[var(--g-card-shadow)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden ${

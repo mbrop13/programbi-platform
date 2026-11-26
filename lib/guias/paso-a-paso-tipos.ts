@@ -70,6 +70,22 @@ export interface CapturaGuia {
   alt: string;
   caption: string;
   ratio?: "16/9";
+  /**
+   * Ruta de la captura real (p. ej. `/images/guias/<id>.webp`). Sin `src` la captura
+   * sigue pendiente en `CAPTURAS.md` y la página no muestra nada en su lugar.
+   */
+  src?: string;
+  /** Tamaño intrínseco de la imagen, para reservar espacio y evitar saltos. */
+  ancho?: number;
+  alto?: number;
+}
+
+/** Esquema ilustrado (no es una captura) de cómo se organiza la pantalla de la herramienta. */
+export interface EsquemaGuia {
+  titulo: string;
+  /** Paneles de izquierda a derecha, tal como aparecen en la herramienta. */
+  paneles: { nombre: string; texto: string }[];
+  nota?: string;
 }
 
 export interface TablaGuia {
@@ -165,6 +181,10 @@ export interface GuiaPasoAPaso {
   };
   /** 4 a 7 pasos que enlazan a `SeccionGuia.id`. */
   rutaVisual: PasoRutaVisual[];
+  /** Esquema opcional de la interfaz que se muestra antes de los pasos. */
+  esquema?: EsquemaGuia;
+  /** Fecha ISO en que se revisaron las fuentes oficiales citadas (se muestra una sola vez). */
+  fuentesConsultadas?: string;
   requisitos: {
     version: string;
     lista: string[];

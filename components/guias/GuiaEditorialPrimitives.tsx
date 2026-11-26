@@ -996,7 +996,7 @@ export function GuiaEditorialNote({
   return (
     <aside
       className={[
-        "my-6 rounded-xl border px-4 py-3.5 text-sm leading-relaxed text-[var(--g-muted)]",
+        "my-7 rounded-2xl border px-4 py-4 text-[15px] leading-relaxed text-[var(--g-muted)] sm:px-5",
         NOTE_SURFACE[tone],
         className,
       ]
@@ -1005,7 +1005,7 @@ export function GuiaEditorialNote({
     >
       <p
         className={[
-          "mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.06em]",
+          "mb-1.5 flex items-center gap-2 text-sm font-semibold",
           NOTE_LABEL[tone],
         ].join(" ")}
       >

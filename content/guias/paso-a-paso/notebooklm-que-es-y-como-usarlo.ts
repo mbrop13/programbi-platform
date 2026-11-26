@@ -1,12 +1,14 @@
 import type { GuiaPasoAPaso } from "@/lib/guias/paso-a-paso-tipos";
 
+const ANUNCIO =
+  "https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/";
+
 export const guia: GuiaPasoAPaso = {
   slug: "notebooklm-que-es-y-como-usarlo",
-  title: "NotebookLM (ya Gemini Notebook): qué es y cómo entrar",
-  meta: "Qué es NotebookLM (ahora Gemini Notebook), si es gratis y cómo entrar: crea un cuaderno, sube PDF o Docs y pregunta con citas. Guía actualizada 2026.",
-  h1: "Qué es NotebookLM (Gemini Notebook) y cómo entrar",
-  subtitle:
-    "NotebookLM —renombrado a Gemini Notebook el 16 de julio de 2026, según el [anuncio oficial de Google](https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/)— es una herramienta gratis con tu cuenta de Google para preguntar solo sobre tus propios documentos. Para entrar, ve a [notebooklm.google](https://notebooklm.google), crea un cuaderno, sube un PDF o un Google Docs y haz preguntas con citas.",
+  title: "NotebookLM (Gemini Notebook): qué es y cómo usarlo",
+  meta: "Qué es NotebookLM, ahora Gemini Notebook: si es gratis, cómo entrar y cómo usarlo con tus PDF y Docs, con citas, audio y límites al día. Guía 2026.",
+  h1: "Qué es NotebookLM (Gemini Notebook), cómo entrar y cómo usarlo",
+  subtitle: `NotebookLM, que Google renombró Gemini Notebook en julio de 2026 ([anuncio oficial](${ANUNCIO})), es una herramienta gratis con tu cuenta de Google para preguntarle solo a tus propios documentos. Entra a [notebook.google](https://notebook.google), crea un cuaderno, sube un PDF o un Google Docs y pregunta: cada respuesta trae citas que te llevan al párrafo original.`,
   keywordPrincipal: "notebooklm",
   keywords: [
     "notebooklm",
@@ -14,86 +16,116 @@ export const guia: GuiaPasoAPaso = {
     "NotebookLM para qué sirve",
     "NotebookLM gratis",
     "NotebookLM en español",
+    "Gemini Notebook",
   ],
   curso: "gemini",
   cursoSecundario: "ia-productividad",
   herramienta: "IA",
   nivel: "Básico",
-  updated: "2026-11-24",
+  updated: "2026-11-26",
   published: "2026-11-21",
+  fuentesConsultadas: "2026-11-26",
   totalTimeIso: "PT20M",
   esGuiaIA: true,
   avisoPrivacidad:
-    "Antes de subir contratos, bases de licitación, actas internas o informes financieros a NotebookLM, revisa si tu cuenta pertenece a Google Workspace corporativo o a una cuenta personal gratuita. No cargues archivos con datos personales sensibles como RUT, sueldos individuales o fichas médicas sin autorización de tu organización.",
+    "Google indica que no usa los datos de organizaciones ni de instituciones educativas para entrenar Gemini Notebook, y que en cuentas personales tampoco lo hace salvo que envíes comentarios. Aun así, antes de subir contratos, bases de licitación, actas internas o informes financieros, revisa si estás en una cuenta personal o en el Google Workspace de tu empresa, y no cargues RUT, sueldos con nombre ni fichas médicas sin autorización.",
+  esquema: {
+    titulo: "Así se ordena un cuaderno",
+    paneles: [
+      {
+        nombre: "Fuentes",
+        texto:
+          "Tus PDF, Docs, Slides, páginas web, videos de YouTube, audios y texto pegado. Cada fuente tiene una casilla para incluirla o dejarla fuera de la pregunta.",
+      },
+      {
+        nombre: "Chat",
+        texto:
+          "Le preguntas a tus fuentes. Cada respuesta trae citas numeradas: al tocarlas, se abre el pasaje exacto que la respalda.",
+      },
+      {
+        nombre: "Estudio",
+        texto:
+          "Genera resúmenes en audio, guías de estudio y otros formatos a partir de las mismas fuentes, y guarda lo útil como nota.",
+      },
+    ],
+  },
   en30Segundos: {
     queLogras:
-      "Crear un cuaderno de investigación en NotebookLM con tus propios documentos, hacer preguntas ancladas en citas exactas y producir resúmenes de audio o notas estructuradas.",
-    herramienta: "Google NotebookLM",
+      "Crear un cuaderno con tus propios documentos, preguntarle con citas que puedes revisar y sacar resúmenes en audio o guías de estudio sin salir del mismo lugar.",
+    herramienta: "Gemini Notebook (NotebookLM)",
     tiempo: "20 minutos",
     bullets: [
-      "Distinguir cuándo conviene usar NotebookLM en lugar de un chat general como Gemini.",
-      "Cargar fuentes variadas (PDF, Google Docs/Slides, URLs web, audio o texto pegado).",
-      "Verificar cada respuesta haciendo clic en los números de cita que apuntan al pasaje original.",
-      "Aplicar flujos prácticos para analistas: revisión de informes, actas y diccionarios de datos.",
+      "Cuándo conviene NotebookLM y cuándo el chat general de Gemini.",
+      "Cargar PDF, Docs, páginas web, videos o texto en un cuaderno.",
+      "Revisar cada respuesta con sus citas antes de usarla.",
+      "Usarlo para estudiar o para documentar un proyecto de datos.",
+      "Qué cambió con Gemini Notebook y qué límites tiene gratis.",
     ],
   },
   rutaVisual: [
     {
       numero: 1,
       titulo: "Qué es NotebookLM",
-      resumen: "Entiende su enfoque basado en fuentes frente a Gemini.",
+      resumen: "En qué se diferencia del chat de Gemini.",
       anchorId: "que-es-notebooklm-vs-gemini",
       icono: "layers",
     },
     {
       numero: 2,
       titulo: "Crear y cargar",
-      resumen: "Abre un cuaderno y sube PDF, Docs, enlaces o texto.",
+      resumen: "Un cuaderno por tema, con tus fuentes.",
       anchorId: "crear-cuaderno-cargar-fuentes",
       icono: "file",
     },
     {
       numero: 3,
       titulo: "Preguntas con citas",
-      resumen: "Consulta tus documentos y valida cada cita en la fuente.",
+      resumen: "Pregunta y revisa cada cita.",
       anchorId: "preguntas-citas-verificables",
       icono: "check",
     },
     {
       numero: 4,
       titulo: "Audio y estudio",
-      resumen: "Genera resúmenes de audio y guías de estudio en español.",
+      resumen: "Resúmenes en audio y guías de estudio.",
       anchorId: "resumenes-audio-guias",
       icono: "sparkles",
     },
     {
       numero: 5,
-      titulo: "Usos para analistas",
-      resumen: "Cruza actas, diccionarios de datos y documentación BI.",
+      titulo: "Estudiar y trabajar",
+      resumen: "Apuntes, informes, actas y diccionarios de datos.",
       anchorId: "usos-practicos-analistas",
       icono: "database",
     },
     {
       numero: 6,
+      titulo: "Gemini Notebook",
+      resumen: "Qué cambió en julio de 2026.",
+      anchorId: "novedades-gemini-notebook",
+      icono: "refresh",
+    },
+    {
+      numero: 7,
       titulo: "Límites y privacidad",
-      resumen: "Revisa cuotas reales de fuentes, tamaño y protección de datos.",
+      resumen: "Cuotas gratis y por plan.",
       anchorId: "limites-y-privacidad",
       icono: "shield",
     },
   ],
   requisitos: {
-    version: "Navegador web actualizado y cuenta de Google (personal o Workspace)",
+    version: "Navegador actualizado o la app móvil, con una cuenta de Google personal o de Workspace",
     lista: [
-      "Acceso a notebooklm.google desde tu navegador de escritorio o móvil.",
-      "Documentos de referencia limpios (PDF con texto seleccionable, Google Docs, Slides, URLs públicas o texto plano).",
-      "Opcional: cuenta de Google Workspace o plan pago si requieres mayores cuotas de fuentes o audio.",
+      "Una cuenta de Google (personal, de tu trabajo o de tu institución educativa).",
+      "Entrar a notebook.google desde el navegador, o usar la app móvil de Gemini Notebook.",
+      "Documentos con texto seleccionable: PDF, Google Docs o Slides, páginas web públicas o texto plano.",
     ],
     compatibilidadMacWeb:
-      "NotebookLM funciona íntegramente en la web (Windows, macOS, Linux y navegadores móviles compatibles) sin instalar software local.",
+      "En el navegador (Windows, macOS y Linux) y en la app móvil, sin instalar nada en el computador. La app móvil trae muchas de las funciones principales, no todas.",
     avisoEducativo:
-      "Las cuotas exactas y disponibilidad de funciones por país o plan pueden cambiar; consulta siempre la documentación oficial en support.google.com y notebooklm.google.",
+      "Las cuotas, los planes y las funciones cambian con frecuencia y algunas dependen del país. Antes de decidir un plan, revisa la página de planes de notebook.google y el centro de ayuda de Gemini Notebook.",
   },
-  herramientasHowTo: ["Google NotebookLM", "Navegador web"],
+  herramientasHowTo: ["Gemini Notebook (NotebookLM)", "Navegador web"],
   insumosHowTo: ["Documentos PDF, Google Docs o enlaces de referencia"],
   secciones: [
     {
@@ -101,45 +133,41 @@ export const guia: GuiaPasoAPaso = {
       titulo: "1. Qué es NotebookLM y en qué se diferencia de Gemini",
       esPasoHowTo: true,
       resumenHowTo:
-        "Comprende por qué NotebookLM responde acotado a tus fuentes cargadas mientras Gemini funciona como asistente general.",
+        "Entiende por qué NotebookLM responde desde las fuentes que cargas, mientras el chat de Gemini funciona como asistente general.",
       parrafos: [
-        "NotebookLM —que desde el 16 de julio de 2026 pasó a llamarse Gemini Notebook y al que entras directamente en notebooklm.google— es un asistente de investigación y notas desarrollado por Google cuyo principio central es el anclaje en fuentes (source-grounding). Según la documentación oficial de Google (notebooklm.google y support.google.com, consultado el 21 de noviembre de 2026), en lugar de responder desde conocimiento general abierto en internet, convierte los documentos que tú subes en la base principal de cada conversación.",
-        "Muchas personas confunden NotebookLM con Gemini porque ambos pertenecen al ecosistema de Google y utilizan modelos de la familia Gemini por debajo. Sin embargo, cumplen roles distintos en el flujo de trabajo diario.",
-        "Cuando necesitas lluvia de ideas abierta, redactar un correo desde cero o resolver una duda de programación sin documentos previos, Gemini es la herramienta natural. En cambio, cuando tienes quince PDFs de normativa tributaria, tres manuales técnicos y seis actas de reunión, y necesitas respuestas que citen exactamente en qué página está cada regla sin inventar definiciones externas, NotebookLM reduce drásticamente las alucinaciones. Si además quieres dominar los flujos de trabajo de Gemini junto a Google Workspace en tu trabajo diario, puedes profundizar en nuestro [curso de Gemini en vivo](/cursos/gemini).",
+        "NotebookLM es el asistente de investigación de Google que responde a partir de los documentos que tú le entregas. Desde julio de 2026 se llama Gemini Notebook: Google aclara en su página oficial que es el mismo producto y que conservas todos tus cuadernos. En esta guía usamos los dos nombres, porque la mayoría lo sigue buscando como NotebookLM.",
+        "Su idea central es responder desde tus fuentes. En vez de contestar con lo que el modelo sabe de internet, cada respuesta se arma con lo que subiste al cuaderno y te muestra de dónde sacó cada afirmación.",
+        "Por eso se confunde con Gemini: los dos son de Google y usan modelos Gemini por debajo, pero cumplen roles distintos. Para una lluvia de ideas, un correo desde cero o una duda de programación sin documentos, el chat de Gemini es lo natural. Cuando tienes quince PDF de normativa, tres manuales técnicos y seis actas, y necesitas saber en qué página está cada regla sin que la herramienta invente, NotebookLM baja mucho el riesgo de respuestas inventadas. Si quieres dominar Gemini junto a Google Workspace en tu trabajo diario, puedes verlo en nuestro [curso de Gemini en vivo](/cursos/gemini).",
       ],
       tabla: {
         caption:
-          "Comparativa entre NotebookLM y Gemini según documentación oficial de Google (consultado el 21 de noviembre de 2026)",
-        encabezados: [
-          "Criterio",
-          "NotebookLM",
-          "Gemini (chat general)",
-        ],
+          "Comparación según la documentación oficial de Google. «Gemini» se refiere al chat general de la app Gemini.",
+        encabezados: ["Criterio", "NotebookLM (Gemini Notebook)", "Chat de Gemini"],
         filas: [
           [
-            "Base de conocimiento principal",
-            "Acotada a las fuentes que cargas en cada cuaderno.",
-            "Conocimiento general del modelo, búsqueda web y archivos puntuales.",
+            "De dónde responde",
+            "De las fuentes que cargas en cada cuaderno.",
+            "Del conocimiento del modelo, búsquedas web y archivos sueltos.",
           ],
           [
-            "Trazabilidad de respuestas",
-            "Incluye citas numeradas clicables que abren el fragmento exacto.",
-            "Entrega respuestas directas o enlaces web cuando busca en línea.",
+            "Cómo compruebas la respuesta",
+            "Citas numeradas que abren el pasaje exacto de tu documento.",
+            "Enlaces a la web cuando busca en línea.",
           ],
           [
-            "Organización del trabajo",
-            "Cuadernos persistentes con panel de fuentes, chat y estudio.",
-            "Hilos de conversación orientados a tareas o asistencia general.",
+            "Cómo se organiza",
+            "Cuadernos que quedan guardados, con sus fuentes, chat y notas.",
+            "Conversaciones por tarea.",
           ],
           [
-            "Formatos de salida propios",
-            "Resúmenes de audio, guías de estudio, cronologías y notas.",
+            "Qué genera",
+            "Resúmenes en audio, guías de estudio y otros formatos desde tus fuentes.",
             "Texto, código, borradores y acciones en apps de Workspace.",
           ],
           [
             "Ideal para",
-            "Estudiar normativa, cruzar informes largos y documentar proyectos.",
-            "Ideación, redacción rápida, dudas generales y tareas cotidianas.",
+            "Estudiar, cruzar informes largos y documentar proyectos.",
+            "Ideas, redacción rápida y dudas generales.",
           ],
         ],
       },
@@ -156,16 +184,16 @@ export const guia: GuiaPasoAPaso = {
       titulo: "2. Crear un cuaderno y cargar fuentes (PDF, Docs, web, texto)",
       esPasoHowTo: true,
       resumenHowTo:
-        "Inicia un nuevo cuaderno en notebooklm.google y agrega documentos heterogéneos manteniendo un tema único por cuaderno.",
+        "Entra a notebook.google, crea un cuaderno nuevo y agrega tus documentos, manteniendo un solo tema por cuaderno.",
       parrafos: [
-        "Para empezar, entra a notebooklm.google con tu cuenta de Google y haz clic en Crear nuevo cuaderno. La buena práctica más importante desde el primer minuto es mantener un cuaderno por proyecto o materia: si mezclas apuntes de SQL, contratos de arriendo y políticas de recursos humanos en el mismo cuaderno, las respuestas perderán foco.",
-        "Según el centro de ayuda oficial de Google para NotebookLM (support.google.com, consultado el 21 de noviembre de 2026), puedes incorporar múltiples tipos de fuentes dentro de un mismo cuaderno: archivos PDF, Google Docs, Google Slides, Google Sheets, documentos de Word, archivos de texto o Markdown, URLs de páginas web públicas, enlaces de YouTube, archivos de audio (MP3, WAV) y texto pegado manualmente.",
-        "Una vez cargadas, verás cada fuente listada en el panel izquierdo con una casilla de verificación. Ese detalle es muy útil: puedes activar o desactivar fuentes específicas en cualquier momento para que una pregunta consulte solo un subconjunto de documentos.",
+        "Entra a notebook.google con tu cuenta de Google (la dirección antigua, notebooklm.google, te redirige ahí) y crea un cuaderno nuevo. La costumbre que más ayuda desde el primer minuto es usar un cuaderno por proyecto o materia: si mezclas apuntes de SQL, un contrato de arriendo y políticas de recursos humanos, las respuestas pierden foco.",
+        "En un mismo cuaderno puedes juntar distintos tipos de fuente: archivos PDF, Google Docs, Slides y Sheets, documentos de Word, archivos de texto o Markdown, páginas web públicas, videos de YouTube, audios y texto pegado a mano.",
+        "Cada fuente queda listada en el panel de Fuentes con una casilla. Ese detalle sirve mucho: puedes desmarcar fuentes para que una pregunta consulte solo dos documentos y no el cuaderno entero.",
       ],
       lista: [
-        "Verifica que tus PDFs contengan texto seleccionable; si son escaneos antiguos sin OCR, el reconocimiento puede fallar o quedar incompleto.",
-        "Renombra las fuentes dentro del cuaderno si subiste archivos con nombres genéricos como «Documento_final_v3.pdf».",
-        "Usa las casillas de selección izquierda para aislar dos documentos cuando quieras compararlos sin ruido del resto.",
+        "Revisa que tus PDF tengan texto seleccionable. Si son escaneos sin OCR, la lectura puede fallar o quedar incompleta.",
+        "Cambia el nombre de las fuentes si subiste archivos como «Documento_final_v3.pdf»: las citas se leen mejor.",
+        "Desmarca las fuentes que sobran cuando quieras comparar dos documentos sin ruido del resto.",
       ],
       captura: {
         id: "notebooklm-que-es-y-como-usarlo-paso-2",
@@ -180,27 +208,27 @@ export const guia: GuiaPasoAPaso = {
       titulo: "3. Hacer preguntas con citas verificables en tus documentos",
       esPasoHowTo: true,
       resumenHowTo:
-        "Redacta preguntas concretas, exige formato estructurado y audita cada número de cita haciendo clic sobre él.",
+        "Haz preguntas concretas, pide un formato estructurado y revisa cada número de cita antes de usar la respuesta.",
       parrafos: [
-        "Con tus fuentes activas, el chat central te permite interrogar el contenido completo del cuaderno. La regla de oro es formular preguntas específicas que obliguen al modelo a contrastar documentos o listar condiciones exactas, indicando explícitamente que si un dato no figura en las fuentes debe declararlo.",
-        "Cada afirmación relevante en la respuesta aparece acompañada de un número de cita clicable. Al hacer clic en ese número, el panel izquierdo salta directamente al pasaje exacto de la fuente original que respalda la respuesta. Ese hábito de verificación toma tres segundos y marca la diferencia entre confiar ciegamente en un resumen y trabajar con rigor profesional.",
+        "Con tus fuentes marcadas, el chat te deja preguntarle al cuaderno completo. La regla de oro es preguntar algo concreto que obligue a contrastar documentos o a listar condiciones exactas, y pedir explícitamente que diga cuando un dato no está en las fuentes.",
+        "Cada afirmación importante de la respuesta lleva un número de cita. Al tocarlo, se abre el pasaje original que la respalda. Revisarlo toma tres segundos y es la diferencia entre confiar a ciegas en un resumen y trabajar con rigor. Google advierte en su ayuda que las citas no siempre aparecen, así que si una respuesta llega sin ellas, pide que las agregue o vuelve a preguntar más acotado.",
       ],
       codigos: [
         {
           titulo: "Prompt 1: Extraer requisitos o cláusulas con respaldo literal",
           lenguaje: "prompt",
-          codigo: `Basándote únicamente en las fuentes seleccionadas, lista todos los requisitos de entrega, plazos y penalidades mencionados.
+          codigo: `Basándote solo en las fuentes seleccionadas, lista todos los requisitos de entrega, plazos y multas que se mencionan.
 Formato: tabla con columnas [Tema | Detalle exacto | Documento y sección].
-Si alguno de estos puntos no aparece en las fuentes, indícalo explícitamente como "No especificado en las fuentes".`,
+Si alguno de estos puntos no aparece en las fuentes, escribe "No especificado en las fuentes".`,
         },
         {
-          titulo: "Prompt 2: Comparar discrepancias entre dos versiones de un informe",
+          titulo: "Prompt 2: Comparar dos versiones de un informe",
           lenguaje: "prompt",
-          codigo: `Compara la fuente 1 y la fuente 2 en relación con las definiciones de KPI y metas trimestrales.
+          codigo: `Compara la fuente 1 y la fuente 2 en las definiciones de KPI y las metas trimestrales.
 Enumera:
 1. Definiciones que coinciden exactamente.
-2. Diferencias de criterio o cifras entre ambos documentos.
-3. Qué puntos quedaron ambiguos o sin definir en la versión más reciente.`,
+2. Diferencias de criterio o de cifras entre los dos documentos.
+3. Puntos que quedaron ambiguos o sin definir en la versión más reciente.`,
         },
       ],
       captura: {
@@ -211,25 +239,25 @@ Enumera:
         ratio: "16/9",
       },
       verificaResultado:
-        "Pincha al menos dos o tres citas clave de la respuesta generada por NotebookLM y confirma que el pasaje resaltado a la izquierda dice exactamente lo que el resumen afirma, especialmente en cifras, fechas y negaciones.",
+        "Abre al menos dos o tres citas clave de la respuesta y confirma que el pasaje dice exactamente lo que afirma el resumen, sobre todo en cifras, fechas y negaciones («no aplica», «salvo que»).",
     },
     {
       id: "resumenes-audio-guias",
-      titulo: "4. Resúmenes de audio y guías de estudio",
+      titulo: "4. Resúmenes en audio y guías de estudio",
       esPasoHowTo: true,
       resumenHowTo:
-        "Genera resúmenes de audio tipo pódcast en español y documentos de estudio desde el panel derecho.",
+        "Genera resúmenes en audio en español y guías de estudio desde el panel de Estudio, indicando el enfoque que necesitas.",
       parrafos: [
-        "Una de las funciones más conocidas de NotebookLM son los Resúmenes de audio (Audio Overviews). A partir de las fuentes del cuaderno, la plataforma genera una conversación entre dos voces que sintetizan los puntos principales, ideal para repasar un informe extenso mientras vas en trayecto.",
-        "Además del audio, el panel de estudio permite crear con un clic guías de estudio, preguntas frecuentes, cronologías y documentos de resumen que luego puedes guardar como notas dentro del mismo cuaderno.",
-        "Ten presente que los Resúmenes de audio están pensados para comprensión y repaso rápido, no para reemplazar la lectura de cláusulas legales o números críticos. Si necesitas personalizar el enfoque del audio, utiliza la opción de instrucciones previas para indicar qué tema priorizar y a qué audiencia va dirigido.",
+        "La función más conocida de NotebookLM son los resúmenes en audio: a partir de las fuentes del cuaderno, arma una conversación entre dos voces que repasa los puntos principales. Sirve para repasar un informe largo mientras vas en micro o en metro. Google los describe hoy como interactivos: puedes intervenir con preguntas mientras escuchas.",
+        "Desde el mismo panel de Estudio puedes crear guías de estudio, preguntas frecuentes y otros formatos (la página de planes menciona también diapositivas), y guardarlos como notas dentro del cuaderno.",
+        "Ten presente que el audio está pensado para entender y repasar, no para reemplazar la lectura de una cláusula legal o de una cifra crítica. Antes de generarlo, escribe una instrucción corta con el tema a priorizar y para quién es.",
       ],
       codigos: [
         {
-          titulo: "Prompt 3: Instrucción de enfoque para Resumen de audio o guía de estudio",
+          titulo: "Prompt 3: Enfoque para un resumen en audio o una guía de estudio",
           lenguaje: "prompt",
-          codigo: `Enfoca el resumen en los cambios operacionales y riesgos técnicos para un equipo de análisis de datos en Chile.
-Evita introducciones largas, explica las siglas técnicas la primera vez que aparezcan y cierra con las 3 decisiones pendientes más urgentes.`,
+          codigo: `Enfoca el resumen en los cambios operativos y los riesgos técnicos para un equipo de análisis de datos en Chile.
+Evita introducciones largas, explica cada sigla la primera vez que aparezca y cierra con las 3 decisiones pendientes más urgentes.`,
         },
       ],
       captura: {
@@ -240,33 +268,43 @@ Evita introducciones largas, explica las siglas técnicas la primera vez que apa
         ratio: "16/9",
       },
       verificaResultado:
-        "Escucha los primeros minutos del Resumen de audio o revisa la guía de estudio generada para confirmar que el tono, el idioma y los conceptos prioritarios coinciden con lo que pediste.",
+        "Escucha los primeros minutos del audio o revisa la guía generada y confirma que el idioma, el tono y los temas que pediste son los que aparecen. Si no, desmarca las fuentes secundarias y vuelve a generarlo.",
     },
     {
       id: "usos-practicos-analistas",
-      titulo: "5. Usos prácticos para analistas: informes, actas y diccionarios de datos",
+      titulo: "5. Para estudiar y para trabajar con datos: apuntes, informes, actas y diccionarios",
       esPasoHowTo: true,
       resumenHowTo:
-        "Aplica NotebookLM en tareas reales de análisis: consolidar actas de levantamiento, auditar diccionarios de tablas y estudiar documentación técnica.",
+        "Usa un cuaderno para estudiar con tus apuntes o para documentar un proyecto: consolidar actas, revisar diccionarios de datos y preparar certificaciones.",
       parrafos: [
-        "Más allá del estudio académico, NotebookLM encaja muy bien en el día a día de analistas de datos, consultores BI y equipos de operaciones. Cada vez que un proyecto arranca con diez documentos dispersos entre correos exportados, minutas de reunión y manuales del ERP, un cuaderno dedicado actúa como memoria técnica consultable.",
-        "Por ejemplo, puedes subir el diccionario de datos de un sistema comercial junto con las actas de definición de KPIs y pedirle a NotebookLM que detecte qué métricas solicitadas por gerencia no tienen campo de respaldo en las tablas documentadas. También resulta muy práctico para preparar entrevistas o certificaciones técnicas cargando la documentación oficial en un cuaderno de estudio. Y si buscas dar el paso completo desde el levantamiento de métricas hasta el modelado y la visualización, te servirá nuestro [curso de análisis de datos](/cursos/analisis-de-datos).",
+        "Si estudias, crea un cuaderno por ramo y sube tus apuntes, las lecturas del curso y las guías de ejercicios. Pídele una guía de estudio, preguntas de práctica con sus respuestas citadas o una explicación más simple de un concepto que no te quedó claro. Como responde solo desde tus materiales, no se va a desviar a temas que tu profesor no pasó.",
+        "En el trabajo encaja muy bien con analistas de datos, consultores BI y equipos de operaciones. Cuando un proyecto parte con diez documentos dispersos entre correos, minutas y manuales del ERP, un cuaderno dedicado funciona como memoria técnica a la que le puedes preguntar.",
+        "Por ejemplo, puedes subir el diccionario de datos de un sistema comercial junto con las actas donde se definieron los KPI, y pedirle que detecte qué métricas pidió gerencia que no tienen un campo que las respalde. Y si quieres hacer el recorrido completo, desde levantar las métricas hasta modelarlas y mostrarlas en un tablero, te sirve nuestro [curso de análisis de datos](/cursos/analisis-de-datos).",
       ],
       codigos: [
         {
-          titulo: "Prompt 4: Cruzar actas de negocio contra diccionario de datos",
+          titulo: "Prompt 4: Guía de estudio con preguntas de práctica",
           lenguaje: "prompt",
-          codigo: `Cruza las actas de reunión cargadas contra el diccionario de datos técnico.
-Identifica:
-1. Cada KPI pedido por el área comercial.
-2. La tabla y columna candidata según el diccionario.
-3. KPIs que requieren un cálculo derivado o que no cuentan con un campo claro en las fuentes actuales.`,
+          codigo: `Con los apuntes y lecturas de este cuaderno, arma una guía de estudio para la prueba.
+Incluye:
+1. Los 8 conceptos más importantes, cada uno explicado en 2 o 3 líneas.
+2. 10 preguntas de práctica con su respuesta y la fuente donde aparece.
+3. Los temas que se repiten en más de una fuente.`,
         },
         {
-          titulo: "Prompt 5: Generar glosario de negocio para equipo nuevo",
+          titulo: "Prompt 5: Cruzar actas de negocio con el diccionario de datos",
           lenguaje: "prompt",
-          codigo: `Redacta un glosario con los 15 términos técnicos o siglas de negocio más repetidos en las fuentes del cuaderno.
-Para cada término entrega: definición en máximo 2 líneas y en qué fuente aparece definido por primera vez.`,
+          codigo: `Cruza las actas de reunión con el diccionario de datos técnico.
+Identifica:
+1. Cada KPI que pidió el área comercial.
+2. La tabla y la columna candidatas según el diccionario.
+3. Los KPI que requieren un cálculo derivado o que no tienen un campo claro en las fuentes.`,
+        },
+        {
+          titulo: "Prompt 6: Glosario de negocio para quien recién llega al equipo",
+          lenguaje: "prompt",
+          codigo: `Redacta un glosario con los 15 términos técnicos o siglas de negocio que más se repiten en las fuentes del cuaderno.
+Para cada término: una definición de máximo 2 líneas y la fuente donde aparece definido por primera vez.`,
         },
       ],
       captura: {
@@ -277,88 +315,116 @@ Para cada término entrega: definición en máximo 2 líneas y en qué fuente ap
         ratio: "16/9",
       },
       verificaResultado:
-        "Guarda las mejores tablas o síntesis como nota fijada dentro del cuaderno y valida con tu contraparte técnica cualquier brecha detectada antes de comprometer fechas de entrega.",
+        "Guarda las mejores tablas como nota dentro del cuaderno y valida con tu contraparte técnica cualquier brecha que detecte antes de comprometer fechas.",
+    },
+    {
+      id: "novedades-gemini-notebook",
+      titulo: "6. Qué cambió con Gemini Notebook (julio de 2026)",
+      esPasoHowTo: false,
+      parrafos: [
+        `El 16 de julio de 2026 Google anunció el cambio de nombre y tres novedades ([anuncio oficial](${ANUNCIO})). La primera es el nombre: NotebookLM pasa a llamarse Gemini Notebook, sigue siendo un producto independiente y tus cuadernos se mantienen.`,
+        "La segunda es la más importante si trabajas con datos: cada cuaderno incorpora un computador seguro en la nube que puede escribir y ejecutar código para analizar datos a partir de tus fuentes. Según el anuncio, partió para quienes tienen Google AI Ultra y para clientes de Workspace con acceso a AI Ultra o AI Expanded, y se iba a extender a los usuarios Pro en la web durante las semanas siguientes. Si no lo ves en tu cuenta, depende de tu plan.",
+        "La tercera es que los cuadernos se sincronizan con la app de Gemini, donde ya puedes abrirlos y crearlos, y Google anunció que también llegarán al Modo IA del buscador.",
+      ],
+      lista: [
+        "Mismo producto y mismos cuadernos, con nombre nuevo.",
+        "Análisis de datos con código dentro del cuaderno, según tu plan.",
+        "Cuadernos sincronizados con la app de Gemini.",
+      ],
+      alerta: {
+        tipo: "info",
+        titulo: "¿Reemplaza a Excel o Power BI?",
+        texto:
+          "No. Ejecutar código sobre tus fuentes ayuda a explorar y responder preguntas rápidas, pero el modelo de datos, las actualizaciones automáticas y los tableros que se comparten con un equipo siguen viviendo en SQL, Power BI o una planilla bien armada.",
+      },
     },
     {
       id: "limites-y-privacidad",
-      titulo: "6. Límites reales y privacidad según documentación oficial",
+      titulo: "7. Límites y privacidad según la documentación oficial",
       esPasoHowTo: false,
       parrafos: [
-        "Conocer los límites técnicos de NotebookLM evita chocar contra topes a mitad de un proyecto. Según la documentación oficial de soporte de Google (support.google.com, consultado el 21 de noviembre de 2026), en el nivel estándar gratuito cada cuaderno admite hasta 50 fuentes, mientras que planes superiores (como Pro o Enterprise) amplían esa capacidad.",
-        "Asimismo, según el centro de ayuda oficial de Google (consultado el 21 de noviembre de 2026), cada fuente individual tiene un tope de hasta 500.000 palabras y un límite de tamaño de hasta 200 MB para archivos locales cargados (como PDF o audio). En cuanto a los Resúmenes de audio, las cuentas estándar gratuitas cuentan con un límite diario de hasta 3 generaciones por día, con cuotas mayores en planes de pago.",
-        "Respecto a la privacidad, ten presente que NotebookLM no es una base de datos transaccional ni un reemplazo de Excel para procesar tablas de cientos de miles de filas numéricas. Úsalo para texto, documentación y síntesis cualitativa; para cálculos numéricos exactos sobre grandes volúmenes, trabaja en SQL, Python, Power BI o planillas.",
+        "Conocer los topes evita quedarse corto a mitad de un proyecto. Según el centro de ayuda de Gemini Notebook, con la versión gratis tienes 100 cuadernos, cada uno con hasta 50 fuentes y 500.000 palabras, y un límite diario de 50 consultas de chat y 3 resúmenes en audio. Cada fuente admite hasta 500.000 palabras o 200 MB si la subes desde tu equipo, sin límite de páginas.",
+        "Los planes de pago suben esos topes: con Google AI Plus llegas a 100 fuentes por cuaderno, con AI Pro a 300 y con AI Ultra a 600, además de límites de uso más altos. Google aclara que estos planes solo están disponibles en algunos países, y las organizaciones lo contratan a través de Google Workspace, Gemini Enterprise o Workspace for Education.",
+        "Sobre la privacidad, Google indica que no usa los datos de organizaciones ni de instituciones educativas para entrenar el modelo, y que en cuentas personales tampoco lo hace salvo que envíes comentarios. Aun así, revisa siempre qué cuenta estás usando antes de subir un documento confidencial.",
       ],
+      tabla: {
+        caption:
+          "Fuentes por cuaderno según la página de planes de notebook.google. Los demás límites de uso escalan con cada plan.",
+        encabezados: ["Plan", "Fuentes por cuaderno", "Uso respecto del plan gratis"],
+        filas: [
+          ["Gratis", "Hasta 50", "Límites estándar"],
+          ["Google AI Plus", "Hasta 100", "El doble"],
+          ["Google AI Pro", "Hasta 300", "Cuatro veces más"],
+          ["Google AI Ultra", "Hasta 600", "De 5 a 20 veces más que Pro"],
+        ],
+      },
       lista: [
-        "Límite estándar gratuito documentado: hasta 50 fuentes por cuaderno (planes pagos amplían el tope).",
-        "Por fuente individual: hasta 500.000 palabras y hasta 200 MB en archivos locales.",
-        "Resúmenes de audio: hasta 3 generaciones diarias en cuentas gratuitas estándar.",
-        "No cargues archivos confidenciales en cuentas personales si tu empresa exige gobierno de datos bajo Google Workspace corporativo.",
+        "Gratis: 100 cuadernos, 50 fuentes por cuaderno, 50 consultas y 3 audios al día.",
+        "Por fuente: hasta 500.000 palabras o 200 MB en archivos locales.",
+        "No subas archivos confidenciales a una cuenta personal si tu empresa trabaja con Google Workspace.",
       ],
     },
   ],
   erroresComunes: [
     {
-      error: "NotebookLM no puede leer el texto de un PDF subido",
-      causa:
-        "El PDF está compuesto únicamente por imágenes escaneadas sin capa de texto (OCR).",
+      error: "No puede leer el texto de un PDF que subiste",
+      causa: "El PDF son solo imágenes escaneadas, sin una capa de texto (OCR).",
       solucion:
-        "Pasa el documento por una herramienta de reconocimiento óptico (OCR) antes de cargarlo o copia el texto limpio en un Google Doc.",
+        "Pásalo por una herramienta de OCR antes de subirlo, o copia el texto limpio en un Google Docs y sube ese documento.",
     },
     {
-      error: "Las respuestas mezclan información de dos proyectos distintos",
-      causa:
-        "Subiste documentos de áreas o clientes diferentes dentro del mismo cuaderno.",
+      error: "Las respuestas mezclan información de dos proyectos",
+      causa: "Subiste documentos de áreas o clientes distintos al mismo cuaderno.",
       solucion:
-        "Crea un cuaderno separado por proyecto o desmarca temporalmente en el panel izquierdo las fuentes que no correspondan a tu pregunta.",
+        "Crea un cuaderno por proyecto, o desmarca en el panel de Fuentes los documentos que no corresponden a tu pregunta.",
     },
     {
-      error: "Pedir cálculos matemáticos complejos sobre una planilla larga",
+      error: "Le pides cálculos sobre una planilla larga y los números no cuadran",
       causa:
-        "Los modelos de lenguaje leen texto, no ejecutan motores tabulares SQL o Excel sobre miles de filas dentro de NotebookLM.",
+        "Sin la función de ejecutar código (que depende de tu plan), el modelo lee la planilla como texto y no calcula fila por fila.",
       solucion:
-        "Realiza las sumas, promedios y cruces en Excel, Sheets, SQL o Python, y sube a NotebookLM el informe resumen o la documentación.",
+        "Haz las sumas, promedios y cruces en Excel, Sheets, SQL o Python y sube el resultado. Si tu plan ya incluye el análisis con código, pide que muestre el código que usó y revisa el resultado contra la planilla.",
     },
     {
-      error: "El Resumen de audio se genera en un tema secundario",
-      causa:
-        "Se inició la generación sin personalizar el enfoque ni desactivar fuentes accesorias.",
+      error: "El resumen en audio se va por un tema secundario",
+      causa: "Se generó sin instrucciones y con todas las fuentes marcadas.",
       solucion:
-        "Desmarca fuentes secundarias antes de generar y escribe una instrucción breve indicando el objetivo y público del audio.",
+        "Desmarca las fuentes secundarias y escribe una instrucción breve con el objetivo y el público antes de generarlo.",
     },
   ],
   plantilla: {
     titulo: "Estructura de cuaderno NotebookLM para proyectos de datos",
     descripcion:
-      "Próximamente: guía descargable con nomenclatura de fuentes, checklist de OCR y batería de prompts para documentación BI.",
+      "Nomenclatura de fuentes, checklist de OCR y batería de prompts para documentación BI.",
   },
   faqs: [
     {
       q: "¿NotebookLM es gratis en 2026?",
-      a: "Sí, Google ofrece acceso gratuito a NotebookLM con cuenta de Google personal (sujeto a límites estándar como hasta 50 fuentes por cuaderno y hasta 3 resúmenes de audio diarios, según support.google.com consultado el 21 de noviembre de 2026), además de capacidades ampliadas en planes pagos y Google Workspace.",
-    },
-    {
-      q: "¿Funciona NotebookLM en español?",
-      a: "Sí. Puedes cargar fuentes en español, chatear y obtener citas en español, y generar guías de estudio o resúmenes de audio en español.",
-    },
-    {
-      q: "¿NotebookLM inventa datos o busca en internet sin avisar?",
-      a: "Su diseño prioriza responder anclado en las fuentes que cargaste en el cuaderno, mostrando citas numeradas clicables hacia el texto original. Aun así, siempre debes verificar las citas críticas.",
-    },
-    {
-      q: "¿Qué diferencia hay entre subir un PDF a Gemini y subirlo a NotebookLM?",
-      a: "Gemini está pensado como asistente general para tareas puntuales; NotebookLM organiza múltiples fuentes persistentes en un cuaderno con citas clicables exactas, notas fijadas y herramientas dedicadas como Resúmenes de audio y guías de estudio.",
-    },
-    {
-      q: "¿Cuántas fuentes y qué tamaño máximo acepta por cuaderno?",
-      a: "Según el centro de ayuda oficial de Google (consultado el 21 de noviembre de 2026), el nivel estándar admite hasta 50 fuentes por cuaderno, con hasta 500.000 palabras por fuente y hasta 200 MB por archivo local.",
+      a: "Sí. Con una cuenta de Google tienes la versión gratis: 100 cuadernos con hasta 50 fuentes cada uno, 50 consultas de chat y 3 resúmenes en audio al día, según el centro de ayuda de Gemini Notebook. Los planes Google AI Plus, Pro y Ultra suben esos límites.",
     },
     {
       q: "¿NotebookLM ahora se llama Gemini Notebook?",
-      a: "Sí. El 16 de julio de 2026 Google anunció que NotebookLM pasa a llamarse Gemini Notebook. Sigue siendo el mismo producto para trabajar con tus propias fuentes; el nombre nuevo lo alinea con Gemini. La entrada sigue siendo notebooklm.google.",
+      a: "Sí. En julio de 2026 Google renombró NotebookLM como Gemini Notebook. Es el mismo producto y mantienes todos tus cuadernos. La dirección nueva es notebook.google y la antigua, notebooklm.google, redirige ahí.",
     },
     {
       q: "¿Cómo entro a NotebookLM?",
-      a: "Entra a notebooklm.google con tu cuenta de Google (personal o Workspace), crea un cuaderno y carga un PDF, un Google Docs u otra fuente admitida. Desde ahí puedes preguntar con citas y generar resúmenes de audio o guías de estudio.",
+      a: "Entra a notebook.google con tu cuenta de Google (personal, de trabajo o de tu institución), crea un cuaderno y sube un PDF, un Google Docs u otra fuente. También puedes usar la app móvil de Gemini Notebook o abrir tus cuadernos desde la app de Gemini.",
+    },
+    {
+      q: "¿Funciona en español?",
+      a: "Sí. Puedes subir fuentes en español, conversar y recibir citas en español, y generar guías de estudio y resúmenes en audio en español.",
+    },
+    {
+      q: "¿NotebookLM inventa datos o busca en internet sin avisar?",
+      a: "Está pensado para responder desde las fuentes de tu cuaderno y mostrar citas que llevan al texto original, lo que reduce mucho las respuestas inventadas. Aun así, revisa las citas de cualquier dato crítico; Google advierte que las citas no siempre aparecen.",
+    },
+    {
+      q: "¿Qué diferencia hay entre subir un PDF al chat de Gemini y subirlo a NotebookLM?",
+      a: "El chat de Gemini es un asistente general para tareas puntuales. NotebookLM guarda tus fuentes en un cuaderno que puedes retomar, responde con citas que abren el pasaje exacto y suma notas, resúmenes en audio y guías de estudio sobre esos mismos documentos.",
+    },
+    {
+      q: "¿Cuántas fuentes y qué tamaño acepta por cuaderno?",
+      a: "Gratis, hasta 50 fuentes por cuaderno; con Google AI Plus 100, con AI Pro 300 y con AI Ultra 600. Cada fuente admite hasta 500.000 palabras o 200 MB si la subes desde tu equipo.",
     },
   ],
   relacionadas: [
@@ -368,18 +434,23 @@ Para cada término entrega: definición en máximo 2 líneas y en qué fuente ap
   ],
   enlacesExternos: [
     {
-      label: "NotebookLM — Página oficial de Google",
-      url: "https://notebooklm.google",
+      label: "Gemini Notebook, página oficial",
+      url: "https://notebook.google",
       fuente: "Google",
     },
     {
-      label: "Centro de ayuda de NotebookLM",
-      url: "https://support.google.com/notebooklm",
+      label: "Planes y límites por plan",
+      url: "https://notebook.google/plans",
+      fuente: "Google",
+    },
+    {
+      label: "Centro de ayuda de Gemini Notebook: preguntas frecuentes y límites",
+      url: "https://support.google.com/gemininotebook/answer/16269187?hl=es",
       fuente: "Google Support",
     },
     {
       label: "NotebookLM is now Gemini Notebook (anuncio oficial)",
-      url: "https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/",
+      url: ANUNCIO,
       fuente: "Google Blog",
     },
   ],

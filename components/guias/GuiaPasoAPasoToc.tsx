@@ -42,7 +42,7 @@ function writeCompletedSteps(slug: string, completedIds: string[]): void {
   );
 }
 
-function useGuiaStepProgress(slug: string) {
+export function useGuiaStepProgress(slug: string) {
   const [completedIds, setCompletedIds] = useState<string[]>([]);
 
   useEffect(() => {

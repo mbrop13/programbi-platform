@@ -17,11 +17,11 @@ export default function GuiaPasoAPasoFaq({
     <section
       id="preguntas-frecuentes"
       aria-labelledby="preguntas-frecuentes-titulo"
-      className="mt-12 scroll-mt-24 border-t border-[var(--g-border)] pt-8"
+      className="mt-16 scroll-mt-24"
     >
       <h2
         id="preguntas-frecuentes-titulo"
-        className="mb-5 text-2xl font-bold tracking-[-0.02em] text-[var(--g-ink)]"
+        className="mb-6 text-2xl font-bold tracking-[-0.02em] text-[var(--g-ink)]"
       >
         Preguntas frecuentes
       </h2>
