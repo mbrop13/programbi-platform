@@ -1299,6 +1299,11 @@ function CourseContactForm({ course }: { course: Course }) {
       setFormError("Escribe un correo electrónico válido.");
       return;
     }
+    // Obligatorio en todos los países.
+    if (rawWhatsapp.replace(/\D/g, "").length < 7) {
+      setFormError("Escribe tu teléfono o WhatsApp con al menos 7 dígitos.");
+      return;
+    }
     if (contactType === "empresa" && company.length < 2) {
       setFormError("Indica el nombre de tu empresa.");
       return;
@@ -1449,10 +1454,7 @@ function CourseContactForm({ course }: { course: Course }) {
 
               <div className="flex flex-col gap-2">
                 <label htmlFor="course-whatsapp" className="text-sm font-medium text-ink">
-                  Teléfono o WhatsApp{" "}
-                  {muestraPrecioDirecto(pais) ? (
-                    <span className="font-normal text-mute">(opcional)</span>
-                  ) : null}
+                  Teléfono o WhatsApp
                 </label>
                 <div className="flex">
                   <div className="relative">
@@ -1490,15 +1492,11 @@ function CourseContactForm({ course }: { course: Course }) {
                     id="course-whatsapp"
                     name="whatsapp"
                     type="tel"
+                    required
                     autoComplete="tel"
                     className="h-12 min-w-0 flex-1 rounded-r-xl border border-line-strong bg-paper px-3 text-base text-ink"
                   />
                 </div>
-                {muestraPrecioDirecto(pais) ? (
-                  <p className="text-xs text-mute">
-                    En {getPais(pais).nombre} te respondemos por email; déjalo solo si prefieres WhatsApp.
-                  </p>
-                ) : null}
               </div>
 
               {!isPersonal && (

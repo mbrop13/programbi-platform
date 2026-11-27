@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, Eye, EyeOff, UserPlus, Loader2, CheckCircle, MessageCircle } from "lucide-react";
+import { COUNTRIES, useCountry } from "@/lib/context/CountryContext";
+import { withDialCode } from "@/components/marketing/BrochureGateForm";
 import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { honeypotStyle } from "@/lib/antibot";
@@ -30,7 +32,7 @@ import {
 
 const SURFACE = "registro_page" as const;
 
-type CampoRegistro = "nombre" | "email" | "password" | "privacidad";
+type CampoRegistro = "nombre" | "email" | "telefono" | "password" | "privacidad";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
@@ -78,6 +80,10 @@ export default function RegistroPage() {
     phone: "",
     password: "",
   });
+  // Prefijo del país detectado; la persona puede cambiarlo.
+  const { country } = useCountry();
+  const [prefijoElegido, setPrefijoElegido] = useState<string | null>(null);
+  const prefijo = prefijoElegido ?? country?.phoneCode ?? "+56";
   const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const router = useRouter();
 
@@ -198,6 +204,12 @@ export default function RegistroPage() {
       return;
     }
 
+    if (formData.phone.replace(/\D/g, "").length < 7) {
+      setFieldErrors({ telefono: "Escribe tu WhatsApp con al menos 7 dígitos." });
+      trackRegistroStep({ step: "validation_error", surface: SURFACE, reason: "telefono", method: "form" });
+      return;
+    }
+
     const password = formData.password;
     const pwCheck = validatePassword(password);
     if (!pwCheck.ok) {
@@ -232,7 +244,7 @@ export default function RegistroPage() {
       const defaultName = formData.fullName.trim() || formData.email.split("@")[0] || "Usuario";
       const pricingVariant = readClientPricingVariant();
       const referralCode = captureReferralFromUrl();
-      const phone = formData.phone.trim();
+      const phone = withDialCode(formData.phone, prefijo);
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -520,6 +532,50 @@ export default function RegistroPage() {
                   {fieldErrors.email ? (
                     <p id="registro-email-error" role="alert" className="mt-1.5 text-xs font-semibold text-red-600">
                       {fieldErrors.email}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div>
+                  <label htmlFor="registro-telefono" className="block text-sm font-bold text-brand-dark mb-1.5">
+                    WhatsApp *
+                  </label>
+                  <div className="flex gap-2">
+                    <select
+                      aria-label="Código de país"
+                      disabled={loading}
+                      value={prefijo}
+                      onChange={(e) => setPrefijoElegido(e.target.value)}
+                      className="w-[6.5rem] shrink-0 rounded-xl border border-gray-200 bg-white px-2 py-3 text-sm text-brand-dark outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 disabled:opacity-50"
+                    >
+                      {COUNTRIES.map((c) => (
+                        <option key={`${c.iso}-${c.phoneCode}`} value={c.phoneCode}>
+                          {c.iso.toUpperCase()} {c.phoneCode}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      id="registro-telefono"
+                      type="tel"
+                      required
+                      disabled={loading}
+                      value={formData.phone}
+                      onChange={(e) => {
+                        setFormData({ ...formData, phone: e.target.value });
+                        clearFieldError("telefono");
+                      }}
+                      onFocus={handleFirstFocus}
+                      placeholder="9 8765 4321"
+                      autoComplete="tel-national"
+                      inputMode="tel"
+                      aria-invalid={fieldErrors.telefono ? true : undefined}
+                      aria-describedby={fieldErrors.telefono ? "registro-telefono-error" : undefined}
+                      className="min-w-0 flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition-all focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 disabled:opacity-50"
+                    />
+                  </div>
+                  {fieldErrors.telefono ? (
+                    <p id="registro-telefono-error" role="alert" className="mt-1.5 text-xs font-semibold text-red-600">
+                      {fieldErrors.telefono}
                     </p>
                   ) : null}
                 </div>

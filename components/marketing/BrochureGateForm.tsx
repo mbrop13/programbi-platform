@@ -162,8 +162,9 @@ export function BrochureGateForm({
       setError("Revisa tu email: parece incompleto.");
       return;
     }
-    if (digits.length > 0 && digits.length < 7) {
-      setError("Si ingresas teléfono o WhatsApp, escribe al menos 7 dígitos.");
+    // Obligatorio en todos los países: el temario se envía y se sigue por WhatsApp.
+    if (digits.length < 7) {
+      setError("Escribe tu WhatsApp con al menos 7 dígitos.");
       return;
     }
 
@@ -309,7 +310,7 @@ export function BrochureGateForm({
 
         <div>
           <label htmlFor={`${idPrefix}-whatsapp`} className={labelClass}>
-            WhatsApp (opcional)
+            WhatsApp
           </label>
           <div className="flex gap-2">
             <select
@@ -331,6 +332,7 @@ export function BrochureGateForm({
               id={`${idPrefix}-whatsapp`}
               name="whatsapp"
               type="tel"
+              required
               autoComplete="tel"
               inputMode="tel"
               placeholder="9 8765 4321"

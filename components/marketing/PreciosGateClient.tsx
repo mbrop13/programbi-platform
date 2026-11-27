@@ -120,8 +120,8 @@ export default function PreciosGateClient({
       setError("Revisa tu email: parece incompleto.");
       return;
     }
-    if (digits.length > 0 && digits.length < 7) {
-      setError("Si ingresas teléfono o WhatsApp, escribe al menos 7 dígitos.");
+    if (digits.length < 7) {
+      setError("Escribe tu WhatsApp con al menos 7 dígitos.");
       return;
     }
 
@@ -336,15 +336,16 @@ export default function PreciosGateClient({
               </select>
               <div className="min-w-0 flex-1">
                 <label htmlFor="precios-gate-whatsapp" className="sr-only">
-                  WhatsApp (opcional)
+                  WhatsApp
                 </label>
                 <input
                   id="precios-gate-whatsapp"
                   name="whatsapp"
                   type="tel"
+                  required
                   autoComplete="tel"
                   inputMode="tel"
-                  placeholder="WhatsApp (opcional)"
+                  placeholder="WhatsApp"
                   value={phone}
                   onChange={(event) => setPhone(event.target.value)}
                   className={fieldClass}
