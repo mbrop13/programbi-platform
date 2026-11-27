@@ -588,12 +588,12 @@ export function GuiaCodeShell({
         .filter(Boolean)
         .join(" ")}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--g-code-border)] bg-[var(--g-code-surface)] px-3.5 py-2">
-        <div className="flex min-w-0 flex-wrap items-center gap-3">
+      {/* En celular: título en una fila y pestañas + copiar en la siguiente (antes eran tres filas). */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-[var(--g-code-border)] bg-[var(--g-code-surface)] px-3.5 py-2">
           {(title || activeLanguage) && (
             <span
               id={title ? tablistId : undefined}
-              className="truncate font-mono text-xs font-semibold tracking-tight text-[var(--g-code-muted)]"
+              className="w-full min-w-0 truncate font-mono text-xs font-semibold tracking-tight text-[var(--g-code-muted)] sm:w-auto sm:flex-1"
             >
               {title ?? activeLanguage?.toUpperCase()}
             </span>
@@ -626,9 +626,8 @@ export function GuiaCodeShell({
               })}
             </div>
           )}
-        </div>
 
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           <span className="sr-only" aria-live="polite">
             {copied ? copiedLabel : ""}
           </span>

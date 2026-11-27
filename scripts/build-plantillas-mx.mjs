@@ -185,56 +185,168 @@ function addParametrosSheet(wb, params) {
   return ws;
 }
 
-function buildAguinaldoWorkbook(params) {
+/**
+ * Ejemplo con el que sale la plantilla: el mismo de la guía (sueldo de $15,000 desde el
+ * 1 de marzo de 2026). Los resultados se guardan precalculados para que la vista previa
+ * del correo o del celular muestre números antes de abrir Excel.
+ */
+const EJEMPLO_AGUINALDO = { sueldo: 15000, ingreso: "2026-03-01", corte: "2026-12-31" };
+
+function isrMensual(base, tramos) {
+  if (!(base > 0)) return 0;
+  const t =
+    tramos.find((x) => base >= x.limiteInferior && (x.limiteSuperior == null || base <= x.limiteSuperior)) ??
+    tramos[tramos.length - 1];
+  return t.cuotaFija + (base - t.limiteInferior) * (t.porcentajeExcedente / 100);
+}
+
+const r2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
+
+function diaUtc(iso) {
+  const [a, m, d] = iso.split("-").map(Number);
+  return Math.floor(Date.UTC(a, m - 1, d) / 86400000);
+}
+
+/**
+ * Hoja Parametros de la plantilla de aguinaldo: misma estructura que enseña la guía
+ * (B2 días de ley, B3 días del año, B4 UMA, B5 tope en UMA, B6 monto exento) y debajo la
+ * tarifa mensual del art. 96 en A11:D21 para el ISR.
+ */
+function addParametrosAguinaldo(wb, params) {
+  const ws = wb.addWorksheet("Parametros");
+  ws.columns = [{ width: 40 }, { width: 18 }, { width: 18 }, { width: 46 }];
+
+  styleHeaderRow(ws.addRow(["Parámetro", "Valor 2026", "", "Fuente"]));
+  const filas = [
+    ["Días de aguinaldo (mínimo de ley; súbelo si tu contrato da más)", params.prestacionesLft.aguinaldoDiasMinimo, INT_FMT, "LFT art. 87"],
+    ["Días del año calendario", 365, INT_FMT, "Criterio anual estándar"],
+    ["UMA diaria 2026 (MXN)", params.uma.diaria, MXN_FMT, `${params.uma.fuente}, vigente ${params.uma.vigenciaInicio} a ${params.uma.vigenciaFin}`],
+    ["Tope exento (veces la UMA)", params.prestacionesLft.aguinaldoExentoUmas, INT_FMT, "LISR art. 93 fracc. XIV"],
+  ];
+  for (const [concepto, valor, fmt, fuente] of filas) {
+    const row = ws.addRow([concepto, valor, "", fuente]);
+    row.getCell(2).numFmt = fmt;
+  }
+  styleInputCell(ws.getCell("B2"));
+  ws.getCell("B2").protection = { locked: false };
+  ws.getCell("B2").dataValidation = {
+    type: "whole",
+    operator: "greaterThanOrEqual",
+    formulae: [params.prestacionesLft.aguinaldoDiasMinimo],
+    showErrorMessage: true,
+    errorTitle: "Días de aguinaldo",
+    error: "La ley da al menos 15 días. Escribe 15 o más.",
+  };
+  const exento = r2(params.uma.diaria * params.prestacionesLft.aguinaldoExentoUmas);
+  const rowExento = ws.addRow(["Monto exento en pesos (30 UMA)", { formula: "B4*B5", result: exento }, "", "Fórmula derivada"]);
+  rowExento.getCell(2).numFmt = MXN_FMT;
+  styleResultCell(rowExento.getCell(2));
+
+  ws.addRow([]);
+  ws.addRow([]);
+  styleHeaderRow(ws.addRow(["Tarifa ISR mensual art. 96 LISR (2026)", "", "", params.isrArt96Mensual.fuente]));
+  styleHeaderRow(ws.addRow(["Límite inferior", "Límite superior", "Cuota fija", "% sobre excedente del límite inferior"]));
+  for (const t of params.isrArt96Mensual.tramos) {
+    const row = ws.addRow([t.limiteInferior, t.limiteSuperior ?? 999999999, t.cuotaFija, t.porcentajeExcedente / 100]);
+    row.getCell(1).numFmt = MXN_FMT;
+    row.getCell(2).numFmt = MXN_FMT;
+    row.getCell(3).numFmt = MXN_FMT;
+    row.getCell(4).numFmt = "0.00%";
+  }
+  return ws;
+}
+
+async function buildAguinaldoWorkbook(params) {
   const wb = new ExcelJS.Workbook();
   wb.creator = "ProgramBI";
-  wb.created = new Date("2026-01-15T00:00:00Z");
+  wb.created = new Date("2026-11-27T00:00:00Z");
+  wb.calcProperties = { fullCalcOnLoad: true };
 
-  const ws = wb.addWorksheet("Calculadora Aguinaldo 2026");
-  ws.columns = [{ width: 42 }, { width: 22 }, { width: 42 }];
+  const tramos = params.isrArt96Mensual.tramos;
+  if (tramos.length !== 11) throw new Error("La fórmula de ISR espera 11 tramos en Parametros!A11:D21");
 
-  styleHeaderRow(ws.addRow(["Calculadora de Aguinaldo México 2026", "Valor", "Notas / Fundamento LFT y LISR"]));
+  // Resultados del ejemplo con las mismas reglas que lib/calculadoras/aguinaldo-mx.ts
+  const e = EJEMPLO_AGUINALDO;
+  const diario = r2(e.sueldo / 30);
+  const dias = Math.max(0, diaUtc(e.corte) - Math.max(diaUtc("2026-01-01"), diaUtc(e.ingreso)) + 1);
+  const bruto = r2(((diario * params.prestacionesLft.aguinaldoDiasMinimo) / 365) * dias);
+  const topeExento = r2(params.uma.diaria * params.prestacionesLft.aguinaldoExentoUmas);
+  const exento = Math.min(bruto, topeExento);
+  const gravado = r2(Math.max(0, bruto - exento));
+  const isr = gravado > 0 ? r2(isrMensual(e.sueldo + gravado, tramos) - isrMensual(e.sueldo, tramos)) : 0;
+  const neto = r2(bruto - isr);
 
-  ws.addRow(["Sueldo mensual bruto (MXN)", 20000, "Dato editable (celda amarilla)"]);
-  ws.getCell("B2").numFmt = MXN_FMT;
-  styleInputCell(ws.getCell("B2"));
+  const ws = wb.addWorksheet("Aguinaldo", { views: [{ state: "frozen", ySplit: 1 }] });
+  ws.columns = [{ width: 44 }, { width: 18 }, { width: 58 }];
+  styleHeaderRow(ws.addRow(["Calculadora de aguinaldo México 2026", "Valor", "Cómo se calcula"]));
 
-  ws.addRow(["Días de aguinaldo pactados (mínimo LFT: 15)", 15, "Art. 87 Ley Federal del Trabajo"]);
-  ws.getCell("B3").numFmt = INT_FMT;
-  styleInputCell(ws.getCell("B3"));
+  const T = "Parametros!$A$11:$D$21";
+  const isrDe = (x) => `(VLOOKUP(${x},${T},3,TRUE)+(${x}-VLOOKUP(${x},${T},1,TRUE))*VLOOKUP(${x},${T},4,TRUE))`;
 
-  ws.addRow(["Días trabajados en el año (365 = año completo)", 365, "Proporcional si laboraste menos del año"]);
-  ws.getCell("B4").numFmt = INT_FMT;
-  styleInputCell(ws.getCell("B4"));
+  const filas = [
+    // [etiqueta, valor, formato, nota, tipo]
+    ["Sueldo mensual bruto", e.sueldo, MXN_FMT, "Escribe tu sueldo antes de impuestos, sin bonos.", "dato"],
+    ["Fecha de ingreso", new Date(`${e.ingreso}T00:00:00Z`), "dd/mm/yyyy", "Si entraste antes de 2026, déjala igual: se cuenta desde el 1 de enero.", "dato"],
+    ["Fecha de corte", new Date(`${e.corte}T00:00:00Z`), "dd/mm/yyyy", "31/12/2026, o tu último día si ya no trabajas ahí.", "dato"],
+    ["Salario diario", { formula: "ROUND(B2/30,2)", result: diario }, MXN_FMT, "Sueldo mensual / 30 (paso 3 de la guía).", "calculo"],
+    ["Días trabajados en 2026", { formula: "MAX(0,B4-MAX(DATE(2026,1,1),B3)+1)", result: dias }, INT_FMT, "Desde el 1 de enero o tu ingreso, hasta la fecha de corte, contando ambos días.", "calculo"],
+    ["Aguinaldo bruto", { formula: "ROUND((B5*Parametros!$B$2/Parametros!$B$3)*B6,2)", result: bruto }, MXN_FMT, "Salario diario × días de aguinaldo / 365 × días trabajados.", "resultado"],
+    ["Parte exenta de ISR", { formula: "MIN(B7,Parametros!$B$6)", result: exento }, MXN_FMT, "Hasta 30 UMA (LISR art. 93 fracc. XIV).", "calculo"],
+    ["Parte gravada", { formula: "MAX(0,B7-B8)", result: gravado }, MXN_FMT, "Lo que pasa de 30 UMA.", "calculo"],
+    ["ISR estimado del aguinaldo", { formula: `IF(B9<=0,0,ROUND(${isrDe("(B2+B9)")}-${isrDe("B2")},2))`, result: isr }, MXN_FMT, "ISR del mes con aguinaldo menos ISR del mes sin él (art. 96). Sin subsidio para el empleo.", "calculo"],
+    ["Aguinaldo neto estimado", { formula: "B7-B10", result: neto }, MXN_FMT, "Lo que recibirías después de ISR.", "resultado"],
+  ];
+  for (const [etiqueta, valor, fmt, nota, tipo] of filas) {
+    const row = ws.addRow([etiqueta, valor, nota]);
+    row.getCell(2).numFmt = fmt;
+    row.getCell(3).alignment = { wrapText: true, vertical: "top" };
+    row.getCell(3).font = { color: { argb: "FF475569" }, size: 10 };
+    if (tipo === "dato") {
+      styleInputCell(row.getCell(2));
+      row.getCell(2).protection = { locked: false };
+    }
+    if (tipo === "resultado") styleResultCell(row.getCell(2));
+  }
 
-  ws.addRow(["", "", ""]);
+  ws.getCell("B2").dataValidation = {
+    type: "decimal",
+    operator: "greaterThan",
+    formulae: [0],
+    showErrorMessage: true,
+    errorTitle: "Sueldo mensual",
+    error: "Escribe un monto mayor que cero, sin el signo $.",
+  };
+  ws.getCell("B3").dataValidation = {
+    type: "date",
+    operator: "lessThanOrEqual",
+    formulae: [new Date("2026-12-31T00:00:00Z")],
+    showErrorMessage: true,
+    errorTitle: "Fecha de ingreso",
+    error: "Escribe una fecha de 2026 o anterior (dd/mm/aaaa).",
+  };
+  ws.getCell("B4").dataValidation = {
+    type: "date",
+    operator: "between",
+    formulae: [new Date("2026-01-01T00:00:00Z"), new Date("2026-12-31T00:00:00Z")],
+    showErrorMessage: true,
+    errorTitle: "Fecha de corte",
+    error: "Debe ser una fecha de 2026: el 31/12/2026 o tu último día trabajado.",
+  };
 
-  ws.addRow(["Salario diario", { formula: "B2/30" }, "Sueldo mensual / 30 días"]);
-  ws.getCell("B6").numFmt = MXN_FMT;
+  ws.addRow([]);
+  const aviso = ws.addRow([
+    "Plantilla educativa de ProgramBI, sin macros. No sustituye asesoría laboral o fiscal. Se paga a más tardar el 19 de diciembre (LFT art. 87).",
+  ]);
+  ws.mergeCells(`A${aviso.number}:C${aviso.number}`);
+  aviso.getCell(1).alignment = { wrapText: true };
+  aviso.getCell(1).font = { italic: true, color: { argb: "FF64748B" }, size: 10 };
+  aviso.height = 30;
 
-  ws.addRow(["Aguinaldo bruto", { formula: "(B6*B3)*(B4/365)" }, "Salario diario × días de aguinaldo × proporción anual"]);
-  ws.getCell("B7").numFmt = MXN_FMT;
-  styleResultCell(ws.getCell("B7"));
-
-  ws.addRow(["Tope exento de ISR (30 UMA)", { formula: "Parametros!B9" }, "30 × $117.31 = $3,519.30"]);
-  ws.getCell("B8").numFmt = MXN_FMT;
-
-  ws.addRow(["Aguinaldo exento", { formula: "MIN(B7,B8)" }, "No causa ISR"]);
-  ws.getCell("B9").numFmt = MXN_FMT;
-
-  ws.addRow(["Aguinaldo gravado para ISR", { formula: "MAX(0,B7-B8)" }, "Excedente sobre 30 UMA"]);
-  ws.getCell("B10").numFmt = MXN_FMT;
-
-  ws.addRow(["ISR estimado (tasa efectiva mensual de referencia)", {
-    formula: "IF(B10<=0,0,ROUND(B10*INDEX(Parametros!D14:D24,MATCH(B2,Parametros!A14:A24,1)),2))",
-  }, "Estimación marginal con tarifa art. 96 RMF 2026"]);
-  ws.getCell("B11").numFmt = MXN_FMT;
-
-  ws.addRow(["Aguinaldo neto estimado a recibir", { formula: "B7-B11" }, "Aguinaldo bruto − ISR estimado"]);
-  ws.getCell("B12").numFmt = MXN_FMT;
-  styleResultCell(ws.getCell("B12"));
-
-  addParametrosSheet(wb, params);
+  const pars = addParametrosAguinaldo(wb, params);
+  // Hojas protegidas sin contraseña: evita borrar fórmulas por accidente; Revisar > Desproteger la quita.
+  const opciones = { selectLockedCells: true, selectUnlockedCells: true, formatColumns: true };
+  await ws.protect("", opciones);
+  await pars.protect("", opciones);
   return wb;
 }
 
@@ -430,7 +542,7 @@ async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
   const specs = [
-    ["aguinaldo-mexico-2026.xlsx", buildAguinaldoWorkbook(params)],
+    ["aguinaldo-mexico-2026.xlsx", await buildAguinaldoWorkbook(params)],
     ["finiquito-liquidacion-mexico-2026.xlsx", buildFiniquitoWorkbook(params)],
     ["tabla-isr-2026-mexico.xlsx", buildIsrWorkbook(params)],
     ["ptu-mexico-2026.xlsx", buildPtuWorkbook(params)],

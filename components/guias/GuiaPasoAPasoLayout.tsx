@@ -12,6 +12,7 @@ import {
   GuiaToolVisual,
 } from "@/components/guias/GuiaEditorialPrimitives";
 import GuiaPasoAPasoCodeBlock from "@/components/guias/GuiaPasoAPasoCodeBlock";
+import CalculadoraAguinaldoMx from "@/components/guias/calculadoras/CalculadoraAguinaldoMx";
 import GuiaPasoAPasoFaq from "@/components/guias/GuiaPasoAPasoFaq";
 import GuiaPasoAPasoStickyWa from "@/components/guias/GuiaPasoAPasoStickyWa";
 import { GuiaCursoCierre, GuiaCursoLateral } from "@/components/guias/GuiaCursoCompacto";
@@ -94,7 +95,23 @@ function renderTextoConEnlaces(texto: string): ReactNode {
 function TablaRender({ tabla }: { tabla: TablaGuia }) {
   return (
     <figure className="my-7">
-      <div className="overflow-x-auto rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)]">
+      {/* Celular: cada fila es una tarjeta (la tabla de 3 o 4 columnas no cabe en 390 px). */}
+      <ul className="space-y-2.5 sm:hidden">
+        {tabla.filas.map((fila, rIdx) => (
+          <li key={rIdx} className="rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] p-4">
+            <p className="text-[15px] leading-snug font-semibold text-[var(--g-ink)]">{fila[0]}</p>
+            <dl className="mt-2 space-y-1.5 text-sm">
+              {fila.slice(1).map((celda, cIdx) => (
+                <div key={cIdx} className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-3">
+                  <dt className="text-[var(--g-subtle)]">{tabla.encabezados[cIdx + 1]}</dt>
+                  <dd className="leading-relaxed text-[var(--g-ink)]">{celda}</dd>
+                </div>
+              ))}
+            </dl>
+          </li>
+        ))}
+      </ul>
+      <div className="hidden overflow-x-auto rounded-2xl border border-[var(--g-border)] bg-[var(--g-surface)] sm:block">
         <table className="w-full min-w-[520px] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-[var(--g-border-strong)]">
@@ -137,6 +154,65 @@ function TablaRender({ tabla }: { tabla: TablaGuia }) {
           {tabla.caption}
         </figcaption>
       ) : null}
+    </figure>
+  );
+}
+
+/** Maqueta de la hoja principal de la plantilla: muestra qué trae el archivo antes de descargarlo. */
+function VistaPreviaHoja({ vista }: { vista: NonNullable<GuiaPasoAPaso["plantillaVistaPrevia"]> }) {
+  const tono = {
+    dato: "bg-[#fef9c3] text-[#1f2937]",
+    calculo: "bg-[var(--g-surface)] text-[var(--g-ink)]",
+    resultado: "bg-[#ecfdf5] font-semibold text-[#14532d]",
+  } as const;
+  return (
+    <figure className="overflow-hidden rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)]">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[300px] border-collapse font-mono text-[12.5px]">
+          <thead>
+            <tr className="bg-[var(--g-wash)] text-[var(--g-subtle)]">
+              <th scope="col" className="w-8 border-r border-b border-[var(--g-border)] px-2 py-1 font-normal">
+                <span className="sr-only">Fila</span>
+              </th>
+              <th scope="col" className="border-r border-b border-[var(--g-border)] px-2 py-1 text-left font-normal">
+                A
+              </th>
+              <th scope="col" className="border-b border-[var(--g-border)] px-2 py-1 text-left font-normal">
+                B
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {vista.filas.map(([celda, etiqueta, valor, tipo]) => (
+              <tr key={celda}>
+                <th
+                  scope="row"
+                  className="border-r border-b border-[var(--g-border)] bg-[var(--g-wash)] px-2 py-1.5 text-center font-normal text-[var(--g-subtle)]"
+                >
+                  {celda.replace(/^[A-Z]+/, "")}
+                </th>
+                <td className="border-r border-b border-[var(--g-border)] px-2 py-1.5 font-sans text-[13px] text-[var(--g-muted)]">
+                  {etiqueta}
+                </td>
+                <td className={`border-b border-[var(--g-border)] px-2 py-1.5 text-right tabular-nums ${tono[tipo]}`}>
+                  {valor}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="flex gap-px overflow-x-auto border-t border-[var(--g-border)] bg-[var(--g-wash)] px-2 pt-1 text-xs">
+        <span className="rounded-t-md border border-b-0 border-[var(--g-border)] bg-[var(--g-surface)] px-3 py-1.5 font-semibold text-[var(--g-ink)]">
+          {vista.hoja}
+        </span>
+        {vista.otrasHojas?.map((h) => (
+          <span key={h} className="px-3 py-1.5 text-[var(--g-subtle)]">
+            {h}
+          </span>
+        ))}
+      </div>
+      <figcaption className="sr-only">Vista previa de la hoja {vista.hoja} con un ejemplo.</figcaption>
     </figure>
   );
 }
@@ -289,7 +365,13 @@ export default function GuiaPasoAPasoLayout({
               ]}
             />
 
-            <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end lg:gap-12">
+            <div
+              className={`mt-6 grid gap-8 lg:gap-12 ${
+                guia.calculadora
+                  ? "lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start"
+                  : "lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end"
+              }`}
+            >
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 text-sm font-medium text-[var(--g-muted)]">
                   <GuiaToolVisual tool={guia.herramienta} course={guia.curso} size="sm" />
@@ -321,10 +403,26 @@ export default function GuiaPasoAPasoLayout({
                     </dd>
                   </div>
                 </dl>
+                {/* Con calculadora a la derecha, el resumen baja a esta columna (solo en escritorio,
+                    para que en celular la calculadora quede arriba). */}
+                {guia.calculadora ? (
+                  <div className="mt-10 hidden max-w-[56ch] border-t border-[var(--g-border)] pt-6 lg:block">
+                    <p className="text-sm font-semibold text-[var(--g-ink)]">Qué cubre la guía</p>
+                    <div className="mt-4">
+                      <ListaConCheck items={guia.en30Segundos.bullets} />
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
-              {/* Resumen: qué te llevas, para decidir en segundos si es la guía correcta */}
-              <aside
+              {/* Con calculadora, el resultado va primero: es lo que busca quien llega desde Google. */}
+              {guia.calculadora === "aguinaldo-mx" ? (
+                <div id="calculadora" className="scroll-mt-24">
+                  <CalculadoraAguinaldoMx />
+                </div>
+              ) : (
+                /* Resumen: qué te llevas, para decidir en segundos si es la guía correcta */
+                <aside
                 aria-labelledby="resumen-guia-titulo"
                 className="rounded-3xl border border-[var(--g-border)] bg-[var(--g-bg)] p-5 sm:p-6"
               >
@@ -335,6 +433,7 @@ export default function GuiaPasoAPasoLayout({
                   <ListaConCheck items={guia.en30Segundos.bullets} />
                 </div>
               </aside>
+              )}
             </div>
           </div>
         </header>
@@ -512,7 +611,7 @@ export default function GuiaPasoAPasoLayout({
                           {pasos.length >= 2 && idx === Math.floor(pasos.length / 2) - 1 ? (
                             <aside
                               aria-label={`Aplica ${curso.nombre} en vivo`}
-                              className="mt-8 rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] p-5 sm:p-6"
+                              className="mt-8 rounded-2xl border border-[var(--g-border-strong)] bg-[var(--g-surface)] p-5 sm:p-6 xl:hidden"
                             >
                               <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--g-subtle)]">
                                 Siguiente paso práctico
@@ -613,6 +712,14 @@ export default function GuiaPasoAPasoLayout({
                     <p className="mt-2 text-base leading-relaxed text-[var(--g-muted)]">
                       {guia.plantilla.descripcion}
                     </p>
+                    {guia.plantillaVistaPrevia ? (
+                      <div className="mt-5">
+                        <VistaPreviaHoja vista={guia.plantillaVistaPrevia} />
+                        <p className="mt-2 text-xs text-[var(--g-subtle)]">
+                          Amarillo: datos que escribes. Verde: resultados. El resto se calcula solo.
+                        </p>
+                      </div>
+                    ) : null}
                     <div className="mt-5">
                       <PlantillaDescarga
                         pais={pais}

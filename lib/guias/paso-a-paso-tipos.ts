@@ -200,6 +200,19 @@ export interface GuiaPasoAPaso {
     titulo: string;
     descripcion: string;
   };
+  /**
+   * Calculadora interactiva que reemplaza el resumen del encabezado. Debe usar las mismas
+   * reglas que la guía y la plantilla.
+   */
+  calculadora?: "aguinaldo-mx";
+  /** Vista previa de la hoja principal de la plantilla, junto al botón de descarga. */
+  plantillaVistaPrevia?: {
+    hoja: string;
+    /** [celda, etiqueta, valor de ejemplo, tipo] */
+    filas: [string, string, string, "dato" | "calculo" | "resultado"][];
+    /** Otras hojas del archivo, en el orden de las pestañas. */
+    otrasHojas?: string[];
+  };
   /** Archivo descargable real asociado a la guía (lead magnet). */
   plantillaArchivo?: {
     recurso: string;

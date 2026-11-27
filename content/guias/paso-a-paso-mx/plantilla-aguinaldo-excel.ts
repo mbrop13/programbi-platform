@@ -19,9 +19,10 @@ export const guia: GuiaPasoAPaso = {
   curso: "excel",
   herramienta: "Excel",
   nivel: "Básico",
-  updated: "2026-11-25",
+  updated: "2026-11-27",
   published: "2026-11-25",
   totalTimeIso: "PT20M",
+  calculadora: "aguinaldo-mx",
   en30Segundos: {
     queLogras:
       "Una plantilla de Excel con hoja Parametros y cálculo automático del aguinaldo bruto, aguinaldo proporcional por días trabajados, monto exento (30 UMA) y base gravable de ISR.",
@@ -31,7 +32,7 @@ export const guia: GuiaPasoAPaso = {
       "Mínimo legal de 15 días de salario diario conforme al artículo 87 de la LFT.",
       "Cálculo proporcional exacto cuando no se laboró el año completo.",
       "Separación automática entre parte exenta (30 UMA = $3,519.30 MXN) y gravada.",
-      "Fórmulas en español (;) e inglés (,) listas para copiar y descargar en .xlsx.",
+      "ISR estimado del aguinaldo con la tarifa del art. 96 y el neto que recibirías.",
     ],
   },
   rutaVisual: [
@@ -109,6 +110,7 @@ export const guia: GuiaPasoAPaso = {
         "Centraliza la UMA diaria, las 30 UMA exentas y los días legales en una hoja Parametros.",
       parrafos: [
         "Para evitar números fijos dentro de las fórmulas, crea una hoja llamada Parametros donde centralices los valores vigentes de 2026 y su fuente oficial (INEGI, DOF y LFT).",
+        "Más abajo, en el rango A11:D21 de la misma hoja, va la tarifa mensual del ISR (límite inferior, límite superior, cuota fija y porcentaje). La plantilla descargable ya la trae; la usarás en el paso 4.",
       ],
       tabla: {
         caption: "Estructura sugerida de la hoja Parametros",
@@ -129,8 +131,8 @@ export const guia: GuiaPasoAPaso = {
       resumenHowTo:
         "Obtén el salario diario, los días laborados en el año y el aguinaldo bruto proporcional.",
       parrafos: [
-        "En tu hoja principal (por ejemplo Aguinaldo), coloca el sueldo mensual en B2, la fecha de ingreso en B3 y el cierre del ejercicio (31/12/2026) en B4. El salario diario se obtiene dividiendo el sueldo mensual entre 30.",
-        "Para los días trabajados del año (B6), toma el mayor entre el 1 de enero de 2026 y la fecha de ingreso, y réstalo a la fecha de cierre más 1 día. Luego multiplica el salario diario por los días de aguinaldo y por la proporción del año.",
+        "En tu hoja principal (por ejemplo Aguinaldo), coloca el sueldo mensual en B2, la fecha de ingreso en B3 y la fecha de corte en B4: el 31/12/2026, o tu último día si ya no trabajas ahí. El salario diario se obtiene dividiendo el sueldo mensual entre 30.",
+        "Para los días trabajados del año (B6), toma el mayor entre el 1 de enero de 2026 y la fecha de ingreso, réstalo a la fecha de corte y suma 1 para contar ambos días. Luego multiplica el salario diario por los días de aguinaldo y por la proporción del año.",
       ],
       codigos: [
         {
@@ -164,7 +166,7 @@ export const guia: GuiaPasoAPaso = {
         "Aplica MIN contra $3,519.30 para la parte exenta y calcula el excedente sujeto a ISR.",
       parrafos: [
         "De acuerdo con la Ley del ISR (art. 93 fracc. XIV), el aguinaldo está exento hasta por el equivalente a 30 veces la UMA diaria ($3,519.30 MXN en 2026). Si tu aguinaldo bruto es menor o igual a $3,519.30, queda 100% exento de ISR.",
-        "Sobre el excedente gravado se aplica la retención de ISR conforme al artículo 96 de la LISR (o el procedimiento opcional del artículo 174 del Reglamento). Consulta la [Tabla ISR 2026 en Excel](/mx/guias/tabla-isr-2026-excel) para calcular la retención exacta sobre el ingreso gravable.",
+        "Sobre el excedente gravado se aplica la retención de ISR conforme al artículo 96 de la LISR (o el procedimiento opcional del artículo 174 del Reglamento). Una forma clara de estimarla: calcula el ISR de un mes con el aguinaldo gravado sumado al sueldo, y réstale el ISR del mes sin aguinaldo. La diferencia es lo que se lleva el aguinaldo. Si quieres el detalle de la tarifa, revisa la [Tabla ISR 2026 en Excel](/mx/guias/tabla-isr-2026-excel).",
       ],
       codigos: [
         {
@@ -180,6 +182,55 @@ export const guia: GuiaPasoAPaso = {
 
 // B9: Taxable aguinaldo (excess for ISR art. 96)
 =MAX(0, B7 - B8)`,
+        },
+        {
+          titulo: "ISR estimado del aguinaldo y neto a recibir",
+          lenguaje: "excel",
+          codigo: `// B10: ISR del mes con aguinaldo − ISR del mes sin aguinaldo
+=SI(B9<=0; 0; REDONDEAR(
+  (BUSCARV(B2+B9; Parametros!$A$11:$D$21; 3; VERDADERO)
+   + (B2+B9 - BUSCARV(B2+B9; Parametros!$A$11:$D$21; 1; VERDADERO))
+   * BUSCARV(B2+B9; Parametros!$A$11:$D$21; 4; VERDADERO))
+  - (BUSCARV(B2; Parametros!$A$11:$D$21; 3; VERDADERO)
+   + (B2 - BUSCARV(B2; Parametros!$A$11:$D$21; 1; VERDADERO))
+   * BUSCARV(B2; Parametros!$A$11:$D$21; 4; VERDADERO)); 2))
+
+// B11: Aguinaldo neto estimado
+=B7 - B10`,
+          codigoEn: `// B10: ISR for the month with aguinaldo − ISR without it
+=IF(B9<=0, 0, ROUND(
+  (VLOOKUP(B2+B9, Parametros!$A$11:$D$21, 3, TRUE)
+   + (B2+B9 - VLOOKUP(B2+B9, Parametros!$A$11:$D$21, 1, TRUE))
+   * VLOOKUP(B2+B9, Parametros!$A$11:$D$21, 4, TRUE))
+  - (VLOOKUP(B2, Parametros!$A$11:$D$21, 3, TRUE)
+   + (B2 - VLOOKUP(B2, Parametros!$A$11:$D$21, 1, TRUE))
+   * VLOOKUP(B2, Parametros!$A$11:$D$21, 4, TRUE)), 2))
+
+// B11: Estimated net aguinaldo
+=B7 - B10`,
+          nota: "BUSCARV con VERDADERO busca el tramo cuyo límite inferior es el mayor que no pasa tu ingreso. Es una estimación sin subsidio para el empleo; tu empresa puede usar el método del art. 174 del Reglamento.",
+        },
+      ],
+      subsecciones: [
+        {
+          id: "ejemplo-aguinaldo",
+          titulo: "Ejemplo completo con números",
+          parrafos: [
+            "Sueldo mensual de $15,000, ingreso el 1 de marzo de 2026 y sigue trabajando al 31 de diciembre. Son los mismos datos con los que viene la plantilla, así puedes comparar.",
+          ],
+          tabla: {
+            caption: "Cálculo con la tarifa mensual de ISR 2026 y la UMA de $117.31",
+            encabezados: ["Concepto", "Cálculo", "Resultado"],
+            filas: [
+              ["Salario diario", "$15,000 / 30", "$500.00"],
+              ["Días trabajados", "Del 1 de marzo al 31 de diciembre", "306"],
+              ["Aguinaldo bruto", "$500 × 15 / 365 × 306", "$6,287.67"],
+              ["Parte exenta", "Tope de 30 UMA", "$3,519.30"],
+              ["Parte gravada", "$6,287.67 − $3,519.30", "$2,768.37"],
+              ["ISR estimado", "ISR de $17,768.37 ($1,906.98) − ISR de $15,000 ($1,402.82)", "$504.16"],
+              ["Aguinaldo neto", "$6,287.67 − $504.16", "$5,783.51"],
+            ],
+          },
         },
       ],
       alerta: {
@@ -204,8 +255,8 @@ export const guia: GuiaPasoAPaso = {
         "La exención de 30 días de la LISR se calcula con la UMA vigente ($117.31 × 30 = $3,519.30 MXN en 2026).",
     },
     {
-      error: "Olvidar restar +1 en la diferencia de fechas de días trabajados",
-      causa: "Restar fecha final menos fecha inicial excluye el primer día laborado.",
+      error: "Olvidar sumar 1 al restar las fechas",
+      causa: "Fecha final menos fecha inicial deja fuera uno de los dos días: del 1 al 31 de diciembre da 30, no 31.",
       solucion:
         "Usa (Fecha_Fin - Fecha_Inicio + 1) para contar de forma inclusiva los 365 días del año.",
     },
@@ -213,7 +264,23 @@ export const guia: GuiaPasoAPaso = {
   plantilla: {
     titulo: "Descarga la plantilla de aguinaldo 2026 en Excel (.xlsx)",
     descripcion:
-      "Incluye hoja Parametros (UMA 2026 = $117.31, 30 UMA = $3,519.30), calculadora proporcional individual y resumen con parte exenta y gravada.",
+      "Sigue los mismos pasos de esta guía: escribes sueldo, fecha de ingreso y fecha de corte, y calcula días trabajados, aguinaldo bruto, parte exenta y gravada, ISR estimado y neto. Sin macros, con las fórmulas protegidas para no borrarlas por accidente.",
+  },
+  plantillaVistaPrevia: {
+    hoja: "Aguinaldo",
+    otrasHojas: ["Parametros"],
+    filas: [
+      ["B2", "Sueldo mensual bruto", "$15,000.00", "dato"],
+      ["B3", "Fecha de ingreso", "01/03/2026", "dato"],
+      ["B4", "Fecha de corte", "31/12/2026", "dato"],
+      ["B5", "Salario diario", "$500.00", "calculo"],
+      ["B6", "Días trabajados en 2026", "306", "calculo"],
+      ["B7", "Aguinaldo bruto", "$6,287.67", "resultado"],
+      ["B8", "Parte exenta de ISR", "$3,519.30", "calculo"],
+      ["B9", "Parte gravada", "$2,768.37", "calculo"],
+      ["B10", "ISR estimado del aguinaldo", "$504.16", "calculo"],
+      ["B11", "Aguinaldo neto estimado", "$5,783.51", "resultado"],
+    ],
   },
   plantillaArchivo: PLANTILLAS_MX.aguinaldo,
   faqs: [
@@ -228,6 +295,10 @@ export const guia: GuiaPasoAPaso = {
     {
       q: "¿Cuánto del aguinaldo está exento de ISR en 2026?",
       a: "Están exentas 30 UMA diarias, equivalentes a $3,519.30 MXN con la UMA 2026 de $117.31 MXN. Solo el excedente paga ISR conforme al artículo 96.",
+    },
+    {
+      q: "¿Cuánto ISR se le descuenta al aguinaldo?",
+      a: "Solo paga ISR la parte que pasa de 30 UMA ($3,519.30 en 2026). Para estimarlo, calcula el ISR de un mes con esa parte sumada al sueldo y réstale el ISR del mes normal. Con un sueldo de $15,000 y aguinaldo de $6,287.67, son unos $504.",
     },
     {
       q: "¿Qué pasa si renuncié o me despidieron antes de diciembre?",
