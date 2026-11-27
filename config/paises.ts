@@ -282,10 +282,21 @@ export const TIPO_CAMBIO_USD = 900;
  * Sin esta tabla ese cargo es el precio chileno, que no coincide con un precio
  * local bajado a propósito. Con cuenta local de Mercado Pago no se usa: se
  * cobra el precio local en su moneda.
- * - Perú (24 nov 2026): Análisis de datos S/ 887 ≈ $262.000.
+ * - Perú (27 nov 2026): cursos de 20 h S/ 551 = $159.000; Análisis de datos
+ *   (y su versión minera) S/ 1.102 = $318.000. Mercado financiero no está en la
+ *   tabla: se cobra como en Chile.
  */
+function cobroClpPeru(): Partial<Record<SlugCurso, number>> {
+  const tabla: Partial<Record<SlugCurso, number>> = {};
+  for (const slug of SLUGS_CURSO) {
+    if (slug === "mercado-financiero") continue;
+    tabla[slug] = SLUGS_ANALISIS.has(slug) ? 318000 : 159000;
+  }
+  return tabla;
+}
+
 export const COBRO_CLP_FALLBACK: Readonly<Record<string, Partial<Record<SlugCurso, number>>>> = {
-  pe: { "analisis-de-datos": 262000, "analitica-mineria": 262000 },
+  pe: cobroClpPeru(),
 };
 
 
@@ -628,7 +639,7 @@ export const PAISES: Pais[] = [
     locale: "es-PE",
     decimales: 0,
     pago: "mp",
-    precios: preciosLatAm(618, 887, 904),
+    precios: preciosLatAm(551, 1102, 904),
     listas: listasSoloMercadoFinanciero(1332),
     sinDescuento: true,
     dispositivo: "computadora",

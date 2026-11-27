@@ -12,7 +12,6 @@ import { usePaisRuta } from "@/lib/paises/cliente";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { muestraPrecioDirecto } from "@/config/paises";
 import { courseBrochurePath } from "@/lib/pricing-gate";
-import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 
 const FILTERS = [
   { id: "todos", label: "Todos" },
@@ -70,7 +69,6 @@ export default function ProgramsCatalog() {
 
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visible.slice(0, 6).map((course) => {
-            const precio = showPrices ? precioVenta(pais, course.slug) : null;
             return (
               <article
                 key={course.slug}
@@ -106,9 +104,6 @@ export default function ProgramsCatalog() {
                     <Clock size={12} /> {course.durationHours} h · En vivo
                   </p>
                   <p className="mt-2 text-xs font-semibold text-ink">{getCourseDateLabel(course.slug)}</p>
-                  {precio != null ? (
-                    <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
-                  ) : null}
                   {showPrices ? (
                     <Link
                       href={`/cursos/${course.slug}`}

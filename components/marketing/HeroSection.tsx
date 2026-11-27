@@ -20,7 +20,7 @@ import { getPais, ISO_CHILE, muestraPrecioDirecto } from "@/config/paises";
 import type { ContenidoPais } from "@/lib/data/contenido-paises/tipos";
 import { descuentoPublico, localizarMercado, type PromocionAplicable } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { campanaCompleta, ventanaBlackFriday } from "@/lib/campanas/black-friday";
+import { campanaCompleta, descuentosDelPais, ventanaBlackFriday } from "@/lib/campanas/black-friday";
 import { CuentaRegresiva } from "@/components/campanas/CuentaRegresiva";
 
 /** Próxima cohorte con fecha real; la arma la página desde los horarios activos. */
@@ -120,8 +120,18 @@ export default function HeroSection({
   // Todo lo de campaña lleva .bf-on y lo normal que reemplaza lleva .bf-alt: el script del
   // <head> decide cuál se ve según la hora del visitante, sin esperar a que se regenere la página.
   const bf = campanaCompleta(pais, promotions);
+  // Países sin campaña completa: un aviso con el único descuento real que tienen
+  // (hoy Mercado financiero). Sin porcentajes inventados para el resto de los cursos.
+  const bfSuelto = bf
+    ? null
+    : (descuentosDelPais(pais, promotions).sort((a, b) => b.pct - a.pct)[0] ?? null);
+  const bfSueltoNombre = bfSuelto
+    ? bfSuelto.slug === "mercado-financiero"
+      ? "el curso para el mercado financiero"
+      : `el curso de ${courses.find((c) => c.slug === bfSuelto.slug)?.title ?? bfSuelto.slug}`
+    : "";
   const bfFinMs = ventanaBlackFriday(pais).finMs;
-  const ocultoEnCampana = bf ? "bf-alt" : "";
+  const ocultoEnCampana = bf || bfSuelto ? "bf-alt" : "";
 
   return (
     <section id="inicio" className="bg-bg text-text-primary">
@@ -147,6 +157,17 @@ export default function HeroSection({
                 de descuento
               </p>
             </div>
+          ) : bfSuelto ? (
+            <Link
+              href={rutaLocal(pais, `/cursos/${bfSuelto.slug}`)}
+              className="bf-on mb-5 inline-flex min-h-[44px] max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-lg border border-[#1890ff]/35 bg-[#1890ff]/[0.07] px-3 py-1.5 text-[13px] font-semibold text-text-primary no-underline transition-colors hover:border-[#1890ff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5]"
+            >
+              Black Friday:
+              <span className="text-[#0b6fd6] tabular-nums">{bfSuelto.pct}&nbsp;% de descuento</span>
+              <span className="font-normal text-text-secondary">
+                en {bfSueltoNombre} hasta el lunes 30 <span aria-hidden="true">→</span>
+              </span>
+            </Link>
           ) : null}
           {proximo ? (
             <Link

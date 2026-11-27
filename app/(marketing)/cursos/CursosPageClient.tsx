@@ -15,7 +15,7 @@ import { zonaDe } from "@/lib/paises/horarios";
 import { getPais, muestraPrecioDirecto } from "@/config/paises";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { courseBrochurePath } from "@/lib/pricing-gate";
-import { descuentoPublico, formatMoneda, precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
+import { descuentoPublico, type PromocionAplicable } from "@/lib/paises/precios";
 import { BLACK_FRIDAY, descuentosDelPais } from "@/lib/campanas/black-friday";
 
 const CATALOG_ORDER = [
@@ -255,7 +255,6 @@ export default function CursosPageClient({
   const orderedCourses = rankCatalog(catalog, query);
   const featured = query ? undefined : orderedCourses.find((c) => c.slug === "analisis-de-datos");
   const rest = featured ? orderedCourses.filter((c) => c.slug !== featured.slug) : orderedCourses;
-  const precioFeatured = featured ? precioVenta(pais, featured.slug, promotions) : null;
   // Black Friday: solo etiquetas y una línea arriba; los precios no cambian.
   const bfDescuentos = descuentosDelPais(pais, promotions);
   const bfPct = (slug: string) => descuentoPublico(pais, slug, promotions);
@@ -430,11 +429,6 @@ export default function CursosPageClient({
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-mute">{featured.shortDescription}</p>
                 <p className="mt-4 text-sm font-semibold text-ink">SQL · Power BI · Python</p>
-                {showPrices && precioFeatured != null ? (
-                  <p className="mt-3 text-sm font-semibold text-ink">
-                    {formatMoneda(pais, precioFeatured)}
-                  </p>
-                ) : null}
                 <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
                   {showPrices ? (
                     <Link
@@ -488,7 +482,6 @@ export default function CursosPageClient({
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map((course) => {
-              const precio = showPrices ? precioVenta(pais, course.slug, promotions) : null;
               return (
                 <article
                   key={course.slug}
@@ -545,9 +538,6 @@ export default function CursosPageClient({
                       <Clock size={12} /> {course.durationHours} h · En vivo
                       {course.levelsCount && course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                     </p>
-                    {precio != null ? (
-                      <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
-                    ) : null}
                     {!hasConfirmedDate(course.slug, schedules) ? (
                       <NotifyNextDate
                         variant="compact"
