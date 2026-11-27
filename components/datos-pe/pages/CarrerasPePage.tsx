@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CtaDatosPe } from "@/components/datos-pe/CtaDatosPe";
 import { FaqDatosPe, type FaqItemPe } from "@/components/datos-pe/FaqDatosPe";
 import { FormalVsRealPe } from "@/components/datos-pe/FormalVsRealPe";
-import { GraficoSueldosPe } from "@/components/datos-pe/GraficoSueldosPe";
+import { RankingTopPais, type GrupoTopPais } from "@/components/datos/RankingTopPais";
 import { KpiResumenPe } from "@/components/datos-pe/KpiResumenPe";
 import { MetodologiaPe } from "@/components/datos-pe/MetodologiaPe";
 import { TablaCarrerasPe } from "@/components/datos-pe/TablaCarrerasPe";
@@ -56,6 +56,25 @@ export async function PagePeCarreras({
   const meta = getMetaCarrerasPe();
   const resumen = getResumenCarrerasPe();
   const carreras = getCarrerasPe();
+  const gruposTop: GrupoTopPais[] = (
+    [
+      { id: "universitaria", label: "Universitarias" },
+      { id: "tecnica", label: "Técnicas" },
+    ] as const
+  ).map((g) => ({
+    id: g.id,
+    label: g.label,
+    filas: [...getCarrerasPePorTipo(g.id)]
+      .sort((a, b) => b.enaho.mediana - a.enaho.mediana)
+      .slice(0, 10)
+      .map((c) => ({
+        href: `/pe/datos/carreras/${c.slug}`,
+        nombre: c.nombre,
+        detalle: `${porcentajeTexto(c.enaho.pctOcupados)} ocupados · ${porcentajeTexto(c.enaho.pctPension)} con pensión`,
+        valor: c.enaho.mediana,
+        texto: solesTexto(c.enaho.mediana),
+      })),
+  }));
   const univTop = getCarrerasPePorTipo("universitaria")[0];
   const tecTop = getCarrerasPePorTipo("tecnica")[0];
   const sistemas = getCarreraPe("ingenieria-de-sistemas");
@@ -177,8 +196,17 @@ export async function PagePeCarreras({
         ]}
       />
 
+      {/* Top 10 por nivel: la respuesta rápida antes de la tabla completa */}
+      <RankingTopPais
+        titulo="Las carreras mejor pagadas de Perú"
+        descripcion={`Sueldo real mediano mensual de egresados de 25 a 40 años (ENAHO ${meta.periodoEnaho}, ${meta.unidad}).`}
+        grupos={gruposTop}
+        verTodasHref="#tabla-38-carreras"
+        verTodasTexto={`Ver las ${entero(carreras.length)} carreras con todos sus datos`}
+      />
+
       {/* Bloque 2: Tabla ordenable con las 38 familias */}
-      <section aria-labelledby="tabla-38-carreras" className="space-y-3">
+      <section aria-labelledby="tabla-38-carreras" className="scroll-mt-24 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 id="tabla-38-carreras" className="text-xl font-semibold text-foreground">
             Ranking completo de {entero(carreras.length)} carreras publicables
@@ -193,14 +221,6 @@ export async function PagePeCarreras({
           caption="38 familias de carrera en Perú con muestra suficiente (n ≥ 100 y CV ≤ 15 %)"
         />
       </section>
-
-      {/* Bloque 3: Gráfico de barras horizontales */}
-      <GraficoSueldosPe
-        carreras={carreras}
-        maxItems={15}
-        titulo="Top 15 carreras por sueldo real mediano en Perú (ENAHO 2022–2024)"
-        descripcion="Mediana mensual e intervalo intercuartil p25–p75 en soles de 2024 (egresados 25–40 años)."
-      />
 
       {/* Bloque 4: Sueldo formal vs. sueldo real */}
       <FormalVsRealPe carreras={carreras} />

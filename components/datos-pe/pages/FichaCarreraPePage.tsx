@@ -11,9 +11,11 @@ import {
   getCarreraPe,
   getCarrerasPe,
   getMetaCarrerasPe,
+  getResumenCarrerasPe,
 } from "@/lib/datos-pe/carreras";
+import { RangoIngresoPe } from "@/components/datos-pe/RangoIngresoPe";
 import { cursosAfinesCarreraPe } from "@/lib/datos-pe/cursos-afines";
-import { entero, porcentajeTexto, solesTexto } from "@/lib/datos-pe/formato";
+import { entero, nombrePropioPe, porcentajeTexto, solesTexto } from "@/lib/datos-pe/formato";
 import {
   breadcrumbsPeSchema,
   datasetPeSchema,
@@ -192,6 +194,17 @@ export async function PagePeFicha({
         </Card>
       </section>
 
+      {/* Rango de ingresos frente a la mediana de su nivel */}
+      <RangoIngresoPe
+        carrera={carrera}
+        medianaNivel={
+          carrera.tipo === "universitaria"
+            ? getResumenCarrerasPe().medianaUniversitaria
+            : getResumenCarrerasPe().medianaTecnica
+        }
+        nivel={carrera.tipo === "universitaria" ? "universitaria" : "técnica"}
+      />
+
       {/* Narrativa única */}
       <section aria-labelledby="analisis-carrera-pe" className="space-y-3 rounded-xl border border-border bg-card p-6">
         <h2 id="analisis-carrera-pe" className="text-lg font-semibold text-foreground">
@@ -218,15 +231,27 @@ export async function PagePeFicha({
           </CardHeader>
           <CardContent>
             {carrera.mtpe.topDepartamentos.length > 0 ? (
-              <ul className="divide-y divide-border text-sm">
-                {carrera.mtpe.topDepartamentos.map((dep) => (
-                  <li key={dep.departamento} className="flex items-center justify-between py-2">
-                    <span className="font-medium text-foreground">{dep.departamento}</span>
-                    <span className="tabular-nums text-muted-foreground">
-                      {solesTexto(dep.promedio)}
-                    </span>
-                  </li>
-                ))}
+              <ul className="space-y-3 text-sm">
+                {carrera.mtpe.topDepartamentos.map((dep) => {
+                  const maxDep = Math.max(...carrera.mtpe.topDepartamentos.map((d) => d.promedio), 1);
+                  return (
+                    <li key={dep.departamento}>
+                      <div className="flex items-baseline justify-between gap-3">
+                        {/* El campo «departamento» es el código («la-libertad»); se muestra el nombre. */}
+                        <span className="font-medium text-foreground">
+                          {dep.nombreDepartamento || nombrePropioPe(dep.departamento.replace(/-/g, " "))}
+                        </span>
+                        <span className="tabular-nums text-foreground">{solesTexto(dep.promedio)}</span>
+                      </div>
+                      <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted" aria-hidden="true">
+                        <div
+                          className="h-full rounded-full bg-[#0b63c5]/70"
+                          style={{ width: `${Math.max(3, (dep.promedio / maxDep) * 100).toFixed(1)}%` }}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p className="text-sm text-muted-foreground">
@@ -294,16 +319,36 @@ export async function PagePeFicha({
             </span>
           </div>
           {carrera.sunedu.universidades.length > 0 ? (
-            <ul className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
-              {carrera.sunedu.universidades.map((u) => (
-                <li key={u.nombre} className="rounded-md border border-border/70 px-3 py-2">
-                  <span className="block font-medium text-foreground">{u.nombre}</span>
-                  <span>
-                    {u.tipoGestion} · {u.departamento}
+            (() => {
+              // 31 tarjetas seguidas eran un muro: se muestran 9 y el resto se despliega.
+              const VISIBLES = 9;
+              const tarjeta = (u: (typeof carrera.sunedu.universidades)[number]) => (
+                <li key={u.nombre} className="rounded-lg border border-border/70 px-3 py-2.5">
+                  <span className="block text-sm font-medium text-foreground">{nombrePropioPe(u.nombre)}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {nombrePropioPe(u.tipoGestion)} ·{" "}
+                    {nombrePropioPe(u.departamento)}
                   </span>
                 </li>
-              ))}
-            </ul>
+              );
+              const lista = carrera.sunedu.universidades;
+              return (
+                <>
+                  <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{lista.slice(0, VISIBLES).map(tarjeta)}</ul>
+                  {lista.length > VISIBLES ? (
+                    <details className="group">
+                      <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-sm font-semibold text-blue-700 hover:underline [&::-webkit-details-marker]:hidden">
+                        <span className="group-open:hidden">Ver las otras {lista.length - VISIBLES} universidades</span>
+                        <span className="hidden group-open:inline">Ocultar las otras universidades</span>
+                      </summary>
+                      <ul className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                        {lista.slice(VISIBLES).map(tarjeta)}
+                      </ul>
+                    </details>
+                  ) : null}
+                </>
+              );
+            })()
           ) : null}
         </section>
       ) : null}

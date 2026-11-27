@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import CtaDatosMx from "@/components/datos-mx/CtaDatosMx";
 import TablaCarrerasMx from "@/components/datos-mx/TablaCarrerasMx";
+import { RankingTopPais, type GrupoTopPais } from "@/components/datos/RankingTopPais";
 import {
   getCarrerasPublicablesMx,
   getMetaCarrerasMx,
 } from "@/lib/datos-mx/carreras";
-import { pesosMx } from "@/lib/datos-mx/formato";
+import { pesosMx, porcentajeMx } from "@/lib/datos-mx/formato";
 import {
   canonicalMxUrl,
   jsonLdBreadcrumbListMx,
@@ -69,6 +70,28 @@ export async function PageMxCarreras({
 
   const meta = getMetaCarrerasMx();
   const publicables = getCarrerasPublicablesMx();
+  // Top 10 por nivel: licenciaturas y técnico superior universitario (TSU).
+  const gruposTop: GrupoTopPais[] = (
+    [
+      { id: "lic", label: "Licenciaturas", tsu: false },
+      { id: "tsu", label: "Técnico superior (TSU)", tsu: true },
+    ] as const
+  ).map((g) => ({
+    id: g.id,
+    label: g.label,
+    filas: publicables
+      .filter((c) => c.esTsu === g.tsu && c.ingreso !== null)
+      .sort((a, b) => (b.ingreso ?? 0) - (a.ingreso ?? 0))
+      .slice(0, 10)
+      .map((c) => ({
+        href: `/mx/datos/carreras/${c.slug}`,
+        nombre: c.carrera.replace(/^TSU.s*/, ""),
+        detalle: `Desocupación ${porcentajeMx(c.tasaDesocupacion)} · informalidad ${porcentajeMx(c.tasaInformalidad)}`,
+        valor: c.ingreso ?? 0,
+        texto: `${pesosMx(c.ingreso)}/mes`,
+      })),
+  }));
+
 
   const breadcrumbs = [
     { label: "Inicio", path: "/mx" },
@@ -146,8 +169,16 @@ export async function PageMxCarreras({
         </div>
       </header>
 
-      <section aria-labelledby="tabla-indice-carreras">
-        <h2 id="tabla-indice-carreras" className="sr-only">
+      <RankingTopPais
+        titulo="Las carreras mejor pagadas de México"
+        descripcion="Ingreso mensual promedio de quienes trabajan en cada carrera, según IMCO Compara Carreras 2026 (con base en la ENOE del INEGI)."
+        grupos={gruposTop}
+        verTodasHref="#tabla-indice-carreras"
+        verTodasTexto={`Ver las ${meta.totalPublicables} carreras con todos sus datos`}
+      />
+
+      <section aria-labelledby="tabla-indice-carreras" className="scroll-mt-24 space-y-3">
+        <h2 id="tabla-indice-carreras" className="text-2xl font-bold tracking-[-0.02em] text-ink">
           Listado completo de las {meta.totalPublicables} carreras en México
         </h2>
         <TablaCarrerasMx

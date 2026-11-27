@@ -18,6 +18,7 @@ import { KpiCard } from "@/components/datos/KpiCard";
 import { MigasDatos } from "@/components/datos/MigasDatos";
 import { CtaDatosCo } from "@/components/datos-co/CtaDatosCo";
 import { TablaCarrerasCo } from "@/components/datos-co/carreras/TablaCarrerasCo";
+import { RankingTopPais, type GrupoTopPais } from "@/components/datos/RankingTopPais";
 import {
   getFichasCarrerasCo,
   getMetaCarrerasCo,
@@ -27,6 +28,7 @@ import {
 } from "@/lib/datos-co/carreras";
 import {
   enteroCo,
+  nombreProgramaCo,
   pesosCo,
   porcentajeCo,
   smmlvCo,
@@ -145,6 +147,29 @@ export async function PageCoCarreras({
     .slice()
     .sort((a, b) => b.mediana_cop_2026 - a.mediana_cop_2026)
     .slice(0, 20);
+
+  // Top 10 por nivel (solo programas con ficha, para que cada fila lleve a su página).
+  const gruposTop: GrupoTopPais[] = (
+    [
+      { id: "Universitario", label: "Universitarias" },
+      { id: "Tecnológico", label: "Tecnológicas" },
+      { id: "Formación técnica profesional", label: "Técnicas profesionales" },
+    ] as const
+  ).map((g) => ({
+    id: g.id,
+    label: g.label,
+    filas: fichas
+      .filter((p) => p.nivel_formacion === g.id)
+      .sort((a, b) => b.mediana_cop_2026 - a.mediana_cop_2026)
+      .slice(0, 10)
+      .map((p) => ({
+        href: `/co/datos/carreras/${p.slug}`,
+        nombre: nombreProgramaCo(p.programa),
+        detalle: `${smmlvCo(p.mediana_smmlv)} · ${porcentajeCo(p.pct_4plus_smmlv)} gana 4 SMMLV o más`,
+        valor: p.mediana_cop_2026,
+        texto: pesosCo(p.mediana_cop_2026),
+      })),
+  }));
 
   const medUniv = medianaNivelCo("Universitario");
   const medTec = medianaNivelCo("Tecnológico");
@@ -282,7 +307,15 @@ export async function PageCoCarreras({
           })}
         </section>
 
-        <section aria-labelledby="buscador-carreras-co" className="space-y-3">
+        <RankingTopPais
+          titulo="Las carreras mejor pagadas de Colombia"
+          descripcion={`Mediana mensual de graduados que cotizan en seguridad social (OLE, cohorte ${meta.cohorte}), en pesos de 2026.`}
+          grupos={gruposTop}
+          verTodasHref="#buscador-carreras-co"
+          verTodasTexto={`Explorar los ${enteroCo(programas.length)} programas con filtros`}
+        />
+
+        <section aria-labelledby="buscador-carreras-co" className="scroll-mt-24 space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 id="buscador-carreras-co" className="text-xl font-semibold tracking-tight text-foreground">

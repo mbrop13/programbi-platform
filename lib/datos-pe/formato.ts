@@ -42,3 +42,24 @@ export function entero(valor: number | null | undefined): string {
   if (valor === null || valor === undefined || !Number.isFinite(valor)) return "s/i";
   return fmtEntero.format(Math.round(valor));
 }
+
+const MENORES_PE = new Set(["de", "del", "la", "las", "los", "y", "e", "en", "el", "para", "con"]);
+
+/**
+ * Nombres propios legibles a partir de MAYÚSCULAS o de mayúsculas dañadas en la fuente:
+ * «UNIVERSIDAD NACIONAL DE SAN AGUSTÍN» → «Universidad Nacional de San Agustín»,
+ * «HuÁNuco» → «Huánuco». Las siglas con puntos («S.A.C.») se dejan como vienen.
+ */
+export function nombrePropioPe(texto: string): string {
+  return (texto || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .map((palabra, i) => {
+      if (/^([A-ZÁÉÍÓÚÑ]\.)+$/.test(palabra)) return palabra;
+      const lower = palabra.toLocaleLowerCase("es-PE");
+      if (i > 0 && MENORES_PE.has(lower)) return lower;
+      return lower.charAt(0).toLocaleUpperCase("es-PE") + lower.slice(1);
+    })
+    .join(" ");
+}

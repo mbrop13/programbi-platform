@@ -206,7 +206,7 @@ export default function TablaCarrerasMx({
                 const tieneIngreso = c.publicable && c.ingreso !== null;
                 return (
                   <tr
-                    key={c.cveCarrera}
+                    key={c.slug}
                     className="transition-colors hover:bg-surface-hover/60"
                   >
                     <td className="px-3 py-3 text-xs font-medium text-muted-foreground tabular-nums">
