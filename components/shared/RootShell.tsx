@@ -7,6 +7,7 @@ import ReferralClaim from "@/components/shared/ReferralClaim";
 import { ORG_ID, SITE_URL, WEBSITE_ID, jsonLdString } from "@/lib/seo";
 import { fundadorEquipo } from "@/lib/data/equipo";
 import { getPersonaJsonLd } from "@/lib/seo/course-jsonld";
+import { scriptVentanaCampana } from "@/lib/campanas/black-friday";
 import "@/app/globals.css";
 
 const geist = Geist({
@@ -106,6 +107,8 @@ export default function RootShell({
   return (
     <html lang={lang} suppressHydrationWarning className={`${geist.variable} ${geistMono.variable} ${dancing.variable}`}>
       <head>
+        {/* Antes de pintar: apaga la campaña de temporada si el visitante está fuera de su ventana. */}
+        <script dangerouslySetInnerHTML={{ __html: scriptVentanaCampana() }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}

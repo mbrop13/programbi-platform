@@ -190,9 +190,15 @@ export default function Programs({
                       <span />
                     )}
                     {descuento > 0 ? (
-                      <span className="rounded-full bg-paper px-2.5 py-1 text-xs font-bold text-ink shadow-sm">
-                        {descuento}% de descuento
+                      <>
+                        {/* Durante Black Friday la etiqueta pasa a negro y amarillo; el porcentaje es el mismo. */}
+                        <span className="bf-on inline-flex items-center gap-1.5 rounded-full bg-[#0d0e10] px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                        Black Friday <span className="text-[#1890ff] tabular-nums">{descuento}&nbsp;%</span>
                       </span>
+                        <span className="bf-alt rounded-full bg-paper px-2.5 py-1 text-xs font-bold text-ink shadow-sm">
+                          {descuento}% de descuento
+                        </span>
+                      </>
                     ) : null}
                   </div>
                 </div>

@@ -1463,3 +1463,23 @@ body:has([data-oculta-wa-flotante]) .wa-flotante:not([data-libre]) {
 }
 
 
+
+/* ========================================================================== */
+/* Campaña de temporada (Black Friday). La ventana la decide el script del    */
+/* <head> (lib/campanas/black-friday.ts): fuera de ella marca html.bf-off.     */
+/* .bf-on  = solo durante la campaña · .bf-alt = solo fuera de ella.          */
+/* ========================================================================== */
+html.bf-off .bf-on {
+  display: none !important;
+}
+html:not(.bf-off) .bf-alt {
+  display: none !important;
+}
+/* Durante la campaña el titular de descuento manda; el H1 (SEO) pasa a subtítulo. */
+html:not(.bf-off) .bf-h1-secundario {
+  font-size: clamp(1.45rem, 2.4vw, 2rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+  max-width: 26ch !important;
+  font-weight: 600 !important;
+}

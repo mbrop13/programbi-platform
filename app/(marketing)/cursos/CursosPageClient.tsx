@@ -15,7 +15,8 @@ import { zonaDe } from "@/lib/paises/horarios";
 import { getPais, muestraPrecioDirecto } from "@/config/paises";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { courseBrochurePath } from "@/lib/pricing-gate";
-import { formatMoneda, precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
+import { descuentoPublico, formatMoneda, precioVenta, type PromocionAplicable } from "@/lib/paises/precios";
+import { BLACK_FRIDAY, descuentosDelPais } from "@/lib/campanas/black-friday";
 
 const CATALOG_ORDER = [
   "analisis-de-datos",
@@ -255,6 +256,11 @@ export default function CursosPageClient({
   const featured = query ? undefined : orderedCourses.find((c) => c.slug === "analisis-de-datos");
   const rest = featured ? orderedCourses.filter((c) => c.slug !== featured.slug) : orderedCourses;
   const precioFeatured = featured ? precioVenta(pais, featured.slug, promotions) : null;
+  // Black Friday: solo etiquetas y una línea arriba; los precios no cambian.
+  const bfDescuentos = descuentosDelPais(pais, promotions);
+  const bfPct = (slug: string) => descuentoPublico(pais, slug, promotions);
+  const bfMin = bfDescuentos.length ? Math.min(...bfDescuentos.map((d) => d.pct)) : 0;
+  const bfMax = bfDescuentos.length ? Math.max(...bfDescuentos.map((d) => d.pct)) : 0;
 
   return (
     <>
@@ -271,6 +277,31 @@ export default function CursosPageClient({
                     ? "Cursos en vivo de análisis de datos, Excel e IA en Argentina"
                     : `Cursos de Power BI, SQL y análisis de datos en ${paisNombre}`}
           </h1>
+          {bfDescuentos.length > 0 && !query ? (
+            <p className="bf-on mx-auto mt-4 w-fit max-w-full rounded-xl border border-[#1890ff]/35 bg-[#1890ff]/[0.07] px-4 py-2 text-center text-sm font-medium text-ink">
+              <span className="font-bold">Black Friday</span>{" "}
+              <span className="text-mute">
+                {bfDescuentos.length >= 3 ? (
+                  <>
+                    · los {bfDescuentos.length} cursos con{" "}
+                    <strong className="font-bold text-[#0b6fd6] tabular-nums">
+                      {bfMin === bfMax ? `${bfMax} %` : `${bfMin} % a ${bfMax} %`}
+                    </strong>{" "}
+                    de descuento
+                  </>
+                ) : (
+                  <>
+                    ·{" "}
+                    <strong className="font-bold text-[#0b6fd6] tabular-nums">{bfMax}&nbsp;%</strong> de descuento en{" "}
+                    {bfDescuentos.length === 1 && bfDescuentos[0].slug === "mercado-financiero"
+                      ? "el curso para el mercado financiero"
+                      : "cursos seleccionados"}
+                  </>
+                )}{" "}
+                hasta {BLACK_FRIDAY.finTexto}
+              </span>
+            </p>
+          ) : null}
           <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-mute sm:text-base">
             {pais === "pe" ? (
               <>
@@ -380,6 +411,11 @@ export default function CursosPageClient({
                 )}
               </div>
               <div className="flex flex-col justify-center px-6 py-6 lg:col-span-5 lg:px-8 lg:py-6">
+                {bfPct(featured.slug) > 0 ? (
+                  <p className="bf-on mb-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-[#1890ff]/35 bg-[#1890ff]/[0.07] px-2.5 py-1 text-xs font-semibold text-ink">
+                    Black Friday: <span className="text-[#0b6fd6] tabular-nums">{bfPct(featured.slug)}&nbsp;% de descuento</span>
+                  </p>
+                ) : null}
                 <p className="text-xs font-semibold text-mute">
                   60 horas por nivel · básico-intermedio y avanzado
                 </p>
@@ -476,6 +512,11 @@ export default function CursosPageClient({
                         <span className="absolute right-4 top-4 rounded-full bg-ink px-2.5 py-1 text-xs font-semibold text-canvas shadow-sm">
                           Nuevo
                         </span>
+                      ) : null}
+                      {bfPct(course.slug) > 0 ? (
+                        <span className="bf-on absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-[#0d0e10] px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                        Black Friday <span className="text-[#1890ff] tabular-nums">{bfPct(course.slug)}&nbsp;%</span>
+                      </span>
                       ) : null}
                     </div>
                   </Link>

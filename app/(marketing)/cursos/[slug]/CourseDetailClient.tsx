@@ -63,6 +63,8 @@ import {
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
+import { BLACK_FRIDAY, ventanaBlackFriday } from "@/lib/campanas/black-friday";
+import { CuentaRegresiva } from "@/components/campanas/CuentaRegresiva";
 import {
   descuentoPublico,
   formatMoneda,
@@ -373,6 +375,10 @@ export default function CourseDetailClient({
   const precioLocalCliente = precioVenta(pais, course.slug, promotions);
   const precioListaCliente = precioListaVenta(pais, course.slug, promotions);
   const descuentoLocalCliente = descuentoPublico(pais, course.slug, promotions);
+  // Black Friday: destaca el descuento que el curso ya tiene (no cambia el precio).
+  // Va con .bf-on: el script del <head> lo oculta fuera de la ventana de campaña.
+  const bfDescuento = !isEmpresa && descuentoLocalCliente > 0 ? descuentoLocalCliente : 0;
+  const bfFinMs = ventanaBlackFriday(pais).finMs;
   const brochureUrl = courseBrochureUrl(course.slug, pais);
   const numCuotas = cuotasSinInteres(pais);
 
@@ -675,6 +681,17 @@ export default function CourseDetailClient({
                 {activeLevel ? <li>{activeLevel.name}</li> : null}
               </ul>
 
+              {bfDescuento > 0 ? (
+                <a
+                  href="#inscripcion"
+                  className="bf-on mt-4 inline-flex min-h-[44px] max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-xl border border-[#1890ff]/35 bg-[#1890ff]/[0.07] px-3.5 py-2 text-sm font-semibold text-ink no-underline transition-colors hover:border-[#1890ff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5]"
+                >
+                  <span>Black Friday:</span>
+                  <span className="text-[#0b6fd6] tabular-nums">{bfDescuento}&nbsp;% de descuento</span>
+                  <span className="font-normal text-mute">hasta el lunes 30</span>
+                </a>
+              ) : null}
+
               {pais === "co" && course.slug === "power-bi" && view === "publico" ? (
                 <p className="mt-3 inline-flex flex-wrap items-center gap-2 rounded-xl border border-line bg-paper px-3.5 py-2 text-xs font-medium text-ink">
                   <span>Valor referencial en COP (en el PDF «Temario y precios»)</span>
@@ -762,6 +779,28 @@ export default function CourseDetailClient({
           <aside id="inscripcion" className="order-3 min-w-0 scroll-mt-24 lg:order-none lg:col-span-5 lg:row-span-2">
             <span id="precios" className="scroll-mt-24" aria-hidden="true" />
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:max-h-[calc(100vh_-_var(--sticky-below-nav,6rem)_-_1.5rem)] lg:overflow-y-auto lg:overscroll-contain [scrollbar-width:thin] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
+              {bfDescuento > 0 ? (
+                <div className="bf-on mb-5 rounded-2xl border border-[#1890ff]/35 bg-[#1890ff]/[0.06] p-4 sm:p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                    <p className="text-[13px] font-semibold tracking-tight text-ink">Black Friday</p>
+                    <CuentaRegresiva
+                      finMs={bfFinMs}
+                      fallback="Termina el lunes 30"
+                      className="text-xs font-medium text-mute tabular-nums"
+                    />
+                  </div>
+                  <p className="mt-2 flex flex-wrap items-baseline gap-x-2 leading-none">
+                    <span className="text-[2.75rem] font-extrabold tracking-[-0.045em] text-[#1890ff] tabular-nums">
+                      {bfDescuento}&nbsp;%
+                    </span>
+                    <span className="text-lg font-bold tracking-tight text-ink">de descuento en este curso</span>
+                  </p>
+                  <p className="mt-3 text-[13px] leading-relaxed text-mute">
+                    Vale para inscripciones hasta {BLACK_FRIDAY.finTexto} a medianoche, hora de{" "}
+                    {getPais(pais).nombre}.
+                  </p>
+                </div>
+              ) : null}
               <div className="mb-4 flex justify-start">
                 {isEmpresa ? (
                   <button
@@ -904,7 +943,7 @@ export default function CourseDetailClient({
                     {!precioDirecto || precioLocalCliente == null ? (
                       <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl border border-line bg-canvas px-3.5 py-2.5 text-xs">
                         {!precioDirecto && descuentoLocalCliente > 0 ? (
-                          <div className="flex w-full items-center gap-2">
+                          <div className={`${bfDescuento > 0 ? "bf-alt " : ""}flex w-full items-center gap-2`}>
                             <span className="rounded-full bg-[#15803D]/10 px-2.5 py-0.5 text-xs font-semibold text-[#126c34]">
                               {descuentoLocalCliente}% off
                             </span>
@@ -1146,6 +1185,7 @@ export default function CourseDetailClient({
           curso={course.title}
           cursoSlug={course.slug}
           pais={pais}
+          descuento={bfDescuento}
           resumen={[
             descuentoLocalCliente > 0 ? `${descuentoLocalCliente}% dcto.` : null,
             // "Lunes, 7 de diciembre de 2026" → "Inicia 7 dic": la barra es angosta.
@@ -1564,6 +1604,7 @@ function BarraFijaFicha({
   curso,
   cursoSlug,
   pais,
+  descuento,
   resumen,
   brochureUrl,
   whatsappCustomText,
@@ -1571,6 +1612,8 @@ function BarraFijaFicha({
   curso: string;
   cursoSlug: string;
   pais: string;
+  /** Descuento vigente del curso; durante Black Friday se muestra en negro y amarillo. */
+  descuento: number;
   resumen: string;
   /** URL del brochure si el visitante ya puede ver precios; si no, null. */
   brochureUrl: string | null;
@@ -1632,8 +1675,13 @@ function BarraFijaFicha({
       <div aria-hidden className="mx-auto mb-2.5 h-1 w-10 rounded-full bg-line-strong" />
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="min-w-0 truncate text-[15px] font-bold tracking-tight text-ink">{curso}</p>
+        {descuento > 0 ? (
+          <p className="bf-on inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#0d0e10] px-2.5 py-1 text-xs font-semibold text-white">
+            Black Friday <span className="text-[#1890ff] tabular-nums">{descuento}&nbsp;%</span>
+          </p>
+        ) : null}
         {resumen ? (
-          <p className="inline-flex max-w-[62%] shrink-0 items-center gap-1.5 truncate rounded-full bg-[#15803D]/10 px-2.5 py-1 text-xs font-semibold text-[#126c34]">
+          <p className={`${descuento > 0 ? "bf-alt " : ""}inline-flex max-w-[62%] shrink-0 items-center gap-1.5 truncate rounded-full bg-[#15803D]/10 px-2.5 py-1 text-xs font-semibold text-[#126c34]`}>
             <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#15803D]" />
             <span className="truncate">{resumen}</span>
           </p>

@@ -20,6 +20,8 @@ import { getPais, ISO_CHILE, muestraPrecioDirecto } from "@/config/paises";
 import type { ContenidoPais } from "@/lib/data/contenido-paises/tipos";
 import { descuentoPublico, localizarMercado, type PromocionAplicable } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
+import { campanaCompleta, ventanaBlackFriday } from "@/lib/campanas/black-friday";
+import { CuentaRegresiva } from "@/components/campanas/CuentaRegresiva";
 
 /** Próxima cohorte con fecha real; la arma la página desde los horarios activos. */
 export type ProximoInicio = { fecha: string; curso: string; href: string };
@@ -114,6 +116,12 @@ export default function HeroSection({
   const nombre = getPais(pais).nombre;
   const h1 = contenido?.hero.h1 ?? localizarMercado(PAGE_SEO.home.h1, pais);
   const profesor = mentors.find((m) => m.isFounder && m.imageUrl) ?? null;
+  // Black Friday: solo con descuentos reales en varios cursos del país (hoy Chile).
+  // Todo lo de campaña lleva .bf-on y lo normal que reemplaza lleva .bf-alt: el script del
+  // <head> decide cuál se ve según la hora del visitante, sin esperar a que se regenere la página.
+  const bf = campanaCompleta(pais, promotions);
+  const bfFinMs = ventanaBlackFriday(pais).finMs;
+  const ocultoEnCampana = bf ? "bf-alt" : "";
 
   return (
     <section id="inicio" className="bg-bg text-text-primary">
@@ -124,10 +132,26 @@ export default function HeroSection({
       */}
       <div className="mx-auto grid max-w-[1440px] gap-8 px-4 pt-6 pb-12 sm:px-6 sm:pt-8 sm:pb-14 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-x-10 lg:gap-y-0 lg:px-8 lg:pt-10 lg:pb-16 xl:gap-x-14 xl:px-10">
         <div className="min-w-0 lg:col-start-1 lg:row-start-1 lg:self-end" data-oculta-wa-flotante>
+          {bf ? (
+            <div className="bf-on mb-6">
+              <p className="inline-flex flex-wrap items-center gap-x-2 rounded-lg border border-[#1890ff]/35 bg-[#1890ff]/[0.07] px-3 py-1.5 text-[13px] font-semibold text-text-primary">
+                Black Friday
+                <span className="font-normal text-text-secondary">· del 27 al 30 de noviembre</span>
+              </p>
+              {/* Titular visual de campaña; el H1 (SEO) sigue debajo, más chico durante la campaña. */}
+              <p className="mt-4 text-[clamp(2.6rem,6.5vw,4.4rem)] leading-[1.04] font-extrabold tracking-[-0.045em] text-text-primary">
+                Hasta{" "}
+                <span className="whitespace-nowrap text-[#1890ff] tabular-nums">
+                  {bf.max}&nbsp;%
+                </span>{" "}
+                de descuento
+              </p>
+            </div>
+          ) : null}
           {proximo ? (
             <Link
               href={proximo.href}
-              className="mb-5 inline-flex min-h-[44px] max-w-full items-center gap-2.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-[13px] font-medium text-text-secondary no-underline transition-colors hover:border-border-strong hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5]"
+              className={`${ocultoEnCampana} mb-5 inline-flex min-h-[44px] max-w-full items-center gap-2.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-[13px] font-medium text-text-secondary no-underline transition-colors hover:border-border-strong hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5]`}
             >
               <span className="size-2 shrink-0 rounded-full bg-ok" aria-hidden="true" />
               <span className="truncate">
@@ -139,17 +163,25 @@ export default function HeroSection({
               </span>
             </Link>
           ) : (
-            <p className="mb-5 inline-flex min-h-[40px] items-center gap-2.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-[13px] font-medium text-text-secondary">
+            <p className={`${ocultoEnCampana} mb-5 inline-flex min-h-[40px] items-center gap-2.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-[13px] font-medium text-text-secondary`}>
               <span className="size-2 shrink-0 rounded-full bg-ok" aria-hidden="true" />
               <span className="font-semibold text-text-primary">Inscripciones abiertas</span>
             </p>
           )}
 
-          <h1 className="max-w-[18ch] text-balance text-[2.35rem] font-bold leading-[1.08] tracking-[-0.03em] text-text-primary sm:text-5xl sm:leading-[1.06] xl:text-[3.5rem]">
+          <h1
+            className={`${bf ? "bf-h1-secundario " : ""}max-w-[18ch] text-balance text-[2.35rem] font-bold leading-[1.08] tracking-[-0.03em] text-text-primary sm:text-5xl sm:leading-[1.06] xl:text-[3.5rem]`}
+          >
             <HomeH1 h1={h1} nombre={nombre} />
           </h1>
 
-          <p className="mt-5 max-w-[34rem] text-pretty text-base leading-relaxed text-text-secondary sm:text-lg">
+          {bf ? (
+            <p className="bf-on mt-4 max-w-[34rem] text-pretty text-base leading-relaxed text-text-secondary sm:text-lg">
+              Los {bf.cursos} cursos tienen de {bf.min}&nbsp;% a {bf.max}&nbsp;% de descuento. Clases en vivo
+              por Zoom con profesores que trabajan con datos en banca, retail y minería.
+            </p>
+          ) : null}
+          <p className={`${ocultoEnCampana} mt-5 max-w-[34rem] text-pretty text-base leading-relaxed text-text-secondary sm:text-lg`}>
             {contenido?.hero.parrafo ??
               "Aprende Power BI, SQL y Python en clases en vivo por Zoom, con profesores que trabajan con datos en banca, retail y minería."}
           </p>
@@ -163,7 +195,14 @@ export default function HeroSection({
               href={rutaLocal(pais, "/cursos")}
               className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-text-primary px-6 text-[15px] font-semibold text-surface no-underline transition-colors hover:bg-text-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b63c5]"
             >
-              Ver cursos y fechas
+              {bf ? (
+                <>
+                  <span className="bf-on">Ver cursos con descuento</span>
+                  <span className="bf-alt">Ver cursos y fechas</span>
+                </>
+              ) : (
+                "Ver cursos y fechas"
+              )}
             </Link>
             {muestraPrecioDirecto(pais) ? (
               <a
@@ -184,7 +223,19 @@ export default function HeroSection({
               </WhatsAppCta>
             )}
           </div>
-          <p className="mt-3 text-sm text-text-muted">Te respondemos con fechas y valores.</p>
+          <p className="mt-3 text-sm text-text-muted">
+            {bf ? (
+              <span className="bf-on">
+                <CuentaRegresiva
+                  finMs={bfFinMs}
+                  fallback="Termina el lunes 30"
+                  className="font-semibold text-text-primary tabular-nums"
+                />{" "}
+                ·{" "}
+              </span>
+            ) : null}
+            Te respondemos con fechas y valores.
+          </p>
         </div>
 
         <div className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
