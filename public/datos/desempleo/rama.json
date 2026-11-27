@@ -3,8 +3,8 @@
     "nombre": "INE, ENE: rama",
     "url": "https://www.ine.gob.cl/docs/default-source/ocupacion-y-desocupacion/cuadros-estadisticos/series-vigentes/rama.xlsx",
     "licencia": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "sha256": "2723e9acd4d6e34e8ced6e6145661216a696eb3920eb0c177f414e26e273331c",
-    "fecha_actualizacion": "29-10-2026"
+    "sha256": "ed28662889ca225d6b0444fa96603061e64e53be43cd28bf168d5dd4af4d22ec",
+    "fecha_actualizacion": "27-11-2026"
   },
   "series": {
     "nacional": [
@@ -5010,6 +5010,37 @@
           "actividades_de_los_hogares_como_empleadores": 262.52608058744937,
           "actividades_de_organizaciones_y_organos_extraterritoriales": 2.8905089375634967,
           "no_sabe_no_responde": 28.3638375755164
+        },
+        "notas": {
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 9350.996538459873,
+          "agricultura_ganaderia_silvicultura_y_pesca": 501.7353750998264,
+          "explotacion_de_minas_y_canteras": 301.0301636325707,
+          "industrias_manufactureras": 858.4595274523991,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 46.36170928619565,
+          "suministro_de_agua": 73.54247409568839,
+          "construccion": 732.6223881976024,
+          "comercio_al_por_mayor_y_al_por_menor": 1732.2895138416964,
+          "transporte_y_almacenamiento": 653.032687596811,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 443.7272226063154,
+          "informacion_y_comunicaciones": 191.23412540867187,
+          "actividades_financieras_y_de_seguros": 179.5400184129961,
+          "actividades_inmobiliarias": 111.61168716758651,
+          "actividades_profesionales_cientificas_y_tecnicas": 360.0199017139865,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 313.5907346299207,
+          "administracion_publica_y_defensa": 539.1804711014167,
+          "ensenanza": 857.021468624248,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 739.280473085823,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 117.26390873345457,
+          "otras_actividades_de_servicios": 307.95918695985074,
+          "actividades_de_los_hogares_como_empleadores": 257.2103444058509,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 3.343577200899383,
+          "no_sabe_no_responde": 30.939579206062152
         },
         "notas": {
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b"
@@ -12085,6 +12116,51 @@
         "notas": {
           "agricultura_ganaderia_silvicultura_y_pesca": "a",
           "industrias_manufactureras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "construccion": "a",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_los_hogares_como_empleadores": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 121.66512628335975,
+          "agricultura_ganaderia_silvicultura_y_pesca": 8.76404694687362,
+          "explotacion_de_minas_y_canteras": 10.207375538368089,
+          "industrias_manufactureras": 7.500860359810359,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 0.563912262838677,
+          "suministro_de_agua": 0.7031453270543322,
+          "construccion": 9.55598794633503,
+          "comercio_al_por_mayor_y_al_por_menor": 20.37614750202401,
+          "transporte_y_almacenamiento": 9.622912619042083,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 7.251498105395364,
+          "informacion_y_comunicaciones": 1.6332318572488136,
+          "actividades_financieras_y_de_seguros": 0.710189958186441,
+          "actividades_inmobiliarias": 1.1935696608937238,
+          "actividades_profesionales_cientificas_y_tecnicas": 2.399024149614715,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 1.6678589144264049,
+          "administracion_publica_y_defensa": 12.33559258778373,
+          "ensenanza": 13.534588207724,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 7.628886047545219,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 1.6122717644432807,
+          "otras_actividades_de_servicios": 2.2047798359232966,
+          "actividades_de_los_hogares_como_empleadores": 1.9658327531347382,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.23341393869383179
+        },
+        "notas": {
+          "agricultura_ganaderia_silvicultura_y_pesca": "a",
+          "industrias_manufactureras": "a",
           "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
           "suministro_de_agua": "b",
           "construccion": "a",
@@ -19602,6 +19678,53 @@
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 194.0120064218702,
+          "agricultura_ganaderia_silvicultura_y_pesca": 1.0691028526103248,
+          "explotacion_de_minas_y_canteras": 18.907922599424424,
+          "industrias_manufactureras": 8.042134719943958,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 0,
+          "suministro_de_agua": 1.1922079032684436,
+          "construccion": 16.88512846981023,
+          "comercio_al_por_mayor_y_al_por_menor": 40.68036031614622,
+          "transporte_y_almacenamiento": 17.17835340761449,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 15.164306062456042,
+          "informacion_y_comunicaciones": 1.4867357725928718,
+          "actividades_financieras_y_de_seguros": 2.1276024745595867,
+          "actividades_inmobiliarias": 2.40433476962328,
+          "actividades_profesionales_cientificas_y_tecnicas": 4.680180304454605,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 5.057394467856642,
+          "administracion_publica_y_defensa": 18.86219255700104,
+          "ensenanza": 16.950579218070104,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 12.246505274468232,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 2.883799389321564,
+          "otras_actividades_de_servicios": 5.031390085986222,
+          "actividades_de_los_hogares_como_empleadores": 3.1617757766619254,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0
+        },
+        "notas": {
+          "agricultura_ganaderia_silvicultura_y_pesca": "b",
+          "industrias_manufactureras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": "a",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "administracion_publica_y_defensa": "a",
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": "a",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_los_hogares_como_empleadores": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
       }
     ],
     "antofagasta": [
@@ -26860,6 +26983,49 @@
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 365.7258768545101,
+          "agricultura_ganaderia_silvicultura_y_pesca": 3.5946813140287524,
+          "explotacion_de_minas_y_canteras": 64.96760294390324,
+          "industrias_manufactureras": 35.729088005845135,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 5.202139720269413,
+          "suministro_de_agua": 8.222157718728639,
+          "construccion": 21.30406932956948,
+          "comercio_al_por_mayor_y_al_por_menor": 49.84025044497107,
+          "transporte_y_almacenamiento": 35.02299700353028,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 19.313595307350507,
+          "informacion_y_comunicaciones": 3.08612516898582,
+          "actividades_financieras_y_de_seguros": 3.502136364502039,
+          "actividades_inmobiliarias": 4.054496545209723,
+          "actividades_profesionales_cientificas_y_tecnicas": 11.201224859942194,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 13.789899890273,
+          "administracion_publica_y_defensa": 16.221306758972823,
+          "ensenanza": 29.877462783334582,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 23.008759449369332,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 3.567889407052541,
+          "otras_actividades_de_servicios": 8.60707685035352,
+          "actividades_de_los_hogares_como_empleadores": 4.324350035566798,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 1.288566952751186
+        },
+        "notas": {
+          "agricultura_ganaderia_silvicultura_y_pesca": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": "a",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_los_hogares_como_empleadores": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
       }
     ],
     "atacama": [
@@ -34070,6 +34236,51 @@
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 150.7144355738111,
+          "agricultura_ganaderia_silvicultura_y_pesca": 5.037106296146297,
+          "explotacion_de_minas_y_canteras": 31.622100357002957,
+          "industrias_manufactureras": 11.230910066323723,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 2.162065894194253,
+          "suministro_de_agua": 2.022126991158843,
+          "construccion": 10.412735912097451,
+          "comercio_al_por_mayor_y_al_por_menor": 24.416385208894596,
+          "transporte_y_almacenamiento": 8.901295491057217,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 7.770834743642342,
+          "informacion_y_comunicaciones": 0.6431715414050346,
+          "actividades_financieras_y_de_seguros": 1.4227809721852467,
+          "actividades_inmobiliarias": 1.38801121506238,
+          "actividades_profesionales_cientificas_y_tecnicas": 2.5887930482389,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 3.5953197550222944,
+          "administracion_publica_y_defensa": 8.202352469348524,
+          "ensenanza": 12.050056539105332,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 8.827929798212391,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 1.2444165726185066,
+          "otras_actividades_de_servicios": 3.871884759445593,
+          "actividades_de_los_hogares_como_empleadores": 2.884976234131373,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.4191817085178456
+        },
+        "notas": {
+          "agricultura_ganaderia_silvicultura_y_pesca": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "construccion": "a",
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": "a",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_los_hogares_como_empleadores": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
       }
     ],
     "coquimbo": [
@@ -40899,6 +41110,48 @@
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 399.5272648644686,
+          "agricultura_ganaderia_silvicultura_y_pesca": 34.081085159897086,
+          "explotacion_de_minas_y_canteras": 54.86105867471981,
+          "industrias_manufactureras": 24.807448050217086,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 1.837135301007465,
+          "suministro_de_agua": 2.5303941228753626,
+          "construccion": 29.184415493729485,
+          "comercio_al_por_mayor_y_al_por_menor": 75.09512379265932,
+          "transporte_y_almacenamiento": 20.994566502846848,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 17.754873762177194,
+          "informacion_y_comunicaciones": 3.6976629576049773,
+          "actividades_financieras_y_de_seguros": 2.600723551186931,
+          "actividades_inmobiliarias": 2.134591393109411,
+          "actividades_profesionales_cientificas_y_tecnicas": 13.524360170197848,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 8.62139600933049,
+          "administracion_publica_y_defensa": 16.391290688978295,
+          "ensenanza": 40.222221081400384,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 23.29519986668326,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 3.105819694887372,
+          "otras_actividades_de_servicios": 14.44812975007415,
+          "actividades_de_los_hogares_como_empleadores": 9.896202991345598,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.44356584954021894
+        },
+        "notas": {
+          "industrias_manufactureras": "a",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "a",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "actividades_de_los_hogares_como_empleadores": "a",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
       }
     ],
     "valparaiso": [
@@ -46778,6 +47031,41 @@
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 923.0622340392508,
+          "agricultura_ganaderia_silvicultura_y_pesca": 40.81751089596018,
+          "explotacion_de_minas_y_canteras": 35.882084366824834,
+          "industrias_manufactureras": 68.60773052112373,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 3.0478772481146406,
+          "suministro_de_agua": 7.231456319905677,
+          "construccion": 76.07013766383466,
+          "comercio_al_por_mayor_y_al_por_menor": 162.8002683034226,
+          "transporte_y_almacenamiento": 72.52425016482378,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 50.73738379662155,
+          "informacion_y_comunicaciones": 16.208204861130355,
+          "actividades_financieras_y_de_seguros": 11.251910713439258,
+          "actividades_inmobiliarias": 15.769043701699882,
+          "actividades_profesionales_cientificas_y_tecnicas": 33.58176995080728,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 32.705436345378075,
+          "administracion_publica_y_defensa": 63.211057124981416,
+          "ensenanza": 82.61067314161663,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 75.57843228224438,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 14.544232272283812,
+          "otras_actividades_de_servicios": 31.255652822564898,
+          "actividades_de_los_hogares_como_empleadores": 27.71972711721761,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0.17648002400775334,
+          "no_sabe_no_responde": 0.7309144012478659
+        },
+        "notas": {
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
       }
     ],
     "metropolitana": [
@@ -52332,6 +52620,40 @@
         "notas": {
           "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
           "suministro_de_agua": "a",
+          "actividades_inmobiliarias": "a",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 4160.155686572818,
+          "agricultura_ganaderia_silvicultura_y_pesca": 59.80240365408432,
+          "explotacion_de_minas_y_canteras": 37.511278722796874,
+          "industrias_manufactureras": 380.13473260624244,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 15.85573742298946,
+          "suministro_de_agua": 30.67064081160605,
+          "construccion": 321.3907978463179,
+          "comercio_al_por_mayor_y_al_por_menor": 834.0150067970666,
+          "transporte_y_almacenamiento": 309.8567403656092,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 189.60503787461482,
+          "informacion_y_comunicaciones": 136.2664789406059,
+          "actividades_financieras_y_de_seguros": 133.64803107061044,
+          "actividades_inmobiliarias": 65.0662985724744,
+          "actividades_profesionales_cientificas_y_tecnicas": 214.49928631436697,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 161.72424109350936,
+          "administracion_publica_y_defensa": 216.27914013566314,
+          "ensenanza": 366.8740668218324,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 335.67372826813966,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 59.277186067115935,
+          "otras_actividades_de_servicios": 162.17932063465582,
+          "actividades_de_los_hogares_como_empleadores": 104.80484559750012,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 3.16709717689163,
+          "no_sabe_no_responde": 21.853589778124554
+        },
+        "notas": {
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
           "actividades_inmobiliarias": "a",
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
@@ -59160,6 +59482,47 @@
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 444.001880418866,
+          "agricultura_ganaderia_silvicultura_y_pesca": 71.21682895264878,
+          "explotacion_de_minas_y_canteras": 17.118075627352244,
+          "industrias_manufactureras": 47.082824066725976,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 1.019856668240739,
+          "suministro_de_agua": 3.392274703912767,
+          "construccion": 31.35771099408223,
+          "comercio_al_por_mayor_y_al_por_menor": 84.9925708632331,
+          "transporte_y_almacenamiento": 23.259769059047844,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 17.092723617558672,
+          "informacion_y_comunicaciones": 3.553905587528558,
+          "actividades_financieras_y_de_seguros": 4.345667083230185,
+          "actividades_inmobiliarias": 3.031155874261825,
+          "actividades_profesionales_cientificas_y_tecnicas": 7.893258543360567,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 11.187067039485008,
+          "administracion_publica_y_defensa": 20.65039076690546,
+          "ensenanza": 37.76726123199421,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 27.564931014254014,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 5.159090466937504,
+          "otras_actividades_de_servicios": 10.233618102660186,
+          "actividades_de_los_hogares_como_empleadores": 15.797423430433255,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.28547672501286164
+        },
+        "notas": {
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "a",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
       }
     ],
     "maule": [
@@ -65819,6 +66182,47 @@
           "actividades_de_los_hogares_como_empleadores": 19.870931531206786,
           "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
           "no_sabe_no_responde": 0.33438832837076127
+        },
+        "notas": {
+          "explotacion_de_minas_y_canteras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 493.9428408272358,
+          "agricultura_ganaderia_silvicultura_y_pesca": 74.73928354638971,
+          "explotacion_de_minas_y_canteras": 5.855102361704299,
+          "industrias_manufactureras": 45.75861598444431,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 2.9008063124125596,
+          "suministro_de_agua": 4.20602193482897,
+          "construccion": 39.44663345596205,
+          "comercio_al_por_mayor_y_al_por_menor": 94.77407058515298,
+          "transporte_y_almacenamiento": 29.208638493991533,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 18.7420698742328,
+          "informacion_y_comunicaciones": 3.5365636744681357,
+          "actividades_financieras_y_de_seguros": 2.9318991015309357,
+          "actividades_inmobiliarias": 2.4034580678809716,
+          "actividades_profesionales_cientificas_y_tecnicas": 10.347769211566751,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 10.22773029884463,
+          "administracion_publica_y_defensa": 24.778391381171538,
+          "ensenanza": 49.166353578337336,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 40.854884203544636,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 2.6490581200671834,
+          "otras_actividades_de_servicios": 12.502846058888503,
+          "actividades_de_los_hogares_como_empleadores": 18.312400682318607,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.6002438994973444
         },
         "notas": {
           "explotacion_de_minas_y_canteras": "b",
@@ -73236,6 +73640,49 @@
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 219.21985128467037,
+          "agricultura_ganaderia_silvicultura_y_pesca": 22.53039438148014,
+          "explotacion_de_minas_y_canteras": 2.570343102691003,
+          "industrias_manufactureras": 22.99097903702582,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 1.285368245398159,
+          "suministro_de_agua": 1.9307831947536533,
+          "construccion": 17.6966616334119,
+          "comercio_al_por_mayor_y_al_por_menor": 34.669718210500335,
+          "transporte_y_almacenamiento": 10.490955191137273,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 11.867395450910603,
+          "informacion_y_comunicaciones": 2.169036648366931,
+          "actividades_financieras_y_de_seguros": 1.2219781366008569,
+          "actividades_inmobiliarias": 0.5428928554540944,
+          "actividades_profesionales_cientificas_y_tecnicas": 7.94296334301789,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 6.682598092847052,
+          "administracion_publica_y_defensa": 12.115048716850435,
+          "ensenanza": 20.895476420077486,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 21.839512919020798,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 1.175407738378772,
+          "otras_actividades_de_servicios": 6.035591860007895,
+          "actividades_de_los_hogares_como_empleadores": 11.314408775098515,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 1.2523373316407642
+        },
+        "notas": {
+          "explotacion_de_minas_y_canteras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": "a",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
       }
     ],
     "biobio": [
@@ -79501,6 +79948,44 @@
           "actividades_de_los_hogares_como_empleadores": 20.054728614046162,
           "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
           "no_sabe_no_responde": 0.7405339184446539
+        },
+        "notas": {
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 708.2271412837207,
+          "agricultura_ganaderia_silvicultura_y_pesca": 41.887528219104816,
+          "explotacion_de_minas_y_canteras": 15.959085565756782,
+          "industrias_manufactureras": 87.3180560796799,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 5.822133038281311,
+          "suministro_de_agua": 4.135583330897909,
+          "construccion": 55.90722420222185,
+          "comercio_al_por_mayor_y_al_por_menor": 120.03131815297078,
+          "transporte_y_almacenamiento": 46.33236055668421,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 30.657158999849127,
+          "informacion_y_comunicaciones": 7.512214275974087,
+          "actividades_financieras_y_de_seguros": 5.8996011421414725,
+          "actividades_inmobiliarias": 6.0250034683612474,
+          "actividades_profesionales_cientificas_y_tecnicas": 20.966506667371508,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 19.026747726533348,
+          "administracion_publica_y_defensa": 48.13778793085822,
+          "ensenanza": 70.98176571011554,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 67.24927287509426,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 9.901504837298477,
+          "otras_actividades_de_servicios": 22.406729629673553,
+          "actividades_de_los_hogares_como_empleadores": 21.287554848148556,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.7820040267037908
         },
         "notas": {
           "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
@@ -86457,6 +86942,47 @@
           "administracion_publica_y_defensa": "a",
           "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
           "otras_actividades_de_servicios": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 429.8479346644735,
+          "agricultura_ganaderia_silvicultura_y_pesca": 50.44506639565618,
+          "explotacion_de_minas_y_canteras": 2.197300641515829,
+          "industrias_manufactureras": 36.83385000261485,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 1.709044729735147,
+          "suministro_de_agua": 3.6460884756664753,
+          "construccion": 43.99283329561473,
+          "comercio_al_por_mayor_y_al_por_menor": 69.78494749085507,
+          "transporte_y_almacenamiento": 21.77678850141009,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 19.715420408994497,
+          "informacion_y_comunicaciones": 3.4072746655585306,
+          "actividades_financieras_y_de_seguros": 3.0018890166541676,
+          "actividades_inmobiliarias": 2.3238503908477193,
+          "actividades_profesionales_cientificas_y_tecnicas": 10.6778854487315,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 13.640663566308923,
+          "administracion_publica_y_defensa": 30.099725637728326,
+          "ensenanza": 48.87820670715104,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 36.41055231417882,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 3.601183401163785,
+          "otras_actividades_de_servicios": 12.784791142199452,
+          "actividades_de_los_hogares_como_empleadores": 13.984129558796202,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.9364428730921475
+        },
+        "notas": {
+          "explotacion_de_minas_y_canteras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "administracion_publica_y_defensa": "a",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
@@ -93502,6 +94028,48 @@
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
           "no_sabe_no_responde": "b"
         }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 180.57868394156438,
+          "agricultura_ganaderia_silvicultura_y_pesca": 20.939754112114244,
+          "explotacion_de_minas_y_canteras": 0.41487480404610777,
+          "industrias_manufactureras": 18.152660009849427,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 0.6665982027802679,
+          "suministro_de_agua": 0.38778116370597404,
+          "construccion": 17.096521415429336,
+          "comercio_al_por_mayor_y_al_por_menor": 27.543119588219607,
+          "transporte_y_almacenamiento": 8.989946364826155,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 7.399821411891106,
+          "informacion_y_comunicaciones": 2.7583447747114778,
+          "actividades_financieras_y_de_seguros": 1.6907812915127562,
+          "actividades_inmobiliarias": 1.3437217131220343,
+          "actividades_profesionales_cientificas_y_tecnicas": 6.116571263108755,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 5.410515395795877,
+          "administracion_publica_y_defensa": 12.671267091423935,
+          "ensenanza": 20.597978796670844,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 14.425873661453664,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 1.5939187393371377,
+          "otras_actividades_de_servicios": 4.6397369540403846,
+          "actividades_de_los_hogares_como_empleadores": 7.738897187525278,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0
+        },
+        "notas": {
+          "explotacion_de_minas_y_canteras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
       }
     ],
     "los-lagos": [
@@ -100332,6 +100900,48 @@
           "actividades_financieras_y_de_seguros": "b",
           "actividades_inmobiliarias": "b",
           "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 403.70140803970884,
+          "agricultura_ganaderia_silvicultura_y_pesca": 56.83337630611152,
+          "explotacion_de_minas_y_canteras": 0.2856160931655767,
+          "industrias_manufactureras": 51.84948870917177,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 2.8027650131840876,
+          "suministro_de_agua": 2.3521443992491364,
+          "construccion": 26.389693304146167,
+          "comercio_al_por_mayor_y_al_por_menor": 69.99468483969385,
+          "transporte_y_almacenamiento": 27.693075761701408,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 21.26113957247771,
+          "informacion_y_comunicaciones": 4.043962332224399,
+          "actividades_financieras_y_de_seguros": 4.212768737125924,
+          "actividades_inmobiliarias": 2.644752027403082,
+          "actividades_profesionales_cientificas_y_tecnicas": 10.551859025506579,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 14.112930020103432,
+          "administracion_publica_y_defensa": 19.81734502310386,
+          "ensenanza": 32.37036477327804,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 30.44049889970225,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 4.860374052263333,
+          "otras_actividades_de_servicios": 8.284065750950463,
+          "actividades_de_los_hogares_como_empleadores": 11.229437383801958,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 1.6710660153443118
+        },
+        "notas": {
+          "explotacion_de_minas_y_canteras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "a",
           "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
           "otras_actividades_de_servicios": "b",
           "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
@@ -107620,6 +108230,51 @@
           "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
           "suministro_de_agua": "b",
           "transporte_y_almacenamiento": "a",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_los_hogares_como_empleadores": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 58.22936958760154,
+          "agricultura_ganaderia_silvicultura_y_pesca": 5.256090270984613,
+          "explotacion_de_minas_y_canteras": 0.41874868489038164,
+          "industrias_manufactureras": 4.156872624910787,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 0.33714060223594505,
+          "suministro_de_agua": 0.38676262072844747,
+          "construccion": 4.985891818934303,
+          "comercio_al_por_mayor_y_al_por_menor": 9.999692093292927,
+          "transporte_y_almacenamiento": 3.2779178431061458,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 3.434218664051521,
+          "informacion_y_comunicaciones": 0.4870754048012069,
+          "actividades_financieras_y_de_seguros": 0.2196059531919006,
+          "actividades_inmobiliarias": 0.1341274657413984,
+          "actividades_profesionales_cientificas_y_tecnicas": 0.874269950715496,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 1.9097955263133422,
+          "administracion_publica_y_defensa": 9.434282536888185,
+          "ensenanza": 4.932189374287789,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 5.058172955153405,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 0.7758354754008178,
+          "otras_actividades_de_servicios": 0.9141620930172432,
+          "actividades_de_los_hogares_como_empleadores": 1.2040450575999961,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.03247257135569214
+        },
+        "notas": {
+          "agricultura_ganaderia_silvicultura_y_pesca": "a",
+          "explotacion_de_minas_y_canteras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": "a",
           "informacion_y_comunicaciones": "b",
           "actividades_financieras_y_de_seguros": "b",
           "actividades_inmobiliarias": "b",
@@ -115251,6 +115906,50 @@
           "actividades_de_los_hogares_como_empleadores": 1.5198065125231626,
           "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
           "no_sabe_no_responde": 0.17110524907778926
+        },
+        "notas": {
+          "agricultura_ganaderia_silvicultura_y_pesca": "b",
+          "explotacion_de_minas_y_canteras": "b",
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": "b",
+          "suministro_de_agua": "b",
+          "informacion_y_comunicaciones": "b",
+          "actividades_financieras_y_de_seguros": "b",
+          "actividades_inmobiliarias": "b",
+          "actividades_profesionales_cientificas_y_tecnicas": "b",
+          "actividades_de_servicios_administrativos_y_de_apoyo": "b",
+          "actividades_artisticas_de_entretenimiento_y_recreativas": "b",
+          "otras_actividades_de_servicios": "b",
+          "actividades_de_los_hogares_como_empleadores": "b",
+          "actividades_de_organizaciones_y_organos_extraterritoriales": "b",
+          "no_sabe_no_responde": "b"
+        }
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "poblacion_ocupada_total": 98.38479780194281,
+          "agricultura_ganaderia_silvicultura_y_pesca": 4.721115795735819,
+          "explotacion_de_minas_y_canteras": 2.2515935484082643,
+          "industrias_manufactureras": 8.263276608469871,
+          "suministro_de_electricidad_gas_vapor_y_aire_acondicionado": 1.1491286245135242,
+          "suministro_de_agua": 0.5329050773477105,
+          "construccion": 10.94594541610553,
+          "comercio_al_por_mayor_y_al_por_menor": 13.275849652593301,
+          "transporte_y_almacenamiento": 7.9021202703824125,
+          "actividades_de_alojamiento_y_de_servicio_de_comidas": 5.95974495409153,
+          "informacion_y_comunicaciones": 0.7441369454647917,
+          "actividades_financieras_y_de_seguros": 0.7524528463379391,
+          "actividades_inmobiliarias": 1.1523794464413444,
+          "actividades_profesionales_cientificas_y_tecnicas": 2.17417946298491,
+          "actividades_de_servicios_administrativos_y_de_apoyo": 4.231140487892804,
+          "administracion_publica_y_defensa": 9.97329969375784,
+          "ensenanza": 9.312224239252325,
+          "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social": 9.177333256758686,
+          "actividades_artisticas_de_entretenimiento_y_recreativas": 1.3119207348845514,
+          "otras_actividades_de_servicios": 2.559410629409532,
+          "actividades_de_los_hogares_como_empleadores": 1.5843369765703865,
+          "actividades_de_organizaciones_y_organos_extraterritoriales": 0,
+          "no_sabe_no_responde": 0.4103031345397402
         },
         "notas": {
           "agricultura_ganaderia_silvicultura_y_pesca": "b",
