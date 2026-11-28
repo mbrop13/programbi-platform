@@ -3,334 +3,333 @@
     "nombre": "INE, ENE: rama",
     "url": "https://www.ine.gob.cl/docs/default-source/ocupacion-y-desocupacion/cuadros-estadisticos/series-vigentes/rama.xlsx",
     "licencia": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "sha256": "2723e9acd4d6e34e8ced6e6145661216a696eb3920eb0c177f414e26e273331c",
-    "fecha_actualizacion": "29-10-2026"
+    "sha256": "ed28662889ca225d6b0444fa96603061e64e53be43cd28bf168d5dd4af4d22ec",
+    "fecha_actualizacion": "27-11-2026"
   },
-  "periodo": "2026-08",
-  "periodo_anterior": "2025-08",
+  "periodo": "2026-09",
+  "periodo_anterior": "2025-09",
   "territorios": {
     "nacional": [
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 485.6616442810088,
-        "anterior": 499.2849826097753,
-        "variacion": -13.623338328766465
+        "actual": 501.7353750998264,
+        "anterior": 515.6175046756623,
+        "variacion": -13.882129575835904
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 303.50844694365225,
-        "anterior": 296.00997260133056,
-        "variacion": 7.4984743423216855
+        "actual": 301.0301636325707,
+        "anterior": 289.79754619034435,
+        "variacion": 11.232617442226342
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 835.8434312684595,
-        "anterior": 909.8433375984877,
-        "variacion": -73.99990633002813
+        "actual": 858.4595274523991,
+        "anterior": 901.0602612713716,
+        "variacion": -42.60073381897246
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 43.56931548593157,
-        "anterior": 48.65754323163936,
-        "variacion": -5.0882277457077905
+        "actual": 46.36170928619565,
+        "anterior": 46.64602876371232,
+        "variacion": -0.2843194775166751
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 73.00396525765257,
-        "anterior": 69.29547867167739,
-        "variacion": 3.70848658597518
+        "actual": 73.54247409568839,
+        "anterior": 74.4848984590388,
+        "variacion": -0.9424243633504119
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 742.7309629124455,
-        "anterior": 722.647246210739,
-        "variacion": 20.08371670170652
+        "actual": 732.6223881976024,
+        "anterior": 702.5691245462644,
+        "variacion": 30.053263651337943
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 1735.214454564375,
-        "anterior": 1750.444547640639,
-        "variacion": -15.230093076263984
+        "actual": 1732.2895138416964,
+        "anterior": 1744.048047639283,
+        "variacion": -11.758533797586551
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 630.7229242619075,
-        "anterior": 614.7806350085249,
-        "variacion": 15.942289253382569
+        "actual": 653.032687596811,
+        "anterior": 603.03363713323,
+        "variacion": 49.99905046358106
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 441.54512591592334,
-        "anterior": 442.45556758256544,
-        "variacion": -0.9104416666421002
+        "actual": 443.7272226063154,
+        "anterior": 435.50199601139593,
+        "variacion": 8.22522659491949
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 186.20628628458536,
-        "anterior": 234.99832829712224,
-        "variacion": -48.79204201253688
+        "actual": 191.23412540867187,
+        "anterior": 235.75937819799472,
+        "variacion": -44.52525278932285
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 175.29033613977396,
-        "anterior": 204.0303036186501,
-        "variacion": -28.73996747887614
+        "actual": 179.5400184129961,
+        "anterior": 202.5665975730318,
+        "variacion": -23.02657916003571
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 104.12460981204626,
-        "anterior": 87.43740514297228,
-        "variacion": 16.687204669073978
+        "actual": 111.61168716758651,
+        "anterior": 97.20564376376399,
+        "variacion": 14.406043403822522
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 367.7423853211369,
-        "anterior": 361.9554868152479,
-        "variacion": 5.786898505888985
+        "actual": 360.0199017139865,
+        "anterior": 358.69618565454937,
+        "variacion": 1.3237160594371176
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 314.3864343658694,
-        "anterior": 327.50551784051527,
-        "variacion": -13.11908347464589
+        "actual": 313.5907346299207,
+        "anterior": 335.9032351541132,
+        "variacion": -22.3125005241925
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 540.2133566472565,
-        "anterior": 536.5249352282848,
-        "variacion": 3.688421418971757
+        "actual": 539.1804711014167,
+        "anterior": 517.6652124389348,
+        "variacion": 21.515258662481983
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 823.0040706940067,
-        "anterior": 803.7584324424654,
-        "variacion": 19.245638251541322
+        "actual": 857.021468624248,
+        "anterior": 814.1448418774677,
+        "variacion": 42.87662674678029
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 735.893405823937,
-        "anterior": 731.7850228768676,
-        "variacion": 4.1083829470693445
+        "actual": 739.280473085823,
+        "anterior": 748.1685066567275,
+        "variacion": -8.88803357090444
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 118.95705038714577,
-        "anterior": 104.54162811442337,
-        "variacion": 14.415422272722395
+        "actual": 117.26390873345457,
+        "anterior": 110.55950195350466,
+        "variacion": 6.704406779949906
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 323.3434352684107,
-        "anterior": 340.6527824121993,
-        "variacion": -17.309347143788614
+        "actual": 307.95918695985074,
+        "anterior": 347.8086155193363,
+        "variacion": -39.849428559485546
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 262.52608058744937,
-        "anterior": 258.10992263717964,
-        "variacion": 4.416157950269735
+        "actual": 257.2103444058509,
+        "anterior": 268.3592590413506,
+        "variacion": -11.148914635499693
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
         "nombre": "Actividades de organizaciones y órganos extraterritoriales",
-        "actual": 2.8905089375634967,
-        "anterior": 1.716825716536196,
-        "variacion": 1.1736832210273007,
+        "actual": 3.343577200899383,
+        "anterior": 1.5028631122003586,
+        "variacion": 1.8407140886990245,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 28.3638375755164,
-        "anterior": 31.18107459709402,
-        "variacion": -2.817237021577622
+        "actual": 30.939579206062152,
+        "anterior": 35.31146021546054,
+        "variacion": -4.37188100939839
       }
     ],
     "arica-y-parinacota": [
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 8.782612498052044,
-        "anterior": 7.394667249177635,
-        "variacion": 1.3879452488744093,
-        "nota_actual": "a"
+        "actual": 8.76404694687362,
+        "anterior": 6.776700362394246,
+        "variacion": 1.9873465844793738,
+        "nota_actual": "a",
+        "nota_anterior": "a"
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 9.6399246329386,
-        "anterior": 8.050869825630603,
-        "variacion": 1.5890548073079973
+        "actual": 10.207375538368089,
+        "anterior": 8.037292088423165,
+        "variacion": 2.170083449944924
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 5.722043803409831,
-        "anterior": 6.0710321445805615,
-        "variacion": -0.3489883411707302,
-        "nota_actual": "b"
+        "actual": 7.500860359810359,
+        "anterior": 5.860223727688305,
+        "variacion": 1.640636632122054,
+        "nota_actual": "a"
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 0.5497300979112217,
-        "anterior": 0.4298139626719311,
-        "variacion": 0.11991613523929062,
+        "actual": 0.563912262838677,
+        "anterior": 0.3423112500752441,
+        "variacion": 0.22160101276343291,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 0.5276009998257093,
-        "anterior": 0.21781776940887354,
-        "variacion": 0.30978323041683575,
+        "actual": 0.7031453270543322,
+        "anterior": 0.22799026783446685,
+        "variacion": 0.47515505921986534,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 9.69097393265745,
-        "anterior": 8.18290182417597,
-        "variacion": 1.50807210848148,
+        "actual": 9.55598794633503,
+        "anterior": 8.5963980554652,
+        "variacion": 0.9595898908698306,
         "nota_actual": "a"
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 21.349818938798748,
-        "anterior": 25.413012209427777,
-        "variacion": -4.063193270629029
+        "actual": 20.37614750202401,
+        "anterior": 24.28780128761356,
+        "variacion": -3.91165378558955
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 9.793370150387455,
-        "anterior": 9.907155902298701,
-        "variacion": -0.11378575191124618,
-        "nota_anterior": "a"
+        "actual": 9.622912619042083,
+        "anterior": 8.792340534128288,
+        "variacion": 0.8305720849137952
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 6.747365519095565,
-        "anterior": 5.849812331120003,
-        "variacion": 0.8975531879755616,
+        "actual": 7.251498105395364,
+        "anterior": 5.886761873512812,
+        "variacion": 1.364736231882552,
         "nota_anterior": "a"
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 1.2383134321667728,
-        "anterior": 1.2701073587291893,
-        "variacion": -0.03179392656241653,
+        "actual": 1.6332318572488136,
+        "anterior": 0.9183327324466065,
+        "variacion": 0.7148991248022071,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 0.9448988529611204,
-        "anterior": 1.0208452442396885,
-        "variacion": -0.07594639127856806,
+        "actual": 0.710189958186441,
+        "anterior": 1.5380051344495744,
+        "variacion": -0.8278151762631334,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 1.3313788634694772,
-        "anterior": 1.5202376859583349,
-        "variacion": -0.18885882248885766,
+        "actual": 1.1935696608937238,
+        "anterior": 1.5293189628520762,
+        "variacion": -0.3357493019583524,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 2.6103194871987334,
-        "anterior": 3.0066265181320904,
-        "variacion": -0.39630703093335695,
+        "actual": 2.399024149614715,
+        "anterior": 3.450766391904142,
+        "variacion": -1.0517422422894267,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 2.290206805096223,
-        "anterior": 3.1067650807958267,
-        "variacion": -0.8165582756996037,
+        "actual": 1.6678589144264049,
+        "anterior": 3.5292669577016973,
+        "variacion": -1.8614080432752924,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 12.32020434291532,
-        "anterior": 14.711545889635206,
-        "variacion": -2.391341546719886
+        "actual": 12.33559258778373,
+        "anterior": 12.908078536052823,
+        "variacion": -0.5724859482690938
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 13.364015769947505,
-        "anterior": 10.683884532922104,
-        "variacion": 2.6801312370254013
+        "actual": 13.534588207724,
+        "anterior": 11.64926986000888,
+        "variacion": 1.8853183477151187
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 7.5611215259880575,
-        "anterior": 7.639576220602272,
-        "variacion": -0.07845469461421484,
-        "nota_anterior": "a"
+        "actual": 7.628886047545219,
+        "anterior": 7.496750610059772,
+        "variacion": 0.13213543748544687
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 1.033948558088221,
-        "anterior": 0.8001172755347237,
-        "variacion": 0.2338312825534974,
+        "actual": 1.6122717644432807,
+        "anterior": 0.9722018032848199,
+        "variacion": 0.6400699611584608,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 2.609994252079597,
-        "anterior": 2.5062999235406593,
-        "variacion": 0.10369432853893779,
+        "actual": 2.2047798359232966,
+        "anterior": 3.0185619605664074,
+        "variacion": -0.8137821246431107,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 1.5140080568386844,
-        "anterior": 1.5963316915107784,
-        "variacion": -0.08232363467209391,
+        "actual": 1.9658327531347382,
+        "anterior": 1.7498714095618002,
+        "variacion": 0.21596134357293795,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
@@ -338,17 +337,17 @@
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
         "nombre": "Actividades de organizaciones y órganos extraterritoriales",
         "actual": 0,
-        "anterior": 0.07781591106582633,
-        "variacion": -0.07781591106582633,
+        "anterior": 0.07614718297728654,
+        "variacion": -0.07614718297728654,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.2740464243650272,
-        "anterior": 0.32913919102467354,
-        "variacion": -0.05509276665964635,
+        "actual": 0.23341393869383179,
+        "anterior": 0.4001415254639781,
+        "variacion": -0.1667275867701463,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -357,25 +356,25 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 1.707933214372076,
-        "anterior": 4.770107420696976,
-        "variacion": -3.0621742063249,
+        "actual": 1.0691028526103248,
+        "anterior": 4.131415505996521,
+        "variacion": -3.062312653386196,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 19.37060291519935,
-        "anterior": 16.26621360882042,
-        "variacion": 3.1043893063789305
+        "actual": 18.907922599424424,
+        "anterior": 17.201405431325437,
+        "variacion": 1.706517168098987
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 7.100436201105366,
-        "anterior": 9.408969628141218,
-        "variacion": -2.3085334270358517,
+        "actual": 8.042134719943958,
+        "anterior": 10.080482886026529,
+        "variacion": -2.038348166082571,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
@@ -383,143 +382,145 @@
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
         "actual": 0,
-        "anterior": 0.9841455135266963,
-        "variacion": -0.9841455135266963,
+        "anterior": 0.8300203982753879,
+        "variacion": -0.8300203982753879,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 1.1785993692004606,
-        "anterior": 1.244766680554617,
-        "variacion": -0.06616731135415632,
+        "actual": 1.1922079032684436,
+        "anterior": 1.6313439589226173,
+        "variacion": -0.4391360556541737,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 16.649614619310785,
-        "anterior": 13.693723915567716,
-        "variacion": 2.9558907037430693
+        "actual": 16.88512846981023,
+        "anterior": 11.698329799864842,
+        "variacion": 5.186798669945388,
+        "nota_anterior": "b"
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 40.252005921993835,
-        "anterior": 41.5759855307683,
-        "variacion": -1.323979608774465
+        "actual": 40.68036031614622,
+        "anterior": 40.44361091517531,
+        "variacion": 0.2367494009709077
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 16.84015426334362,
-        "anterior": 15.321414016332223,
-        "variacion": 1.5187402470113973
+        "actual": 17.17835340761449,
+        "anterior": 14.64342184163232,
+        "variacion": 2.5349315659821716
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 12.75128679921304,
-        "anterior": 8.849379566043362,
-        "variacion": 3.901907233169677,
+        "actual": 15.164306062456042,
+        "anterior": 9.558534846947675,
+        "variacion": 5.605771215508367,
         "nota_actual": "a",
         "nota_anterior": "b"
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 1.2486183398915645,
-        "anterior": 1.1836386105057919,
-        "variacion": 0.06497972938577257,
+        "actual": 1.4867357725928718,
+        "anterior": 0.8660501504691832,
+        "variacion": 0.6206856221236886,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 1.3754811976897543,
-        "anterior": 1.3009059229287114,
-        "variacion": 0.07457527476104286,
+        "actual": 2.1276024745595867,
+        "anterior": 1.713108122225596,
+        "variacion": 0.4144943523339908,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 3.8955758936877336,
-        "anterior": 0.559910516464389,
-        "variacion": 3.3356653772233447,
+        "actual": 2.40433476962328,
+        "anterior": 1.4901168015144906,
+        "variacion": 0.9142179681087896,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 5.400761277180803,
-        "anterior": 4.972759109997643,
-        "variacion": 0.42800216718316,
+        "actual": 4.680180304454605,
+        "anterior": 4.958256459798133,
+        "variacion": -0.2780761553435287,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 5.025668151901177,
-        "anterior": 6.789638184560088,
-        "variacion": -1.7639700326589107,
+        "actual": 5.057394467856642,
+        "anterior": 6.820754409304431,
+        "variacion": -1.7633599414477894,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 19.018109963506213,
-        "anterior": 16.753902863822184,
-        "variacion": 2.264207099684029,
-        "nota_actual": "a"
+        "actual": 18.86219255700104,
+        "anterior": 16.193983213107586,
+        "variacion": 2.668209343893455,
+        "nota_actual": "a",
+        "nota_anterior": "a"
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 18.068984990007053,
-        "anterior": 16.835410445731682,
-        "variacion": 1.2335745442753705
+        "actual": 16.950579218070104,
+        "anterior": 17.531809869464094,
+        "variacion": -0.5812306513939909
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 12.535052030419424,
-        "anterior": 15.287982764770454,
-        "variacion": -2.7529307343510308,
+        "actual": 12.246505274468232,
+        "anterior": 15.478218570184882,
+        "variacion": -3.2317132957166503,
         "nota_actual": "a",
         "nota_anterior": "a"
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 2.720602668257223,
-        "anterior": 1.0583735382160258,
-        "variacion": 1.662229130041197,
+        "actual": 2.883799389321564,
+        "anterior": 1.1729002979501642,
+        "variacion": 1.7108990913714,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 6.429344444046745,
-        "anterior": 8.788432230247945,
-        "variacion": -2.3590877862012007,
+        "actual": 5.031390085986222,
+        "anterior": 8.034350064525611,
+        "variacion": -3.0029599785393897,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 2.778007837784053,
-        "anterior": 2.503256832349748,
-        "variacion": 0.27475100543430475,
+        "actual": 3.1617757766619254,
+        "anterior": 2.941400147028834,
+        "variacion": 0.22037562963309165,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
@@ -527,17 +528,17 @@
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
         "nombre": "Actividades de organizaciones y órganos extraterritoriales",
         "actual": 0,
-        "anterior": 0.21335349144155547,
-        "variacion": -0.21335349144155547,
+        "anterior": 0,
+        "variacion": 0,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.26053859946390406,
-        "anterior": 0,
-        "variacion": 0.26053859946390406,
+        "actual": 0,
+        "anterior": 0.2901480960034702,
+        "variacion": -0.2901480960034702,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -546,163 +547,163 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 2.991625634094455,
-        "anterior": 1.8902703434912478,
-        "variacion": 1.1013552906032074,
+        "actual": 3.5946813140287524,
+        "anterior": 2.086373901918892,
+        "variacion": 1.5083074121098603,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 57.31852893139714,
-        "anterior": 66.21351273579684,
-        "variacion": -8.8949838043997
+        "actual": 64.96760294390324,
+        "anterior": 67.20955992411095,
+        "variacion": -2.2419569802077035
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 34.96829364495278,
-        "anterior": 29.088427345731912,
-        "variacion": 5.879866299220868
+        "actual": 35.729088005845135,
+        "anterior": 29.37371045191233,
+        "variacion": 6.355377553932804
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 4.27938357440731,
-        "anterior": 3.767313630155138,
-        "variacion": 0.5120699442521723,
+        "actual": 5.202139720269413,
+        "anterior": 2.3740215813178427,
+        "variacion": 2.82811813895157,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 5.846721812608188,
-        "anterior": 3.0421798900121546,
-        "variacion": 2.8045419225960337,
+        "actual": 8.222157718728639,
+        "anterior": 5.129838570872648,
+        "variacion": 3.0923191478559904,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 26.004739531950143,
-        "anterior": 25.752485158422044,
-        "variacion": 0.25225437352809976
+        "actual": 21.30406932956948,
+        "anterior": 27.1108517846348,
+        "variacion": -5.806782455065321
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 53.10798967470591,
-        "anterior": 49.64517774246517,
-        "variacion": 3.46281193224074
+        "actual": 49.84025044497107,
+        "anterior": 46.25844641045228,
+        "variacion": 3.5818040345187896
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 30.961673073372978,
-        "anterior": 33.76012902972325,
-        "variacion": -2.798455956350274
+        "actual": 35.02299700353028,
+        "anterior": 33.13829483227054,
+        "variacion": 1.8847021712597396
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 19.164837404950905,
-        "anterior": 16.371512873505946,
-        "variacion": 2.7933245314449593,
+        "actual": 19.313595307350507,
+        "anterior": 12.758799258395499,
+        "variacion": 6.554796048955009,
+        "nota_actual": "a",
         "nota_anterior": "a"
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 5.197713603251993,
-        "anterior": 1.4233362228869264,
-        "variacion": 3.774377380365066,
+        "actual": 3.08612516898582,
+        "anterior": 2.470177289638111,
+        "variacion": 0.6159478793477091,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 3.2186280347754557,
-        "anterior": 3.793083994812688,
-        "variacion": -0.5744559600372323,
+        "actual": 3.502136364502039,
+        "anterior": 3.4780706259325758,
+        "variacion": 0.024065738569463146,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 3.908814506062067,
-        "anterior": 3.622354802685556,
-        "variacion": 0.28645970337651105,
+        "actual": 4.054496545209723,
+        "anterior": 3.0952159634979344,
+        "variacion": 0.9592805817117886,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 11.830709297808541,
-        "anterior": 12.408813309028217,
-        "variacion": -0.5781040112196756,
+        "actual": 11.201224859942194,
+        "anterior": 13.270280775324911,
+        "variacion": -2.0690559153827177,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 12.672192253402061,
-        "anterior": 14.869158709303811,
-        "variacion": -2.19696645590175,
-        "nota_actual": "a"
+        "actual": 13.789899890273,
+        "anterior": 15.825307610572173,
+        "variacion": -2.0354077202991725
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 16.570667241215347,
-        "anterior": 17.204220066912995,
-        "variacion": -0.6335528256976488,
+        "actual": 16.221306758972823,
+        "anterior": 16.040229952167408,
+        "variacion": 0.1810768068054145,
         "nota_anterior": "a"
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 29.34633502464367,
-        "anterior": 29.700542481872233,
-        "variacion": -0.35420745722856495
+        "actual": 29.877462783334582,
+        "anterior": 30.306166955583965,
+        "variacion": -0.4287041722493825
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 22.974568697512275,
-        "anterior": 23.720848766958568,
-        "variacion": -0.7462800694462928
+        "actual": 23.008759449369332,
+        "anterior": 24.78109405817977,
+        "variacion": -1.7723346088104392
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 4.98498976275069,
-        "anterior": 4.8838984522022395,
-        "variacion": 0.10109131054845033,
+        "actual": 3.567889407052541,
+        "anterior": 4.8169287053924,
+        "variacion": -1.2490392983398593,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 9.436276712382046,
-        "anterior": 9.254309954322396,
-        "variacion": 0.1819667580596498,
+        "actual": 8.60707685035352,
+        "anterior": 9.184330635366056,
+        "variacion": -0.5772537850125357,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 5.293349918665265,
-        "anterior": 5.442685008152719,
-        "variacion": -0.14933508948745455,
+        "actual": 4.324350035566798,
+        "anterior": 5.285295795900691,
+        "variacion": -0.9609457603338925,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
@@ -710,17 +711,17 @@
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
         "nombre": "Actividades de organizaciones y órganos extraterritoriales",
         "actual": 0,
-        "anterior": 0.26859079687798115,
-        "variacion": -0.26859079687798115,
+        "anterior": 0.2645451475213213,
+        "variacion": -0.2645451475213213,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.5630847445937378,
-        "anterior": 0.81207589558658,
-        "variacion": -0.2489911509928422,
+        "actual": 1.288566952751186,
+        "anterior": 1.8903878801612715,
+        "variacion": -0.6018209274100854,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -729,163 +730,164 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 6.07037673502541,
-        "anterior": 6.492065777151803,
-        "variacion": -0.4216890421263928,
-        "nota_actual": "a",
+        "actual": 5.037106296146297,
+        "anterior": 6.971592934804435,
+        "variacion": -1.9344866386581376,
+        "nota_actual": "b",
         "nota_anterior": "a"
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 32.17569549801279,
-        "anterior": 28.05079416836298,
-        "variacion": 4.124901329649813
+        "actual": 31.622100357002957,
+        "anterior": 30.680091528911014,
+        "variacion": 0.942008828091943
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 10.06205630557076,
-        "anterior": 11.996998469067213,
-        "variacion": -1.9349421634964532
+        "actual": 11.230910066323723,
+        "anterior": 10.299881797054006,
+        "variacion": 0.9310282692697172
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 1.9137450097056132,
-        "anterior": 1.235366187911657,
-        "variacion": 0.6783788217939561,
+        "actual": 2.162065894194253,
+        "anterior": 1.0505859824343096,
+        "variacion": 1.1114799117599434,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 2.31284826601688,
-        "anterior": 2.501415479613834,
-        "variacion": -0.18856721359695428,
+        "actual": 2.022126991158843,
+        "anterior": 2.5316269119451524,
+        "variacion": -0.5094999207863093,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 11.513396283754219,
-        "anterior": 11.13031578558534,
-        "variacion": 0.38308049816887824
+        "actual": 10.412735912097451,
+        "anterior": 10.468881032334174,
+        "variacion": -0.05614512023672269,
+        "nota_actual": "a"
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 25.93127778363951,
-        "anterior": 26.354926291187105,
-        "variacion": -0.42364850754759686
+        "actual": 24.416385208894596,
+        "anterior": 26.507342059389682,
+        "variacion": -2.090956850495086
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 8.200334730701101,
-        "anterior": 8.394699204843592,
-        "variacion": -0.1943644741424908
+        "actual": 8.901295491057217,
+        "anterior": 8.106717017147933,
+        "variacion": 0.7945784739092847
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 7.934148599854656,
-        "anterior": 7.581464665919884,
-        "variacion": 0.35268393393477204,
+        "actual": 7.770834743642342,
+        "anterior": 7.100581705054928,
+        "variacion": 0.6702530385874139,
         "nota_actual": "a"
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 0.7897274534909317,
-        "anterior": 1.146543423048372,
-        "variacion": -0.3568159695574403,
+        "actual": 0.6431715414050346,
+        "anterior": 0.8289856507033806,
+        "variacion": -0.18581410929834596,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 1.4933310881278772,
-        "anterior": 1.3932655824102727,
-        "variacion": 0.10006550571760453,
+        "actual": 1.4227809721852467,
+        "anterior": 1.4568645781404665,
+        "variacion": -0.034083605955219864,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 1.2395787948819372,
-        "anterior": 0.9803541649663416,
-        "variacion": 0.2592246299155956,
+        "actual": 1.38801121506238,
+        "anterior": 1.4382805635982636,
+        "variacion": -0.05026934853588361,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 2.759252325759522,
-        "anterior": 3.6730471871640415,
-        "variacion": -0.9137948614045195,
+        "actual": 2.5887930482389,
+        "anterior": 3.5754751951929857,
+        "variacion": -0.9866821469540858,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 2.4733578552016384,
-        "anterior": 4.226437742038936,
-        "variacion": -1.7530798868372974,
+        "actual": 3.5953197550222944,
+        "anterior": 4.355614012603424,
+        "variacion": -0.7602942575811298,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 9.160430331469874,
-        "anterior": 8.650905339445131,
-        "variacion": 0.5095249920247422
+        "actual": 8.202352469348524,
+        "anterior": 7.286465400767934,
+        "variacion": 0.9158870685805898
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 13.097463455216625,
-        "anterior": 12.532871624224283,
-        "variacion": 0.5645918309923417
+        "actual": 12.050056539105332,
+        "anterior": 14.411679713210374,
+        "variacion": -2.3616231741050413
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 8.752068187592949,
-        "anterior": 7.27421336482658,
-        "variacion": 1.4778548227663686
+        "actual": 8.827929798212391,
+        "anterior": 6.062821541157489,
+        "variacion": 2.7651082570549024
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 1.3367410269404538,
-        "anterior": 1.8287003807768627,
-        "variacion": -0.4919593538364089,
+        "actual": 1.2444165726185066,
+        "anterior": 2.0444165328046493,
+        "variacion": -0.7999999601861427,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 3.7073300636416566,
-        "anterior": 2.9701207629253537,
-        "variacion": 0.737209300716303,
+        "actual": 3.871884759445593,
+        "anterior": 3.1742453048784722,
+        "variacion": 0.697639454567121,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 2.8067857582071083,
-        "anterior": 2.50471658386007,
-        "variacion": 0.3020691743470385,
+        "actual": 2.884976234131373,
+        "anterior": 1.7928529577405596,
+        "variacion": 1.0921232763908133,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
@@ -901,9 +903,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.2718462934686095,
-        "anterior": 0.8486170807203472,
-        "variacion": -0.5767707872517378,
+        "actual": 0.4191817085178456,
+        "anterior": 0.8617748971812068,
+        "variacion": -0.4425931886633612,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -912,161 +914,161 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 34.30143558879104,
-        "anterior": 32.91628588120565,
-        "variacion": 1.3851497075853842
+        "actual": 34.081085159897086,
+        "anterior": 30.694825918987995,
+        "variacion": 3.386259240909091
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 58.751444426376544,
-        "anterior": 50.223347198802536,
-        "variacion": 8.528097227574008
+        "actual": 54.86105867471981,
+        "anterior": 48.629327189995784,
+        "variacion": 6.231731484724023
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 21.94643968366147,
-        "anterior": 20.589432807056816,
-        "variacion": 1.357006876604654,
+        "actual": 24.807448050217086,
+        "anterior": 22.178956353393783,
+        "variacion": 2.6284916968233034,
+        "nota_actual": "a",
         "nota_anterior": "a"
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 1.5640484560128285,
-        "anterior": 1.1285714067681218,
-        "variacion": 0.43547704924470665,
+        "actual": 1.837135301007465,
+        "anterior": 1.2531331522852838,
+        "variacion": 0.5840021487221811,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 2.6593008499894273,
-        "anterior": 2.8384643626357984,
-        "variacion": -0.1791635126463711,
+        "actual": 2.5303941228753626,
+        "anterior": 3.078715037554695,
+        "variacion": -0.5483209146793326,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 29.543568383305114,
-        "anterior": 29.87440641653129,
-        "variacion": -0.33083803322617555
+        "actual": 29.184415493729485,
+        "anterior": 28.829792120076316,
+        "variacion": 0.354623373653169
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 70.4582686528245,
-        "anterior": 71.1684913597739,
-        "variacion": -0.7102227069493949
+        "actual": 75.09512379265932,
+        "anterior": 72.68707848229576,
+        "variacion": 2.408045310363562
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 21.416554856744348,
-        "anterior": 22.224889387128222,
-        "variacion": -0.808334530383874
+        "actual": 20.994566502846848,
+        "anterior": 22.062953643252396,
+        "variacion": -1.068387140405548
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 21.637438777782076,
-        "anterior": 23.327912236341227,
-        "variacion": -1.6904734585591505,
-        "nota_actual": "a"
+        "actual": 17.754873762177194,
+        "anterior": 23.264771465769673,
+        "variacion": -5.509897703592479
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 2.8553040407004673,
-        "anterior": 5.399524050998312,
-        "variacion": -2.5442200102978445,
+        "actual": 3.6976629576049773,
+        "anterior": 5.067662234535548,
+        "variacion": -1.3699992769305704,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 1.6978581930009522,
-        "anterior": 3.363106319016221,
-        "variacion": -1.665248126015269,
+        "actual": 2.600723551186931,
+        "anterior": 3.9741048662138323,
+        "variacion": -1.3733813150269012,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 2.3323408989666694,
-        "anterior": 3.3111692855410677,
-        "variacion": -0.9788283865743983,
+        "actual": 2.134591393109411,
+        "anterior": 3.430641283307618,
+        "variacion": -1.2960498901982067,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 12.473562578444668,
-        "anterior": 15.446030775285786,
-        "variacion": -2.9724681968411186,
-        "nota_actual": "b",
-        "nota_anterior": "a"
+        "actual": 13.524360170197848,
+        "anterior": 14.316269515919808,
+        "variacion": -0.7919093457219599,
+        "nota_actual": "a",
+        "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 8.322135136341222,
-        "anterior": 9.625249358580247,
-        "variacion": -1.3031142222390244,
+        "actual": 8.62139600933049,
+        "anterior": 9.523899173767182,
+        "variacion": -0.9025031644366912,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 17.895817746650142,
-        "anterior": 21.877490723358786,
-        "variacion": -3.9816729767086443
+        "actual": 16.391290688978295,
+        "anterior": 20.99320984014288,
+        "variacion": -4.601919151164587
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 39.879710806897094,
-        "anterior": 34.06152353461906,
-        "variacion": 5.818187272278031
+        "actual": 40.222221081400384,
+        "anterior": 33.47028118611098,
+        "variacion": 6.751939895289404
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 23.313858337603897,
-        "anterior": 25.790792487290318,
-        "variacion": -2.4769341496864214
+        "actual": 23.29519986668326,
+        "anterior": 24.488828121838164,
+        "variacion": -1.1936282551549056
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 2.599066018469738,
-        "anterior": 4.179930201189865,
-        "variacion": -1.5808641827201275,
+        "actual": 3.105819694887372,
+        "anterior": 4.5306963063758925,
+        "variacion": -1.4248766114885205,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 12.904538186440515,
-        "anterior": 12.76146817197018,
-        "variacion": 0.14307001447033585,
+        "actual": 14.44812975007415,
+        "anterior": 12.256145222299448,
+        "variacion": 2.191984527774702,
         "nota_anterior": "a"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 9.417815351205185,
-        "anterior": 9.058690697165114,
-        "variacion": 0.35912465404007143,
+        "actual": 9.896202991345598,
+        "anterior": 8.830874097085072,
+        "variacion": 1.0653288942605261,
         "nota_actual": "a",
         "nota_anterior": "a"
       },
@@ -1082,9 +1084,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.2672366206543897,
-        "anterior": 0.8660663134146659,
-        "variacion": -0.5988296927602762,
+        "actual": 0.44356584954021894,
+        "anterior": 1.2712730772290801,
+        "variacion": -0.8277072276888612,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -1093,162 +1095,163 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 40.66860097356893,
-        "anterior": 38.167819902082464,
-        "variacion": 2.5007810714864647
+        "actual": 40.81751089596018,
+        "anterior": 41.065589222287805,
+        "variacion": -0.24807832632762228
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 36.252216270577776,
-        "anterior": 30.573547636053775,
-        "variacion": 5.678668634524001
+        "actual": 35.882084366824834,
+        "anterior": 30.494248032429468,
+        "variacion": 5.387836334395367
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 67.46291131522644,
-        "anterior": 63.53531025902206,
-        "variacion": 3.9276010562043737
+        "actual": 68.60773052112373,
+        "anterior": 61.459739362409685,
+        "variacion": 7.147991158714042
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 2.6704494653751025,
-        "anterior": 2.9647166416371262,
-        "variacion": -0.2942671762620237,
+        "actual": 3.0478772481146406,
+        "anterior": 2.9259835087567265,
+        "variacion": 0.12189373935791403,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 8.43361474674223,
-        "anterior": 7.5684163465654395,
-        "variacion": 0.8651984001767898,
+        "actual": 7.231456319905677,
+        "anterior": 8.319602329691092,
+        "variacion": -1.0881460097854152,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 76.93011716043456,
-        "anterior": 76.74665679585024,
-        "variacion": 0.18346036458432025
+        "actual": 76.07013766383466,
+        "anterior": 80.20352534980387,
+        "variacion": -4.133387685969211
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 161.49806135942697,
-        "anterior": 178.77373200410588,
-        "variacion": -17.27567064467891
+        "actual": 162.8002683034226,
+        "anterior": 172.96343847611638,
+        "variacion": -10.163170172693782
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 67.62119519512869,
-        "anterior": 73.07066925706017,
-        "variacion": -5.4494740619314825
+        "actual": 72.52425016482378,
+        "anterior": 69.8537746316474,
+        "variacion": 2.6704755331763863
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 47.77118741365368,
-        "anterior": 46.86470762404568,
-        "variacion": 0.9064797896079995
+        "actual": 50.73738379662155,
+        "anterior": 45.15297910495269,
+        "variacion": 5.584404691668858
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 16.54157323108579,
-        "anterior": 16.395046977359822,
-        "variacion": 0.14652625372596617
+        "actual": 16.208204861130355,
+        "anterior": 17.03754216802048,
+        "variacion": -0.8293373068901246
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 12.347136713211887,
-        "anterior": 13.033965031066671,
-        "variacion": -0.6868283178547845
+        "actual": 11.251910713439258,
+        "anterior": 14.379588071498953,
+        "variacion": -3.127677358059694,
+        "nota_actual": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 16.13079417146363,
-        "anterior": 13.43855783921963,
-        "variacion": 2.6922363322440006
+        "actual": 15.769043701699882,
+        "anterior": 14.369472755334481,
+        "variacion": 1.399570946365401
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 32.6093804661427,
-        "anterior": 26.72880407186854,
-        "variacion": 5.880576394274161
+        "actual": 33.58176995080728,
+        "anterior": 26.146246460817874,
+        "variacion": 7.435523489989404
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 33.89934733027369,
-        "anterior": 25.32307472832346,
-        "variacion": 8.576272601950233
+        "actual": 32.705436345378075,
+        "anterior": 26.780160461844144,
+        "variacion": 5.925275883533931
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 64.494254631212,
-        "anterior": 61.419814766623816,
-        "variacion": 3.074439864588186
+        "actual": 63.211057124981416,
+        "anterior": 58.959186673432335,
+        "variacion": 4.251870451549081
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 81.06228842235895,
-        "anterior": 84.9994265948996,
-        "variacion": -3.9371381725406565
+        "actual": 82.61067314161663,
+        "anterior": 85.22251129108673,
+        "variacion": -2.6118381494701026
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 79.62084269529365,
-        "anterior": 72.50227961349638,
-        "variacion": 7.118563081797262
+        "actual": 75.57843228224438,
+        "anterior": 73.87702431672551,
+        "variacion": 1.701407965518868
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 12.42750306492381,
-        "anterior": 13.332514610666314,
-        "variacion": -0.9050115457425036
+        "actual": 14.544232272283812,
+        "anterior": 13.100396312551185,
+        "variacion": 1.4438359597326276
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 29.592603014578206,
-        "anterior": 33.76469200247286,
-        "variacion": -4.172088987894657
+        "actual": 31.255652822564898,
+        "anterior": 35.178038769585015,
+        "variacion": -3.9223859470201177
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 28.49683360236796,
-        "anterior": 37.06487268135818,
-        "variacion": -8.568039078990221
+        "actual": 27.71972711721761,
+        "anterior": 39.65455158588117,
+        "variacion": -11.934824468663564
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
         "nombre": "Actividades de organizaciones y órganos extraterritoriales",
-        "actual": 0.1687134980327398,
+        "actual": 0.17648002400775334,
         "anterior": 0,
-        "variacion": 0.1687134980327398,
+        "variacion": 0.17648002400775334,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 1.1858222890100334,
-        "anterior": 1.063752879079399,
-        "variacion": 0.12206940993063431,
+        "actual": 0.7309144012478659,
+        "anterior": 0.9531013428663853,
+        "variacion": -0.22218694161851937,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -1257,163 +1260,163 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 55.81448689351082,
-        "anterior": 63.760135835144524,
-        "variacion": -7.945648941633706
+        "actual": 59.80240365408432,
+        "anterior": 68.06878110746916,
+        "variacion": -8.266377453384841,
+        "nota_anterior": "a"
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 39.38596779597703,
-        "anterior": 37.59393302923892,
-        "variacion": 1.7920347667381122
+        "actual": 37.511278722796874,
+        "anterior": 35.439916795183954,
+        "variacion": 2.0713619276129194
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 373.94440729575797,
-        "anterior": 418.35073223778693,
-        "variacion": -44.40632494202896
+        "actual": 380.13473260624244,
+        "anterior": 419.4700167344863,
+        "variacion": -39.33528412824387
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 17.69758172619693,
-        "anterior": 18.606369637052794,
-        "variacion": -0.9087879108558639,
+        "actual": 15.85573742298946,
+        "anterior": 19.173025380976515,
+        "variacion": -3.3172879579870553,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 30.79772615634164,
-        "anterior": 26.813390622421217,
-        "variacion": 3.9843355339204223,
-        "nota_actual": "a",
+        "actual": 30.67064081160605,
+        "anterior": 29.3488414770576,
+        "variacion": 1.321799334548448,
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 324.3615305903327,
-        "anterior": 304.28995538760745,
-        "variacion": 20.071575202725228
+        "actual": 321.3907978463179,
+        "anterior": 284.08933700422847,
+        "variacion": 37.301460842089455
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 840.0115305106398,
-        "anterior": 816.9444908272912,
-        "variacion": 23.067039683348526
+        "actual": 834.0150067970666,
+        "anterior": 826.3781451163569,
+        "variacion": 7.636861680709671
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 296.67130556072465,
-        "anterior": 286.99381363407423,
-        "variacion": 9.677491926650418
+        "actual": 309.8567403656092,
+        "anterior": 275.6137577748926,
+        "variacion": 34.24298259071662
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 187.49644988084322,
-        "anterior": 195.93433892002957,
-        "variacion": -8.43788903918636
+        "actual": 189.60503787461482,
+        "anterior": 194.0174620236854,
+        "variacion": -4.412424149070574
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 127.66327729465633,
-        "anterior": 179.8491091775373,
-        "variacion": -52.18583188288096
+        "actual": 136.2664789406059,
+        "anterior": 178.0710758375558,
+        "variacion": -41.8045968969499
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 132.74321350277216,
-        "anterior": 157.53006590474658,
-        "variacion": -24.786852401974414
+        "actual": 133.64803107061044,
+        "anterior": 154.95136342774492,
+        "variacion": -21.30333235713448
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 55.72244812926353,
-        "anterior": 45.25401767661471,
-        "variacion": 10.468430452648825,
+        "actual": 65.0662985724744,
+        "anterior": 51.77133137276434,
+        "variacion": 13.294967199710058,
         "nota_actual": "a"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 219.57169913139074,
-        "anterior": 203.6862182638503,
-        "variacion": 15.885480867540451
+        "actual": 214.49928631436697,
+        "anterior": 204.20696376157204,
+        "variacion": 10.292322552794928
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 168.87628621660238,
-        "anterior": 184.04782207794418,
-        "variacion": -15.171535861341795
+        "actual": 161.72424109350936,
+        "anterior": 186.99744639127232,
+        "variacion": -25.273205297762956
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 213.24764563567297,
-        "anterior": 208.72835775914152,
-        "variacion": 4.51928787653145
+        "actual": 216.27914013566314,
+        "anterior": 204.3002662929592,
+        "variacion": 11.978873842703933
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 334.71780264081264,
-        "anterior": 319.0721210114482,
-        "variacion": 15.645681629364447
+        "actual": 366.8740668218324,
+        "anterior": 325.3694055074142,
+        "variacion": 41.50466131441817
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 323.1096991664492,
-        "anterior": 339.90642432380264,
-        "variacion": -16.79672515735342
+        "actual": 335.67372826813966,
+        "anterior": 348.735733089719,
+        "variacion": -13.062004821579364
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 64.10483043575125,
-        "anterior": 49.54949752107129,
-        "variacion": 14.555332914679965
+        "actual": 59.277186067115935,
+        "anterior": 54.176478319050105,
+        "variacion": 5.10070774806583
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 176.8672711607604,
-        "anterior": 187.89628675459605,
-        "variacion": -11.029015593835652
+        "actual": 162.17932063465582,
+        "anterior": 194.6662132607029,
+        "variacion": -32.48689262604708
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 111.00715837668588,
-        "anterior": 103.68005586689667,
-        "variacion": 7.3271025097892135
+        "actual": 104.80484559750012,
+        "anterior": 111.76499003713229,
+        "variacion": -6.960144439632174
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
         "nombre": "Actividades de organizaciones y órganos extraterritoriales",
-        "actual": 2.7217954395307564,
-        "anterior": 1.0711177470934823,
-        "variacion": 1.6506776924372741,
+        "actual": 3.16709717689163,
+        "anterior": 1.0754288393853069,
+        "variacion": 2.0916683375063228,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 19.814512876497563,
-        "anterior": 19.03445532389914,
-        "variacion": 0.7800575525984215,
+        "actual": 21.853589778124554,
+        "anterior": 19.569738046441156,
+        "variacion": 2.2838517316833986,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -1422,160 +1425,161 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 67.13579248837516,
-        "anterior": 67.47541284520969,
-        "variacion": -0.33962035683452996
+        "actual": 71.21682895264878,
+        "anterior": 70.24841116068775,
+        "variacion": 0.9684177919610306
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 20.63519758520353,
-        "anterior": 23.327312253482535,
-        "variacion": -2.692114668279004
+        "actual": 17.118075627352244,
+        "anterior": 21.625366525620286,
+        "variacion": -4.507290898268042
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 44.07768418039209,
-        "anterior": 48.59911165759159,
-        "variacion": -4.521427477199502
+        "actual": 47.082824066725976,
+        "anterior": 45.173629405624155,
+        "variacion": 1.9091946611018216
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 0.9947647107697655,
-        "anterior": 1.4951661596487769,
-        "variacion": -0.5004014488790114,
+        "actual": 1.019856668240739,
+        "anterior": 1.2630388488722506,
+        "variacion": -0.24318218063151154,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 2.2312987752599103,
-        "anterior": 4.8131569092648,
-        "variacion": -2.5818581340048894,
+        "actual": 3.392274703912767,
+        "anterior": 5.4492877379199935,
+        "variacion": -2.0570130340072263,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 30.821130259684836,
-        "anterior": 29.644350940543674,
-        "variacion": 1.1767793191411613
+        "actual": 31.35771099408223,
+        "anterior": 29.41747428974784,
+        "variacion": 1.9402367043343887
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 83.36610059969503,
-        "anterior": 85.0050616297685,
-        "variacion": -1.6389610300734745
+        "actual": 84.9925708632331,
+        "anterior": 86.37157509486242,
+        "variacion": -1.3790042316293238
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 23.48769462684965,
-        "anterior": 20.064741106601943,
-        "variacion": 3.422953520247706
+        "actual": 23.259769059047844,
+        "anterior": 21.647555887917893,
+        "variacion": 1.6122131711299517
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 19.042052458112135,
-        "anterior": 16.023061647192577,
-        "variacion": 3.018990810919558,
+        "actual": 17.092723617558672,
+        "anterior": 14.771564207930096,
+        "variacion": 2.321159409628576,
         "nota_anterior": "a"
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 3.841043478827755,
-        "anterior": 2.1251614419242326,
-        "variacion": 1.7158820369035226,
+        "actual": 3.553905587528558,
+        "anterior": 3.47784134756204,
+        "variacion": 0.0760642399665179,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 3.482977996402888,
-        "anterior": 4.271252776224669,
-        "variacion": -0.7882747798217808,
+        "actual": 4.345667083230185,
+        "anterior": 2.4317634433495097,
+        "variacion": 1.9139036398806755,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 3.3244942065262375,
-        "anterior": 2.449819964213408,
-        "variacion": 0.8746742423128295,
+        "actual": 3.031155874261825,
+        "anterior": 2.9731390978404333,
+        "variacion": 0.058016776421391913,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 8.298524925807742,
-        "anterior": 18.104820216029445,
-        "variacion": -9.806295290221703,
+        "actual": 7.893258543360567,
+        "anterior": 15.423025857806069,
+        "variacion": -7.529767314445502,
         "nota_actual": "b",
         "nota_anterior": "a"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 11.010878302726036,
-        "anterior": 9.190161822695911,
-        "variacion": 1.820716480030125,
+        "actual": 11.187067039485008,
+        "anterior": 10.057195622235682,
+        "variacion": 1.1298714172493263,
         "nota_actual": "a",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 20.661395798977836,
-        "anterior": 21.684165133117922,
-        "variacion": -1.0227693341400865
+        "actual": 20.65039076690546,
+        "anterior": 22.35510062505269,
+        "variacion": -1.704709858147229
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 39.28354949100243,
-        "anterior": 37.87562578288464,
-        "variacion": 1.4079237081177922
+        "actual": 37.76726123199421,
+        "anterior": 36.099004017795785,
+        "variacion": 1.6682572141984267
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 28.654015775935573,
-        "anterior": 29.805611104354448,
-        "variacion": -1.1515953284188747
+        "actual": 27.564931014254014,
+        "anterior": 29.374567371620962,
+        "variacion": -1.8096363573669478
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 4.616685933050089,
-        "anterior": 4.236059747921939,
-        "variacion": 0.3806261851281505,
+        "actual": 5.159090466937504,
+        "anterior": 4.579333120082152,
+        "variacion": 0.5797573468553514,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 10.058267165170447,
-        "anterior": 10.784373039566239,
-        "variacion": -0.7261058743957918,
+        "actual": 10.233618102660186,
+        "anterior": 8.675306484567791,
+        "variacion": 1.5583116180923948,
+        "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 15.32940150375209,
-        "anterior": 13.71068923490353,
-        "variacion": 1.6187122688485598
+        "actual": 15.797423430433255,
+        "anterior": 13.99837204227345,
+        "variacion": 1.7990513881598051
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
@@ -1589,9 +1593,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.3809252658917182,
-        "anterior": 0.8536435630268953,
-        "variacion": -0.47271829713517705,
+        "actual": 0.28547672501286164,
+        "anterior": 0.8495746068117731,
+        "variacion": -0.5640978817989115,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -1600,160 +1604,158 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 74.01595303573954,
-        "anterior": 85.43676848294051,
-        "variacion": -11.420815447200965
+        "actual": 74.73928354638971,
+        "anterior": 86.6400532053476,
+        "variacion": -11.900769658957884
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 5.48317514910842,
-        "anterior": 7.058515988965108,
-        "variacion": -1.575340839856688,
+        "actual": 5.855102361704299,
+        "anterior": 4.932963232998389,
+        "variacion": 0.9221391287059104,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 43.66305509922156,
-        "anterior": 46.88954396897684,
-        "variacion": -3.226488869755279
+        "actual": 45.75861598444431,
+        "anterior": 43.47809113148628,
+        "variacion": 2.280524852958031
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 2.0620915733152367,
-        "anterior": 2.959327250203283,
-        "variacion": -0.8972356768880463,
+        "actual": 2.9008063124125596,
+        "anterior": 2.623415528036529,
+        "variacion": 0.2773907843760304,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 4.179334876933973,
-        "anterior": 6.021912872062496,
-        "variacion": -1.842577995128523,
+        "actual": 4.20602193482897,
+        "anterior": 5.106245077134135,
+        "variacion": -0.9002231423051654,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 40.906387033946395,
-        "anterior": 39.218881139792856,
-        "variacion": 1.6875058941535386
+        "actual": 39.44663345596205,
+        "anterior": 38.16010530366776,
+        "variacion": 1.286528152294288
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 93.66948529773063,
-        "anterior": 99.4290631185878,
-        "variacion": -5.759577820857174
+        "actual": 94.77407058515298,
+        "anterior": 97.10097084941893,
+        "variacion": -2.3269002642659444
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 30.665862708131787,
-        "anterior": 25.584251847884644,
-        "variacion": 5.081610860247142
+        "actual": 29.208638493991533,
+        "anterior": 28.802148996239254,
+        "variacion": 0.40648949775227905
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 20.78630635793163,
-        "anterior": 23.616033777178284,
-        "variacion": -2.8297274192466553
+        "actual": 18.7420698742328,
+        "anterior": 23.28064783036147,
+        "variacion": -4.53857795612867
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 4.373060416461822,
-        "anterior": 4.933958930018006,
-        "variacion": -0.5608985135561841,
+        "actual": 3.5365636744681357,
+        "anterior": 5.414522128450559,
+        "variacion": -1.8779584539824237,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 2.4986890284230188,
-        "anterior": 3.6941132931908647,
-        "variacion": -1.195424264767846,
+        "actual": 2.9318991015309357,
+        "anterior": 3.63279849517646,
+        "variacion": -0.7008993936455243,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 2.364708120237954,
-        "anterior": 1.665942409161661,
-        "variacion": 0.698765711076293,
+        "actual": 2.4034580678809716,
+        "anterior": 1.1724527399836557,
+        "variacion": 1.2310053278973159,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 12.352909199687474,
-        "anterior": 10.170377286446017,
-        "variacion": 2.1825319132414567,
-        "nota_actual": "b",
-        "nota_anterior": "b"
+        "actual": 10.347769211566751,
+        "anterior": 13.751583495321116,
+        "variacion": -3.4038142837543646,
+        "nota_actual": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 9.03827859718942,
-        "anterior": 10.911233015860283,
-        "variacion": -1.8729544186708633,
-        "nota_actual": "b",
-        "nota_anterior": "a"
+        "actual": 10.22773029884463,
+        "anterior": 12.733931139453414,
+        "variacion": -2.506200840608784,
+        "nota_actual": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 24.7096817288913,
-        "anterior": 25.221480702760683,
-        "variacion": -0.5117989738693822
+        "actual": 24.778391381171538,
+        "anterior": 23.844377650373335,
+        "variacion": 0.9340137307982026
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 49.021333815566656,
-        "anterior": 44.58819705592407,
-        "variacion": 4.433136759642586
+        "actual": 49.166353578337336,
+        "anterior": 45.345068302999984,
+        "variacion": 3.8212852753373525
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 40.413314658072345,
-        "anterior": 33.13566384467496,
-        "variacion": 7.277650813397386
+        "actual": 40.854884203544636,
+        "anterior": 35.24690710308317,
+        "variacion": 5.6079771004614685
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 3.256352189273032,
-        "anterior": 3.802708661656185,
-        "variacion": -0.5463564723831529,
+        "actual": 2.6490581200671834,
+        "anterior": 4.321834757704025,
+        "variacion": -1.6727766376368414,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 12.390649110786153,
-        "anterior": 14.615115380300441,
-        "variacion": -2.224466269514288
+        "actual": 12.502846058888503,
+        "anterior": 14.475074057418224,
+        "variacion": -1.9722279985297213
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 19.870931531206786,
-        "anterior": 17.55774205244095,
-        "variacion": 2.3131894787658354
+        "actual": 18.312400682318607,
+        "anterior": 18.783919466311477,
+        "variacion": -0.4715187839928703
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
@@ -1767,9 +1769,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.33438832837076127,
-        "anterior": 1.3618487368637648,
-        "variacion": -1.0274604084930035,
+        "actual": 0.6002438994973444,
+        "anterior": 1.7527634117430362,
+        "variacion": -1.152519512245692,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -1778,163 +1780,163 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 20.75338166395073,
-        "anterior": 27.23909811247529,
-        "variacion": -6.48571644852456
+        "actual": 22.53039438148014,
+        "anterior": 27.79262966283032,
+        "variacion": -5.262235281350179
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 3.3695062381930785,
-        "anterior": 3.644367748128444,
-        "variacion": -0.2748615099353655,
+        "actual": 2.570343102691003,
+        "anterior": 3.1937294825156597,
+        "variacion": -0.6233863798246566,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 22.28257180763815,
-        "anterior": 20.307258498457653,
-        "variacion": 1.9753133091804962
+        "actual": 22.99097903702582,
+        "anterior": 20.71758949116937,
+        "variacion": 2.2733895458564497
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 1.0860304337337416,
-        "anterior": 1.8395432071444329,
-        "variacion": -0.7535127734106912,
+        "actual": 1.285368245398159,
+        "anterior": 1.854122606969061,
+        "variacion": -0.5687543615709021,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 1.6751308513000371,
-        "anterior": 1.9171087130621427,
-        "variacion": -0.24197786176210556,
+        "actual": 1.9307831947536533,
+        "anterior": 1.8687262072479034,
+        "variacion": 0.06205698750574995,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 17.56654257311881,
-        "anterior": 22.410313071512835,
-        "variacion": -4.843770498394026
+        "actual": 17.6966616334119,
+        "anterior": 19.572527172279155,
+        "variacion": -1.8758655388672558
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 34.861762632380646,
-        "anterior": 32.18403907162468,
-        "variacion": 2.6777235607559646
+        "actual": 34.669718210500335,
+        "anterior": 32.83936925918154,
+        "variacion": 1.830348951318797
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 9.956985982249678,
-        "anterior": 7.999187208594025,
-        "variacion": 1.9577987736556537
+        "actual": 10.490955191137273,
+        "anterior": 9.422697481203612,
+        "variacion": 1.0682577099336612
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 10.910950741780464,
-        "anterior": 11.523113503145584,
-        "variacion": -0.6121627613651199,
+        "actual": 11.867395450910603,
+        "anterior": 10.670975089430165,
+        "variacion": 1.1964203614804383,
         "nota_actual": "a"
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 1.4267515012126641,
-        "anterior": 1.0148811184097062,
-        "variacion": 0.41187038280295796,
+        "actual": 2.169036648366931,
+        "anterior": 1.829587342701024,
+        "variacion": 0.3394493056659069,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 0.8483642245541709,
-        "anterior": 1.9669231062100438,
-        "variacion": -1.118558881655873,
+        "actual": 1.2219781366008569,
+        "anterior": 2.011934234894407,
+        "variacion": -0.7899560982935503,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 0.9966042866147955,
-        "anterior": 1.51274014276509,
-        "variacion": -0.5161358561502944,
+        "actual": 0.5428928554540944,
+        "anterior": 1.93293505665766,
+        "variacion": -1.3900422012035656,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 8.48635181289169,
-        "anterior": 6.102453226831471,
-        "variacion": 2.38389858606022,
+        "actual": 7.94296334301789,
+        "anterior": 5.03582364345105,
+        "variacion": 2.90713969956684,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 4.848341505154434,
-        "anterior": 4.998630962690653,
-        "variacion": -0.15028945753621858,
+        "actual": 6.682598092847052,
+        "anterior": 4.791266891863931,
+        "variacion": 1.891331200983121,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 12.985922238939514,
-        "anterior": 13.776761747496664,
-        "variacion": -0.7908395085571502
+        "actual": 12.115048716850435,
+        "anterior": 13.460562587396424,
+        "variacion": -1.3455138705459895
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 21.26849747155353,
-        "anterior": 23.63697133168853,
-        "variacion": -2.3684738601350013
+        "actual": 20.895476420077486,
+        "anterior": 23.596931794080994,
+        "variacion": -2.7014553740035083
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 20.930924875387976,
-        "anterior": 17.12393120888005,
-        "variacion": 3.8069936665079247
+        "actual": 21.839512919020798,
+        "anterior": 18.13002307780305,
+        "variacion": 3.7094898412177493
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 1.5827030008371965,
-        "anterior": 1.694255813266767,
-        "variacion": -0.1115528124295706,
+        "actual": 1.175407738378772,
+        "anterior": 1.039304792244984,
+        "variacion": 0.13610294613378793,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 6.879891742841316,
-        "anterior": 5.4311406220939435,
-        "variacion": 1.4487511207473727,
+        "actual": 6.035591860007895,
+        "anterior": 6.273240011968373,
+        "variacion": -0.23764815196047806,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 9.465912501867559,
-        "anterior": 10.56265100568222,
-        "variacion": -1.0967385038146613
+        "actual": 11.314408775098515,
+        "anterior": 10.054835544596292,
+        "variacion": 1.2595732305022231
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
@@ -1948,9 +1950,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 1.2540220733605865,
-        "anterior": 1.350098630406223,
-        "variacion": -0.09607655704563656,
+        "actual": 1.2523373316407642,
+        "anterior": 1.826529658022602,
+        "variacion": -0.5741923263818378,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -1959,170 +1961,170 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 41.77706896997118,
-        "anterior": 37.737657321568456,
-        "variacion": 4.0394116484027265
+        "actual": 41.887528219104816,
+        "anterior": 41.67226701281696,
+        "variacion": 0.21526120628785606
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 16.009810693950673,
-        "anterior": 19.505959236822598,
-        "variacion": -3.496148542871925
+        "actual": 15.959085565756782,
+        "anterior": 17.482761553747938,
+        "variacion": -1.5236759879911563
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 84.04280354853417,
-        "anterior": 92.727045454415,
-        "variacion": -8.684241905880839
+        "actual": 87.3180560796799,
+        "anterior": 96.43331768721885,
+        "variacion": -9.11526160753894
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 5.498531268734951,
-        "anterior": 6.11733989578496,
-        "variacion": -0.6188086270500097,
+        "actual": 5.822133038281311,
+        "anterior": 4.816014641702602,
+        "variacion": 1.0061183965787084,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 4.12801684474474,
-        "anterior": 4.826973430516364,
-        "variacion": -0.698956585771624,
+        "actual": 4.135583330897909,
+        "anterior": 4.8589528151119366,
+        "variacion": -0.7233694842140279,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 55.03058815847136,
-        "anterior": 58.68251787710633,
-        "variacion": -3.6519297186349675
+        "actual": 55.90722420222185,
+        "anterior": 57.378757076778975,
+        "variacion": -1.471532874557127
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 124.06331919892304,
-        "anterior": 117.70313528581809,
-        "variacion": 6.360183913104947
+        "actual": 120.03131815297078,
+        "anterior": 117.7104946091363,
+        "variacion": 2.3208235438344786
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 44.35733291798383,
-        "anterior": 45.32957119270269,
-        "variacion": -0.9722382747188547
+        "actual": 46.33236055668421,
+        "anterior": 43.89810972544912,
+        "variacion": 2.43425083123509
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 28.965302457815113,
-        "anterior": 25.67208785823402,
-        "variacion": 3.293214599581095
+        "actual": 30.657158999849127,
+        "anterior": 28.22211490541858,
+        "variacion": 2.4350440944305483
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 6.963434688208272,
-        "anterior": 7.558049040338643,
-        "variacion": -0.5946143521303711,
+        "actual": 7.512214275974087,
+        "anterior": 7.72408418696771,
+        "variacion": -0.21186991099362285,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 5.447445635155097,
-        "anterior": 6.264684910517569,
-        "variacion": -0.8172392753624722,
+        "actual": 5.8996011421414725,
+        "anterior": 5.993798621075137,
+        "variacion": -0.09419747893366459,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 6.297288679965243,
-        "anterior": 4.623782597434627,
-        "variacion": 1.6735060825306158,
+        "actual": 6.0250034683612474,
+        "anterior": 5.036442488048001,
+        "variacion": 0.9885609803132462,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 19.865032798522396,
-        "anterior": 20.33497901859743,
-        "variacion": -0.46994622007503395
+        "actual": 20.966506667371508,
+        "anterior": 18.63270314167569,
+        "variacion": 2.333803525695817
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 18.9275058465314,
-        "anterior": 17.720922759158082,
-        "variacion": 1.2065830873733177
+        "actual": 19.026747726533348,
+        "anterior": 16.211359534181312,
+        "variacion": 2.815388192352035
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 45.80132344598215,
-        "anterior": 46.60130485893745,
-        "variacion": -0.7999814129553044
+        "actual": 48.13778793085822,
+        "anterior": 45.841571125965245,
+        "variacion": 2.296216804892971
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 72.28712237688924,
-        "anterior": 75.6671814968024,
-        "variacion": -3.380059119913156
+        "actual": 70.98176571011554,
+        "anterior": 76.82201617045234,
+        "variacion": -5.840250460336804
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 67.96062674468472,
-        "anterior": 70.19816773194191,
-        "variacion": -2.2375409872571907
+        "actual": 67.24927287509426,
+        "anterior": 67.5621494540057,
+        "variacion": -0.3128765789114425
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 9.152825322009319,
-        "anterior": 7.9510561645475475,
-        "variacion": 1.2017691574617713,
+        "actual": 9.901504837298477,
+        "anterior": 7.644712868436918,
+        "variacion": 2.2567919688615588,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 23.52189192165729,
-        "anterior": 23.650604372588738,
-        "variacion": -0.12871245093144879
+        "actual": 22.406729629673553,
+        "anterior": 26.2180449732934,
+        "variacion": -3.811315343619846
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 20.054728614046162,
-        "anterior": 21.660465699033058,
-        "variacion": -1.6057370849868953
+        "actual": 21.287554848148556,
+        "anterior": 20.96636265526944,
+        "variacion": 0.32119219287911704
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
         "nombre": "Actividades de organizaciones y órganos extraterritoriales",
         "actual": 0,
-        "anterior": 0.08594777005735088,
-        "variacion": -0.08594777005735088,
+        "anterior": 0.086741942316444,
+        "variacion": -0.086741942316444,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.7405339184446539,
-        "anterior": 1.2892196039831938,
-        "variacion": -0.5486856855385399,
+        "actual": 0.7820040267037908,
+        "anterior": 1.749893513205142,
+        "variacion": -0.9678894865013513,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -2131,162 +2133,161 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 47.71922165714656,
-        "anterior": 47.586879748785904,
-        "variacion": 0.13234190836065807
+        "actual": 50.44506639565618,
+        "anterior": 54.11340042778655,
+        "variacion": -3.6683340321303746
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 1.7180756242773234,
-        "anterior": 1.8170860952132601,
-        "variacion": -0.09901047093593673,
+        "actual": 2.197300641515829,
+        "anterior": 1.4503280407736359,
+        "variacion": 0.7469726007421933,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 37.72367545191507,
-        "anterior": 45.65700039311052,
-        "variacion": -7.933324941195451
+        "actual": 36.83385000261485,
+        "anterior": 41.28828141193149,
+        "variacion": -4.454431409316641
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 1.5612961023135608,
-        "anterior": 2.3397384778322,
-        "variacion": -0.7784423755186394,
+        "actual": 1.709044729735147,
+        "anterior": 2.4353334765009693,
+        "variacion": -0.7262887467658223,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 4.482251764365633,
-        "anterior": 3.7712957481809677,
-        "variacion": 0.7109560161846651,
+        "actual": 3.6460884756664753,
+        "anterior": 3.3718693999495044,
+        "variacion": 0.2742190757169709,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 42.87373271251333,
-        "anterior": 40.64443357527487,
-        "variacion": 2.2292991372384634
+        "actual": 43.99283329561473,
+        "anterior": 43.2653602699057,
+        "variacion": 0.7274730257090312
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 67.05608551342627,
-        "anterior": 84.54713525010746,
-        "variacion": -17.49104973668119
+        "actual": 69.78494749085507,
+        "anterior": 79.45232927585953,
+        "variacion": -9.667381785004451
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 21.771849549363996,
-        "anterior": 24.203968416099972,
-        "variacion": -2.4321188667359763
+        "actual": 21.77678850141009,
+        "anterior": 24.908987376461297,
+        "variacion": -3.132198875051209
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 22.515207558664606,
-        "anterior": 20.575242706756963,
-        "variacion": 1.939964851907643
+        "actual": 19.715420408994497,
+        "anterior": 22.094988340612403,
+        "variacion": -2.379567931617906
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 2.9555292342272494,
-        "anterior": 2.6903117271783357,
-        "variacion": 0.2652175070489138,
+        "actual": 3.4072746655585306,
+        "anterior": 3.015661641998975,
+        "variacion": 0.39161302355955563,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 3.160219904443489,
-        "anterior": 1.4963126485645484,
-        "variacion": 1.6639072558789407,
+        "actual": 3.0018890166541676,
+        "anterior": 1.6659909834861293,
+        "variacion": 1.3358980331680383,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 1.7767200969697843,
-        "anterior": 4.2138727366445625,
-        "variacion": -2.4371526396747782,
+        "actual": 2.3238503908477193,
+        "anterior": 4.923743837520979,
+        "variacion": -2.5998934466732595,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 12.811668134388084,
-        "anterior": 8.667088892884896,
-        "variacion": 4.1445792415031875,
+        "actual": 10.6778854487315,
+        "anterior": 7.556238101851003,
+        "variacion": 3.121647346880497,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 13.080354116185392,
-        "anterior": 12.949071712442505,
-        "variacion": 0.1312824037428868,
-        "nota_actual": "b"
+        "actual": 13.640663566308923,
+        "anterior": 12.973411892760836,
+        "variacion": 0.6672516735480869,
+        "nota_anterior": "a"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 33.05584199315333,
-        "anterior": 24.664110686164495,
-        "variacion": 8.391731306988834,
+        "actual": 30.099725637728326,
+        "anterior": 22.157242943479037,
+        "variacion": 7.942482694249289,
         "nota_actual": "a"
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 46.77724709274942,
-        "anterior": 45.91602929409031,
-        "variacion": 0.8612177986591121
+        "actual": 48.87820670715104,
+        "anterior": 45.707138106780384,
+        "variacion": 3.1710686003706527
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 37.69263974375842,
-        "anterior": 30.400282209986713,
-        "variacion": 7.292357533771707
+        "actual": 36.41055231417882,
+        "anterior": 32.62859211500002,
+        "variacion": 3.7819601991788048
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 4.484818774606913,
-        "anterior": 3.609616780837389,
-        "variacion": 0.8752019937695237,
+        "actual": 3.601183401163785,
+        "anterior": 4.786428263506348,
+        "variacion": -1.185244862342563,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 12.426093343950832,
-        "anterior": 14.402008677123547,
-        "variacion": -1.9759153331727148,
-        "nota_actual": "b",
+        "actual": 12.784791142199452,
+        "anterior": 13.758996672155204,
+        "variacion": -0.9742055299557517,
         "nota_anterior": "a"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 14.254043161012541,
-        "anterior": 13.014801141157221,
-        "variacion": 1.23924201985532
+        "actual": 13.984129558796202,
+        "anterior": 13.165761446077948,
+        "variacion": 0.8183681127182538
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
@@ -2300,9 +2301,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.9495936141596683,
-        "anterior": 0.867888896516629,
-        "variacion": 0.08170471764303922,
+        "actual": 0.9364428730921475,
+        "anterior": 0.7684950536749433,
+        "variacion": 0.16794781941720416,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -2311,162 +2312,162 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 21.413986767873745,
-        "anterior": 21.55985182558864,
-        "variacion": -0.14586505771489655
+        "actual": 20.939754112114244,
+        "anterior": 21.100311873019734,
+        "variacion": -0.16055776090549045
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 0.7027188019818644,
-        "anterior": 0.6486740126679676,
-        "variacion": 0.05404478931389678,
+        "actual": 0.41487480404610777,
+        "anterior": 0.606442492701337,
+        "variacion": -0.19156768865522922,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 18.346431098855547,
-        "anterior": 19.821800025523522,
-        "variacion": -1.4753689266679757
+        "actual": 18.152660009849427,
+        "anterior": 18.60393926793458,
+        "variacion": -0.45127925808515457
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 0.38167940438410236,
-        "anterior": 0.9949104294266672,
-        "variacion": -0.6132310250425648,
+        "actual": 0.6665982027802679,
+        "anterior": 1.1181505033292376,
+        "variacion": -0.45155230054896967,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 0.2284901498041234,
-        "anterior": 1.317800666428049,
-        "variacion": -1.0893105166239256,
+        "actual": 0.38778116370597404,
+        "anterior": 1.1679742041847858,
+        "variacion": -0.7801930404788118,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 17.025000196301924,
-        "anterior": 15.231876934438526,
-        "variacion": 1.793123261863398
+        "actual": 17.096521415429336,
+        "anterior": 15.874378955878848,
+        "variacion": 1.2221424595504882
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 28.54694341931012,
-        "anterior": 26.432844204951902,
-        "variacion": 2.1140992143582196
+        "actual": 27.543119588219607,
+        "anterior": 25.532751885219415,
+        "variacion": 2.010367703000192
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 9.619901530999662,
-        "anterior": 8.612101835836476,
-        "variacion": 1.007799695163186
+        "actual": 8.989946364826155,
+        "anterior": 8.582465153003037,
+        "variacion": 0.4074812118231179
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 7.6518509454182935,
-        "anterior": 8.736913078688929,
-        "variacion": -1.0850621332706352
+        "actual": 7.399821411891106,
+        "anterior": 8.915635434172998,
+        "variacion": -1.5158140222818917
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 2.8456409597041916,
-        "anterior": 2.3540573723203044,
-        "variacion": 0.4915835873838872,
+        "actual": 2.7583447747114778,
+        "anterior": 2.0180763434450317,
+        "variacion": 0.740268431266446,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 2.0277537037652493,
-        "anterior": 1.5854913637149823,
-        "variacion": 0.442262340050267,
+        "actual": 1.6907812915127562,
+        "anterior": 1.4715130270566132,
+        "variacion": 0.219268264456143,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 1.1615048466888602,
-        "anterior": 1.0673366418609425,
-        "variacion": 0.09416820482791777,
+        "actual": 1.3437217131220343,
+        "anterior": 0.7348508467491308,
+        "variacion": 0.6088708663729034,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 5.445998318034423,
-        "anterior": 6.259145336515655,
-        "variacion": -0.8131470184812315,
+        "actual": 6.116571263108755,
+        "anterior": 5.968408978083955,
+        "variacion": 0.14816228502479944,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 6.838787757442921,
-        "anterior": 5.486648114601556,
-        "variacion": 1.3521396428413643,
-        "nota_actual": "a",
+        "actual": 5.410515395795877,
+        "anterior": 5.855917858645568,
+        "variacion": -0.44540246284969065,
+        "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 11.420804287576505,
-        "anterior": 13.00813238917436,
-        "variacion": -1.5873281015978549
+        "actual": 12.671267091423935,
+        "anterior": 12.940658278841465,
+        "variacion": -0.2693911874175292
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 18.548504259394864,
-        "anterior": 22.492722364153583,
-        "variacion": -3.9442181047587184
+        "actual": 20.597978796670844,
+        "anterior": 22.097318593750533,
+        "variacion": -1.4993397970796885
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 15.549545615294585,
-        "anterior": 15.180378003876253,
-        "variacion": 0.369167611418332
+        "actual": 14.425873661453664,
+        "anterior": 17.87143102370336,
+        "variacion": -3.4455573622496942
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 1.6854352695084571,
-        "anterior": 2.121563607969209,
-        "variacion": -0.4361283384607517,
+        "actual": 1.5939187393371377,
+        "anterior": 1.7022691363525777,
+        "variacion": -0.10835039701544003,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 3.5969419578958615,
-        "anterior": 4.378638714775128,
-        "variacion": -0.7816967568792661,
+        "actual": 4.6397369540403846,
+        "anterior": 4.075164746093009,
+        "variacion": 0.5645722079473758,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 8.066046612173462,
-        "anterior": 7.712907150765544,
-        "variacion": 0.35313946140791863
+        "actual": 7.738897187525278,
+        "anterior": 7.467976810391983,
+        "variacion": 0.27092037713329464
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
@@ -2480,9 +2481,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.2214647900259989,
-        "anterior": 0.31676555365341863,
-        "variacion": -0.09530076362741974,
+        "actual": 0,
+        "anterior": 0.6436198435627056,
+        "variacion": -0.6436198435627056,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -2491,163 +2492,164 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 53.37689091605109,
-        "anterior": 47.33289182066294,
-        "variacion": 6.043999095388152
+        "actual": 56.83337630611152,
+        "anterior": 45.65582073235267,
+        "variacion": 11.177555573758845
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 0.29366633409660997,
-        "anterior": 0.7210064726556302,
-        "variacion": -0.42734013855902026,
+        "actual": 0.2856160931655767,
+        "anterior": 0.566744642720077,
+        "variacion": -0.2811285495545003,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 50.92134013368243,
-        "anterior": 62.71058649659399,
-        "variacion": -11.789246362911562
+        "actual": 51.84948870917177,
+        "anterior": 64.96775926226887,
+        "variacion": -13.118270553097098
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 1.7148276936457036,
-        "anterior": 2.9065110499570244,
-        "variacion": -1.1916833563113207,
+        "actual": 2.8027650131840876,
+        "anterior": 3.5183103475590056,
+        "variacion": -0.7155453343749181,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 2.8041717860126045,
-        "anterior": 1.6760284098996963,
-        "variacion": 1.1281433761129083,
+        "actual": 2.3521443992491364,
+        "anterior": 1.5305683084478157,
+        "variacion": 0.8215760908013208,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 26.968521725780825,
-        "anterior": 31.968671336261306,
-        "variacion": -5.000149610480481,
+        "actual": 26.389693304146167,
+        "anterior": 32.46059131245333,
+        "variacion": -6.070898008307164,
         "nota_anterior": "a"
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 69.66868321787979,
-        "anterior": 68.64616057499579,
-        "variacion": 1.0225226428839989
+        "actual": 69.99468483969385,
+        "anterior": 68.90817075228117,
+        "variacion": 1.0865140874126809
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 27.54063640249945,
-        "anterior": 22.119931522499506,
-        "variacion": 5.4207048799999455
+        "actual": 27.693075761701408,
+        "anterior": 21.82858696890828,
+        "variacion": 5.864488792793129
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 18.906054591392355,
-        "anterior": 21.72162991635341,
-        "variacion": -2.8155753249610562,
-        "nota_actual": "a",
+        "actual": 21.26113957247771,
+        "anterior": 19.582333567908556,
+        "variacion": 1.6788060045691537,
         "nota_anterior": "a"
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 6.697188490200223,
-        "anterior": 6.65289005085804,
-        "variacion": 0.04429843934218347,
+        "actual": 4.043962332224399,
+        "anterior": 5.972962123053188,
+        "variacion": -1.9289997908287893,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 2.9405662056880857,
-        "anterior": 2.5087700903559713,
-        "variacion": 0.43179611533211437,
+        "actual": 4.212768737125924,
+        "anterior": 2.9110248086479684,
+        "variacion": 1.301743928477956,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 2.6300988431411634,
-        "anterior": 2.388079326172727,
-        "variacion": 0.2420195169684365,
+        "actual": 2.644752027403082,
+        "anterior": 2.5065618169393185,
+        "variacion": 0.13819021046376356,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 9.722731850174537,
-        "anterior": 18.920651256415823,
-        "variacion": -9.197919406241287,
+        "actual": 10.551859025506579,
+        "anterior": 19.024963692390465,
+        "variacion": -8.473104666883886,
         "nota_actual": "b",
         "nota_anterior": "a"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 10.86102540408706,
-        "anterior": 11.481304714228049,
-        "variacion": -0.6202793101409885
+        "actual": 14.112930020103432,
+        "anterior": 12.239928364221736,
+        "variacion": 1.873001655881696,
+        "nota_actual": "a"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 20.580230456200283,
-        "anterior": 24.441811480941077,
-        "variacion": -3.8615810247407936
+        "actual": 19.81734502310386,
+        "anterior": 22.80630366497561,
+        "variacion": -2.988958641871747
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 32.18301757978111,
-        "anterior": 32.979132333292604,
-        "variacion": -0.7961147535114961
+        "actual": 32.37036477327804,
+        "anterior": 34.007715299217764,
+        "variacion": -1.6373505259397234
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 32.75631140167237,
-        "anterior": 27.964136220591534,
-        "variacion": 4.792175181080836
+        "actual": 30.44049889970225,
+        "anterior": 28.739352693742354,
+        "variacion": 1.701146205959894
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 3.531522437319441,
-        "anterior": 4.145654275437488,
-        "variacion": -0.6141318381180474,
+        "actual": 4.860374052263333,
+        "anterior": 4.236072929527913,
+        "variacion": 0.62430112273542,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 8.868941587043079,
-        "anterior": 6.7045343196613585,
-        "variacion": 2.16440726738172,
+        "actual": 8.284065750950463,
+        "anterior": 6.03506728782823,
+        "variacion": 2.2489984631222324,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 11.433700111581587,
-        "anterior": 9.022484056653404,
-        "variacion": 2.4112160549281825
+        "actual": 11.229437383801958,
+        "anterior": 8.850043697671046,
+        "variacion": 2.3793936861309124,
+        "nota_anterior": "a"
       },
       {
         "sector": "actividades_de_organizaciones_y_organos_extraterritoriales",
@@ -2661,9 +2663,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 1.674716488131956,
-        "anterior": 2.025456879387947,
-        "variacion": -0.350740391255991,
+        "actual": 1.6710660153443118,
+        "anterior": 1.724756576593016,
+        "variacion": -0.053690561248704194,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -2672,166 +2674,166 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 4.05845219860636,
-        "anterior": 5.8930550828669315,
-        "variacion": -1.8346028842605717,
-        "nota_actual": "a",
-        "nota_anterior": "a"
+        "actual": 5.256090270984613,
+        "anterior": 4.561041525483686,
+        "variacion": 0.6950487455009267,
+        "nota_actual": "a"
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 0.42364681350285616,
-        "anterior": 0.4027566624485046,
-        "variacion": 0.020890151054351547,
+        "actual": 0.41874868489038164,
+        "anterior": 0.638906807449086,
+        "variacion": -0.22015812255870437,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 4.990254201940259,
-        "anterior": 4.512030400236487,
-        "variacion": 0.47822380170377254,
-        "nota_actual": "a"
+        "actual": 4.156872624910787,
+        "anterior": 4.543848623511219,
+        "variacion": -0.3869759986004322
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 0.5806180375580734,
-        "anterior": 0.3754162181682719,
-        "variacion": 0.20520181938980148,
+        "actual": 0.33714060223594505,
+        "anterior": 0.469934831200417,
+        "variacion": -0.13279422896447196,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 0.6196016617882504,
-        "anterior": 0.2310264768280578,
-        "variacion": 0.3885751849601926,
+        "actual": 0.38676262072844747,
+        "anterior": 0.2134699743359182,
+        "variacion": 0.17329264639252928,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 5.616471317717748,
-        "anterior": 5.303345323878573,
-        "variacion": 0.31312599383917483
+        "actual": 4.985891818934303,
+        "anterior": 5.301770395460311,
+        "variacion": -0.3158785765260079
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 8.505420835006218,
-        "anterior": 8.784336173876369,
-        "variacion": -0.2789153388701511
+        "actual": 9.999692093292927,
+        "anterior": 8.319828629889729,
+        "variacion": 1.6798634634031977
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 3.8097774695921798,
-        "anterior": 3.6674900522647285,
-        "variacion": 0.14228741732745132,
-        "nota_actual": "a"
+        "actual": 3.2779178431061458,
+        "anterior": 3.664339551649084,
+        "variacion": -0.38642170854293845
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 3.1091708811713112,
-        "anterior": 3.8642204760005727,
-        "variacion": -0.7550495948292615
+        "actual": 3.434218664051521,
+        "anterior": 3.721207808020717,
+        "variacion": -0.2869891439691963,
+        "nota_actual": "a",
+        "nota_anterior": "a"
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 0.38818589849375107,
-        "anterior": 0.47360804366531745,
-        "variacion": -0.08542214517156638,
+        "actual": 0.4870754048012069,
+        "anterior": 0.4707250011936638,
+        "variacion": 0.01635040360754314,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 0.22639198473162905,
-        "anterior": 0.5369943070295523,
-        "variacion": -0.3106023222979233,
+        "actual": 0.2196059531919006,
+        "anterior": 0.6862353808529154,
+        "variacion": -0.4666294276610148,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 0.1677023364557599,
-        "anterior": 0.12709191345092893,
-        "variacion": 0.040610423004830976,
+        "actual": 0.1341274657413984,
+        "anterior": 0.11536904463826911,
+        "variacion": 0.01875842110312928,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 0.9390394953104522,
-        "anterior": 1.5474302175778276,
-        "variacion": -0.6083907222673755,
+        "actual": 0.874269950715496,
+        "anterior": 1.4436454833206869,
+        "variacion": -0.5693755326051909,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 1.9688864679785714,
-        "anterior": 2.0902294089837277,
-        "variacion": -0.1213429410051563,
+        "actual": 1.9097955263133422,
+        "anterior": 2.338948646325601,
+        "variacion": -0.4291531200122587,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 8.60323388618718,
-        "anterior": 7.808645305758211,
-        "variacion": 0.794588580428969
+        "actual": 9.434282536888185,
+        "anterior": 8.863638889937196,
+        "variacion": 0.5706436469509892
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 4.92354315598015,
-        "anterior": 5.49601773862963,
-        "variacion": -0.5724745826494795
+        "actual": 4.932189374287789,
+        "anterior": 4.890736163782961,
+        "variacion": 0.04145321050482842
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 5.1869882453665275,
-        "anterior": 4.427650928151337,
-        "variacion": 0.7593373172151905
+        "actual": 5.058172955153405,
+        "anterior": 5.72524654047918,
+        "variacion": -0.6670735853257748,
+        "nota_anterior": "a"
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 0.6825081567181572,
-        "anterior": 0.6595750975692157,
-        "variacion": 0.022933059148941504,
+        "actual": 0.7758354754008178,
+        "anterior": 0.7465868368333823,
+        "variacion": 0.029248638567435425,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 1.1682751775975755,
-        "anterior": 1.0922069653037279,
-        "variacion": 0.07606821229384764,
+        "actual": 0.9141620930172432,
+        "anterior": 0.9740736899228314,
+        "variacion": -0.05991159690558823,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 1.217551137531868,
-        "anterior": 1.0879507108580788,
-        "variacion": 0.12960042667378913,
+        "actual": 1.2040450575999961,
+        "anterior": 1.0633354977782465,
+        "variacion": 0.1407095598217496,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
@@ -2847,9 +2849,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0,
-        "anterior": 0.06698223068109614,
-        "variacion": -0.06698223068109614,
+        "actual": 0.03247257135569214,
+        "anterior": 0.5352863095887127,
+        "variacion": -0.5028137382330206,
         "nota_actual": "b",
         "nota_anterior": "b"
       }
@@ -2858,165 +2860,166 @@
       {
         "sector": "agricultura_ganaderia_silvicultura_y_pesca",
         "nombre": "Agricultura, ganadería, silvicultura y pesca",
-        "actual": 5.0738250458796905,
-        "anterior": 3.6320149607266337,
-        "variacion": 1.4418100851530569,
+        "actual": 4.721115795735819,
+        "anterior": 4.03829012147795,
+        "variacion": 0.6828256742578684,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "explotacion_de_minas_y_canteras",
         "nombre": "Explotación de minas y canteras",
-        "actual": 1.978269232858657,
-        "anterior": 1.912075928240438,
-        "variacion": 0.06619330461821904,
+        "actual": 2.2515935484082643,
+        "anterior": 1.6084624214381096,
+        "variacion": 0.6431311269701547,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "industrias_manufactureras",
         "nombre": "Industrias manufactureras",
-        "actual": 8.58902749659567,
-        "anterior": 9.578057812195272,
-        "variacion": -0.989030315599603
+        "actual": 8.263276608469871,
+        "anterior": 7.130793677255884,
+        "variacion": 1.1324829312139872,
+        "nota_anterior": "a"
       },
       {
         "sector": "suministro_de_electricidad_gas_vapor_y_aire_acondicionado",
         "nombre": "Suministro de electricidad, gas, vapor y aire acondicionado",
-        "actual": 1.014537931867424,
-        "anterior": 0.513293563750276,
-        "variacion": 0.5012443681171479,
+        "actual": 1.1491286245135242,
+        "anterior": 0.598626725420944,
+        "variacion": 0.5505018990925802,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "suministro_de_agua",
         "nombre": "Suministro de agua",
-        "actual": 0.8992563467187608,
-        "anterior": 0.4937242942228823,
-        "variacion": 0.4055320524958785,
+        "actual": 0.5329050773477105,
+        "anterior": 0.6498461808285405,
+        "variacion": -0.11694110348082998,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "construccion",
         "nombre": "Construcción",
-        "actual": 11.228648433165421,
-        "anterior": 9.872410728189958,
-        "variacion": 1.356237704975463,
+        "actual": 10.94594541610553,
+        "anterior": 10.141044623684751,
+        "variacion": 0.8049007924207796,
         "nota_anterior": "a"
       },
       {
         "sector": "comercio_al_por_mayor_y_al_por_menor",
         "nombre": "Comercio al por mayor y al por menor",
-        "actual": 12.867701007994135,
-        "anterior": 17.8369563658891,
-        "variacion": -4.969255357894966
+        "actual": 13.275849652593301,
+        "anterior": 18.286694536033956,
+        "variacion": -5.0108448834406545
       },
       {
         "sector": "transporte_y_almacenamiento",
         "nombre": "Transporte y almacenamiento",
-        "actual": 8.008295243834374,
-        "anterior": 7.526621394580417,
-        "variacion": 0.48167384925395673
+        "actual": 7.9021202703824125,
+        "anterior": 8.067485717427004,
+        "variacion": -0.165365447044592
       },
       {
         "sector": "actividades_de_alojamiento_y_de_servicio_de_comidas",
         "nombre": "Actividades de alojamiento y de servicio de comidas",
-        "actual": 6.155515528244258,
-        "anterior": 5.944136402009372,
-        "variacion": 0.21137912623488653
+        "actual": 5.95974495409153,
+        "anterior": 6.502638549222254,
+        "variacion": -0.5428935951307237
       },
       {
         "sector": "informacion_y_comunicaciones",
         "nombre": "Información y comunicaciones",
-        "actual": 1.1809242220056106,
-        "anterior": 0.5281047513439265,
-        "variacion": 0.6528194706616841,
+        "actual": 0.7441369454647917,
+        "anterior": 0.576092019253423,
+        "variacion": 0.16804492621136868,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_financieras_y_de_seguros",
         "nombre": "Actividades financieras y de seguros",
-        "actual": 0.8373798740711247,
-        "anterior": 0.2705231236210517,
-        "variacion": 0.566856750450073,
+        "actual": 0.7524528463379391,
+        "anterior": 0.2704337522867168,
+        "variacion": 0.4820190940512223,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_inmobiliarias",
         "nombre": "Actividades inmobiliarias",
-        "actual": 0.844557137651412,
-        "anterior": 0.7021374398183071,
-        "variacion": 0.14241969783310493,
+        "actual": 1.1523794464413444,
+        "anterior": 0.6857711325173331,
+        "variacion": 0.46660831392401125,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_profesionales_cientificas_y_tecnicas",
         "nombre": "Actividades profesionales, científicas y técnicas",
-        "actual": 2.564444222394371,
-        "anterior": 1.926242128622745,
-        "variacion": 0.638202093771626,
+        "actual": 2.17417946298491,
+        "anterior": 1.9355347001194803,
+        "variacion": 0.2386447628654298,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_servicios_administrativos_y_de_apoyo",
         "nombre": "Actividades de servicios administrativos y de apoyo",
-        "actual": 4.2531826197557665,
-        "anterior": 4.689169448307935,
-        "variacion": -0.43598682855216886,
+        "actual": 4.231140487892804,
+        "anterior": 4.868826187359732,
+        "variacion": -0.6376856994669273,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "administracion_publica_y_defensa",
         "nombre": "Administración pública y defensa",
-        "actual": 9.687792918706544,
-        "anterior": 9.972285514994368,
-        "variacion": -0.28449259628782464
+        "actual": 9.97329969375784,
+        "anterior": 8.714336764283514,
+        "variacion": 1.2589629294743254
       },
       {
         "sector": "ensenanza",
         "nombre": "Enseñanza",
-        "actual": 9.174654341205766,
-        "anterior": 7.220774819282528,
-        "variacion": 1.9538795219232385
+        "actual": 9.312224239252325,
+        "anterior": 7.61778904572769,
+        "variacion": 1.694435193524635
       },
       {
         "sector": "actividades_de_atencion_de_la_salud_humana_y_de_asistencia_social",
         "nombre": "Actividades de atención de la salud humana y de asistencia social",
-        "actual": 8.88182812290496,
-        "anterior": 11.427084082663235,
-        "variacion": -2.5452559597582756
+        "actual": 9.177333256758686,
+        "anterior": 11.969766969424908,
+        "variacion": -2.792433712666222
       },
       {
         "sector": "actividades_artisticas_de_entretenimiento_y_recreativas",
         "nombre": "Actividades artísticas, de entretenimiento y recreativas",
-        "actual": 0.7565177686417753,
-        "anterior": 0.688105985560326,
-        "variacion": 0.06841178308144935,
+        "actual": 1.3119207348845514,
+        "anterior": 0.6889409714071462,
+        "variacion": 0.6229797634774052,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "otras_actividades_de_servicios",
         "nombre": "Otras actividades de servicios",
-        "actual": 2.8851254275390197,
-        "anterior": 1.6525505207107365,
-        "variacion": 1.2325749068282832,
+        "actual": 2.559410629409532,
+        "anterior": 1.8117623781653376,
+        "variacion": 0.7476482512441942,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
       {
         "sector": "actividades_de_los_hogares_como_empleadores",
         "nombre": "Actividades de los hogares como empleadores",
-        "actual": 1.5198065125231626,
-        "anterior": 1.92962222439234,
-        "variacion": -0.4098157118691774,
+        "actual": 1.5843369765703865,
+        "anterior": 1.9888158506502494,
+        "variacion": -0.4044788740798628,
         "nota_actual": "b",
         "nota_anterior": "b"
       },
@@ -3032,9 +3035,9 @@
       {
         "sector": "no_sabe_no_responde",
         "nombre": "No sabe / No responde [2]",
-        "actual": 0.17110524907778926,
-        "anterior": 0.09506381885004553,
-        "variacion": 0.07604143022774373,
+        "actual": 0.4103031345397402,
+        "anterior": 0.22397637691206373,
+        "variacion": 0.18632675762767648,
         "nota_actual": "b",
         "nota_anterior": "b"
       }

@@ -3,8 +3,8 @@
     "nombre": "INE, ENE: duracion",
     "url": "https://www.ine.gob.cl/docs/default-source/ocupacion-y-desocupacion/cuadros-estadisticos/series-vigentes/duracion_des_edad.xlsx",
     "licencia": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "sha256": "1aa334cad036b4ea454f87a2950bee6c5cacb0ed6260f8e0ad4b333908f20897",
-    "fecha_actualizacion": "29-10-2026"
+    "sha256": "cf2fd8e8cd597468a6ece31b538f2bdef3480a559fa9e554bdcddd7caedd5f5a",
+    "fecha_actualizacion": "27-11-2026"
   },
   "series": {
     "15-24": [
@@ -2025,6 +2025,16 @@
           "des": 177.15624419489006
         },
         "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "tasa_larga": 2.3176385114968343,
+          "proporcion_larga": 9.130247989141097,
+          "promedio_meses": 5.19875827537361,
+          "des": 185.82425783708865
+        },
+        "notas": {}
       }
     ],
     "25-34": [
@@ -4027,6 +4037,16 @@
           "proporcion_larga": 18.8456202369126,
           "promedio_meses": 7.619536877915685,
           "des": 315.0739755168242
+        },
+        "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "tasa_larga": 2.484871226976364,
+          "proporcion_larga": 20.16729142557904,
+          "promedio_meses": 8.269983335399566,
+          "des": 312.21610179142294
         },
         "notas": {}
       }
@@ -6105,6 +6125,16 @@
           "des": 205.62938766597253
         },
         "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "tasa_larga": 1.251489794022077,
+          "proporcion_larga": 15.686299061081705,
+          "promedio_meses": 7.613144523793207,
+          "des": 214.2917375662653
+        },
+        "notas": {}
       }
     ],
     "45-54": [
@@ -8170,6 +8200,16 @@
           "proporcion_larga": 22.17714207139847,
           "promedio_meses": 9.563639746675737,
           "des": 167.62774178829298
+        },
+        "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "tasa_larga": 1.6804861877002122,
+          "proporcion_larga": 21.135134591442238,
+          "promedio_meses": 10.079238683909125,
+          "des": 171.40829080498762
         },
         "notas": {}
       }
@@ -10348,6 +10388,16 @@
           "proporcion_larga": 26.06045900899023,
           "promedio_meses": 11.508104810052657,
           "des": 111.10575144724602
+        },
+        "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "tasa_larga": 2.0188531852733065,
+          "proporcion_larga": 27.52359994095505,
+          "promedio_meses": 12.224666578933286,
+          "des": 118.89289926225878
         },
         "notas": {}
       }
@@ -12972,6 +13022,16 @@
           "proporcion_larga": 38.913163898458976,
           "promedio_meses": 16.554955906324132,
           "des": 31.38320313111025
+        },
+        "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "tasa_larga": 1.7493356334501535,
+          "proporcion_larga": 34.233341857985295,
+          "promedio_meses": 15.084144088008863,
+          "des": 33.65787461809771
         },
         "notas": {}
       }

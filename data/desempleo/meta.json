@@ -1,17 +1,18 @@
 {
-  "version": "2026-08",
-  "fetched_at": "2026-11-19T09:49:39.596Z",
-  "ine_fecha_actualizacion": "29-10-2026",
+  "version": "2026-09",
+  "fetched_at": "2026-11-27T17:07:11.682Z",
+  "ine_fecha_actualizacion": "27-11-2026",
+  "ine_proxima_publicacion": "30-12-2026",
   "ultimo_periodo": {
-    "codigo": "2026-08",
-    "label": "jul–sep 2026"
+    "codigo": "2026-09",
+    "label": "ago–oct 2026"
   },
   "fuentes": [
     {
       "nombre": "INE, Encuesta Nacional de Empleo",
       "url": "https://www.ine.gob.cl/docs/default-source/ocupacion-y-desocupacion/cuadros-estadisticos/series-vigentes/indicadores_principales.xlsx",
       "licencia": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sha256": "63bbe64b2174ae04ecb76eacd2d188db0d1e6e8429b5b770131d84ad844b302f"
+      "sha256": "64eb543deb4ac5e72b434457a48b8637e7a9325ca708f760232944efc3461065"
     }
   ],
   "revisiones": []

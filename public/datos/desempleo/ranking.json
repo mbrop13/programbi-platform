@@ -2,16 +2,16 @@
   {
     "slug": "nacional",
     "nombre": "Chile",
-    "tasa": 9.802624823820713,
-    "anterior_pp": 0.1623,
-    "yoy_pp": 1.2737,
+    "tasa": 9.976532775213316,
+    "anterior_pp": 0.1739,
+    "yoy_pp": 1.5289,
     "rank_mismo_trimestre": 2,
     "anterior_mismo_trimestre": {
-      "p": "2020-08",
-      "tasa": 12.348290683320114
+      "p": "2020-09",
+      "tasa": 11.577038760121193
     },
     "vs_chile_pp": 0,
-    "cinco_anos_pp": 1.397,
+    "cinco_anos_pp": 1.8999,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -36,16 +36,16 @@
   {
     "slug": "arica-y-parinacota",
     "nombre": "Arica y Parinacota",
-    "tasa": 7.782534953506367,
-    "anterior_pp": -1.6521,
-    "yoy_pp": 1.2029,
-    "rank_mismo_trimestre": 2,
+    "tasa": 6.686777828088018,
+    "anterior_pp": -1.0958,
+    "yoy_pp": -0.2421,
+    "rank_mismo_trimestre": 9,
     "anterior_mismo_trimestre": {
-      "p": "2020-08",
-      "tasa": 9.54803047171363
+      "p": "2025-09",
+      "tasa": 6.928847733270925
     },
-    "vs_chile_pp": -2.0201,
-    "cinco_anos_pp": 2.8954,
+    "vs_chile_pp": -3.2898,
+    "cinco_anos_pp": 1.2068,
     "maximo": {
       "p": "2026-06",
       "notas": {},
@@ -72,16 +72,16 @@
   {
     "slug": "tarapaca",
     "nombre": "Tarapacá",
-    "tasa": 8.53788960661492,
-    "anterior_pp": 0.7114,
-    "yoy_pp": 0.4879,
-    "rank_mismo_trimestre": 4,
+    "tasa": 8.209997230684172,
+    "anterior_pp": -0.3279,
+    "yoy_pp": 0.0045,
+    "rank_mismo_trimestre": 3,
     "anterior_mismo_trimestre": {
-      "p": "2022-08",
-      "tasa": 9.655956996895766
+      "p": "2020-09",
+      "tasa": 9.536719495494776
     },
-    "vs_chile_pp": -1.2647,
-    "cinco_anos_pp": 1.6234,
+    "vs_chile_pp": -1.7665,
+    "cinco_anos_pp": 0.7198,
     "maximo": {
       "p": "2020-07",
       "notas": {
@@ -110,16 +110,16 @@
   {
     "slug": "antofagasta",
     "nombre": "Antofagasta",
-    "tasa": 6.738171101267618,
-    "anterior_pp": 0.4057,
-    "yoy_pp": -1.145,
-    "rank_mismo_trimestre": 13,
+    "tasa": 6.98237550022443,
+    "anterior_pp": 0.2442,
+    "yoy_pp": -0.374,
+    "rank_mismo_trimestre": 11,
     "anterior_mismo_trimestre": {
-      "p": "2025-08",
-      "tasa": 7.883213612068764
+      "p": "2025-09",
+      "tasa": 7.356390460227341
     },
-    "vs_chile_pp": -3.0645,
-    "cinco_anos_pp": -2.9057,
+    "vs_chile_pp": -2.9942,
+    "cinco_anos_pp": -2.1444,
     "maximo": {
       "p": "2020-04",
       "notas": {},
@@ -146,16 +146,16 @@
   {
     "slug": "atacama",
     "nombre": "Atacama",
-    "tasa": 8.751942848174748,
-    "anterior_pp": -0.7088,
-    "yoy_pp": -0.161,
-    "rank_mismo_trimestre": 4,
+    "tasa": 9.14778249874655,
+    "anterior_pp": 0.3958,
+    "yoy_pp": 0.1125,
+    "rank_mismo_trimestre": 2,
     "anterior_mismo_trimestre": {
-      "p": "2025-08",
-      "tasa": 8.912927095422894
+      "p": "2020-09",
+      "tasa": 11.623521926385957
     },
-    "vs_chile_pp": -1.0507,
-    "cinco_anos_pp": 0.3663,
+    "vs_chile_pp": -0.8288,
+    "cinco_anos_pp": 1.0304,
     "maximo": {
       "p": "2020-07",
       "notas": {},
@@ -182,16 +182,16 @@
   {
     "slug": "coquimbo",
     "nombre": "Coquimbo",
-    "tasa": 8.966875713662938,
-    "anterior_pp": -0.3888,
-    "yoy_pp": 1.3679,
-    "rank_mismo_trimestre": 4,
+    "tasa": 9.01375437385587,
+    "anterior_pp": 0.0469,
+    "yoy_pp": 1.0827,
+    "rank_mismo_trimestre": 5,
     "anterior_mismo_trimestre": {
-      "p": "2023-08",
-      "tasa": 11.22150898188022
+      "p": "2024-09",
+      "tasa": 9.146252888365387
     },
-    "vs_chile_pp": -0.8357,
-    "cinco_anos_pp": -0.2815,
+    "vs_chile_pp": -0.9628,
+    "cinco_anos_pp": -0.5007,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -216,16 +216,16 @@
   {
     "slug": "valparaiso",
     "nombre": "Valparaíso",
-    "tasa": 9.881423583486006,
-    "anterior_pp": -0.334,
-    "yoy_pp": 1.3524,
+    "tasa": 9.840837091565971,
+    "anterior_pp": -0.0406,
+    "yoy_pp": 1.6477,
     "rank_mismo_trimestre": 2,
     "anterior_mismo_trimestre": {
-      "p": "2020-08",
-      "tasa": 14.365768627547231
+      "p": "2020-09",
+      "tasa": 12.931107002692766
     },
-    "vs_chile_pp": 0.0788,
-    "cinco_anos_pp": 1.1474,
+    "vs_chile_pp": -0.1357,
+    "cinco_anos_pp": 1.8925,
     "maximo": {
       "p": "2020-08",
       "notas": {},
@@ -250,16 +250,16 @@
   {
     "slug": "metropolitana",
     "nombre": "Región Metropolitana",
-    "tasa": 10.35063427338166,
-    "anterior_pp": 0.5662,
-    "yoy_pp": 1.5606,
+    "tasa": 10.528419358719491,
+    "anterior_pp": 0.1778,
+    "yoy_pp": 1.9286,
     "rank_mismo_trimestre": 2,
     "anterior_mismo_trimestre": {
-      "p": "2020-08",
-      "tasa": 13.244855354885596
+      "p": "2020-09",
+      "tasa": 12.673393162248464
     },
-    "vs_chile_pp": 0.548,
-    "cinco_anos_pp": 1.1344,
+    "vs_chile_pp": 0.5519,
+    "cinco_anos_pp": 1.535,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -284,16 +284,16 @@
   {
     "slug": "ohiggins",
     "nombre": "O’Higgins",
-    "tasa": 10.887298345852912,
-    "anterior_pp": 0.0965,
-    "yoy_pp": 2.068,
+    "tasa": 11.330623652571155,
+    "anterior_pp": 0.4433,
+    "yoy_pp": 2.4324,
     "rank_mismo_trimestre": 2,
     "anterior_mismo_trimestre": {
-      "p": "2020-08",
-      "tasa": 12.277568740969963
+      "p": "2020-09",
+      "tasa": 11.592917643337067
     },
-    "vs_chile_pp": 1.0847,
-    "cinco_anos_pp": 3.2788,
+    "vs_chile_pp": 1.3541,
+    "cinco_anos_pp": 3.5733,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -318,16 +318,13 @@
   {
     "slug": "maule",
     "nombre": "Maule",
-    "tasa": 9.652031547354662,
-    "anterior_pp": 0.1857,
-    "yoy_pp": 2.1468,
-    "rank_mismo_trimestre": 2,
-    "anterior_mismo_trimestre": {
-      "p": "2020-08",
-      "tasa": 10.393631790729739
-    },
-    "vs_chile_pp": -0.1506,
-    "cinco_anos_pp": 2.4815,
+    "tasa": 10.867018236152006,
+    "anterior_pp": 1.215,
+    "yoy_pp": 3.2339,
+    "rank_mismo_trimestre": 1,
+    "anterior_mismo_trimestre": null,
+    "vs_chile_pp": 0.8905,
+    "cinco_anos_pp": 4.683,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -352,13 +349,13 @@
   {
     "slug": "nuble",
     "nombre": "Ñuble",
-    "tasa": 11.824507780781545,
-    "anterior_pp": 0.6613,
-    "yoy_pp": 1.8524,
+    "tasa": 11.601059441139656,
+    "anterior_pp": -0.2234,
+    "yoy_pp": 1.7035,
     "rank_mismo_trimestre": 1,
     "anterior_mismo_trimestre": null,
-    "vs_chile_pp": 2.0219,
-    "cinco_anos_pp": 3.1848,
+    "vs_chile_pp": 1.6245,
+    "cinco_anos_pp": 4.2329,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -385,13 +382,13 @@
   {
     "slug": "biobio",
     "nombre": "Biobío",
-    "tasa": 10.47711433709502,
-    "anterior_pp": -0.1988,
-    "yoy_pp": 0.4054,
+    "tasa": 10.559915698032851,
+    "anterior_pp": 0.0828,
+    "yoy_pp": 0.5562,
     "rank_mismo_trimestre": 1,
     "anterior_mismo_trimestre": null,
-    "vs_chile_pp": 0.6745,
-    "cinco_anos_pp": 2.1132,
+    "vs_chile_pp": 0.5834,
+    "cinco_anos_pp": 2.4986,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -416,16 +413,16 @@
   {
     "slug": "araucania",
     "nombre": "La Araucanía",
-    "tasa": 9.35924662371259,
-    "anterior_pp": -0.7654,
-    "yoy_pp": 0.2645,
+    "tasa": 9.40155341897922,
+    "anterior_pp": 0.0423,
+    "yoy_pp": 0.2449,
     "rank_mismo_trimestre": 3,
     "anterior_mismo_trimestre": {
-      "p": "2024-08",
-      "tasa": 10.866582539813646
+      "p": "2024-09",
+      "tasa": 10.419173545928912
     },
-    "vs_chile_pp": -0.4434,
-    "cinco_anos_pp": 2.2668,
+    "vs_chile_pp": -0.575,
+    "cinco_anos_pp": 2.7914,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -450,16 +447,16 @@
   {
     "slug": "los-rios",
     "nombre": "Los Ríos",
-    "tasa": 9.841780125156573,
-    "anterior_pp": -0.3748,
-    "yoy_pp": 0.9129,
+    "tasa": 9.938498020272235,
+    "anterior_pp": 0.0967,
+    "yoy_pp": 1.555,
     "rank_mismo_trimestre": 2,
     "anterior_mismo_trimestre": {
-      "p": "2020-08",
-      "tasa": 14.134699849190572
+      "p": "2020-09",
+      "tasa": 12.688914056817291
     },
-    "vs_chile_pp": 0.0392,
-    "cinco_anos_pp": 1.2414,
+    "vs_chile_pp": -0.038,
+    "cinco_anos_pp": 2.6291,
     "maximo": {
       "p": "2020-07",
       "notas": {},
@@ -486,13 +483,13 @@
   {
     "slug": "los-lagos",
     "nombre": "Los Lagos",
-    "tasa": 7.687895411606013,
-    "anterior_pp": -0.1039,
-    "yoy_pp": 2.1941,
+    "tasa": 7.758794062684868,
+    "anterior_pp": 0.0709,
+    "yoy_pp": 1.1725,
     "rank_mismo_trimestre": 1,
     "anterior_mismo_trimestre": null,
-    "vs_chile_pp": -2.1147,
-    "cinco_anos_pp": 4.6623,
+    "vs_chile_pp": -2.2177,
+    "cinco_anos_pp": 5.0132,
     "maximo": {
       "p": "2020-06",
       "notas": {},
@@ -519,16 +516,16 @@
   {
     "slug": "aysen",
     "nombre": "Aysén",
-    "tasa": 3.9992835148833774,
-    "anterior_pp": -0.0143,
-    "yoy_pp": -0.7198,
-    "rank_mismo_trimestre": 11,
+    "tasa": 4.47112096800671,
+    "anterior_pp": 0.4718,
+    "yoy_pp": 0.6124,
+    "rank_mismo_trimestre": 7,
     "anterior_mismo_trimestre": {
-      "p": "2025-08",
-      "tasa": 4.719113105782135
+      "p": "2024-09",
+      "tasa": 4.6453742850983994
     },
-    "vs_chile_pp": -5.8033,
-    "cinco_anos_pp": 0.624,
+    "vs_chile_pp": -5.5054,
+    "cinco_anos_pp": 0.7157,
     "maximo": {
       "p": "2020-06",
       "notas": {
@@ -557,16 +554,16 @@
   {
     "slug": "magallanes",
     "nombre": "Magallanes",
-    "tasa": 6.442853784335462,
-    "anterior_pp": -0.4587,
-    "yoy_pp": -0.0585,
-    "rank_mismo_trimestre": 5,
+    "tasa": 6.782649859543458,
+    "anterior_pp": 0.3398,
+    "yoy_pp": 0.6409,
+    "rank_mismo_trimestre": 3,
     "anterior_mismo_trimestre": {
-      "p": "2025-08",
-      "tasa": 6.50135585495901
+      "p": "2023-09",
+      "tasa": 6.840209145511482
     },
-    "vs_chile_pp": -3.3598,
-    "cinco_anos_pp": 0.6329,
+    "vs_chile_pp": -3.1939,
+    "cinco_anos_pp": 1.2693,
     "maximo": {
       "p": "2020-07",
       "notas": {

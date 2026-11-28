@@ -3,8 +3,8 @@
     "nombre": "INE, ENE: nini",
     "url": "https://www.ine.gob.cl/docs/default-source/ocupacion-y-desocupacion/cuadros-estadisticos/series-vigentes/no_estudian_no_ocupadas.xlsx",
     "licencia": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "sha256": "5a02510cae85efe08e42f7a9bba7ef3b06f143d4fcb0a8e8897ce1f1d00c6410",
-    "fecha_actualizacion": "29-10-2026"
+    "sha256": "94c0bbd8dad805b2c51bef50991e13cfe790716d7982c7dabcb85be36e432de6",
+    "fecha_actualizacion": "27-11-2026"
   },
   "series": {
     "15-24": [
@@ -716,6 +716,15 @@
           "total": 308.8507851736161,
           "hombres": 146.69545896901747,
           "mujeres": 162.1553262045986
+        },
+        "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "total": 312.0449150189811,
+          "hombres": 146.82559677965637,
+          "mujeres": 165.21931823932474
         },
         "notas": {}
       }
@@ -1431,6 +1440,15 @@
           "mujeres": 48.486211262375065
         },
         "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "total": 90.0039487504223,
+          "hombres": 43.62848161917133,
+          "mujeres": 46.37546713125095
+        },
+        "notas": {}
       }
     ],
     "20-24": [
@@ -2142,6 +2160,15 @@
           "total": 216.8603746245288,
           "hombres": 103.19125968230524,
           "mujeres": 113.66911494222353
+        },
+        "notas": {}
+      },
+      {
+        "p": "2026-09",
+        "valores": {
+          "total": 222.0409662685588,
+          "hombres": 103.19711516048503,
+          "mujeres": 118.84385110807376
         },
         "notas": {}
       }
