@@ -1,0 +1,2 @@
+# Downloadable CSVs are generated with CRLF for Excel; keep LF in the repo so commits from Linux CI and Windows match.
+public/datos/desempleo/csv/*.csv text eol=crlf

@@ -5,8 +5,10 @@ on:
     - cron: '30 13 27-31,1-3 * *'
 permissions:
   contents: write
-  pull-requests: write
   issues: write
+concurrency:
+  group: datos-desempleo
+  cancel-in-progress: false
 jobs:
   actualizar:
     runs-on: ubuntu-latest
@@ -27,34 +29,51 @@ jobs:
         run: |
           set -o pipefail
           node scripts/datos/update-desempleo.mjs 2>&1 | tee datos-desempleo-log.txt
-          if [ ! -s "$DATOS_SUMMARY_PATH" ] && [ -n "$(git status --porcelain -- data/desempleo public/datos/desempleo)" ]; then
-            {
-              printf '## Actualización de cuadros complementarios del INE\n\n'
-              printf 'Se validaron las series oficiales y se regeneraron sus archivos.\n\n'
-              sed -n '/^Fase 2:/p' datos-desempleo-log.txt
-            } > "$DATOS_SUMMARY_PATH"
+          if [ -n "$(git status --porcelain -- data/desempleo public/datos/desempleo)" ]; then
+            echo "cambios=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "cambios=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Obtener versión
-        if: success() && hashFiles('datos-desempleo-resumen.md') != ''
-        id: version
-        run: echo "version=$(node -p "require('./data/desempleo/meta.json').version")" >> "$GITHUB_OUTPUT"
-      - name: Crear pull request para revisión
-        if: success() && hashFiles('datos-desempleo-resumen.md') != ''
-        uses: peter-evans/create-pull-request@v7
-        with:
-          branch: datos/desempleo-${{ steps.version.outputs.version }}
-          delete-branch: true
-          title: 'Actualizar observatorio de desempleo INE'
-          commit-message: 'Actualizar datos de desempleo INE'
-          body-path: datos-desempleo-resumen.md
-          add-paths: |
-            data/desempleo/*.json
-            data/desempleo/regiones/*.json
-            public/datos/desempleo/**
-      - name: Informar fallo de validación
-        if: failure() && steps.datos.outcome == 'failure'
+      # The series are imported as typed JSON, so a type check catches structural changes before publishing.
+      - name: Verificar tipos antes de publicar
+        id: tipos
+        if: steps.datos.outputs.cambios == 'true'
+        run: |
+          set -o pipefail
+          npx tsc --noEmit 2>&1 | tee -a datos-desempleo-log.txt
+      - name: Publicar en main
+        id: publicar
+        if: steps.datos.outputs.cambios == 'true'
+        run: |
+          periodo=$(node -p "require('./data/desempleo/meta.json').ultimo_periodo.label")
+          fecha=$(node -p "require('./data/desempleo/meta.json').ine_fecha_actualizacion")
+          if [ -s datos-desempleo-resumen.md ]; then
+            titulo="datos(desempleo): actualiza el observatorio a ${periodo} (INE ${fecha})"
+          else
+            titulo="datos(desempleo): actualiza cuadros complementarios del INE"
+            sed -n '/^Fase 2:/p' datos-desempleo-log.txt > datos-desempleo-resumen.md
+          fi
+          { echo "$titulo"; echo; cat datos-desempleo-resumen.md; } > /tmp/mensaje-commit.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/desempleo/*.json data/desempleo/regiones/*.json public/datos/desempleo
+          git commit -q -F /tmp/mensaje-commit.txt
+          for intento in 1 2 3; do
+            git pull --rebase -q origin main && git push origin HEAD:main && exit 0
+            sleep $((intento * 10))
+          done
+          echo "No se pudo publicar en main tras 3 intentos" | tee -a datos-desempleo-log.txt
+          exit 1
+      - name: Forzar despliegue en Vercel
+        if: steps.publicar.outcome == 'success'
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$VERCEL_DEPLOY_HOOK" ]; then curl -fsS -X POST "$VERCEL_DEPLOY_HOOK" > /dev/null; fi
+      - name: Informar fallo
+        if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          { printf 'Falló la actualización automática. Revisar la ejecución: %s/%s/actions/runs/%s\n\n```\n' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"; tail -n 60 datos-desempleo-log.txt; printf '\n```\n'; } > /tmp/datos-issue.md
+          { printf 'Falló la actualización automática del observatorio de desempleo. Revisar la ejecución: %s/%s/actions/runs/%s\n\n```\n' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"; tail -n 60 datos-desempleo-log.txt 2>/dev/null; printf '\n```\n'; } > /tmp/datos-issue.md
           gh issue create --title 'Falló la actualización de datos de desempleo' --body-file /tmp/datos-issue.md
