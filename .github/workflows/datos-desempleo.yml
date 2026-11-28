@@ -1,8 +1,17 @@
 name: Actualizar datos de desempleo
 on:
   workflow_dispatch:
+    inputs:
+      redesplegar:
+        description: Volver a desplegar main aunque el INE no tenga datos nuevos
+        type: boolean
+        default: false
   schedule:
-    - cron: '30 13 27-31,1-3 * *'
+    # El INE publica a las 09:00. Consultar cada 15 minutos durante las dos primeras horas.
+    - cron: '7,22,37,52 9-10 25-31,1-3 * *'
+      timezone: America/Santiago
+    - cron: '17 12,16 25-31,1-3 * *'
+      timezone: America/Santiago
 permissions:
   contents: write
   issues: write
@@ -12,13 +21,14 @@ concurrency:
 jobs:
   actualizar:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
       - run: npm ci
       - name: Descargar, validar y generar
@@ -41,6 +51,15 @@ jobs:
         run: |
           set -o pipefail
           npx tsc --noEmit 2>&1 | tee -a datos-desempleo-log.txt
+      - name: Verificar conexión con Vercel
+        if: steps.datos.outputs.cambios == 'true' || inputs.redesplegar
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo 'Falta el secreto VERCEL_DEPLOY_HOOK' | tee -a datos-desempleo-log.txt
+            exit 1
+          fi
       - name: Publicar en main
         id: publicar
         if: steps.datos.outputs.cambios == 'true'
@@ -59,17 +78,24 @@ jobs:
           git add data/desempleo/*.json data/desempleo/regiones/*.json public/datos/desempleo
           git commit -q -F /tmp/mensaje-commit.txt
           for intento in 1 2 3; do
-            git pull --rebase -q origin main && git push origin HEAD:main && exit 0
+            if ! git pull --rebase -q origin main; then
+              git rebase --abort 2>/dev/null || true
+              echo 'No se pudo integrar el main actual; se volverá a intentar en la próxima ejecución' | tee -a datos-desempleo-log.txt
+              exit 1
+            fi
+            if git push origin HEAD:main; then exit 0; fi
             sleep $((intento * 10))
           done
           echo "No se pudo publicar en main tras 3 intentos" | tee -a datos-desempleo-log.txt
           exit 1
-      - name: Forzar despliegue en Vercel
-        if: steps.publicar.outcome == 'success'
+      - name: Desplegar en Vercel
+        if: steps.publicar.outcome == 'success' || inputs.redesplegar
         env:
           VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
         run: |
-          if [ -n "$VERCEL_DEPLOY_HOOK" ]; then curl -fsS -X POST "$VERCEL_DEPLOY_HOOK" > /dev/null; fi
+          set -o pipefail
+          curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 \
+            --request POST --output /dev/null "$VERCEL_DEPLOY_HOOK" 2>&1 | tee -a datos-desempleo-log.txt
       - name: Informar fallo
         if: failure()
         env:
